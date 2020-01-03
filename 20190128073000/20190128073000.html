@@ -1,0 +1,60 @@
+<div class="entry-content">
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%CF%A4%C6%A4%CA%A5%D6%A5%ED%A5%B0">はてなブログ</a>では記事のエクスポートという機能もありますが、すべての記事が一つのhtmlとして出力されます。<br/>
+また、写真は<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%CF%A4%C6%A4%CA%A5%D5%A5%A9%A5%C8%A5%E9%A5%A4%A5%D5">はてなフォトライフ</a>のリンクがhtmlに埋め込まれた状態です。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fhelp.hatenablog.com%2Fentry%2Fexport" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="記事データをエクスポート（バックアップ）する - はてなブログ ヘルプ"></iframe><cite class="hatena-citation"><a href="http://help.hatenablog.com/entry/export">help.hatenablog.com</a></cite></p><p>そこで、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%CF%A4%C6%A4%CA%A5%D6%A5%ED%A5%B0">はてなブログ</a>の記事をひとつずつダウンロードし、写真も個別に取得ダウンロードするものを作りました。<br/>
+目的は、モバイル環境などでブログ記事を作成するともとの写真がどこで作成されたものかどこへ行ったのかわからなくなるので、これを集約するためです。もちろんバックアップの目的も達成されます。</p><p>自分のブログ記事の一覧は以前の記事で紹介しています。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2018%2F01%2F04%2F121923" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="pythonではてなブログのエントリー一覧を取得する - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2018/01/04/121923">s51517765.hatenadiary.jp</a></cite></p><p>このようなurlからすべての記事にたどり着けます。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">rootUrl = <span class="synConstant">'http://s51517765.hatenadiary.jp/archive?page='</span>
+url = rootUrl + <span class="synIdentifier">str</span>(n) <span class="synComment">#nはページ数</span>
+</pre><p>新しいLinkが出てこなくなるまで取得します。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">def</span> <span class="synIdentifier">main</span>(url):
+    html = requests.get(url)
+    soup = BeautifulSoup(html.text, <span class="synConstant">'lxml'</span>)  <span class="synComment">##lxmlを指定するほうがよい</span>
+
+    alink = soup.select(<span class="synConstant">'a'</span>)
+    newLinkCheck = <span class="synIdentifier">False</span>;
+
+    <span class="synStatement">for</span> i <span class="synStatement">in</span> <span class="synIdentifier">range</span>(<span class="synIdentifier">len</span>(alink)):
+        <span class="synStatement">if</span> alink[i].get(<span class="synConstant">"class"</span>) != <span class="synIdentifier">None</span>:
+            <span class="synStatement">if</span> <span class="synConstant">'entry-title-link'</span> <span class="synStatement">in</span> alink[i].get(<span class="synConstant">'class'</span>):
+                <span class="synStatement">if</span> alink[i].get(<span class="synConstant">"href"</span>) <span class="synStatement">not</span> <span class="synStatement">in</span> <span class="synIdentifier">list</span>:
+                    <span class="synIdentifier">print</span>(<span class="synConstant">'【プログラミング素人のはてなブログ】'</span> + alink[i].getText() + <span class="synConstant">' '</span> + alink[i].get(<span class="synConstant">'href'</span>))
+                    get_contents(alink[i].get(<span class="synConstant">'href'</span>))  <span class="synComment"># コンテンツ取得</span>
+                    newLinkCheck = <span class="synIdentifier">True</span>;
+                    time.sleep(<span class="synConstant">0.3</span>)
+                    <span class="synIdentifier">list</span>.append(alink[i].get(<span class="synConstant">"href"</span>))
+
+    <span class="synStatement">return</span> newLinkCheck
+</pre><p>取得した記事のurlに対して、記事の中身だけを取得します。<br/>
+記事の本編は<code>'entry-content'</code>で探します。<br/>
+写真は<code>soup.find_all("img")</code>でさがして、<code>requests.get(img['src'])</code>でダウンロードします。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">def</span> <span class="synIdentifier">get_contents</span>(url):
+    html = requests.get(url)
+    soup = BeautifulSoup(html.text, <span class="synConstant">'lxml'</span>)  <span class="synComment">##lxmlを指定するほうがよい</span>
+    contents_div = soup.select(<span class="synConstant">'div'</span>)
+    <span class="synStatement">for</span> i <span class="synStatement">in</span> <span class="synIdentifier">range</span>(<span class="synIdentifier">len</span>(contents_div)):
+        <span class="synStatement">if</span> contents_div[i].get(<span class="synConstant">"class"</span>) != <span class="synIdentifier">None</span>:
+            <span class="synStatement">if</span> <span class="synConstant">'entry-content'</span> <span class="synStatement">in</span> contents_div[i].get(<span class="synConstant">'class'</span>):
+                page = contents_div[i]  <span class="synComment"># Full HTML</span>
+                folderName = url.replace(<span class="synConstant">"https://s51517765.hatenadiary.jp/entry/"</span>, <span class="synConstant">""</span>)
+                folderName = folderName.replace(<span class="synConstant">"/"</span>, <span class="synConstant">""</span>)  <span class="synComment"># 日付でフォルダ名にする</span>
+                os.chdir(root)  <span class="synComment"># ルートディレクトリに移動</span>
+                <span class="synStatement">if</span> <span class="synStatement">not</span> os.path.exists(folderName):
+                    os.mkdir(folderName)  <span class="synComment"># フォルダーを作る</span>
+                os.chdir(folderName)  <span class="synComment"># 存在しないフォルダに移動しようとするとErrorになる</span>
+                <span class="synIdentifier">file</span> = <span class="synIdentifier">open</span>(folderName + <span class="synConstant">'.html'</span>, <span class="synConstant">'w'</span>, encoding=<span class="synConstant">'utf'</span>)  <span class="synComment"># 書き込みモードでオープンs</span>
+                <span class="synIdentifier">file</span>.write(<span class="synIdentifier">str</span>(page))
+                <span class="synIdentifier">file</span>.close()
+                <span class="synStatement">try</span>: <span class="synComment">#写真のダウンロード</span>
+                    imgs = soup.find_all(<span class="synConstant">"img"</span>)
+                    i = <span class="synConstant">0</span>
+                    <span class="synStatement">for</span> img <span class="synStatement">in</span> imgs:
+                        <span class="synStatement">if</span> <span class="synConstant">'fotolife'</span> <span class="synStatement">in</span> img[<span class="synConstant">'src'</span>]:
+                            r = requests.get(img[<span class="synConstant">'src'</span>])
+                            <span class="synStatement">with</span> <span class="synIdentifier">open</span>(<span class="synIdentifier">str</span>(i) + <span class="synConstant">'.jpeg'</span>, <span class="synConstant">'wb'</span>) <span class="synStatement">as</span> <span class="synIdentifier">file</span>:
+                                <span class="synIdentifier">file</span>.write(r.content)
+                            i += <span class="synConstant">1</span>  <span class="synComment"># 画像に連番をつける</span>
+                <span class="synStatement">except</span>:
+                    <span class="synStatement">pass</span>
+</pre><p><figure class="figure-image figure-image-fotolife" title="取得した記事がフォルダごとに"><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20190127183802j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190127/20190127183802.jpg" title="f:id:s51517765:20190127183802j:plain"/></span><figcaption>取得した記事がフォルダごとに</figcaption></figure><figure class="figure-image figure-image-fotolife" title="記事本文をhtmlで写真をjpegとして"><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20190127183833j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190127/20190127183833.jpg" title="f:id:s51517765:20190127183833j:plain"/></span><figcaption>記事本文をhtmlで写真を<a class="keyword" href="http://d.hatena.ne.jp/keyword/jpeg">jpeg</a>として</figcaption></figure></p><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fs51517765%2FhatenaAllDownload%2Fblob%2Fmaster%2FhatenaAllDownload.py" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="s51517765/hatenaAllDownload"></iframe><cite class="hatena-citation"><a href="https://github.com/s51517765/hatenaAllDownload/blob/master/hatenaAllDownload.py">github.com</a></cite></p>
+</div>

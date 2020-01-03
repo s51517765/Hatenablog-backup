@@ -1,8 +1,6 @@
 <div class="entry-content">
-<p><a href="https://px.a8.net/svt/ejp?a8mat=2ZTMYI+8RJREA+0K+11K0U9" rel="nofollow" target="_blank"><br/>
-<img alt="" border="0" height="60" src="https://www23.a8.net/svt/bgt?aid=181101690530&amp;wid=001&amp;eno=01&amp;mid=s00000000002006308000&amp;mc=1" width="234"/></a><br/>
-<img alt="" border="0" height="1" src="https://www18.a8.net/0.gif?a8mat=2ZTMYI+8RJREA+0K+11K0U9" width="1"/></p><p></p><h3>序論</h3>KerasでRNN(LSTM)を試してみました。<p>以下の記事を参考にしました。（タイトルまでそのまんまじゃないか…）<br/>
-<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Fsasayabaku%2Fitems%2Fb7872a3b8acc7d6261bf" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="KerasでRNN(LSTM)を試してみる - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/sasayabaku/items/b7872a3b8acc7d6261bf">qiita.com</a></cite></p><p>LSTMとは簡単に言うと時系列データを扱える<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C7%A5%A3%A1%BC%A5%D7%A5%E9%A1%BC%A5%CB%A5%F3%A5%B0">ディープラーニング</a>の仕組みで、RNNの一種です。</p>
+<p></p><h3>序論</h3>KerasでRNN(LSTM)を試してみました。<p>以下の記事を参考にしました。（タイトルまでそのまんまじゃないか…）<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Fsasayabaku%2Fitems%2Fb7872a3b8acc7d6261bf" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="初心者のRNN(LSTM) | Kerasで試してみる - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/sasayabaku/items/b7872a3b8acc7d6261bf">qiita.com</a></cite></p><p>LSTMとは簡単に言うと時系列データを扱える<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C7%A5%A3%A1%BC%A5%D7%A5%E9%A1%BC%A5%CB%A5%F3%A5%B0">ディープラーニング</a>の仕組みで、RNNの一種です。</p>
 <pre class="code" data-lang="" data-unlink="">LSTM：Long-short Term Memory</pre><p>従来のRNNでは短期的な時系列相関しか扱えなかったのに対して（比較的）長期的相関を扱えることが特徴です。<br/>
 応用例としては、為替・株価予測や文章生成、動画の連続的な加工などがあります。<br/>
 <iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Ft_Signull%2Fitems%2F21b82be280b46f467d1b" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="わかるLSTM ～ 最近の動向と共に - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/t_Signull/items/21b82be280b46f467d1b">qiita.com</a></cite><br/>
@@ -82,7 +80,7 @@ model.fit(g, h, batch_size=<span class="synConstant">300</span>, epochs=<span cl
     model.add(Dense(in_out_neurons))
     model.add(Activation(<span class="synConstant">"linear"</span>))
     optimizer = Adam(lr=<span class="synConstant">0.001</span>) <span class="synComment">#勾配手法</span>
-    model.<span class="synIdentifier">compile</span>(loss=<span class="synConstant">"mean_squared_error"</span>, optimizer=optimizer)
+    model.compile(loss=<span class="synConstant">"mean_squared_error"</span>, optimizer=optimizer)
 
     <span class="synComment"># 学習</span>
     early_stopping = EarlyStopping(monitor=<span class="synConstant">'val_loss'</span>, mode=<span class="synConstant">'min'</span>, patience=<span class="synConstant">20</span>)

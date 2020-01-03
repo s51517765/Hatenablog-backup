@@ -1,0 +1,53 @@
+<div class="entry-content">
+<p><iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2019%2F09%2F30%2F000000" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="GitとGitHubの違いとGitを使うメリット - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2019/09/30/000000">s51517765.hatenadiary.jp</a></cite><br/>
+前の記事ではGitの基本と<a class="keyword" href="http://d.hatena.ne.jp/keyword/GitHub">GitHub</a>について説明しました。</p><p>Gitを使っていてめんどくさいのがコンフリクト（Conflict）の対応です。<br/>
+日本語では「衝突」といいます。<br/>
+例えば、複数人のチームで開発をしているときに、同じ場所を違うようにアップデートしたものをマージしようとすると矛盾が生じることです。<br/>
+通常、別々の編集であればその両方を生かすことができますが、それが出来ないことが生じる場合があります。</p><p>また、ローカルで開発していたものを初めてリモートに登録しようとしたときにも、リモートの初期化の仕方が悪いのかもしれませんが、衝突が起きてしまうことがあります。</p><p>初めてGitを使おうと思ったとき、衝突が起きるときの解消方法を説明します。</p><p>ここでは、リモートサーバとして、無料アカウントでもプライベー<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%EA%A5%DD%A5%B8">トリポジ</a>トリが使えるBitbucketを使った場合に基づいて説明します。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fbitbucket.org%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Bitbucket | The Git solution for professional teams"></iframe><cite class="hatena-citation"><a href="https://bitbucket.org/">bitbucket.org</a></cite></p><p>Bitbucketのアカウントは作成済みであるものとします。</p><p></p><h3>リモートの設定手順</h3>Web（ブラウザ）で左側の「＋」からリモートの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EA%A5%DD%A5%B8%A5%C8%A5%EA">リポジトリ</a>を作成します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20191002204132j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20191002/20191002204132.jpg" title="f:id:s51517765:20191002204132j:plain"/></span><br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20191002220157p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20191002/20191002220157.png" title="f:id:s51517765:20191002220157p:plain"/></span><br/>
+Readmeが自動的に作成されて<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EA%A5%DD%A5%B8%A5%C8%A5%EA">リポジトリ</a>が作成されます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20191002205505p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20191002/20191002205505.png" title="f:id:s51517765:20191002205505p:plain"/></span><br/>
+Sorcetreeに戻って、リモー<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%EA%A5%DD%A5%B8">トリポジ</a>トリの設定をします。右上のリモートのアイコンをクリックします。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20190929110255j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190929/20190929110255.jpg" title="f:id:s51517765:20190929110255j:plain"/></span><br/>
+リモートのタブで「追加」を選び、リモート名、リモー<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%EA%A5%DD%A5%B8">トリポジ</a>トリのURL、アカウントを設定します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20191002220338j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20191002/20191002220338.jpg" title="f:id:s51517765:20191002220338j:plain"/></span><br/>
+すべてのファイルをインデックスに追加し、コミットし、プッシュします。<br/>
+コミットするとローカルの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EA%A5%DD%A5%B8%A5%C8%A5%EA">リポジトリ</a>に変更が登録されます。これをプッシュするとリモートの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EA%A5%DD%A5%B8%A5%C8%A5%EA">リポジトリ</a>に登録をします。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20191002210444p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20191002/20191002210444.png" title="f:id:s51517765:20191002210444p:plain"/></span><br/>
+Errorが出ます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20191002210830j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20191002/20191002210830.jpg" title="f:id:s51517765:20191002210830j:plain"/></span><br/>
+注目すべきは、線で囲んだところですが、<br/>
+「他のプッシュによって起きている、リモートの変更を統合せよ。プッシュする前にプルしてね。」というErrorです。
+
+    <blockquote>
+<p>git -c diff.mnemonicprefix=false -c core.quotepath=false --no-optional-locks push -v --tags origin master:master<br/>
+Pushing to <a href="https://bitbucket.org/s51517765/test2/src/master/">https://bitbucket.org/s51517765/test2/src/master/</a><br/>
+To <a href="https://bitbucket.org/s51517765/test2/src/master/">https://bitbucket.org/s51517765/test2/src/master/</a><br/>
+ ! [rejected]        master -&gt; master (fetch first)<br/>
+error: failed to push some refs to '<a href="https://bitbucket.org/s51517765/test2/src/master/'">https://bitbucket.org/s51517765/test2/src/master/'</a><br/>
+hint: Updates were rejected because the remote contains work that you do<br/>
+hint: not have locally. This is usually caused by another repository pushing<br/>
+hint: to the same ref. You may want to first integrate the remote changes<br/>
+hint: (e.g., 'git pull ...') before pushing again.<br/>
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.</p>
+</blockquote>
+<p>まずは、リモートの変更を取り込みます。<br/>
+衝突があります、と言われます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20191002212420j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20191002/20191002212420.jpg" title="f:id:s51517765:20191002212420j:plain"/></span><br/>
+手動で解消します。</p><p>しかし、意図的な変更がない場合？はフェッチしてマージすると難なく解消できます。<br/>
+フェッチとはリモートの変更の情報を取得することです。<br/>
+プルはフェッチしたうえでマージをすることですが、フェッチした上で明示的にローカルのソースにリモートをマージするとうまくいくようです。<br/>
+フェッチした上で、「リモートブランチを表示」しマージします。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20191002214728j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20191002/20191002214728.jpg" title="f:id:s51517765:20191002214728j:plain"/></span><br/>
+ローカルのブランチを選択した状態でマージをクリックし、「マージの代わりにリベースする」にチェックを入れ、マージするコミットとしてリモートを選択します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20191002214859j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20191002/20191002214859.jpg" title="f:id:s51517765:20191002214859j:plain"/></span></p><p>これでうまう行くはずですが、これでもダメな場合（初期以外の場合）はブランチを作ってリモートをチェックアウトし、マージするとうまくいくことがあります。</p><p>それでもだめだったら、ローカルですべてのブランチのファイルを<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A8%A5%AF%A5%B9%A5%D7%A5%ED%A1%BC%A5%E9">エクスプローラ</a>上で手動マージしてコピペしてSorcetree上でブランチをマージします…。</p><p></p><h3>まとめ</h3>コンフリクトの解消の仕方を説明しました。<br/>
+SorcetreeはErrorが英語しか出ないので怖いところはありますが、Errorのほとんどはコンフリクト関連だと思います。<br/>
+うまくブランチをマージ出来るかどうかが使いこなしのポイントです。<br/>
+Sorcetree上にも手動マージの機能がありますが、コンフリクトしたときには自身の使い慣れたエディタで手動マージするのもありです。<br/>
+また、ブランチは途中で終わらせても特に問題はありません。Masterだけ手動マージして進めるというのもありです。（管理上はどうかというのはありますが…）<p>いずれにしてもコミットした時点へはいつでも戻れるので恐れずやってみて慣れるのが一番です。<br/>
+練習用の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EA%A5%DD%A5%B8%A5%C8%A5%EA">リポジトリ</a>をBitbucketでつくってわざとブランチを作り、コンフリクトを起こさせて解消するといい練習になります。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/GitHub">GitHub</a>でも同様に使えます。</p><p>チーム開発でなくても、GitもしくはSorcetreeでローカルのみでVersion管理するだけでも価値があります。<br/>
+Bitbucketでは無料でもプライベー<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%EA%A5%DD%A5%B8">トリポジ</a>トリが使えるので、リモートにプッシュしておけば非公開でバックアップもできます。</p><p></p><h3>参考</h3><div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/429500524X/shirotoakb-22/"><img alt="いちばんやさしいGit&amp;GitHubの教本 人気講師が教えるバージョン管理&amp;共有入門 (「いちばんやさしい教本」シリーズ)" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/51XKtp0hjmL._SL160_.jpg" title="いちばんやさしいGit&amp;GitHubの教本 人気講師が教えるバージョン管理&amp;共有入門 (「いちばんやさしい教本」シリーズ)"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/429500524X/shirotoakb-22/">いちばんやさしいGit&amp;GitHubの教本 人気講師が教えるバージョン管理&amp;共有入門 (「いちばんやさしい教本」シリーズ)</a></p><ul><li><span class="hatena-asin-detail-label">作者:</span> 横田紋奈,宇賀神みずき</li><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A4%A5%F3%A5%D7%A5%EC%A5%B9">インプレス</a></li><li><span class="hatena-asin-detail-label">発売日:</span> 2018/12/14</li><li><span class="hatena-asin-detail-label">メディア:</span> 単行本（ソフトカバー）</li><li><a href="http://d.hatena.ne.jp/asin/429500524X/shirotoakb-22" target="_blank">この商品を含むブログを見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div>
+</div>

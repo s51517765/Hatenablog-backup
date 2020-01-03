@@ -1,0 +1,126 @@
+<div class="entry-content">
+<p>うちは共働きなので、買い物は帰りが早いほうが買い出しをすることが多いですが、例えば洗面所周りは、モノの消費を妻のほうが把握していることが多いのでこれらを共有する仕組みを作りたかった、というところから始まりました。</p><p>Firebaseなら無料で作れそうなので、Firebaseと<a class="keyword" href="http://d.hatena.ne.jp/keyword/JavaScript">JavaScript</a>を合わせて勉強しながら作ってみました。</p><p>完成イメージ。<figure class="figure-image figure-image-fotolife" title="完成イメージ"><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20190715115257j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190715/20190715115257.jpg" title="f:id:s51517765:20190715115257j:plain"/></span><figcaption>完成イメージ</figcaption></figure></p><p></p><h3>要件定義</h3>・夫婦で共有できること。<br/>
+・無料で使えること。<br/>
+・<a class="keyword" href="http://d.hatena.ne.jp/keyword/Android">Android</a>でも<a class="keyword" href="http://d.hatena.ne.jp/keyword/iphone">iphone</a>でも使えること。<br/>
+・入手済みのものを保存できること。<p>上の3つはFirebaseを使う時点で成立します。<br/>
+4つ目は「欲しいものリスト」と「入手済みリスト」を作ることで実現しました。</p><p></p><h3>html</h3>htmlの本文はタイトル、入力ボックス、ボタンなどとリスト<code>ul</code>です。リストは名前を付けるために、<code> form name="form1”</code>で囲みます。
+<pre class="code lang-html" data-lang="html" data-unlink=""><span class="synIdentifier">&lt;</span><span class="synStatement">body</span><span class="synIdentifier">&gt;</span>
+    <span class="synIdentifier">&lt;</span><span class="synStatement">h1</span><span class="synIdentifier">&gt;</span>買い物リスト<span class="synIdentifier">&lt;/</span><span class="synStatement">h1</span><span class="synIdentifier">&gt;</span>
+    <span class="synIdentifier">&lt;</span><span class="synStatement">div</span><span class="synIdentifier">&gt;</span>
+        <span class="synIdentifier">&lt;</span><span class="synStatement">p</span><span class="synIdentifier">&gt;</span>
+            <span class="synIdentifier">&lt;</span><span class="synStatement">div</span><span class="synIdentifier">&gt;&lt;</span><span class="synStatement">input</span><span class="synIdentifier"> </span><span class="synType">type</span><span class="synIdentifier">=</span><span class="synConstant">"text"</span><span class="synIdentifier"> </span><span class="synType">name</span><span class="synIdentifier">=</span><span class="synConstant">""</span><span class="synIdentifier"> </span><span class="synType">id</span><span class="synIdentifier">=</span><span class="synConstant">"message"</span><span class="synIdentifier"> placeholder=</span><span class="synConstant">"品物を入力して追加"</span><span class="synIdentifier">&gt;&lt;/</span><span class="synStatement">div</span><span class="synIdentifier">&gt;</span>
+            <span class="synIdentifier">&lt;</span><span class="synStatement">div</span><span class="synIdentifier">&gt;&lt;</span><span class="synStatement">input</span><span class="synIdentifier"> </span><span class="synType">type</span><span class="synIdentifier">=</span><span class="synConstant">"button"</span><span class="synIdentifier"> </span><span class="synType">value</span><span class="synIdentifier">=</span><span class="synConstant">"追加"</span><span class="synIdentifier"> </span><span class="synType">id</span><span class="synIdentifier">=</span><span class="synConstant">"btnUpload"</span><span class="synIdentifier"> </span><span class="synSpecial">onclick="addData</span>()<span class="synSpecial">"</span><span class="synIdentifier">&gt;&lt;/</span><span class="synStatement">div</span><span class="synIdentifier">&gt;</span>
+        <span class="synIdentifier">&lt;/</span><span class="synStatement">p</span><span class="synIdentifier">&gt;</span>
+        <span class="synIdentifier">&lt;</span><span class="synStatement">div</span><span class="synIdentifier">&gt;&lt;</span><span class="synStatement">input</span><span class="synIdentifier"> </span><span class="synType">type</span><span class="synIdentifier">=</span><span class="synConstant">"button"</span><span class="synIdentifier"> </span><span class="synType">value</span><span class="synIdentifier">=</span><span class="synConstant">"再読み込み"</span><span class="synIdentifier"> </span><span class="synType">id</span><span class="synIdentifier">=</span><span class="synConstant">"btnReload"</span><span class="synIdentifier"> </span><span class="synSpecial">onclick="ListLoad</span>()<span class="synSpecial">"</span><span class="synIdentifier">&gt;&lt;/</span><span class="synStatement">div</span><span class="synIdentifier">&gt;</span>
+    <span class="synIdentifier">&lt;/</span><span class="synStatement">div</span><span class="synIdentifier">&gt;</span>
+    <span class="synIdentifier">&lt;</span><span class="synStatement">h3</span><span class="synIdentifier">&gt;</span>欲しいものリスト<span class="synIdentifier">&lt;/</span><span class="synStatement">h3</span><span class="synIdentifier">&gt;</span>
+    <span class="synIdentifier">&lt;</span><span class="synStatement">form</span><span class="synIdentifier"> </span><span class="synType">name</span><span class="synIdentifier">=</span><span class="synConstant">"form1"</span><span class="synIdentifier">&gt;</span>
+        <span class="synIdentifier">&lt;</span><span class="synStatement">ul</span><span class="synIdentifier"> </span><span class="synType">id</span><span class="synIdentifier">=</span><span class="synConstant">"List1"</span><span class="synIdentifier">&gt;&lt;/</span><span class="synStatement">ul</span><span class="synIdentifier">&gt;</span>
+    <span class="synIdentifier">&lt;/</span><span class="synStatement">form</span><span class="synIdentifier">&gt;</span>
+    <span class="synIdentifier">&lt;</span><span class="synStatement">div</span><span class="synIdentifier">&gt;&lt;</span><span class="synStatement">input</span><span class="synIdentifier"> </span><span class="synType">type</span><span class="synIdentifier">=</span><span class="synConstant">"button"</span><span class="synIdentifier"> </span><span class="synType">value</span><span class="synIdentifier">=</span><span class="synConstant">"入手完了"</span><span class="synIdentifier"> </span><span class="synType">id</span><span class="synIdentifier">=</span><span class="synConstant">"btnDone"</span><span class="synIdentifier"> </span><span class="synSpecial">onclick="done</span>()<span class="synSpecial">"</span><span class="synIdentifier">&gt;&lt;/</span><span class="synStatement">div</span><span class="synIdentifier">&gt;</span>
+    <span class="synIdentifier">&lt;</span><span class="synStatement">h3</span><span class="synIdentifier">&gt;</span>入手済みリスト<span class="synIdentifier">&lt;/</span><span class="synStatement">h3</span><span class="synIdentifier">&gt;</span>
+    <span class="synIdentifier">&lt;</span><span class="synStatement">form</span><span class="synIdentifier"> </span><span class="synType">name</span><span class="synIdentifier">=</span><span class="synConstant">"form2"</span><span class="synIdentifier">&gt;</span>
+        <span class="synIdentifier">&lt;</span><span class="synStatement">ul</span><span class="synIdentifier"> </span><span class="synType">id</span><span class="synIdentifier">=</span><span class="synConstant">"List2"</span><span class="synIdentifier">&gt;&lt;/</span><span class="synStatement">ul</span><span class="synIdentifier">&gt;</span>
+    <span class="synIdentifier">&lt;/</span><span class="synStatement">form</span><span class="synIdentifier">&gt;</span>
+    <span class="synIdentifier">&lt;</span><span class="synStatement">div</span><span class="synIdentifier">&gt;&lt;</span><span class="synStatement">input</span><span class="synIdentifier"> </span><span class="synType">type</span><span class="synIdentifier">=</span><span class="synConstant">"button"</span><span class="synIdentifier"> </span><span class="synType">value</span><span class="synIdentifier">=</span><span class="synConstant">"削除"</span><span class="synIdentifier"> </span><span class="synType">id</span><span class="synIdentifier">=</span><span class="synConstant">"btnDelete"</span><span class="synIdentifier"> </span><span class="synSpecial">onclick="deleteItem</span>()<span class="synSpecial">"</span><span class="synIdentifier">&gt;&lt;/</span><span class="synStatement">div</span><span class="synIdentifier">&gt;</span>
+<span class="synIdentifier">&lt;/</span><span class="synStatement">body</span><span class="synIdentifier">&gt;</span>
+</pre><p></p><h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/css">css</a></h3>簡単に<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%BF%A5%A4%A5%EB%A5%B7%A1%BC%A5%C8">スタイルシート</a>をコピペで作成。最低限の文字の大きさの指定だけです。
+<pre class="code lang-css" data-lang="css" data-unlink=""><span class="synComment">/* css checkbox01 */</span>
+<span class="synStatement">input</span><span class="synSpecial">[</span><span class="synConstant">type</span><span class="synSpecial">=</span><span class="synConstant">checkbox</span><span class="synSpecial">]</span> <span class="synIdentifier">{</span>
+    <span class="synType">width</span>: <span class="synConstant">20px</span>;
+    <span class="synType">height</span>: <span class="synConstant">20px</span>;
+    <span class="synType">vertical-align</span>: <span class="synConstant">middle</span>;
+<span class="synIdentifier">}</span>
+
+<span class="synStatement">input</span><span class="synSpecial">[</span><span class="synConstant">type</span><span class="synSpecial">=</span><span class="synConstant">"text"</span><span class="synSpecial">]</span> <span class="synIdentifier">{</span>
+    <span class="synType">width</span>: <span class="synConstant">300px</span>;
+    <span class="synType">height</span>: <span class="synConstant">20px</span>;
+<span class="synIdentifier">}</span>
+
+<span class="synStatement">html</span> <span class="synIdentifier">{</span>
+    <span class="synType">font-size</span>: <span class="synConstant">20px</span>;
+<span class="synIdentifier">}</span>
+
+<span class="synStatement">h1</span> <span class="synIdentifier">{</span>
+    <span class="synType">font-size</span>: <span class="synConstant">40px</span>;
+<span class="synIdentifier">}</span>
+
+<span class="synStatement">h2</span> <span class="synIdentifier">{</span>
+    <span class="synType">font-size</span>: <span class="synConstant">20px</span>;
+<span class="synIdentifier">}</span>
+</pre><p>このほかに、htmlの<code>head</code>には、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%CA%B8%BB%FA%A5%B3%A1%BC%A5%C9">文字コード</a>と<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%DE%A5%DB">スマホ</a>表示用の設定と<a class="keyword" href="http://d.hatena.ne.jp/keyword/css">css</a>の読み込みを設定します。</p>
+<pre class="code lang-html" data-lang="html" data-unlink="">    <span class="synIdentifier">&lt;</span><span class="synStatement">meta</span><span class="synIdentifier"> </span><span class="synType">http-equiv</span><span class="synIdentifier">=</span><span class="synConstant">"content-type"</span><span class="synIdentifier"> </span><span class="synType">charset</span><span class="synIdentifier">=</span><span class="synConstant">"utf-8"</span><span class="synIdentifier">&gt;</span>
+    <span class="synIdentifier">&lt;</span><span class="synStatement">meta</span><span class="synIdentifier"> </span><span class="synType">name</span><span class="synIdentifier">=</span><span class="synConstant">"viewport"</span><span class="synIdentifier"> </span><span class="synType">content</span><span class="synIdentifier">=</span><span class="synConstant">"width=device-width,initial-scale=1"</span><span class="synIdentifier">&gt;</span><span class="synComment">&lt;!-- スマホ用の表示拡大 --&gt;</span>
+    <span class="synIdentifier">&lt;</span><span class="synStatement">link</span><span class="synIdentifier"> </span><span class="synType">rel</span><span class="synIdentifier">=</span><span class="synConstant">"stylesheet"</span><span class="synIdentifier"> </span><span class="synType">type</span><span class="synIdentifier">=</span><span class="synConstant">"text/css"</span><span class="synIdentifier"> </span><span class="synType">href</span><span class="synIdentifier">=</span><span class="synConstant">"css.css"</span><span class="synIdentifier">&gt;</span>
+</pre><p></p><h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/JavaScript">JavaScript</a></h3>Firebaseの初期化は管理画面のSettingをコピーします。
+<pre class="code lang-javascript" data-lang="javascript" data-unlink="">&lt;script src=<span class="synConstant">"https://www.gstatic.com/firebasejs/5.8.6/firebase.js"</span>&gt;&lt;/script&gt;
+&lt;script&gt;
+    <span class="synComment">// Your web app's Firebase configuration</span>
+        <span class="synIdentifier">var</span> firebaseConfig = <span class="synIdentifier">{</span>
+            apiKey: <span class="synConstant">"*************"</span>,
+            authDomain: <span class="synConstant">"*************"</span>,
+            databaseURL: <span class="synConstant">"*************"</span>,
+            projectId: <span class="synConstant">"*************"</span>,
+            storageBucket: <span class="synConstant">""</span>,
+            messagingSenderId: <span class="synConstant">"*************"</span>,
+            appId: <span class="synConstant">"*************"</span>
+        <span class="synIdentifier">}</span>;
+    <span class="synComment">// Initialize Firebase</span>
+firebase.initializeApp(firebaseConfig);
+</pre><p>これ以降、要素を追加、要素を削除、画面に表示されるリストの更新、などの関数を作成します。<br/>
+初めて<a class="keyword" href="http://d.hatena.ne.jp/keyword/JavaScript">JavaScript</a>を触って、はまったところを少し解説します。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/JavaScript">JavaScript</a>は基本文法をQiitaで流れてきた↓でざっと学習したうえで取り組んでいます。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fja.javascript.info%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="現代の JavaScript チュートリアル"></iframe><cite class="hatena-citation"><a href="https://ja.javascript.info/">ja.javascript.info</a></cite></p><p>欲しいものリストに追加するときにすでに登録されているモノとの重複を確認するのに、「ローカルに保持した配列をループで確認して一致するものを探す」という方法を使いました。<a class="keyword" href="http://d.hatena.ne.jp/keyword/JavaScript">JavaScript</a>では<code>obj in subject</code>のようなメソッドがないらしいです。本当か？<br/>
+要素と一致するものがあるかどうかは、インデックスが0以上になるかどうかで確認します。</p>
+<pre class="code lang-javascript" data-lang="javascript" data-unlink=""> <span class="synStatement">if</span> (subject.indexOf(message) &gt;= 0) <span class="synIdentifier">{</span>  <span class="synComment">//if (obj in subject)のようなメソッドが無い</span>
+        <span class="synStatement">alert</span>(<span class="synConstant">"重複しています。"</span>)
+  <span class="synIdentifier">}</span>
+</pre><p>リストの中で<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C1%A5%A7%A5%C3%A5%AF%A5%DC%A5%C3%A5%AF%A5%B9">チェックボックス</a>の状態を確認するには、<code>form</code>で範囲を決めてあげて<code>elements[i]</code>で確認します。<br/>
+ここで、iを<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C1%A5%A7%A5%C3%A5%AF%A5%DC%A5%C3%A5%AF%A5%B9">チェックボックス</a>の数を数えて範囲指定をしようとしたら、要<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C1%C7%BF%F4">素数</a>1のときになぜか<code>undefined</code>となってうまくいかなかないという問題がありました。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C1%A5%A7%A5%C3%A5%AF%A5%DC%A5%C3%A5%AF%A5%B9">チェックボックス</a>（リストの要素）の数を別にカウント<code>itemCount</code>として持たせることで解決しました。</p>
+<pre class="code lang-javascript" data-lang="javascript" data-unlink="">  <span class="synComment">// i番目のチェックボックスがチェックされているかを判定</span>
+  <span class="synStatement">if</span> (<span class="synStatement">document</span>.form1.elements<span class="synIdentifier">[</span>i<span class="synIdentifier">]</span>.checked) <span class="synIdentifier">{</span>
+        <span class="synIdentifier">let</span> object_done = <span class="synStatement">document</span>.form1.elements<span class="synIdentifier">[</span>i<span class="synIdentifier">]</span>.value;
+　<span class="synIdentifier">}</span>
+</pre><p>サーバー上の要素を削除するには、キーを指定してあげる必要があります。<br/>
+コーダーからすると、要素の名前？中身と一致するもの、という考え方をしますが、要素が一致するオブジェクトを探してそのキーで指定する必要があります。</p>
+<pre class="code lang-javascript" data-lang="javascript" data-unlink=""><span class="synIdentifier">var</span> childData = childSnapshot.val().message;
+<span class="synStatement">if</span> (childData) <span class="synIdentifier">{</span>
+    database1.child(childSnapshot.key).remove(); <span class="synComment">// .keyでIDを取得</span>
+<span class="synIdentifier">}</span>
+</pre><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/JavaScript">JavaScript</a>での日付の取得の仕方は基本ではありますが一応書いておきます。"月" が<code>＋１</code>必要です。</p>
+<pre class="code lang-javascript" data-lang="javascript" data-unlink=""><span class="synIdentifier">var</span> today = <span class="synStatement">new</span> <span class="synType">Date</span>();　<span class="synComment">//日付</span>
+<span class="synIdentifier">let</span> date = today.getMonth() + 1 + <span class="synConstant">"/"</span> + today.getDate()
+</pre><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fwww.sejuku.net%2Fblog%2F22867%23i-2" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="【JavaScript入門】日付の取得と比較(今日/昨日/明日/月初/月末) | 侍エンジニア塾ブログ（Samurai Blog） - プログラミング入門者向けサイト"></iframe><cite class="hatena-citation"><a href="https://www.sejuku.net/blog/22867#i-2">www.sejuku.net</a></cite></p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C1%A5%A7%A5%C3%A5%AF%A5%DC%A5%C3%A5%AF%A5%B9">チェックボックス</a>のついたリストの作成は、一度リストの中を空にしてからサーバー上の要素に<code>forEach</code>でアクセスし、<code>append</code>します。<br/>
+pushするときに重複を確認するためにローカルの配列<code>subject</code>を用意してサーバーにアクセスしなくてもいいようにしてみました。<br/>
+<code>cb.value</code>はチェックされた要素を確認するときに使っています。実際に表示される文字は<code>element.innerHTML</code> で設定します。</p>
+<pre class="code lang-javascript" data-lang="javascript" data-unlink=""><span class="synIdentifier">function</span> ListLoad() <span class="synIdentifier">{</span>
+      deleteAllElement()
+
+     <span class="synIdentifier">var</span> list1 = <span class="synStatement">document</span>.getElementById(<span class="synConstant">"List1"</span>);
+      database1.on(<span class="synConstant">"value"</span>, <span class="synIdentifier">function</span> (snapshot) <span class="synIdentifier">{</span>
+      snapshot.forEach(<span class="synIdentifier">function</span> (childSnapshot) <span class="synIdentifier">{</span>
+
+       <span class="synIdentifier">var</span> childData = childSnapshot.val();
+      <span class="synIdentifier">var</span> element = <span class="synStatement">document</span>.createElement(<span class="synConstant">"li"</span>);
+
+      subject.push(childData.message);  <span class="synComment">//リストの中身を配列に追加し保持、重複確認のため</span>
+
+      <span class="synComment">//チェックボックスの追加</span>
+      <span class="synIdentifier">var</span> cb = <span class="synStatement">document</span>.createElement(<span class="synConstant">"input"</span>);<span class="synComment">//チェックを作成</span>
+      cb.type = <span class="synConstant">"checkbox"</span>;
+      cb.name = <span class="synConstant">"cb"</span>
+      cb.value = childData.message;
+      element.innerHTML = childData.message;
+      cb.textContent = element.innerHTML;
+      element.appendChild(cb);
+      list1.append(element);
+      <span class="synIdentifier">}</span>);
+   <span class="synIdentifier">}</span>);
+</pre><p>ページ読み込み時の動作は<code>window.onload</code>で指定します。</p>
+<pre class="code lang-javascript" data-lang="javascript" data-unlink=""><span class="synStatement">window</span>.onload = <span class="synIdentifier">function</span> () <span class="synIdentifier">{</span>
+     ListLoad();
+<span class="synIdentifier">}</span>;
+</pre><p></p><h3>まとめ</h3>これで、一通りのFirebaseのリアルタイムデータベースが使えるようになったと思います。<br/>
+ア<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A4%A5%C7%A5%A2">イデア</a>次第でいろいろ出来そうです。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fs51517765%2FListToBuy" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="s51517765/ListToBuy"></iframe><cite class="hatena-citation"><a href="https://github.com/s51517765/ListToBuy">github.com</a></cite>
+</div>

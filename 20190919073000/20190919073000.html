@@ -1,0 +1,69 @@
+<div class="entry-content">
+<p>掛け算（99x99）暗算ゲームを作りました。<br/>
+ゲーム部分は<a class="keyword" href="http://d.hatena.ne.jp/keyword/JavaScript">JavaScript</a>で構成し、成績の記録と個人認証にはFirebaseを使いました。<br/>
+<a href="https://s51517765.firebaseapp.com/9999/index.html">https://s51517765.firebaseapp.com/9999/index.html</a></p><p></p><blockquote class="twitter-tweet" data-lang="ja"><p dir="ltr" lang="ja">掛け算（99x99）暗算ゲームを作りました。<br/>ゲーム部分は<a class="keyword" href="http://d.hatena.ne.jp/keyword/JavaScript">JavaScript</a>で構成し、成績の記録と個人認証にはFirebaseを使いました。<a href="https://t.co/0tyhDODT05">https://t.co/0tyhDODT05</a> <a href="https://t.co/T1Of35lrLe">pic.twitter.com/T1Of35lrLe</a></p>— プログラミング素人 (@s51517765) <a href="https://twitter.com/s51517765/status/1174154584345833472?ref_src=twsrc%5Etfw">2019年9月18日</a></blockquote><script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script><p><figure class="figure-image figure-image-fotolife" title="システム構成図"><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20190918115459p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190918/20190918115459.png" title="f:id:s51517765:20190918115459p:plain"/></span><figcaption>システム構成図</figcaption></figure></p><p></p><h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/JavaScript">JavaScript</a>の切り離し</h3>これまでは、<code>index.html</code>のなかに<a class="keyword" href="http://d.hatena.ne.jp/keyword/JavaScript">JavaScript</a>を書いていましたが、<code>main.js</code>として切り離し、メンテナンス性を高めるようにしました。
+<pre class="code lang-javascript" data-lang="javascript" data-unlink="">&lt;script type=<span class="synConstant">"text/javascript"</span> src=<span class="synConstant">"config.js"</span> charset=<span class="synConstant">"utf-8"</span>&gt;&lt;/script&gt;
+&lt;script type=<span class="synConstant">"text/javascript"</span> src=<span class="synConstant">"main.js"</span> charset=<span class="synConstant">"utf-8"</span>&gt;&lt;/script&gt;
+</pre><p><code>config.js</code>はFirebaseの認証情報が書かれたものです。こちらは基本的には変更されることもないので分離しておくほうがよいと考えました。<br/>
+ただし、このとき<code>config.js</code>と<code>main.js</code>の読み込み順はこの通りでないとだめなので注意です。<code>config.js</code>の中身を<code>main.js</code>で使っているからです。</p><p></p><h3>過去の記録の読み込み</h3>FirebaseのRealtime databaseからforEachで呼び出し、3x2の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%CF%A2%C1%DB%C7%DB%CE%F3">連想配列</a>に難易度ごとに分けて最大値を探索します。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%CF%A2%C1%DB%C7%DB%CE%F3">連想配列</a>とは辞書形式のことです。<br/>
+このように難易度別に保持しておくことで、ゲーム結果が更新したかどうかをこれと比較して判定します。
+<pre class="code lang-javascript" data-lang="javascript" data-unlink=""><span class="synIdentifier">var</span> rank_in_Score = <span class="synIdentifier">{</span> <span class="synConstant">"9"</span>: <span class="synIdentifier">{</span> <span class="synConstant">"score"</span>: - 1, <span class="synConstant">"name"</span>: <span class="synConstant">"none"</span> <span class="synIdentifier">}</span>, <span class="synConstant">"19"</span>: <span class="synIdentifier">{</span> score: - 1, name: <span class="synConstant">"none"</span> <span class="synIdentifier">}</span>, <span class="synConstant">"99"</span>: <span class="synIdentifier">{</span> score: - 1, name: <span class="synConstant">"none"</span> <span class="synIdentifier">}</span> <span class="synIdentifier">}</span>; <span class="synComment">//連想配列</span>
+
+<span class="synIdentifier">function</span> loadScore()
+<span class="synIdentifier">{</span>
+    database99.on(<span class="synConstant">"value"</span>, <span class="synIdentifier">function</span> (snapshot)
+    <span class="synIdentifier">{</span>
+        snapshot.forEach(<span class="synIdentifier">function</span> (childSnapshot)
+        <span class="synIdentifier">{</span>
+            <span class="synIdentifier">var</span> childData = childSnapshot.val();
+            <span class="synStatement">if</span> (parseInt(childData.score) &gt; rank_in_Score<span class="synIdentifier">[</span>childData.difficulty<span class="synIdentifier">][</span><span class="synConstant">"score"</span><span class="synIdentifier">]</span>)
+            <span class="synIdentifier">{</span>
+                rank_in_Score<span class="synIdentifier">[</span>childData.difficulty<span class="synIdentifier">][</span><span class="synConstant">"score"</span><span class="synIdentifier">]</span> = parseInt(childData.score);
+                rank_in_Score<span class="synIdentifier">[</span>childData.difficulty<span class="synIdentifier">][</span><span class="synConstant">"name"</span><span class="synIdentifier">]</span> = childData.name;
+            <span class="synIdentifier">}</span>
+        <span class="synIdentifier">}</span>);
+        <span class="synStatement">document</span>.getElementById(<span class="synConstant">"9_score"</span>).innerHTML = rank_in_Score<span class="synIdentifier">[</span><span class="synConstant">"9"</span><span class="synIdentifier">][</span><span class="synConstant">"score"</span><span class="synIdentifier">]</span>
+        <span class="synStatement">document</span>.getElementById(<span class="synConstant">"9_name"</span>).innerHTML = rank_in_Score<span class="synIdentifier">[</span><span class="synConstant">"9"</span><span class="synIdentifier">][</span><span class="synConstant">"name"</span><span class="synIdentifier">]</span>
+        <span class="synStatement">document</span>.getElementById(<span class="synConstant">"19_score"</span>).innerHTML = rank_in_Score<span class="synIdentifier">[</span><span class="synConstant">"19"</span><span class="synIdentifier">][</span><span class="synConstant">"score"</span><span class="synIdentifier">]</span>
+        <span class="synStatement">document</span>.getElementById(<span class="synConstant">"19_name"</span>).innerHTML = rank_in_Score<span class="synIdentifier">[</span><span class="synConstant">"19"</span><span class="synIdentifier">][</span><span class="synConstant">"name"</span><span class="synIdentifier">]</span>
+        <span class="synStatement">document</span>.getElementById(<span class="synConstant">"99_score"</span>).innerHTML = rank_in_Score<span class="synIdentifier">[</span><span class="synConstant">"99"</span><span class="synIdentifier">][</span><span class="synConstant">"score"</span><span class="synIdentifier">]</span>
+        <span class="synStatement">document</span>.getElementById(<span class="synConstant">"99_name"</span>).innerHTML = rank_in_Score<span class="synIdentifier">[</span><span class="synConstant">"99"</span><span class="synIdentifier">][</span><span class="synConstant">"name"</span><span class="synIdentifier">]</span>
+    <span class="synIdentifier">}</span>);
+
+<span class="synIdentifier">}</span>
+</pre><p></p><h3>時間管理・タイマー処理</h3>解くことが出来た問題数を競うゲームなので時間制限を使う必要があります。<br/>
+また、問題が正しく解かれたことを判断するために入力があるたびにその入力が正解かどうかを判定する必要があります。<p>これにはsetIntervalという関数で定期的に入力欄を監視します。<br/>
+これには、intervalごとにanswerCheckという関数を呼び出す設定で実現できます。</p>
+<pre class="code lang-javascript" data-lang="javascript" data-unlink="">timer = setInterval(answerCheck, interval); <span class="synComment">//タイマースタート</span>
+</pre><p>timerと名前を付けておくことで、停止処理もできます。</p>
+<pre class="code lang-javascript" data-lang="javascript" data-unlink=""><span class="synIdentifier">function</span> end()
+<span class="synIdentifier">{</span>
+    clearInterval(timer); <span class="synComment">//タイマーストップ</span>
+<span class="synIdentifier">}</span>
+</pre><p>同時に時間切れも判定します。</p>
+<pre class="code lang-javascript" data-lang="javascript" data-unlink=""><span class="synIdentifier">function</span> answerCheck()
+<span class="synIdentifier">{</span>
+    <span class="synStatement">if</span> (nowTime - startTime &gt; 1000 * Time)
+    <span class="synIdentifier">{</span>
+        end();
+    <span class="synIdentifier">}</span>
+<span class="synIdentifier">}</span>
+</pre><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>のtimerと同じような感覚で使うことが出来ました。</p><p></p><h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>認証</h3>新記録を出したときに<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>認証をしてランキングする仕組みを作りたかったのでFirebaseを使った、というところがあります。<p>記録を更新したら、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>認証をします。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>認証は↓をほぼそのまま使わせていただきました。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fblog.katsubemakito.net%2Ffirebase%2Ffirebase-authentication-twitter-web1" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="[Firebase] AuthenticationでTwitter認証 (Web編)"></iframe><cite class="hatena-citation"><a href="https://blog.katsubemakito.net/firebase/firebase-authentication-twitter-web1">blog.katsubemakito.net</a></cite></p><p>Firebaseの<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>認証でとれる情報はScreen_nameだけのようです。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a> IDを取得できれば、ランキング表にその人のProfileへのLinkを貼ることが出来るとよいかと思ったのですが、Firebaseではそのような機能は提供されていないようです。Firebaseの<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>認証で生成されるIDはあくまでFirebaseでのIDのようです。</p><p></p><h3>ページ間でのデータの受け渡し</h3>メインのゲームのページ<code>index.html</code>と<code>login.html</code>や<code>done.html</code>の間でデータ（ここではゲームの難易度設定とスコア）を受け渡すには「URLのパラメーター」という方法が使えます。<br/>
+これは
+<pre class="code" data-lang="" data-unlink="">遷移先のurl + ? + parameter</pre><p>のような形で値を渡す方法です。<br/>
+遷移先のページで↓のようにして値を取得します。</p>
+<pre class="code" data-lang="" data-unlink="">var data = (window.location.search).slice().split('&amp;');
+var score = data[0].split('=')[1];
+var selected_difficulty = data[1].split('=')[1];
+document.getElementById("score").innerHTML = score;
+document.getElementById("difficulty").innerHTML = selected_difficulty;</pre><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Fma_me%2Fitems%2F03aaebb5dc440b380244" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="javascriptでクエリ文字列を取得する - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/ma_me/items/03aaebb5dc440b380244">qiita.com</a></cite></p><p></p><h3>tableの<a class="keyword" href="http://d.hatena.ne.jp/keyword/CSS">CSS</a></h3>ランキング表はtableで作成しましたが、そのデザインは<a class="keyword" href="http://d.hatena.ne.jp/keyword/CSS">CSS</a>で作成しています。<br/>
+サンプルコードほぼそのままです。<br/>
+<a href="https://webliker.info/75964/">【コピペOK】CSSだけで実装できるおしゃれテーブルデザイン10つ | webliker</a><p></p><h3>ブラウザのキャッシュ</h3>変更を加えながらdeployしていると、サーバー上のdeployが反映されないことがありました。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Chrome">Chrome</a>ブラウザのキャッシュが原因のようで、「Ctrl」+「F5」でキャッシュを無視して更新するか、キャッシュを削除すると解消します。<h3>まとめ</h3>Firebaseを使えば<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>連携も簡単です。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.firebaseapp.com%2F9999%2Findex.html" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="99 x 99 インド人に挑戦！"></iframe><cite class="hatena-citation"><a href="https://s51517765.firebaseapp.com/9999/index.html">s51517765.firebaseapp.com</a></cite><br/>
+<p></p><h3>参考</h3><div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/477418411X/shirotoakb-22/"><img alt="改訂新版JavaScript本格入門 ~モダンスタイルによる基礎から現場での応用まで" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/51AvRbVdAsL._SL160_.jpg" title="改訂新版JavaScript本格入門 ~モダンスタイルによる基礎から現場での応用まで"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/477418411X/shirotoakb-22/">改訂新版JavaScript本格入門 ~モダンスタイルによる基礎から現場での応用まで</a></p><ul><li><span class="hatena-asin-detail-label">作者:</span> 山田祥寛</li><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/%B5%BB%BD%D1%C9%BE%CF%C0%BC%D2">技術評論社</a></li><li><span class="hatena-asin-detail-label">発売日:</span> 2016/09/30</li><li><span class="hatena-asin-detail-label">メディア:</span> 大型本</li><li><a href="http://d.hatena.ne.jp/asin/477418411X/shirotoakb-22" target="_blank">この商品を含むブログを見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div>
+</div>

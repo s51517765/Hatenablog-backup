@@ -1,0 +1,52 @@
+<div class="entry-content">
+<p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20190328221111p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190328/20190328221111.png" title="f:id:s51517765:20190328221111p:plain"/></span><br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%CF%A4%C6%A4%CA%A5%D6%A5%ED%A5%B0">はてなブログ</a>の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A2%A5%AF%A5%BB%A5%B9%B2%F2%C0%CF">アクセス解析</a>は情報が少なく、過去の履歴も1週間分しかありません。<br/>
+これでは物足りないので、なにか方法はないか？と考えたところ<a class="keyword" href="http://d.hatena.ne.jp/keyword/Google%20analytics">Google analytics</a>が使えそうで、しかも<a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>があります。<br/>
+そこで、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Google%20analytics">Google analytics</a>で<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%CF%A4%C6%A4%CA%A5%D6%A5%ED%A5%B0">はてなブログ</a>のアクセス数（Daily）を取得することをやってみました。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Google%20analytics">Google analytics</a>がすでに埋め込まれていて、データが取得できていることが前提です。</p><p>まずは<a class="keyword" href="http://d.hatena.ne.jp/keyword/Google">Google</a> <a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>を有効にします。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>の有効化は↓の記事の通りにやればできました。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fblog.cosnomi.com%2Farchives%2F1372" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="PythonでGoogle Analytics APIを利用して、アクセス解析情報を取得する (Part 1- サンプルコード編)"></iframe><cite class="hatena-citation"><a href="https://blog.cosnomi.com/archives/1372">blog.cosnomi.com</a></cite></p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">スクリプト</a>を作ります。基本的には<a class="keyword" href="http://d.hatena.ne.jp/keyword/Google">Google</a> <a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>の公式ページのものを使いました。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fdevelopers.google.com%2Fanalytics%2Fdevguides%2Fconfig%2Fmgmt%2Fv3%2Fquickstart%2Fservice-py%3Fhl%3Dja" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="はじめてのアナリティクス API: サービス アカウント向け Python クイックスタート  |  アナリティクス Management API
+       |  Google Developers"></iframe><cite class="hatena-citation"><a href="https://developers.google.com/analytics/devguides/config/mgmt/v3/quickstart/service-py?hl=ja">developers.google.com</a></cite><br/>
+</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""> key_file_location = <span class="synConstant">'&lt;REPLACE_WITH_JSON_FILE&gt;'</span>
+</pre><p>ここの部分は自分の<a class="keyword" href="http://d.hatena.ne.jp/keyword/JSON">JSON</a>ファイル名とパスを指定します。<br/>
+ダウンロードした<a class="keyword" href="http://d.hatena.ne.jp/keyword/JSON">JSON</a>をmainの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">スクリプト</a>と同じ場所に置くなら、osモジュールを使用して、</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">key_file_location = os.getcwd() +<span class="synConstant">"/"</span>+ <span class="synConstant">'xxxx.json'</span>  <span class="synComment"># JSON</span>
+</pre><p>のように書くこともできます。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/google">google</a> <a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>のモジュールをインポートします。</p>
+<pre class="code" data-lang="" data-unlink="">$pip install --upgrade google-auth-oauthlib
+$pip install --upgrade google-api-python-client</pre><p>これで、基本的には動くはず…と思いきや、</p>
+<pre class="code" data-lang="" data-unlink="">from apiclient.discovery import build
+ImportError: No module named apiclient.discovery</pre><p>Errorを吐かれました。</p><p>importを変更します。</p>
+<pre class="code" data-lang="" data-unlink="">from apiclient.discovery import build
+↓
+from googleapiclient.discovery import build</pre><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F18267749%2Fimporterror-no-module-named-apiclient-discovery" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="ImportError: No module named apiclient.discovery"></iframe><cite class="hatena-citation"><a href="https://stackoverflow.com/questions/18267749/importerror-no-module-named-apiclient-discovery">stackoverflow.com</a></cite></p><p>公式のドキュメント通りで動かないとはどういうことなんでしょう？？？<br/>
+もしかしたら<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>のversionとかもあるのかもしれませんが。（当方python3.5です…）</p>
+<pre class="code" data-lang="" data-unlink="">Installing collected packages: google-auth-oauthlib, pyasn1
+  Found existing installation: pyasn1 0.1.9
+Cannot uninstall 'pyasn1'. It is a distutils installed project and thus we cannot accurately determine which files belong to it which would lead to only a partial uninstall.</pre><p>またErrorを吐かれました。</p><p>こんな時は、Errorを無視する？みたいなオプションを付けてpip installします。</p>
+<pre class="code" data-lang="" data-unlink="">$pip install --upgrade google-auth-oauthlib --ignore-installed</pre><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Fnaoiwata%2Fitems%2F4a31bb1adf3682485c2c" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="pip install でコケるとき - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/naoiwata/items/4a31bb1adf3682485c2c">qiita.com</a></cite></p><p>またまたError。</p>
+<pre class="code" data-lang="" data-unlink="">“TypeError: cannot instantiate ctype 'EVP_MD_CTX' of unknown size” while trying to build google prediction api</pre><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%B0%A4%B0%A4%EB">ぐぐる</a>と以下のようなStackoverflowがありました。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">pip install --upgrade pyOpenSSL
+</pre><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fstackoverflow.com%2Fquestions%2F41175403%2Ftypeerror-cannot-instantiate-ctype-evp-md-ctx-of-unknown-size-while-trying" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="&quot;TypeError: cannot instantiate ctype 'EVP_MD_CTX' of unknown size&quot; while trying to build google prediction api"></iframe><cite class="hatena-citation"><a href="https://stackoverflow.com/questions/41175403/typeerror-cannot-instantiate-ctype-evp-md-ctx-of-unknown-size-while-trying">stackoverflow.com</a></cite></p><br/>
+<p>これで、動かしてみると有効にし忘れたところがあるようで、</p>
+<pre class="code" data-lang="" data-unlink="">googleapiclient.errors.HttpError: 
+&lt;HttpError 403 when requesting https://www.googleapis.com/analytics/v3/management/accounts?alt=json 
+returned "Project 834633458561 is not found and cannot be used for API calls. If it is recently created, 
+enable Google Analytics API by visiting
+ https://console.developers.google.com/apis/api/analytics.googleapis.com/overview?project=834633458561 then retry. 
+If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."&gt;</pre><p>これを修正して、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Google%20analytics">Google analytics</a>の<a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>の呼び出しに成功しました。</p>
+<pre class="code" data-lang="" data-unlink="">&gt; View (Profile): すべてのウェブサイトのデータ
+&gt; Total Sessions: 280</pre><p>算出期間の指定は、start_dateとend_dateで指定します。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">def</span> <span class="synIdentifier">get_results</span>(service, profile_id):
+    <span class="synComment"># Use the Analytics Service Object to query the Core Reporting API</span>
+    <span class="synComment"># for the number of sessions within the past seven days.</span>
+    <span class="synStatement">return</span> service.data().ga().get(
+        ids=<span class="synConstant">'ga:'</span> + profile_id,
+        start_date=<span class="synConstant">'1daysAgo'</span>,
+        end_date=<span class="synConstant">'1daysAgo'</span>, <span class="synComment"># 最新データまでふくめるなら 'today'</span>
+        metrics=<span class="synConstant">'ga:sessions'</span>).execute()
+</pre><p>昨日の分だけなら、<code>start_date='1daysAgo'</code> 、<code>end_date='1daysAgo'</code>とします。<br/>
+start_dateは<code>start_date='700daysAgo'</code>のように、かなり前も指定できるようです。<br/>
+このブログでは、設置がこのぐらい前なので、それ以上はどうなのかわかりませんが。</p><p></p><h3>アクセス数が欲しいだけなら…</h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%D7%A5%EC%A5%C3%A5%C9%A5%B7%A1%BC%A5%C8">スプレッドシート</a>のほうが早いことにあとで気づいた。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fservice.plan-b.co.jp%2Fblog%2Fad%2F10698%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="スプレッドシートでGoogleアナリティクスレポート作成を自動化する方法 | PINTO!"></iframe><cite class="hatena-citation"><a href="https://service.plan-b.co.jp/blog/ad/10698/">service.plan-b.co.jp</a></cite>
+</div>

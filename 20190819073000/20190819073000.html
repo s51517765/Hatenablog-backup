@@ -1,0 +1,54 @@
+<div class="entry-content">
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>で関数を作っていると、複数のデータをreturnしたい場面があります。</p><p>複数のreturnというとコーディング上、大きく２つの意味合いがありますが、一つ目は簡単で文字通り条件によって複数のreturnの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%A4%A4%C5%A4%EC">いづれ</a>かが実行されます。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">private</span> <span class="synType">double</span> function(<span class="synType">double</span> a, <span class="synType">double</span> b)
+{
+    <span class="synStatement">if</span> (a == b)
+    {
+        <span class="synStatement">return</span> <span class="synConstant">1</span>;
+    }
+    <span class="synStatement">else</span>
+    {
+        <span class="synStatement">return</span> <span class="synConstant">0</span>;
+    }
+}
+</pre><p>このような場合は、コーディング規約等でretrunは1つにせよという風にされている場合もあるかもしれません。<br/>
+その場合は、一度変数に入れてあげればよいです。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">private</span> <span class="synType">double</span> function(<span class="synType">double</span> a, <span class="synType">double</span> b)
+{
+    <span class="synType">double</span> ans;
+    <span class="synStatement">if</span> (a==b)
+    {
+        ans = <span class="synConstant">1</span>;
+    }
+    <span class="synStatement">else</span>
+    {
+        ans = <span class="synConstant">0</span>;
+    }
+    <span class="synStatement">return</span> ans;
+}
+</pre><p>しかし、これらはいずれもreturnがいくつ書かれているかによらずfunctionの戻り値としては1つの変数です。</p><p>場合によっては↓のようなことをしたい時があると思いませんか？<br/>
+ちなみに、<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>ではこのような記法が可能でタプルとして戻ってきます。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">private</span> <span class="synType">double</span> function(<span class="synType">double</span> a, <span class="synType">double</span> b)
+{
+<span class="synStatement">return</span> a * <span class="synConstant">3</span>,b * <span class="synConstant">4</span>;
+}
+&gt;&gt; (<span class="synConstant">6</span>, <span class="synConstant">12</span>) #pythonの例  a=<span class="synConstant">2</span>, b=<span class="synConstant">3</span>のとき
+</pre><p></p><h3>本編</h3>厳密にいうと関数の戻り値は0（つまり1つ）にしているが、結果的には複数の値を戻すことが出来る方法です。<br/>
+戻したい値を格納する変数を配列で関数に渡してあげます。
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">private</span> <span class="synType">void</span> Form1_Load(<span class="synType">object</span> sender, EventArgs e)
+{
+    <span class="synType">double</span> a = <span class="synConstant">2</span>;
+    <span class="synType">double</span> b = <span class="synConstant">3</span>;
+    <span class="synType">double</span>[] ans = <span class="synStatement">new</span> <span class="synType">double</span>[<span class="synConstant">2</span>];
+    function(a, b, ans);
+    MessageBox.Show(ans[<span class="synConstant">0</span>].ToString()+<span class="synConstant">" , "</span>+ans[<span class="synConstant">1</span>].ToString());
+}
+<span class="synType">private</span> <span class="synType">double</span> function(<span class="synType">double</span> a, <span class="synType">double</span> b, <span class="synType">double</span>[] ans)
+{
+    ans[<span class="synConstant">0</span>] = a * <span class="synConstant">3</span>;
+    ans[<span class="synConstant">1</span>] = b * <span class="synConstant">4</span>;
+
+    <span class="synStatement">return</span> <span class="synConstant">0</span>;
+}
+</pre><p>入力のaとbと出力の配列（ans[]）を関数の引数に入れて、関数の中で配列の中身を書き換えてあげます。</p>
+</div>

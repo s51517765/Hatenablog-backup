@@ -1,0 +1,81 @@
+<div class="entry-content">
+<p>Windowのハードディス残量のデイリーの変化を記録して、残量が少なくなるとアラートがでるアプリを作ってました。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20191123145009j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20191123/20191123145009.jpg" title="f:id:s51517765:20191123145009j:plain"/></span><br/>
+主な特長：<br/>
+1)ディスク残量をテキストファイルに出力します。<br/>
+2)監視するドライブを指定できます。<br/>
+3)残り容量が少なくなった時アラートを出します。音は出ません。</p><p>ドライブを指定することが出来るのですが、外付けのディスクを指定して、それが接続されていないと残量０となり意図しない挙動をしてしまいました（容量も０）。<br/>
+すると、ディスクが準備可能かどうかを確認し、警告を発し済みかどうかを管理し…、といった複雑な挙動が必要になりました。</p><p>こうなってくると、複数のif文で管理することが難しくなります。</p><p>そこで思い出したのが、状態遷移表（状態管理）です。</p><p>表の書き方の流儀は大きく2つあります。<br/>
+・縦軸に現在の状態、横軸にトリガーを置き、表の中に遷移先を示すもの。<br/>
+・もう一つは縦軸に現在の状態、横軸に次の状態、表の中にトリガーを示すものです。</p><p>どちらがいいかは、ソフトウェアによって、コーディングの仕方によっても異なるかと思いますが、私は前者を使うことにしました。</p><p></p><h3>挙動説明</h3>これが、このソフトウェアの状態遷移表です。<figure class="figure-image figure-image-fotolife" title="状態遷移表"><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20191123151432p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20191123/20191123151432.png" title="f:id:s51517765:20191123151432p:plain"/></span><figcaption>状態遷移表</figcaption></figure>まず、ソフトウェアが起動されると<code>Start</code>状態になります。<br/>
+自動遷移で、<code>DiscCheck</code>に移ります。<br/>
+ディスクが準備完了（アクセス可能状態）であれば、ディスクチェックをして、<code>Idle</code>に遷移します。<br/>
+ディスクが準備完了していない場合は、その状態に留まり、ディスクの準備完了を待ちます。<br/>
+<code>Idle</code>状態では120s経過で自動終了します。<br/>
+Idleはなにもしない状態です。<p>これが正常の動作フローです。</p><p>一方、<code>DiscCheck</code>状態で、20s経過しても準備完了にならない場合は、<code>Alert</code>に遷移し、メッセージを通知し、<code>Idle</code>に遷移します。<code>Idle</code>に遷移したあとは、正常時と同じです。</p><p>手動でディスクチェックをしたい場合があるので、手動用のボタンがあります。このときの挙動もトリガー<code>GetRemain</code>で記述しておきます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20191123150436j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20191123/20191123150436.jpg" title="f:id:s51517765:20191123150436j:plain"/></span><br/>
+この時もディスクが準備完了である必要があります。これを遷移条件（進入条件）といいます。<br/>
+状態遷移するときに何かの動作を行わせたいときは、出口アクション（そんな言葉はないかもしれないし、状態遷移表で記述するものではないかも）として記述しています。</p><p>監視対象ディスクを変更したときも、準備完了を待つためにタイマーをリセットします。</p><h3>コード例</h3><code>timer</code>をつかって、2秒ごとに現在の状態に応じた動作を行います。<br/>
+上記の状態が<code>Switch.Case</code>で分けられています。<br/>
+何もしないとき（ここではIdle状態）も記述しておきます。<p><code>if</code>で遷移条件を確認しActionし状態遷移します。<br/>
+これは、ソフトウェアが起動している間、常に2sごとに実行されます。<br/>
+時間で動作を分けたいとき（ここでは120sで終了するなど）は<code>switch</code>の外でカウントアップします。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">        <span class="synType">private</span> <span class="synType">void</span> timer1_Tick(<span class="synType">object</span> sender, EventArgs e)
+        {
+            timeCount++;
+
+            <span class="synStatement">switch</span> (state)
+            {
+                <span class="synStatement">case</span> <span class="synConstant">"DiscCheck"</span>:
+                    {
+                        <span class="synStatement">if</span> (getRemain())
+                        {
+                            state = <span class="synConstant">"Idle"</span>;
+                        }
+                        <span class="synStatement">else</span> <span class="synStatement">if</span> (timeCount &gt; <span class="synConstant">10</span>) <span class="synComment">//20s</span>
+                        {
+                            state = <span class="synConstant">"Alert"</span>;
+                        }
+                    }
+                    <span class="synStatement">break</span>;
+
+                <span class="synStatement">case</span> <span class="synConstant">"Idle"</span>:
+                    {
+                        <span class="synComment">//120s後</span>
+                        <span class="synStatement">if</span> (checkBoxAutoClose.Checked &amp;&amp; timeCount &gt; <span class="synConstant">60</span>)
+                        {
+                            state = <span class="synConstant">"Close"</span>;
+                        }
+                    }
+                    <span class="synStatement">break</span>;
+                <span class="synStatement">case</span> <span class="synConstant">"Alert"</span>:
+                    {
+                        state = <span class="synConstant">"Idle"</span>; <span class="synComment">//先にAlertをしようとすると、次のタイマーが回ってきて複数のAlertが上がってくる。次の状態を変更してから動作する。</span>
+                        Alert();             
+                    }
+                    <span class="synStatement">break</span>;
+
+                <span class="synStatement">case</span> <span class="synConstant">"Close"</span>:
+                    {
+                        <span class="synStatement">this</span>.Close();
+                    }
+                    <span class="synStatement">break</span>;
+
+                <span class="synStatement">default</span>:
+                    {
+                        MessageBox.Show(<span class="synConstant">"Error"</span>);
+                    }
+                    <span class="synStatement">break</span>;
+            }
+        }
+</pre><p></p><h3>まとめ</h3>状態遷移表を使ったらうまくまとめることが出来ました、という事例です。<br/>
+タイマーで現在の状態と次の状態を確認し続ける、というのがポイントです。<br/>
+これに似たものとして状態遷移図というものもあります。<br/>
+場合によっては両方描いたほうがいいかもしれません。<br/>
+状態遷移図のほうが描きやすくはありますが、コードに落とし込むにはもう一段階が必要になり、それが状態遷移表だと思います。<br/>
+状態遷移図はちょっと複雑な<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D5%A5%ED%A1%BC%A5%C1%A5%E3%A1%BC%A5%C8">フローチャート</a>のようなものです。<br/>
+状態遷移図も状態遷移表も<a class="keyword" href="http://d.hatena.ne.jp/keyword/UML">UML</a>の一つで、厳密には書き方のルールが存在します。<br/>
+この記事では必ずしも正確な書き方ではありませんのでご了承ください。<p>時間がかかる処理をするとき、ここでは<code>Alert</code>です（ここではMessageBoxをだすので、ユーザーが処理するまでの時間がかかる）が、このときは先に状態を変更しておかないと、2s後にもう一度<code>Alert</code>が呼ばれます。<br/>
+このような場合は、タイマーを一時的に止めるといった荒業もあります。</p><p>このようなソフトウェアのデバックをするときは、状態遷移表のすべてのマスを確認します。<br/>
+起こりえないマスはそのために明確にしておきます。</p>
+</div>

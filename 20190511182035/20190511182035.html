@@ -1,0 +1,68 @@
+<div class="entry-content">
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>で（簡単な）<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D6%A5%ED%A5%C3%A5%AF%CA%F8%A4%B7">ブロック崩し</a>ゲームを作ってみました。ただしGame Overは実装されていません。</p><blockquote class="twitter-tweet" data-lang="ja"><p dir="ltr" lang="ja"><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a> で<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D6%A5%ED%A5%C3%A5%AF%CA%F8%A4%B7">ブロック崩し</a>ゲームを作りました。ちなみにGame Overにはならない。 <a href="https://t.co/mz5BbvfZ2a">pic.twitter.com/mz5BbvfZ2a</a></p>— プログラミング素人 (@s51517765) <a href="https://twitter.com/s51517765/status/1126484381529329664?ref_src=twsrc%5Etfw">2019年5月9日</a></blockquote><script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script><p>ここで、簡単に技術的な解説をしたいと思います。</p><p><figure class="figure-image figure-image-fotolife" title="ゲーム画面"><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20190511173408p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190511/20190511173408.png" title="f:id:s51517765:20190511173408p:plain"/></span><figcaption>ゲーム画面</figcaption></figure></p><br/>
+<p>プレイヤーを示す青い四角（パドル）は実は”Buttun”です。マウスカーソルに連動して動きます。<br/>
+MouseMoveイベントで動かします。<br/>
+マウスポジションはForm1の位置に対して相対的に適宜されるので、Form1の位置をオフセットします。プレイヤーサイズの中央に合わせたいので、その分もオフセットします。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">private</span> <span class="synType">void</span> Form1_MouseMove(<span class="synType">object</span> sender, MouseEventArgs e)
+ {
+   Form1_x = <span class="synStatement">this</span>.Left; <span class="synComment">//Form1の位置</span>
+   Cursol_X = MousePosition.X - Form1_x - playerSize_X / <span class="synConstant">2</span>;
+   buttonPlayer.Left = Cursol_X;
+  }
+</pre><p>崩されるブロックも"Buttun"です。<br/>
+Y座標がブロックのサイズ(30)に入ったら、その部分にブロックが残っているか<code>Block_flag[block_no]</code>判断し、残っていれば、フラグを反転し、<code>Visible=false</code>にします。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">   <span class="synStatement">if</span> (ball_y &lt; <span class="synConstant">30</span>)
+            {
+                <span class="synStatement">if</span> (Block_flag[block_no])
+                {
+                    Block_flag[block_no] = <span class="synConstant">false</span>;
+
+                    <span class="synStatement">switch</span> (block_no)
+                    {
+                        <span class="synStatement">case</span> <span class="synConstant">0</span>:
+                            button0.Visible = <span class="synConstant">false</span>;
+                            <span class="synStatement">break</span>;
+　　　　　　        　}
+                      <span class="synComment">//省略</span>
+               }
+           }
+</pre><p>ボールは"Label"に●を書いたものです。<br/>
+ボールの速度ベクトルはX成分、Y成分に分解して考えることで、<br/>
+<code>labelBall.Left += (int)(ball_Speed * Math.Sin(ball_Direction));</code>、<br/>
+<code>labelBall.Top += (int)(ball_Speed * Math.Cos(ball_Direction));</code>のようにあらわします。これをtimerイベントで更新します。</p><p>ボールの進行速度ベクトルは後で説明する、パドルで角度を変更しますが、その角度は０～2πに正規化しておきます。<br/>
+ボールの位置は<code> int ball_X = labelBall.Left</code>のように取得できます。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synComment">//ボールの進行角度を 0～2*PIに正規化</span>
+  <span class="synStatement">if</span> (ball_Direction &lt; <span class="synConstant">0</span>) ball_Direction += Math.PI * <span class="synConstant">2</span>;
+  <span class="synStatement">else</span> <span class="synStatement">if</span> (ball_Direction &gt; Math.PI * <span class="synConstant">2</span>) ball_Direction -= Math.PI * <span class="synConstant">2</span>;
+
+  <span class="synStatement">in</span>
+t ball_X = labelBall.Left;　<span class="synComment">//ボールの位置を取得</span>
+  <span class="synType">int</span> ball_Y = labelBall.Top;
+</pre><p>壁にボールが当たったときは、<code>入射角=反射角</code>となるように速度ベクトルを変更します。<br/>
+パドルに当たった時も基本は同じですが、端っこに当たったときは反射角度を変化するようにしました。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synComment">//横壁との反射</span>
+<span class="synStatement">if</span> (ball_X &lt; <span class="synConstant">0</span> || <span class="synStatement">this</span>.Width - <span class="synConstant">30</span> &lt; ball_X)
+ {
+     ball_Direction = <span class="synConstant">2</span> * Math.PI - ball_Direction;
+ }
+
+  <span class="synComment">//縦壁との反射</span>
+<span class="synStatement">if</span> (ball_Y &lt; <span class="synConstant">0</span> || <span class="synStatement">this</span>.Height - <span class="synConstant">60</span> &lt; ball_Y)
+{
+    ball_Direction = Math.PI - ball_Direction;
+}
+</pre><p>パドルの当たり判定が結構難しかったです。<br/>
+なにも考えずに実装すると、一回の打撃のつもりが、Timerで複数回打撃が発生してしまいます。<br/>
+ですので、「打ち返し中」というフラグを使います。<br/>
+パドルから一定の距離をボールが離れるまで、「打ち返し」が発生しないようにします。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""> <span class="synComment">//パドル当たり判定</span>
+<span class="synStatement">if</span> (Math.Abs(playerPosition_Y - ball_Y) &lt; ball_Speed &amp;&amp; hitting == <span class="synConstant">false</span>) <span class="synComment">//高さ方向を限定&amp;&amp;打ち返し中でない</span>
+  {  
+         hitting = <span class="synConstant">true</span>;　<span class="synComment">//打ち返し中フラグ</span>
+  }
+<span class="synStatement">else</span> <span class="synStatement">if</span> (Math.Abs(playerPosition_Y - ball_Y) &gt; ball_Speed &amp;&amp; hitting == <span class="synConstant">true</span>)　<span class="synComment">//打ち返し中を抜けたら</span>
+ {
+      hitting = <span class="synConstant">false</span>;
+}
+</pre><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fs51517765%2Fbreaking_blocks" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="s51517765/breaking_blocks"></iframe><cite class="hatena-citation"><a href="https://github.com/s51517765/breaking_blocks">github.com</a></cite></p>
+</div>

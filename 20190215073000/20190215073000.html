@@ -1,0 +1,100 @@
+<div class="entry-content">
+<p>以前<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>でブラウザの自動制御を試しましたが、その時使った<a class="keyword" href="http://d.hatena.ne.jp/keyword/selenium">selenium</a>は他の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D7%A5%ED%A5%B0%A5%E9%A5%DF%A5%F3%A5%B0%B8%C0%B8%EC">プログラミング言語</a>にもパッケージが提供されています。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2018%2F01%2F07%2F173244" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="Seleniumでブラウザの制御 - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2018/01/07/173244">s51517765.hatenadiary.jp</a></cite><br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2018%2F04%2F21%2F124342" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="pythonとseleniumでheadless browserを操作する - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2018/04/21/124342">s51517765.hatenadiary.jp</a></cite></p><p>そこで、<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>で<a class="keyword" href="http://d.hatena.ne.jp/keyword/selenium">selenium</a>を使ってみました。</p><p></p><h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/Visual%20Studio">Visual Studio</a>で<a class="keyword" href="http://d.hatena.ne.jp/keyword/selenium">selenium</a>を設定する</h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/Visual%20Studio">Visual Studio</a>で「プロジェクト¥NuGetパッケージの管理」を開きます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20190211181318j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190211/20190211181318.jpg" title="f:id:s51517765:20190211181318j:plain"/></span><br/>
+「参照」から"<a class="keyword" href="http://d.hatena.ne.jp/keyword/selenium">selenium</a>"を検索します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20190211181445j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190211/20190211181445.jpg" title="f:id:s51517765:20190211181445j:plain"/></span><p>必須となるのは以下の二つです。（ここでは<a class="keyword" href="http://d.hatena.ne.jp/keyword/Chrome">Chrome</a>を使いましたが、他のブラウザの場合は対応するもの）</p>
+<ul>
+<li><a class="keyword" href="http://d.hatena.ne.jp/keyword/Selenium">Selenium</a>.WebDriver</li>
+<li><a class="keyword" href="http://d.hatena.ne.jp/keyword/Selenium">Selenium</a>.WebDriver.ChromeDriver</li>
+</ul><p>これに以下の二つを追加しました。</p>
+<ul>
+<li><a class="keyword" href="http://d.hatena.ne.jp/keyword/Selenium">Selenium</a>.Support</li>
+<li><a class="keyword" href="http://d.hatena.ne.jp/keyword/Selenium">Selenium</a>.WebDriverBackedSelenium</li>
+</ul><p></p><p></p><h3>Amaz〇nでログインして検索して<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>に投稿する</h3>実際にコードを書いていきます。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A4%A5%F3%A5%B9%A5%BF%A5%F3%A5%B9">インスタンス</a>をclass form1の直下で作成します。
+<pre class="code lang-cs" data-lang="cs" data-unlink="">    <span class="synType">public</span> <span class="synStatement">partial</span> <span class="synType">class</span> Form1 : Form
+    {
+        ChromeDriver driver = <span class="synStatement">new</span> ChromeDriver(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location));
+   }
+</pre><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/css">css</a>のid名で目的の入力フォームを探してテキストを送信します。</p><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20190211184540j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190211/20190211184540.jpg" title="f:id:s51517765:20190211184540j:plain"/></span></p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">        <span class="synType">private</span> <span class="synType">void</span> login()
+        {
+            var auth = <span class="synStatement">new</span> auth();  <span class="synComment">//別のクラスファイルにメールアドレスとパスワードを記録</span>
+            <span class="synType">string</span> email = auth.email;
+            <span class="synType">string</span> password = auth.password;
+
+            <span class="synComment">//ログイン</span>
+            <span class="synType">string</span> url = <span class="synConstant">"https://www.amaz〇n…"</span>;　<span class="synComment">//長いので省略</span>
+            driver.Url = url;　　<span class="synComment">// 上記urlに移動</span>
+            Thread.Sleep(<span class="synConstant">1000</span>);
+
+            driver.FindElementById(<span class="synConstant">"ap_email"</span>).SendKeys(email); <span class="synComment">//css idで入力フォームを探す</span>
+            driver.FindElementById(<span class="synConstant">"ap_password"</span>).SendKeys(password);
+            driver.FindElementById(<span class="synConstant">"signInSubmit"</span>).Click();
+        }
+</pre><p><br/>
+このあたりは、以前<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>で作ったものを<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>に変換しました。<br/>
+何となく、似たような書き方でちょっと違う、という感じになっています。</p><p>これは、<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>が<code>スネーク記法</code>で<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>が<code>アッパーキャメル記法</code>となっているからです。</p><p>idで要素が見つけられないときは、<a class="keyword" href="http://d.hatena.ne.jp/keyword/XPath">XPath</a>で対応します。<a class="keyword" href="http://d.hatena.ne.jp/keyword/Xpath">Xpath</a>ならどのような要素でも対応可能です。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/XPath">XPath</a>は<a class="keyword" href="http://d.hatena.ne.jp/keyword/Chrome">Chrome</a>や<a class="keyword" href="http://d.hatena.ne.jp/keyword/Firefox">Firefox</a>の右クリックメニューから見つけることができます。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Chrome">Chrome</a>では、右クリックの「検証」からHTML部分の右クリックで「Copy￥Copy <a class="keyword" href="http://d.hatena.ne.jp/keyword/XPath">XPath</a>」を選択します。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Firefox">Firefox</a>では、右クリックの「要素を調査」からHTML部分の右クリックで「コピー¥<a class="keyword" href="http://d.hatena.ne.jp/keyword/Xpath">Xpath</a>」を選択します。</p><p>どうやら、このようにして取得できる<a class="keyword" href="http://d.hatena.ne.jp/keyword/XPath">XPath</a>は<a class="keyword" href="http://d.hatena.ne.jp/keyword/Firefox">Firefox</a>のほうがHTML階層の最上位からの絶対Pathとなっておりうまく動作しやすいようです。</p><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20190211184955j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190211/20190211184955.jpg" title="f:id:s51517765:20190211184955j:plain"/></span><br/>
+キーワード検索をし、一つ目の検索結果を開きます。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""> <span class="synType">string</span> resultNo = <span class="synConstant">"result_0"</span>; <span class="synComment">//検索結果の1番目</span>
+                <span class="synStatement">if</span> (keyword[i] != <span class="synConstant">""</span>)
+                {
+                    driver.SwitchTo().Window(driver.WindowHandles.First());　<span class="synComment">//一つ目のタブ</span>
+                    <span class="synType">string</span> curentUrl = driver.Url;
+                    driver.FindElementById(<span class="synConstant">"twotabsearchtextbox"</span>).Clear();
+                    driver.FindElementById(<span class="synConstant">"twotabsearchtextbox"</span>).SendKeys(keyword[i]);
+                    Thread.Sleep(<span class="synConstant">1000</span>);
+                    driver.FindElementById(<span class="synConstant">"twotabsearchtextbox"</span>).SendKeys(OpenQA.Selenium.Keys.Return);                   
+                    Thread.Sleep(<span class="synConstant">1000</span>);
+
+                    <span class="synStatement">while</span> (driver.FindElement(By.Id(resultNo)) == <span class="synConstant">null</span>) ; <span class="synComment">// using OpenQA.Selenium;</span>
+                    Thread.Sleep(<span class="synConstant">1000</span>);
+                    driver.FindElementById(resultNo).Click();
+                    driver.SwitchTo().Window(driver.WindowHandles.Last()); <span class="synComment">//最後に開いたタブ</span>
+                    twitter();
+                }
+</pre><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20190211184711j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190211/20190211184711.jpg" title="f:id:s51517765:20190211184711j:plain"/></span><br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>に投稿します。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>にログインしているかどうかを取得したかったのですが、うまくいかなかったのでログインしていないものとしてTryし失敗したらログインしているものとしてツイートボタンを押します。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">        <span class="synType">private</span> <span class="synType">void</span> twitter()
+        {
+            var auth = <span class="synStatement">new</span> auth();
+            <span class="synType">string</span> twitter = auth.twitter;
+            <span class="synType">string</span> tw_password = auth.tw_password;
+            Thread.Sleep(<span class="synConstant">3000</span>);
+            driver.FindElementByXPath(<span class="synConstant">"//*[@id='amzn-ss-twitter-share']/div/a/i"</span>).Click();
+            Thread.Sleep(<span class="synConstant">1000</span>);
+            driver.SwitchTo().Window(driver.WindowHandles.Last());
+            <span class="synType">string</span> text = driver.FindElementById(<span class="synConstant">"status"</span>).Text;
+            text = text.Replace(<span class="synConstant">"@さんから"</span>, <span class="synConstant">""</span>);
+            text = text.Replace(<span class="synConstant">"を Amazon でチェック！"</span>, <span class="synConstant">""</span>);
+            textBoxLog.AppendText(text + <span class="synConstant">"</span><span class="synSpecial">\n</span><span class="synConstant">"</span>);
+
+            <span class="synStatement">try</span>
+            {
+                <span class="synStatement">try</span>
+                {   <span class="synComment">//Loginしてないとき</span>
+                    driver.FindElementById(<span class="synConstant">"username_or_email"</span>).SendKeys(twitter);
+                    driver.FindElementById(<span class="synConstant">"password"</span>).SendKeys(tw_password);
+                    driver.FindElementByXPath(<span class="synConstant">"/html/body/div[2]/form/div[3]/fieldset[2]/input"</span>).Click();
+                }
+                <span class="synStatement">catch</span>
+                {
+                    <span class="synComment">//Loginずみ</span>
+                    driver.FindElementByXPath(<span class="synConstant">"/html/body/div[2]/form/div[3]/fieldset/input"</span>).Click(); <span class="synComment">//XPathはfirefoxで調べる</span>
+                }
+            }
+            <span class="synStatement">catch</span>
+            {
+                textBoxLog.AppendText(<span class="synConstant">"Tweet Error!"</span> + <span class="synConstant">"</span><span class="synSpecial">\n</span><span class="synConstant">"</span>);
+                driver.Close(); <span class="synComment">//タブを閉じる</span>
+            }
+        }
+</pre><p></p><h3>動作結果</h3><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20190214203627j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190214/20190214203627.jpg" title="f:id:s51517765:20190214203627j:plain"/></span><p></p><blockquote class="twitter-tweet" data-lang="ja"><p dir="ltr" lang="ja">伊藤 望 の <a class="keyword" href="http://d.hatena.ne.jp/keyword/Selenium">Selenium</a>実践入門 ―― 自動化による継続的なブラウザテスト (<a class="keyword" href="http://d.hatena.ne.jp/keyword/WEB%2BDB%20PRESS">WEB+DB PRESS</a> plus) を <a class="keyword" href="http://d.hatena.ne.jp/keyword/Amazon">Amazon</a> でチェック！ <a href="https://t.co/gb9aMHPhhu">https://t.co/gb9aMHPhhu</a> @さんから</p>— プログラミング素人 (@s51517765) <a href="https://twitter.com/s51517765/status/1096009779883831297?ref_src=twsrc%5Etfw">2019年2月14日</a></blockquote><script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script><br/>
+<blockquote class="twitter-tweet" data-lang="ja"><p dir="ltr" lang="ja">川本安武 の OpenSSH［実践］入門 <a class="keyword" href="http://d.hatena.ne.jp/keyword/Software%20Design">Software Design</a> plus を <a class="keyword" href="http://d.hatena.ne.jp/keyword/Amazon">Amazon</a> でチェック！ <a href="https://t.co/s7NNkG8WZs">https://t.co/s7NNkG8WZs</a> @さんから</p>— プログラミング素人 (@s51517765) <a href="https://twitter.com/s51517765/status/1096009851023454208?ref_src=twsrc%5Etfw">2019年2月14日</a></blockquote><script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script><p></p><h3>ソース</h3><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fs51517765%2Fselenium_CS" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="s51517765/selenium_CS"></iframe><cite class="hatena-citation"><a href="https://github.com/s51517765/selenium_CS">github.com</a></cite>
+</div>

@@ -1,5 +1,5 @@
 <div class="entry-content">
-<p><iframe allow="autoplay; encrypted-media" allowfullscreen="" frameborder="0" height="344" src="https://www.youtube.com/embed/Q8fX_2xcUp8?feature=oembed" width="459"></iframe><cite class="hatena-citation"><a href="https://youtu.be/Q8fX_2xcUp8">youtu.be</a></cite></p><p>まずは、ラズパイでGPIOの基本的な使い方を確認していきます。<br/>
+<p><iframe allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" frameborder="0" height="344" src="https://www.youtube.com/embed/Q8fX_2xcUp8?feature=oembed" width="459"></iframe><cite class="hatena-citation"><a href="https://youtu.be/Q8fX_2xcUp8">youtu.be</a></cite></p><p>まずは、ラズパイでGPIOの基本的な使い方を確認していきます。<br/>
 ↓のような回路を作って、<a class="keyword" href="http://d.hatena.ne.jp/keyword/CDS">CDS</a>で明るさを検出し、LEDを制御します。<br/>
 <span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180211152302p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180211/20180211152302.png" title="f:id:s51517765:20180211152302p:plain"/></span></p><p></p><h3>回路図用パーツを作る</h3>ここで、回路図は水魚堂のエディタ<a href="http://www.suigyodo.com/online/schsoft.htm">http://www.suigyodo.com/online/schsoft.htm</a>を使っていますが、ラズパイの回路図部品がないので作成しました。<p>部品の作成はLcoV.exeというエディタで作成します。「回路図エディタBSch3V」 をダウンロードすると一緒に入っているはずです。<br/>
 <span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180211125536j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180211/20180211125536.jpg" title="f:id:s51517765:20180211125536j:plain"/></span><br/>
@@ -13,7 +13,7 @@
 <span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180211163210j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180211/20180211163210.jpg" title="f:id:s51517765:20180211163210j:plain"/></span><br/>
 これで、部品にラズパイが追加され、ラズパイを含む回路図が作成できます。<br/>
 部品ファイルは↓にアップしておきました。よかったらご自由にご活用ください。<br/>
-<a href="https://drive.google.com/open?id=13ddiGm8ZNBYyIpNzR5V-_pq7lUAPEqsu">RaspberryPi.zip - Google ドライブ</a></p><p></p><h3>ターミナルでGPIOの状態を確認する</h3>現在のGPIOの状態は、ターミナルからGPIO Readallコマンドで確認することができます。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fs51517765%2FRaspberryPi_for_BSch3V" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="s51517765/RaspberryPi_for_BSch3V"></iframe><cite class="hatena-citation"><a href="https://github.com/s51517765/RaspberryPi_for_BSch3V">github.com</a></cite></p><p></p><h3>ターミナルでGPIOの状態を確認する</h3>現在のGPIOの状態は、ターミナルからGPIO Readallコマンドで確認することができます。<br/>
 ちょっと、最初はわかりにくいですが以下のように一覧で、ピン配置と同じように、段組みで表示されます。<br/>
 前回調べた通り、10番Pin（physical）はGPIOの15(BCM)でINPUT MODEになっていることが確認できます。<br/>
 WiringPiでは16番になるようです。

@@ -1,0 +1,77 @@
+<div class="entry-content">
+<p>以前、Python3で書きました。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2019%2F04%2F27%2F183936" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="競技プログラミングの基本入出力(Python3) - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2019/04/27/183936">s51517765.hatenadiary.jp</a></cite></p><p>今回は<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%2B%2B">C++</a>です。<br/>
+最近、<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%2B%2B">C++</a>の勉強を兼ねて<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%2B%2B">C++</a>で<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B6%A5%B5%BB%A5%D7%A5%ED%A5%B0%A5%E9%A5%DF%A5%F3%A5%B0">競技プログラミング</a>の勉強をしています。</p><p></p><h3>入力編</h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/%B6%A5%B5%BB%A5%D7%A5%ED%A5%B0%A5%E9%A5%DF%A5%F3%A5%B0">競技プログラミング</a>では以下のように入力が与えらるのが基本です。<br/>
+最初の一行は、続く入力行の回数であることが多く、二行目以降はスペース区切りが多いです。<br/>
+入力は「数値」に見えても「文字列」です。<br/>
+しかし<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%2B%2B">C++</a>ではそのまま数値として受け取ることができるようです。
+<pre class="code" data-lang="" data-unlink="">//入力
+3
+6 5
+1 2 
+2 3</pre><pre class="code lang-cpp" data-lang="cpp" data-unlink=""><span class="synPreProc">#include </span><span class="synConstant">&lt;iostream&gt;</span>
+<span class="synStatement">using</span> <span class="synType">namespace</span> std; <span class="synComment">//cin, coutを使う</span>
+<span class="synType">int</span> main()
+{
+    <span class="synType">int</span> n , j , k;
+    cin&gt;&gt;n;
+    <span class="synStatement">for</span> (<span class="synType">int</span> i=<span class="synConstant">0</span>;i&lt;n;i++)
+    {
+        cin&gt;&gt;j&gt;&gt;k;
+    }
+}
+</pre><p><code>cin</code>はコンソールイン（入力）だと思われます。出力は<code>cout</code>コンソールアウト（出力）。<br/>
+<code>＜＜、＞＞</code><a class="keyword" href="http://d.hatena.ne.jp/keyword/%B1%E9%BB%BB%BB%D2">演算子</a>は矢印のように見ると、cin→変数（コンソールから変数へ）、cout←ans（変数をコンソールへ）という風に覚えました。</p><p>配列に入れることも可能。<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%2B%2B">C++</a>の<a class="keyword" href="http://d.hatena.ne.jp/keyword/vector">vector</a>は可変長配列。</p>
+<pre class="code" data-lang="" data-unlink="">//入力
+//6
+//1 2 3 4 5 6</pre><pre class="code lang-cpp" data-lang="cpp" data-unlink=""><span class="synPreProc">#include </span><span class="synConstant">&lt;iostream&gt;</span>
+<span class="synPreProc">#include </span><span class="synConstant">&lt;vector&gt;</span> <span class="synComment">//可変長配列</span>
+<span class="synStatement">using</span> <span class="synType">namespace</span> std;
+<span class="synType">int</span> main()
+{
+    <span class="synType">int</span> n , j;
+    cin&gt;&gt;n;
+    vector&lt;<span class="synType">int</span>&gt; input(n); <span class="synComment">//int型のinputという名前の変数を要素数nで宣言</span>
+    <span class="synStatement">for</span> (<span class="synType">int</span> i=<span class="synConstant">0</span>;i&lt;n;i++)
+    {
+        cin&gt;&gt;j;
+        input[i]=j;
+        cout&lt;&lt;input[i]&lt;&lt;endl;
+    }
+}
+</pre><p>可変長配列であるから値を追加しながら、自動的にサイズ変更できる。このときは<code>push_back</code>関数を使う。</p>
+<pre class="code lang-cpp" data-lang="cpp" data-unlink=""><span class="synType">int</span> j;
+vector&lt;<span class="synType">int</span>&gt; input; <span class="synComment">//配列のサイズを宣言しなくても</span>
+<span class="synStatement">while</span>(cin&gt;&gt;j){ <span class="synComment">//入力に値がある限り</span>
+input.push_back(j);   <span class="synComment">//配列の要素追加</span>
+}
+</pre><p>このようにすると改行とスペース区切りを区別なく取得できる。</p><p>また、配列の大きさは<code>input.size()</code>で取得できる。</p><p>文字列の場合は<code>char</code>型が使える。<br/>
+この場合もインデックスでアクセスできる。</p>
+<pre class="code lang-cpp" data-lang="cpp" data-unlink=""><span class="synType">char</span> first[]=<span class="synConstant">"Alice"</span>;
+# first[<span class="synConstant">0</span>] <span class="synComment">//"A"</span>
+# first[<span class="synConstant">3</span>] <span class="synComment">//"c"</span>
+</pre><p>2次元配列も可能、このときは｛｝で囲む。<br/>
+子要素の長さは<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C9%D4%C4%EA">不定</a>にできないらしい。別途std::string_viewの配列にすれば出きるかも(<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%2B%2B">C++</a>17以降で使用可なのでpaizaはOKだがAtCorderは使えない)。<br/>
+また、char型要素は末尾にnull文字が入るため、最大文字数＋１とする必要がある。</p>
+<pre class="code lang-cpp" data-lang="cpp" data-unlink=""><span class="synType">char</span> name[][<span class="synConstant">6</span>] = { <span class="synConstant">"Alice"</span> , <span class="synConstant">"Sara"</span> , <span class="synConstant">"Ott"</span> }; <span class="synComment">//末尾にnull文字があるためサイズは+1</span>
+</pre><p>競プロであえて使うメリットがあるかどうかわからないが、（<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>の配列のような）静的配列はこのようになる。</p>
+<pre class="code lang-cpp" data-lang="cpp" data-unlink=""><span class="synType">int</span> a[<span class="synConstant">4</span>];
+<span class="synType">int</span> a={<span class="synConstant">1</span>,<span class="synConstant">2</span>,<span class="synConstant">3</span>,<span class="synConstant">4</span>};
+<span class="synType">int</span> aa[<span class="synConstant">3</span>][<span class="synConstant">4</span>]; <span class="synComment">//2次元</span>
+</pre><p></p><h3>出力編</h3><code>cout</code>に続けて入力する。改行は<code>”\n”</code>（""でくくる必要がある）または<code>endl</code>（End lineの略だと思う）。
+<pre class="code lang-cpp" data-lang="cpp" data-unlink="">cout&lt;&lt;<span class="synConstant">"Output"</span>&lt;&lt;endl;
+cout&lt;&lt;<span class="synConstant">"Output"</span>&lt;&lt;<span class="synConstant">"</span><span class="synSpecial">\n</span><span class="synConstant">"</span>;
+</pre><p>複数の文字を出力するときは<code>&lt;&lt;</code>で区切っていれる。</p>
+<pre class="code lang-cpp" data-lang="cpp" data-unlink="">cout&lt;&lt;out[<span class="synConstant">0</span>]&lt;&lt;out[<span class="synConstant">1</span>]&lt;&lt;endl;
+</pre><p>計算式ももちろん入力可能。</p>
+<pre class="code lang-cpp" data-lang="cpp" data-unlink=""><span class="synType">int</span> a=<span class="synConstant">2354</span>;
+cout&lt;&lt;a/<span class="synConstant">1000</span>&lt;&lt;a/<span class="synConstant">100</span>%<span class="synConstant">10</span>&lt;&lt;a/<span class="synConstant">10</span>%<span class="synConstant">10</span>&lt;&lt;a%<span class="synConstant">10</span>;
+</pre><p></p><h3>おまけ</h3>よく使うので、配列のソート。文字列の配列もソートできます（辞書順）。
+<pre class="code lang-cpp" data-lang="cpp" data-unlink=""><span class="synPreProc">#include </span><span class="synConstant">&lt;algorithm&gt;</span>
+<span class="synComment">// a={100,50,200,400}</span>
+sort(a.begin(),a.end());
+<span class="synComment">// a={50,100,200,400}</span>
+sort(a.begin(),a.end(),greater&lt;<span class="synType">int</span>&gt;()) <span class="synComment">//降順</span>
+<span class="synComment">// a={400,200,100,50}</span>
+</pre><p></p><h3>参考書</h3><div class="hatena-asin-detail"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/B074FQS3D1/shirotoakb-22/"><img alt="基礎からしっかり学ぶC++の教科書 C++14対応 マイクロソフト関連書" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/516UTurZAwL._SL160_.jpg" title="基礎からしっかり学ぶC++の教科書 C++14対応 マイクロソフト関連書"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/B074FQS3D1/shirotoakb-22/">基礎からしっかり学ぶC++の教科書 C++14対応 マイクロソフト関連書</a></p><ul><li><span class="hatena-asin-detail-label">作者:</span><a class="keyword" href="http://d.hatena.ne.jp/keyword/%CC%F0%BF%E1%20%C2%C0%CF%AF">矢吹 太朗</a></li><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/%C6%FC%B7%D0BP">日経BP</a></li><li><span class="hatena-asin-detail-label">発売日:</span> 2017/08/01</li><li><span class="hatena-asin-detail-label">メディア:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/Kindle">Kindle</a>版</li></ul></div><div class="hatena-asin-detail-foot"></div></div>
+</div>

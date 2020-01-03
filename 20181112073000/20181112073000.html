@@ -1,8 +1,5 @@
 <div class="entry-content">
-<p><a href="https://px.a8.net/svt/ejp?a8mat=2ZTMYI+8SQMLU+50+2HPDPT" rel="nofollow" target="_blank"><br/>
-<img alt="" border="0" height="60" src="https://www20.a8.net/svt/bgt?aid=181101690532&amp;wid=001&amp;eno=01&amp;mid=s00000000018015067000&amp;mc=1" width="468"/></a><br/>
-<img alt="" border="0" height="1" src="https://www16.a8.net/0.gif?a8mat=2ZTMYI+8SQMLU+50+2HPDPT" width="1"/><br/>
-<a class="keyword" href="http://d.hatena.ne.jp/keyword/QR%A5%B3%A1%BC%A5%C9">QRコード</a>とは2次元バーコードの一種で、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%DE%A5%DB">スマホ</a>などで読み取ることで、文字列やURLなどを取得できるものです。<br/>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/QR%A5%B3%A1%BC%A5%C9">QRコード</a>とは2次元バーコードの一種で、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%DE%A5%DB">スマホ</a>などで読み取ることで、文字列やURLなどを取得できるものです。<br/>
 <iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fwww.keyence.co.jp%2Fss%2Fproducts%2Fautoid%2Fcodereader%2Fbasic2d_qr.jsp" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="QRコードの構成 | バーコード講座 | キーエンス"></iframe><cite class="hatena-citation"><a href="https://www.keyence.co.jp/ss/products/autoid/codereader/basic2d_qr.jsp">www.keyence.co.jp</a></cite></p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/QR%A5%B3%A1%BC%A5%C9">QRコード</a>は無料でweb上などのサービスで、好きな内容を書き込んだものを作ることもできます。<br/>
 一方、その内容を読み取るのは専用のアプリ以外では簡単にはできません。<br/>
 そんな、簡単ではないことに挑戦しているのが↓<br/>
@@ -130,7 +127,7 @@ folder = <span class="synConstant">"C:/Users/***/Projects/QRcode"</span>
     <span class="synStatement">for</span> picture <span class="synStatement">in</span> filelist:
         <span class="synStatement">if</span> <span class="synConstant">".jpg"</span> <span class="synStatement">in</span> picture:
             <span class="synIdentifier">print</span>(<span class="synConstant">"picture = "</span> + picture)
-            image = np.array(Image.<span class="synIdentifier">open</span>(folder + <span class="synConstant">"/data/"</span> + picture).convert(<span class="synConstant">'L'</span>))  <span class="synComment"># モノクロ　'L'</span>
+            image = np.array(Image.open(folder + <span class="synConstant">"/data/"</span> + picture).convert(<span class="synConstant">'L'</span>))  <span class="synComment"># モノクロ　'L'</span>
             <span class="synComment"># reshapeを使って開かれた配列を1次元配列に変換する</span>
             image_risize = image.reshape(image.size)
             image_risize = image_risize.astype(<span class="synConstant">'float32'</span>) / <span class="synConstant">255</span>
@@ -160,7 +157,7 @@ folder = <span class="synConstant">"C:/Users/***/Projects/QRcode"</span>
     y_test = to_categorical(y_test, max_num)
 
     model = model_read()
-    model.<span class="synIdentifier">compile</span>(optimizer=<span class="synConstant">'rmsprop'</span>, loss=<span class="synConstant">'categorical_crossentropy'</span>, metrics=[<span class="synConstant">'accuracy'</span>])
+    model.compile(optimizer=<span class="synConstant">'rmsprop'</span>, loss=<span class="synConstant">'categorical_crossentropy'</span>, metrics=[<span class="synConstant">'accuracy'</span>])
     model.fit(x_train, y_train, batch_size=<span class="synConstant">1460</span>, epochs=<span class="synConstant">60</span>, verbose=<span class="synConstant">1</span>)  <span class="synComment"># データを学習</span>
 
     model.save_weights(model_weight)  <span class="synComment"># 学習結果を保存</span>
@@ -175,7 +172,7 @@ folder = <span class="synConstant">"C:/Users/***/Projects/QRcode"</span>
     model.add(Dense(<span class="synConstant">64</span>, activation=<span class="synConstant">'relu'</span>, input_dim=<span class="synConstant">64</span>))
     model.add(Dense(<span class="synConstant">64</span>, activation=<span class="synConstant">'relu'</span>, input_dim=<span class="synConstant">64</span>))
     model.add(Dense(max_num, activation=<span class="synConstant">'softmax'</span>))  <span class="synComment"># softmax</span>
-    model.<span class="synIdentifier">compile</span>(optimizer=<span class="synConstant">'rmsprop'</span>, loss=<span class="synConstant">'categorical_crossentropy'</span>, metrics=[<span class="synConstant">'accuracy'</span>])
+    model.compile(optimizer=<span class="synConstant">'rmsprop'</span>, loss=<span class="synConstant">'categorical_crossentropy'</span>, metrics=[<span class="synConstant">'accuracy'</span>])
     <span class="synIdentifier">print</span>(<span class="synConstant">""</span>) <span class="synComment">#改行が足りない</span>
     <span class="synComment"># 学習済みモデルの重みのデータを読み込み</span>
     <span class="synStatement">if</span> os.path.exists(model_weight):
@@ -192,7 +189,7 @@ folder = <span class="synConstant">"C:/Users/***/Projects/QRcode"</span>
 
     <span class="synStatement">for</span> picture <span class="synStatement">in</span> filelist:
         <span class="synStatement">if</span> <span class="synConstant">".jpg"</span> <span class="synStatement">in</span> picture:
-            image = np.array(Image.<span class="synIdentifier">open</span>(check_folder + <span class="synConstant">"/"</span> + picture).convert(<span class="synConstant">'L'</span>))  <span class="synComment"># モノクロ　'L'</span>
+            image = np.array(Image.open(check_folder + <span class="synConstant">"/"</span> + picture).convert(<span class="synConstant">'L'</span>))  <span class="synComment"># モノクロ　'L'</span>
             <span class="synComment"># reshapeを使って開かれた配列を1次元配列に変換する</span>
             image_risize = image.reshape(image.size)
             image_risize = image_risize.astype(<span class="synConstant">'float32'</span>) / <span class="synConstant">255</span>

@@ -1,0 +1,43 @@
+<div class="entry-content">
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%B6%A5%B5%BB%A5%D7%A5%ED%A5%B0%A5%E9%A5%DF%A5%F3%A5%B0">競技プログラミング</a>の基本入出力をPython3で説明します。<br/>
+基本的過ぎて、ちゃんと説明されたサイトが無くって苦労しました。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Atcoder">Atcoder</a>の先人の解答例は参考になります。</p><p></p><h3>入力編</h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/%B6%A5%B5%BB%A5%D7%A5%ED%A5%B0%A5%E9%A5%DF%A5%F3%A5%B0">競技プログラミング</a>では以下のように入力が与えらるのが基本です。<br/>
+最初の一行は、続く入力行の回数であることが多く、二行目以降はスペース区切りが多いです。<br/>
+入力は「数値」に見えても「文字列」です。
+<pre class="code" data-lang="" data-unlink="">3
+6 5 6 8
+1 2 3 
+2 3 4 6 7</pre><p>入力を数値に。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synComment">#入力→ '3'</span>
+n = <span class="synIdentifier">int</span>(<span class="synIdentifier">input</span>())
+<span class="synComment"># 3</span>
+</pre><p>スペース区切りをlistに。この時点では文字列になっています。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synComment">#入力→ '6 5 6 8'</span>
+<span class="synIdentifier">list</span> = <span class="synIdentifier">input</span>().split()
+<span class="synComment"># ['6', '5', '6', '8']</span>
+</pre><p>さらに数値に。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synComment">#入力→ '6 5 6 8'</span>
+<span class="synIdentifier">list</span> = [<span class="synIdentifier">int</span>(s) <span class="synStatement">for</span> s <span class="synStatement">in</span> <span class="synIdentifier">input</span>().split()]
+<span class="synComment"># [6, 5, 6, 8]</span>
+</pre><p>入力の変数の数がわかっているとときはmapを使って以下のようにもできます。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synComment">#入力→ '1 2 3'</span>
+a,b,c=<span class="synIdentifier">map</span>(<span class="synIdentifier">int</span>, <span class="synIdentifier">input</span>().split()) 
+<span class="synComment"># a=1 , b=2 , c=3</span>
+</pre><p>これらを組み合わせると、以下のような計算も可能になります。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">n=<span class="synIdentifier">int</span>(<span class="synIdentifier">input</span>())
+<span class="synStatement">for</span> i <span class="synStatement">in</span> <span class="synIdentifier">range</span>(n):
+    <span class="synIdentifier">list</span>=[<span class="synIdentifier">int</span>(s) <span class="synStatement">for</span> s <span class="synStatement">in</span> <span class="synIdentifier">input</span>().split()]
+<span class="synIdentifier">print</span>(<span class="synIdentifier">list</span>[<span class="synConstant">0</span>]+<span class="synIdentifier">list</span>[<span class="synConstant">1</span>])
+</pre><p>これらを応用して、n行にわたって入力がある場合は<code>for</code>で<code>input()</code>を回します</p><p></p><h3>出力編</h3>スペース区切りで出力せよ、という回答の仕方はよく出ます。<br/>
+listのjoinで複数の数値をスペース区切りの一つの文字列にします。
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synIdentifier">list</span>=[<span class="synConstant">"6"</span>, <span class="synConstant">"5"</span>, <span class="synConstant">"6"</span>, <span class="synConstant">"8"</span>]
+<span class="synIdentifier">print</span>(<span class="synConstant">" "</span>.join(<span class="synIdentifier">list</span>))
+<span class="synComment"># 6 5 6 8</span>
+</pre><p>ただし、これは文字列のListでないとだめなので、文字列でない場合は変換します。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synIdentifier">list</span>=[<span class="synConstant">6</span>, <span class="synConstant">5</span>, <span class="synConstant">6</span>, <span class="synConstant">8</span>]
+list2=[<span class="synIdentifier">str</span>(s) <span class="synStatement">for</span> s <span class="synStatement">in</span> <span class="synIdentifier">list</span>]
+<span class="synIdentifier">print</span>(<span class="synConstant">" "</span>.join(list2))
+もしくは
+<span class="synIdentifier">print</span>(<span class="synConstant">" "</span>.join( [<span class="synIdentifier">str</span>(s) <span class="synStatement">for</span> s <span class="synStatement">in</span> listl] ))
+</pre>
+</div>

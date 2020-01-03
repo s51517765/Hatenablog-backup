@@ -1,0 +1,28 @@
+<div class="entry-content">
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>で<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>アプリを作るときに、UIが不要でタスクトレイ常駐タイプのアプリを作りたいときがあります。<br/>
+以前作ったタイムカードなどもそうです。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2017%2F12%2F21%2F224239" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="C#でタイムカードアプリを作った - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2017/12/21/224239">s51517765.hatenadiary.jp</a></cite></p><p>ここでは、タスクトレイ常駐タイプのアプリの設定の仕方を説明します。</p><p></p><h3>工程（じゃ～～ん 以下略）</h3>プロジェクトを作成します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20191025095723j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20191025/20191025095723.jpg" title="f:id:s51517765:20191025095723j:plain"/></span><p>WindowStateをMinimizedにします。これで最小化起動になります。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20191025095823j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20191025/20191025095823.jpg" title="f:id:s51517765:20191025095823j:plain"/></span></p><p>ShowInTaskbarをFalseにします。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20191025095857j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20191025/20191025095857.jpg" title="f:id:s51517765:20191025095857j:plain"/></span></p><p>アイコンを設定します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20191025095919j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20191025/20191025095919.jpg" title="f:id:s51517765:20191025095919j:plain"/></span></p><p>NotifyIconも設定します。こちらがタスクトレイに表示されるアイコンで、通常のFormのアイコンとは独立に設定できます。あまり違うように設定するメリットはないような気がしますが。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20191025095939j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20191025/20191025095939.jpg" title="f:id:s51517765:20191025095939j:plain"/></span></p><p>これで、最小化（UIが非表示）でタスクトレイのみで起動します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20191025100011j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20191025/20191025100011.jpg" title="f:id:s51517765:20191025100011j:plain"/></span></p><p>しかしこれでは、このソフトウェアは何も操作できない（ログを収集して書き出すなどならこれでもOKですが）ので、タスクトレイのアイコンを右クリックでUIを起動できるようにします。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C4%A1%BC%A5%EB%A5%DC%A5%C3%A5%AF%A5%B9">ツールボックス</a>から<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%F3%A5%C6%A5%AD%A5%B9%A5%C8%A5%E1%A5%CB%A5%E5%A1%BC">コンテキストメニュー</a>を追加します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20191025100055j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20191025/20191025100055.jpg" title="f:id:s51517765:20191025100055j:plain"/></span></p><p>ここでは、<code>Form open</code>、<code>Version info.</code>というメニューを作ります。<br/>
+上記の２つの間には、区切り線を入れます。区切り線は<code>-</code>（半角ハイフン）で入力できます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20191025100117j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20191025/20191025100117.jpg" title="f:id:s51517765:20191025100117j:plain"/></span></p><p>デザイナー画面の下のほうにでているcontextMenuStripをクリックし、デザイナーに表示されたコンテキストメニュの項目をダブルクリックするとそのメニューを選んだ時に実行される関数が作成されます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20191025100135j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20191025/20191025100135.jpg" title="f:id:s51517765:20191025100135j:plain"/></span></p><p>フォームを通常サイズに表示するようにします。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">private</span> <span class="synType">void</span> openFormToolStripMenuItem_Click(<span class="synType">object</span> sender, EventArgs e)
+{
+   <span class="synStatement">this</span>.WindowState = FormWindowState.Normal;
+}
+</pre><p>Version infoを表示するようにします。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">private</span> <span class="synType">void</span> versionInfoToolStripMenuItem_Click(<span class="synType">object</span> sender, EventArgs e)
+{
+    MessageBox.Show(<span class="synConstant">"Copyright 2019"</span> + System.Environment.NewLine +
+                   <span class="synConstant">"s51517765"</span> + System.Environment.NewLine +
+                   <span class="synConstant">"http://s51517765.hatenadiary.jp/"</span>);
+        }
+</pre><p>notifiIconのプロパティでContextMenuStripで呼び出すContextMenuを指定します。</p><p>これで、タスクトレイからFormを呼び出すことが出来ます。</p>
+</div>

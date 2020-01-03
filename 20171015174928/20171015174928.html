@@ -1,0 +1,58 @@
+<div class="entry-content">
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>でよく使う処理を関数として作成し、他のプログラムから呼び出すことができます。</p><p>main.py</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synPreProc">import</span> a  <span class="synComment">#a.pyをモジュールとして読み込む</span>
+<span class="synPreProc">import</span> b  <span class="synComment">#b.pyをモジュールとして読み込む</span>
+
+a.function()
+<span class="synIdentifier">print</span>(<span class="synConstant">"a is done."</span>)
+b.function()
+<span class="synIdentifier">print</span>(<span class="synConstant">"b is done."</span>)
+</pre><p>a.py</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synIdentifier">print</span>(<span class="synConstant">"start a."</span>)
+<span class="synStatement">def</span> <span class="synIdentifier">function</span>():
+  <span class="synIdentifier">print</span>(<span class="synConstant">"This is a."</span>)
+<span class="synStatement">if</span> __name__ == ‘__main__’:
+  <span class="synIdentifier">print</span>(<span class="synConstant">"a is main."</span>)
+  function()
+</pre><p>b.py</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synIdentifier">print</span>(<span class="synConstant">"start b."</span>)
+<span class="synStatement">def</span> <span class="synIdentifier">function</span>():
+  <span class="synIdentifier">print</span>(<span class="synConstant">"This is b."</span>)
+<span class="synStatement">if</span> __name__ == ‘__main__’:
+  <span class="synIdentifier">print</span>(<span class="synConstant">"b is main."</span>)
+  function()
+</pre><p>このように、3つの<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>プログラムを作成し、同じフォルダに格納します。<br/>
+a.py を実行すれば、</p>
+<pre class="code" data-lang="" data-unlink="">start a.
+a is main.
+This is a.</pre><p>という風に実行されます。b.pyも同様。</p><p>main.py　を実行すると、main.pyが実行され、a.pyとb.pyが呼び出されます。</p>
+<pre class="code" data-lang="" data-unlink="">start a.
+start b.
+This is a.
+a is done.
+This is b.
+a is done.</pre><p>しかし、単独にa.pyとb.pyを実行したときと異なり、main.pyを実行したときは、"a is main."、"b is main."は実行されません。<br/>
+これは、"if __name__ == '__main__':"の中にあるためです。<br/>
+"if __name__ == '__main__':"は直接a.pyまたはb.pyを実行したときに実行されます。</p><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Ftaigamikami%2Fitems%2F2713856b9f3c3b90f6fd" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Python 「if __name__ == ‘__main__’:」の意味 - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/taigamikami/items/2713856b9f3c3b90f6fd">qiita.com</a></cite></p><p>一方、main.pyを見ると</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">a.function()
+<span class="synIdentifier">print</span>(<span class="synConstant">"a is done."</span>)
+b.function()
+<span class="synIdentifier">print</span>(<span class="synConstant">"b is done."</span>)
+</pre><p>a.function()、b.function()と直接、a.py、b.pyのfunction()を実行しているように見えますが、<br/>
+実は、これらの前に記述されている</p><p>print("start a.")、　print("start b.")は実行されます。</p><p>実は、</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synPreProc">import</span> a  <span class="synComment">#a.pyをモジュールとして読み込む</span>
+<span class="synPreProc">import</span> b  <span class="synComment">#b.pyをモジュールとして読み込む</span>
+
+<span class="synComment">#a.function()</span>
+<span class="synIdentifier">print</span>(<span class="synConstant">"a is done."</span>)
+<span class="synComment">#b.function()</span>
+<span class="synIdentifier">print</span>(<span class="synConstant">"b is done."</span>)
+</pre><p>とすると、</p>
+<pre class="code" data-lang="" data-unlink="">start a.
+start b.
+a is done.
+b is done.</pre><p>モジュールとして呼び込むと、その時点で、<br/>
+if __name__ == ‘__main__’:<br/>
+以外の部分が実行されるのです。</p><p>通常、<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>のプログラムを同時に複数実行することはできませんが、このようなことに気をつけさえすれば、main.py（親プロセスと呼ぶ）から呼び出すことで、2つ以上のプログラムを実行させることができます。<br/>
+それぞれの起動条件はmain.pyの中でfunction()の起動条件として設定します。</p>
+</div>

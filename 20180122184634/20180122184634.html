@@ -1,0 +1,206 @@
+<div class="entry-content">
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%B8%C0%B8%EC">C言語</a>から初めて、<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>（VC#）、Python3と学習を進めてきたが、ここで<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>のすばらしさを基本文法を整理することで見ていこうと思う。<br/>
+以下では<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>とPyhtonの比較として整理するが、ここで例示する<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>の文法はほとんどCと同じである。<br/>
+また、<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>は<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>でしか動作しないが<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>は<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Linux">Linux</a>、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Mac">Mac</a>などで動作する<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AF%A5%ED%A5%B9%A5%D7%A5%E9%A5%C3%A5%C8%A5%D5%A5%A9%A1%BC%A5%E0">クロスプラットフォーム</a>な言語である。</p><br/>
+<p>※表記上、"インデント"は"____"で表す。</p><p></p><h3>変数の定義と代入</h3>
+<table>
+<tr>
+<td><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a></td>
+<td>Python3</td>
+</tr>
+<tr>
+<td>int a=1;</td>
+<td>a=1</td>
+</tr>
+<tr>
+<td>int b;<br/>b=1;</td>
+<td>定義のみは不可</td>
+</tr>
+<tr>
+<td>定義した型と異なる値は代入できない</td>
+<td>c=1<br/>c="1"</td>
+</tr>
+</table><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>では変数は型定義と代入が必要だが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>では代入によって型が決定される</p><p></p><h3>数値から文字列への変換</h3>
+<table>
+<tr>
+<td><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a></td>
+<td>Python3</td>
+</tr>
+<tr>
+<td>int a=1;<br/>string b;<br/>b=a.ToString();</td>
+<td>a=1<br/>b=str(a)</td>
+</tr>
+</table><p></p><h3>文字列から数値への変換</h3>
+<table>
+<tr>
+<td><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a></td>
+<td>Python3</td>
+</tr>
+<tr>
+<td>string b="1";<br/>int a;<br/>a=(int)b;</td>
+<td>b="1"<br/>a=int(b)</td>
+</tr>
+</table><p></p><h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/%B1%E9%BB%BB%BB%D2">演算子</a></h3>
+<table>
+<tr>
+<td><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a></td>
+<td>Python3</td>
+</tr>
+<tr>
+<td>c=a+b;</td>
+<td>c=a+b</td>
+</tr>
+<tr>
+<td>c=a-b;</td>
+<td>c=a-b</td>
+</tr>
+<tr>
+<td>c=a/b;</td>
+<td>c=a/b</td>
+</tr>
+<tr>
+<td>c=a*b;</td>
+<td>c=a*b</td>
+</tr>
+<tr>
+<td>c=a%b;</td>
+<td>c=a%b</td>
+</tr>
+<tr>
+<td>c=Math.Pow(a, b);</td>
+<td>c=a**b</td>
+</tr>
+</table><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>ではべき乗はMathクラスのインポートが必要</p><p></p><h3>文字列の置換</h3>
+<table>
+<tr>
+<td><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a></td>
+<td>Python3</td>
+</tr>
+<tr>
+<td>line = line.Replace("before", "after");</td>
+<td>line=line.replace("before","after")</td>
+</tr>
+</table><p>置換後の文字列を””（blank）にすると削除できる。</p><p></p><h3>for文</h3>
+<table>
+<tr>
+<td><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a></td>
+<td>Python3</td>
+</tr>
+<tr>
+<td>for (int n = 1; n &lt; 40; n++)<br/>____ {xxxx<br/>________}</td>
+<td>for i in range(40):<br/>____xxxxx</td>
+</tr>
+</table><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>はfor文を”()”でくくり、中身は”{}”でくくる<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>はfor文は”:”で終わり改行とインデントが必須</p><p></p><h3>if文</h3>
+<table>
+<tr>
+<td><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a></td>
+<td>Python3</td>
+</tr>
+<tr>
+<td>if (<a class="keyword" href="http://d.hatena.ne.jp/keyword/value">value</a> == 1)<br/>____{xxxx<br/>____}</td>
+<td>if  <a class="keyword" href="http://d.hatena.ne.jp/keyword/value">value</a> == 1:<br/>____xxxxx</td>
+</tr>
+</table><p>forと考え方は大体同じ、whileも同様</p><p></p><h3>論理<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B1%E9%BB%BB%BB%D2">演算子</a></h3>
+<table>
+<tr>
+<td><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a></td>
+<td>Python3</td>
+</tr>
+<tr>
+<td>if (a==b &amp;&amp;c==d)</td>
+<td>if a==b and c==d:</td>
+</tr>
+<tr>
+<td>if (a==b ｜｜ c==d)</td>
+<td>if a==b or c==d:</td>
+</tr>
+</table><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a> の"and" , "or" のような書き方は<a class="keyword" href="http://d.hatena.ne.jp/keyword/VB">VB</a>に似ている</p><p></p><h3>インクリメント(デクリメント)</h3>
+<table>
+<tr>
+<td><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a></td>
+<td>Python3</td>
+</tr>
+<tr>
+<td>n=n+1;</td>
+<td>n=n+1</td>
+</tr>
+<tr>
+<td>n++;</td>
+<td>なし</td>
+</tr>
+<tr>
+<td>n+=1;</td>
+<td>n+=1</td>
+</tr>
+</table><p>デクリメントも同様</p><p></p><h3>コンソール出力</h3>
+<table>
+<tr>
+<td><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a></td>
+<td>Python3</td>
+</tr>
+<tr>
+<td>Console.WriteLine("Hello <a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>");</td>
+<td>print("Hello Python3")</td>
+</tr>
+</table><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>ではsystemクラスのインポートが必要</p><p></p><h3>配列（リスト）</h3>
+<table>
+<tr>
+<td><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a></td>
+<td>Python3</td>
+</tr>
+<tr>
+<td>string[] array = new string[4];<br/>array[0]="a";<br/>array[1]="b";<br/>array[2]="c";<br/>array[3]="d";</td>
+<td>array=["a","b","c","d"]</td>
+</tr>
+<tr>
+<td>異なる型は一つの配列に代入できない</td>
+<td>array=["aa",1,"cc",3]</td>
+</tr>
+</table><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>では型の混在したリストが可能<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>ではサイズを変更できる”リスト”とサイズを変更できない”配列”は明確に区別されるが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>ではサイズを変更できない”配列”は無い</p><p></p><h3>スライス</h3>
+<table>
+<tr>
+<td><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a></td>
+<td>Python3</td>
+</tr>
+<tr>
+<td>string sample = text.Substring(start,length);</td>
+<td>sample=text[start:length]</td>
+</tr>
+</table><p>※スライスとは要素の部分的取得をすること</p><p></p><h3>例外処理</h3>
+<table>
+<tr>
+<td><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a></td>
+<td>Python3</td>
+</tr>
+<tr>
+<td>try<br/>____{ xxxx }<br/>catch<br/>____{ MessageBox.Show("Error!!") }<br/>finally<br/>____{  MessageBox.Show("Either Error or Not!")  }</td>
+<td>try:<br/>____xxxxx<br/>except:<br/>____print("Error!")<br/>finally:<br/>____print("Either Error or Not!")</td>
+</tr>
+</table><p></p><h3>ファイル読み込み</h3>
+<table>
+<tr>
+<td><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a></td>
+<td>Python3</td>
+</tr>
+<tr>
+<td>using System.IO;<br/>string[] line = System.IO.File.ReadAllLines("xxxx.txt");<br/>//一行ごとに配列に格納 </td>
+<td>f = open('xxxx.txt', 'r', encoding='utf')<br/>list = f.readlines()</td>
+</tr>
+<tr>
+<td>using System.IO;<br/>string line;<br/>StreamReader sr = new StreamReader("xxxx.txt");<br/>while （(line=sr.ReadLine()） != null)    <br/>____{<br/>// ファイルの末尾まで繰り返す<br/>________}</td>
+<td>file = open(’xxxx.txt', 'r', encoding='utf')<br/>line = file.readline()<br/>while line != "":<br/>____line = file.readline()</td>
+</tr>
+</table><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>では読み込みは”r”を指定</p><p></p><h3>ファイル書き込み</h3>
+<table>
+<tr>
+<td><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a></td>
+<td>Python3</td>
+</tr>
+<tr>
+<td>using System.IO;<br/>using (<a class="keyword" href="http://d.hatena.ne.jp/keyword/StreamWriter">StreamWriter</a> writer = new <a class="keyword" href="http://d.hatena.ne.jp/keyword/StreamWriter">StreamWriter</a>("xxxx.txt", true, System.Text.Encoding.GetEncoding("<a class="keyword" href="http://d.hatena.ne.jp/keyword/utf-8">utf-8</a>")))<br/>____{<br/>________writer.Write("yyyy");<br/>____}</td>
+<td>file = open(’xxxx.txt', 'a', encoding='utf')<br/>file.write("yyyy")</td>
+</tr>
+</table><p>追記指定は<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>では"true"、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>では”a”。新規（上書）は<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>では"false"、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>では"w"とする。</p><p></p><h3>参考資料</h3><div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/487311778X/shirotoakb-22/"><img alt="退屈なことはPythonにやらせよう ―ノンプログラマーにもできる自動化処理プログラミング" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/51hk%2B5bKNrL._SL160_.jpg" title="退屈なことはPythonにやらせよう ―ノンプログラマーにもできる自動化処理プログラミング"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/487311778X/shirotoakb-22/">退屈なことはPythonにやらせよう ―ノンプログラマーにもできる自動化処理プログラミング</a></p><ul><li><span class="hatena-asin-detail-label">作者:</span> Al Sweigart,相川愛三</li><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AA%A5%E9%A5%A4%A5%EA%A1%BC%A5%B8%A5%E3%A5%D1%A5%F3">オライリージャパン</a></li><li><span class="hatena-asin-detail-label">発売日:</span> 2017/06/03</li><li><span class="hatena-asin-detail-label">メディア:</span> 単行本（ソフトカバー）</li><li><a href="http://d.hatena.ne.jp/asin/487311778X/shirotoakb-22" target="_blank">この商品を含むブログ (5件) を見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div><div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B01D14LDAC/shirotoakb-22/"><img alt="ゴールからはじめるC#　?「作りたいもの」でプログラミングのきほんがわかる" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/51IXG5wWa9L._SL160_.jpg" title="ゴールからはじめるC#　?「作りたいもの」でプログラミングのきほんがわかる"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B01D14LDAC/shirotoakb-22/">ゴールからはじめるC#　?「作りたいもの」でプログラミングのきほんがわかる</a></p><ul><li><span class="hatena-asin-detail-label">作者:</span> 菅原朋子</li><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/%B5%BB%BD%D1%C9%BE%CF%C0%BC%D2">技術評論社</a></li><li><span class="hatena-asin-detail-label">発売日:</span> 2016/03/16</li><li><span class="hatena-asin-detail-label">メディア:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/Kindle">Kindle</a>版</li><li><a href="http://d.hatena.ne.jp/asin/B01D14LDAC/shirotoakb-22" target="_blank">この商品を含むブログを見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div>
+</div>

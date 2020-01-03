@@ -1,0 +1,239 @@
+<div class="entry-content">
+<p>これまで、土壌抵抗に基づいて水遣りを行うロジックを考えてきました。</p>
+<p>ここで、手動水遣りボタンを作ります。</p>
+<p></p>
+<p>これは土壌抵抗に寄らず、水を給水するためのものです。</p>
+<p>ここでは、割り込みモードを使います。</p>
+<p></p>
+<p>これまで、タクトスイッチの状態を見て動作させるには　digitalRead、analogReadを使ってきました。これによって、スイッチが押されたことを観測しています。</p>
+<p>しかし、delayに入っているときなど、**Readのコマンドがないときには読むことができません。</p>
+<p></p>
+<p>ここで<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>にはattachInterruptという割り込み関数が用意されています。</p>
+<p>これをつかってタクトスイッチが押されたら、給水を行います。</p>
+<p></p>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a> UNO R3の場合は割り込み番号0でpin2、割り込み番号1でpin3の組み合わせでこのピンの入力を随時受け付ける機能があります。</p>
+<p>このattachInterruptはこの二つのpinしか利用することはできません。</p>
+<p></p>
+<p>========================================</p>
+<p>void setup (){</p>
+<p> pinMode(2, INPUT); //割り込みピン(タクトスイッチ)</p>
+<p>  attachInterrupt(0, manual_supply, HIGH);</p>
+<p>}</p>
+<p>========================================</p>
+<p>void setupの中でこの割り込みピンを宣言します。</p>
+<p>ここでは2pinをINPUTとして使用することと、attachInterrupt関数で、このpin2を意味する”0”、呼び出す関数、pinの状態、を指定します。</p>
+<p></p>
+<p>この場合は、0 = pin2を監視して、HIGHになったとき、manual_supplyという関数を呼び出します。</p>
+<p></p>
+<p>========================================</p>
+<p>void setup (){}</p>
+<p>void loop (){}</p>
+<p>void manual_supply() {</p>
+<p></p>
+<p>  Tsw = 1;//タクトスイッチON</p>
+<p>}</p>
+<p>========================================</p>
+<p>次に、void loopの外にこの呼び出す関数を定義します。</p>
+<p>ここではTswというタクトスイッチの状態を示す定数を　"1"に変更する指定をしました。</p>
+<p></p>
+<p>========================================</p>
+<p>void loop (){</p>
+<p> if (Tsw == 1) {</p>
+<p>    analogWrite(POMP, power); //ポンプON</p>
+<p>    delay(mizu);</p>
+<p>    Serial.println("water supply" );</p>
+<p>    analogWrite(POMP, 0);</p>
+<p>    Tsw = 0;</p>
+<p>  }</p>
+<p>========================================</p>
+<p>void loopの中に、このTswによっての動作を記述します。</p>
+<p>ポンプをONにし、水遣り時間を経過の値ポンプをOFFにします。</p>
+<p>また、Tswを　0 にリセットします。</p>
+<p></p>
+<p>ここで、間違いやすいことが　"==" はifなどの中で、条件一致を示し、"="　は、この定数を書き換えることを意味します。</p>
+<p>ifの中で　=　を使ってしまうと、ここで書き替えが起こってしまって思い道理に動かないので注意です。</p>
+<p></p>
+<p>このようにして、まだ一部完全ではないですが、一通りの自動水遣り装置が出来上がりました。</p>
+<p>これまでは時間経過をdelayのみで記述しましたが、タクトスイッチの監視をする必要があるため</p>
+<p></p>
+<p>========================================</p>
+<p>int cycle = 200; //水遣りチェック周期</p>
+<p>========================================</p>
+<p></p>
+<p>を定義し、</p>
+<p></p>
+<p>========================================</p>
+<p>int CHECK = 30 * 1000; //水やりカウント倍率</p>
+<p>========================================</p>
+<p></p>
+<p>によって、</p>
+<p>cycle * CHECK =　土壌状態更新周期</p>
+<p></p>
+<p>となるように設計しました。</p>
+<p></p>
+<p>こうすることで、スイッチが押されたときはすぐに水遣りを実施し、一方、土壌センサの読み値が変化したときは土壌状態更新周期が来たときに更新を実施します。</p>
+<p></p>
+<p>========================================</p>
+<p>if (check &gt; CHECK / 10) { //給水スキップ倍率10倍</p>
+<p>========================================</p>
+<p>thresholdを超えたときは加速的に水遣りをします。</p>
+<p></p>
+<p></p>
+<p>======================プログラム全文ここから============</p>
+<p></p>
+<p>float regist = 600; //土壌抵抗</p>
+<p>int power = 255; //ポンプpwm</p>
+<p>int threshold = 800; //水遣り敷居値 (実装800、テスト700)</p>
+<p>int GREEN = A1;</p>
+<p>int YELLOW = A2;</p>
+<p>int RED = A3;</p>
+<p>int POMP = 5;</p>
+<p>int LED = 150;</p>
+<p>int cycle = 200; //水遣りチェック周期</p>
+<p>int check = 0; //水遣り実行周期繰り返しカウント</p>
+<p>int CHECK = 30 * 1000; //水やりカウント倍率</p>
+<p>//cycle * CHECK = 土壌状態更新周期</p>
+<p>int aveNum = 10;//平均化のサンプリング数</p>
+<p>int aveCycle = 300; //平均化サンプリング周期(ms)</p>
+<p>int retry = 0; //水遣りRetryカウント</p>
+<p>int retryMax = 3; //水遣り繰り返しMax</p>
+<p>int ReWait = 12000; //水遣り繰り返しのwait(実装12*1000、テスト3000)</p>
+<p>int mizu = 3000; //水遣り動作時間</p>
+<p>int Tsw = 0; //タクトスイッチ</p>
+<p>int manual_s = 0;</p>
+<p></p>
+<p>void setup() {</p>
+<p>  Serial.begin(9600); //シリアルモニタを使う(カッコ内は通信速度)</p>
+<p>  pinMode(A0, INPUT); //土壌抵抗Read</p>
+<p>  pinMode(5, OUTPUT); //電圧を<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B0%F5%B2%C4">印可</a>する宣言</p>
+<p>  pinMode(A1, OUTPUT); //GREEN</p>
+<p>  pinMode(A2, OUTPUT); //YELLOW</p>
+<p>  pinMode(A3, OUTPUT); //RED</p>
+<p> </p>
+<p>  pinMode(2, INPUT); //割り込みピン(タクトスイッチ)</p>
+<p>  attachInterrupt(0, manual_supply, HIGH);</p>
+<p>  // attachInterrupt(1, manual_supply, HIGH) 割り込みNo.1 = Pin2(Leonardo)</p>
+<p>//attachInterrupt(0, manual_supply, HIGH) 割り込みNo.0 = Pin2(Uno)</p>
+<p></p>
+<p>}</p>
+<p>void loop() {</p>
+<p></p>
+<p>  float REGIST = 0; //平均計算のための中間の数値を格納</p>
+<p>  int i; //繰り返しのためのカウンター</p>
+<p>  for (i = 0 ; i &lt; aveNum; i++) {</p>
+<p>    regist = analogRead(A0);</p>
+<p>    REGIST = REGIST + regist; //読み値を足し合わせ合計していく</p>
+<p>    //  Serial.println(regist);</p>
+<p>    //   Serial.print(",");</p>
+<p>    // Serial.println(REGIST);</p>
+<p>    delay(aveCycle);</p>
+<p>  }</p>
+<p>  regist = REGIST / aveNum; //合計から平均を算出しregistとして出力</p>
+<p></p>
+<p>  Serial.print("A0 = regist = ");</p>
+<p>  Serial.println(regist);</p>
+<p>  Serial.print("threshold = ");</p>
+<p>  Serial.println(threshold);</p>
+<p>  Serial.print("cycle = ");</p>
+<p>  Serial.println(cycle);</p>
+<p>  Serial.print("Retry = ");</p>
+<p>  Serial.println(retry);</p>
+<p>  Serial.print("POMP = ");</p>
+<p>  Serial.println(power);</p>
+<p>  Serial.print("Tsw =" );</p>
+<p>  Serial.println(Tsw);</p>
+<p>  Serial.print("check =");</p>
+<p>  Serial.println(check);</p>
+<p>  if (check &gt; CHECK) {</p>
+<p>    check = 0;</p>
+<p>  }</p>
+<p>  else if (Tsw == 1) {</p>
+<p>    analogWrite(POMP, power); //ポンプON</p>
+<p>    delay(mizu);</p>
+<p>    Serial.println("water supply" );</p>
+<p>    analogWrite(POMP, 0);</p>
+<p>    Tsw = 0;</p>
+<p>    check = 0;</p>
+<p>  }</p>
+<p></p>
+<p>  else if (regist &gt; 1021) //センサーエラー</p>
+<p>  { analogWrite(RED, LED);</p>
+<p>    delay(100);</p>
+<p>    analogWrite(POMP, 0);</p>
+<p>    analogWrite(GREEN, 0);</p>
+<p>    analogWrite(YELLOW, 0);</p>
+<p>    analogWrite(RED, 0);</p>
+<p>    delay(100);</p>
+<p>  }</p>
+<p>  else if (retry &gt; 2) //Rety　3回で土壌水分が上がらないとき</p>
+<p>  { analogWrite(RED, LED);</p>
+<p>    delay(100);</p>
+<p>    analogWrite(POMP, 0);</p>
+<p>    analogWrite(GREEN, 0);</p>
+<p>    analogWrite(YELLOW, 0);</p>
+<p>    analogWrite(RED, 0);</p>
+<p>    delay(100);</p>
+<p>    Serial.println("Water supply ERROR !!");</p>
+<p>    if (regist &lt;= threshold) { //小なりイコール</p>
+<p>      retry = 0;</p>
+<p>    }</p>
+<p>    else {}</p>
+<p>  }</p>
+<p></p>
+<p>  else if (regist &gt; threshold) { //給水</p>
+<p>    if (check &gt; CHECK / 10) { //給水スキップ倍率</p>
+<p>      analogWrite(GREEN, 0);</p>
+<p>      analogWrite(YELLOW, 0);</p>
+<p>      analogWrite(RED, LED);</p>
+<p>      analogWrite(POMP, power); //ポンプON</p>
+<p>      delay(mizu);</p>
+<p>      Serial.println("water supply" );</p>
+<p>      analogWrite(POMP, 0);</p>
+<p>      Tsw = 0;</p>
+<p>      retry = retry + 1;</p>
+<p>      delay(ReWait);</p>
+<p>    }</p>
+<p>    else {</p>
+<p>      analogWrite(GREEN, 0);</p>
+<p>      analogWrite(YELLOW, 0);</p>
+<p>      analogWrite(RED, LED);</p>
+<p>      Serial.println("red" );</p>
+<p>      check++;</p>
+<p>    }</p>
+<p>  }</p>
+<p>  else if (regist &gt; threshold - 200)</p>
+<p>  {</p>
+<p>    analogWrite(GREEN, 0);</p>
+<p>    analogWrite(YELLOW, LED);</p>
+<p>    analogWrite(RED, 0);</p>
+<p>    delay(cycle);//更新間隔の設定</p>
+<p>    retry = 0;</p>
+<p>    check++;</p>
+<p>  }</p>
+<p>  else if (regist &gt; 100) {</p>
+<p>    analogWrite(GREEN, LED);</p>
+<p>    analogWrite(YELLOW, 0);</p>
+<p>    analogWrite(RED, 0);</p>
+<p>    delay(cycle);//更新間隔の設定</p>
+<p>    retry = 0;</p>
+<p>    check++;</p>
+<p>  }</p>
+<p>  else {</p>
+<p>    analogWrite(RED, LED);</p>
+<p>    delay(100);</p>
+<p>    analogWrite(POMP, 0);</p>
+<p>    analogWrite(GREEN, 0);</p>
+<p>    analogWrite(YELLOW, 0);</p>
+<p>    analogWrite(RED, 0);</p>
+<p>    delay(100);</p>
+<p>  }</p>
+<p></p>
+<p>}</p>
+<p>void manual_supply() {</p>
+<p></p>
+<p>  Tsw = 1;//タクトスイッチON</p>
+<p>}</p>
+<p></p>
+<p>======================プログラム全文ここまで============</p>
+<p>**一部使われていない定数やコードがあるかもしれません。</p>
+</div>

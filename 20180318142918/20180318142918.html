@@ -1,0 +1,48 @@
+<div class="entry-content">
+<p><a href="https://px.a8.net/svt/ejp?a8mat=2ZTMYI+8RJREA+0K+10YDIP" rel="nofollow" target="_blank"><br/>
+<img alt="" border="0" height="250" src="https://www20.a8.net/svt/bgt?aid=181101690530&amp;wid=001&amp;eno=01&amp;mid=s00000000002006207000&amp;mc=1" width="300"/></a><br/>
+<img alt="" border="0" height="1" src="https://www12.a8.net/0.gif?a8mat=2ZTMYI+8RJREA+0K+10YDIP" width="1"/><br/>
+科学・技術界隈にかかわっているとデータ解析で出てくる<a class="keyword" href="http://d.hatena.ne.jp/keyword/FFT">FFT</a>ですが、なかなか計算するのは複雑でしかも、それが正しく計算されたのかが、わかりにくいところがあります。</p><p>そこで、今回は<a class="keyword" href="http://d.hatena.ne.jp/keyword/FFT">FFT</a>がだれでもそこそこ使えるようにまとめてみました。</p><p></p><h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/FFT">FFT</a>とは</h3>あらゆる周期関数は正弦波の足しあわせで表現できるという特性を利用し、周波数成分に分解すること。<br/>
+これは、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D5%A1%BC%A5%EA%A5%A8%B5%E9%BF%F4%C5%B8%B3%AB">フーリエ級数展開</a>を数値的に計算しているのと同じことになります。<br/>
+これをなるべく少ない計算量で行うのが”高速”<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D5%A1%BC%A5%EA%A5%A8%CA%D1%B4%B9">フーリエ変換</a>です。<p></p><h3>どのような目的で使うの？</h3>工業的にはノイズ（音や振動）の発生源の特定のために使われます。<br/>
+音というのは周期振動によって発生するものであり、その本質はなにかしらの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B5%A1%B3%A3%C5%AA">機械的</a>振動が空気中に広がっていくものです。<br/>
+よって、その音であったり振動を<a class="keyword" href="http://d.hatena.ne.jp/keyword/FFT">FFT</a>することで周波数を特定すればそれに相当する回転数をもった部品が原因であると特定できます。<br/>
+音の場合はマイクで拾ったものを電圧として受信し、振動であればAEセンサなどで拾ったものを電圧として取得します。<p></p><h3>計算方法は？</h3>いつくか方法がありますが、もっとも一般的なのは ”Cooley-Tukey の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A2%A5%EB%A5%B4%A5%EA%A5%BA%A5%E0">アルゴリズム</a>” を利用したものです。<br/>
+この<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A2%A5%EB%A5%B4%A5%EA%A5%BA%A5%E0">アルゴリズム</a>によって、計算量は O(N2) から O(N log N) まで落とせるが、制約として入力は2^n個（4,8,16,32,64,…）でなければならない。この制限下でのみ計算量を削減できる<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A2%A5%EB%A5%B4%A5%EA%A5%BA%A5%E0">アルゴリズム</a>です。<br/>
+<a href="https://en.wikipedia.org/wiki/Cooley%E2%80%93Tukey_FFT_algorithm">Cooley–Tukey FFT algorithm - Wikipedia</a><p></p><h3>実際に計算してみる</h3>適当な周期関数として時間に対して2つの正弦波をたしあわせたものを<a class="keyword" href="http://d.hatena.ne.jp/keyword/FFT">FFT</a>してみます。<br/>
+図の下のグラフがもとの正弦波で上のグラフがそれを足しあわせたものです。<br/>
+下のようなグラフが出てくれば、深く考えなくても周期を見つけることは簡単ですが、たった2つの正弦波が足しあわされた（混ざった）だけでこれほど複雑になり、周期を見つけることは大変難しくなります。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180318131916p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180318/20180318131916.png" title="f:id:s51517765:20180318131916p:plain"/></span><br/>
+<pre class="code" data-lang="" data-unlink="">sin(time /10*1000)+sin(time /17*1000)</pre><p>適当に作った周期関数ですが、そのもととなる正弦波の周期（周波数は）以下のようになります。</p>
+<table>
+<tr>
+<td>周期(s)	</td>
+<td>0.0628</td>
+<td>	0.1068</td>
+</tr>
+<tr>
+<td>周波数(Hz)	</td>
+<td>15.915	</td>
+<td>9.362</td>
+</tr>
+</table><p>これが数値として得られているとして一般的に↓のように得られます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180318141733p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180318/20180318141733.png" title="f:id:s51517765:20180318141733p:plain"/></span><br/>
+これを<a class="keyword" href="http://d.hatena.ne.jp/keyword/FFT">FFT</a>した結果が、こちら。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180318132841p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180318/20180318132841.png" title="f:id:s51517765:20180318132841p:plain"/></span><br/>
+サンプリング数を2水準で実施してみました。<br/>
+512ポイントでは二つのピークを検出できていますが、128ポイントではそのピークがくっついてしまい、15.625Hzは何となく肩がありますが、9.362Hzはかなりずれたところにピークがあります。また、サンプリング数によって大きく周波数が変わっています。<br/>
+これは、サンプリング数により周波数の分解能が違うためです。</p><p>もっと厳密にいえば、512ポイントでも15.915Hzは15.625Hzであり、9.362Hzは9.766Hzと算出されています。<br/>
+15.915Hzはたまたま検出可能周波数として、15.625Hzがあったため近い値が出ましたが、9.362Hzはもっとも近いのが9.766Hzであるためこのようにずれて算出されます。</p><p></p><h3>検出可能周波数</h3>下図は1kHzのサンプリング周波数のときの検出可能周波数です。<br/>
+右方向がサンプリング数になります。<br/>
+9.362Hzについては±0.1Hzが出るには2048ポイントが必要ということになります。<br/>
+（もちろんサンプリング周波数によってもかわります）<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180318134143j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180318/20180318134143.jpg" title="f:id:s51517765:20180318134143j:plain"/></span><p>ちなみに小数点以下2桁が一致するには32768ポイントのサンプリングが必要になります。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180318134716j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180318/20180318134716.jpg" title="f:id:s51517765:20180318134716j:plain"/></span></p><p></p><h3>まとめ</h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/FFT">FFT</a>は簡単に周波数解析ができますが、その分解能についてよく理解しないで使おうとすると、その周波数が誤って認識されてしまいます。<br/>
+あくまでも簡易的な解析ができるだけでありますが、サンプリング数を十分に増やしていけばかなりの（精度）分解能が得られます。<br/>
+ですが<a class="keyword" href="http://d.hatena.ne.jp/keyword/FFT">FFT</a>とは言っても計算量はO(N log N)で増えていきますので、その計算時間はそれなりになります。<br/>
+また、ピーク強度がこの計算方法では入力データ数によって異なります。ピーク強度は相対的な比較になることにも注意が必要です。<p></p><h3>ツールのダウンロード</h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/csv">csv</a>形式のデータソースから<a class="keyword" href="http://d.hatena.ne.jp/keyword/FFT">FFT</a>を計算するツールを作成しました。<br/>
+ライセンス認証によって1048576データ（<a class="keyword" href="http://d.hatena.ne.jp/keyword/Excel">Excel</a>の最大行と同じ）までの入力に対応します（計算時間はかかります）。<br/>
+無料でも128データまでの解析・計算ができます。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fwww.vector.co.jp%2Fsoft%2Fwinnt%2Fedu%2Fse518906.html" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="FFTの詳細情報 : Vector ソフトを探す！"></iframe><cite class="hatena-citation"><a href="https://www.vector.co.jp/soft/winnt/edu/se518906.html">www.vector.co.jp</a></cite><br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180318142509p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180318/20180318142509.png" title="f:id:s51517765:20180318142509p:plain"/></span>
+</div>

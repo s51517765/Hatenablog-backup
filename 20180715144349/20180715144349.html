@@ -1,0 +1,302 @@
+<div class="entry-content">
+<p><a href="https://px.a8.net/svt/ejp?a8mat=2ZU0DC+5FA776+3RR8+C03K1" rel="nofollow" target="_blank"><br/>
+<img alt="" border="0" height="250" src="https://www25.a8.net/svt/bgt?aid=181119072328&amp;wid=001&amp;eno=01&amp;mid=s00000017594002016000&amp;mc=1" width="300"/></a><br/>
+<img alt="" border="0" height="1" src="https://www13.a8.net/0.gif?a8mat=2ZU0DC+5FA776+3RR8+C03K1" width="1"/><br/>
+</p><h3>序論</h3>夏を前にして、暑がりの妻が言いました。
+
+    <blockquote>
+<p>夜寝るとき、エアコンを付けないと暑いし付けっぱなしだと寒いし、タイマーで温度を上げたい。</p>
+</blockquote>
+<p>これに対して、僕としては夜は温度の設定が間違っているだけで、エアコンとは「長期的に快適な温度」を設定すべきと思いましたが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>にもありますように、顧客の意図を「正しく」組みとらなければなりません。</p><blockquote class="twitter-tweet" data-lang="ja"><p dir="ltr" lang="ja">「ドリルを買いに来た人が欲しいのはドリルではなく穴である」ではなく、ドリルを買うことで今後自分の意志で好きな時に好きなだけ穴が空け放題になる自由を買ってる💪💪💪</p>— izm (@izm) <a href="https://twitter.com/izm/status/1003510692828176384?ref_src=twsrc%5Etfw">2018年6月4日</a></blockquote><script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script><p>つまり、「暑い寒いを解決すること」ではなく、「暑い寒いを自分の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%BB%D9%C7%DB%B2%BC">支配下</a>におく」ことがここでの顧客の要望であると考えました。</p><p>そこで、ラズパイを使ってこれを実現することを目指しました。</p><p>ラズパイではLircや、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>のIRRemotというライブラリがあります。<br/>
+これらを使って、タイマーで指定時刻にリモコンのキーをエミュレーションして送信すれば実現できると考えられます。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Fww24%2Fitems%2F32d2a78c20e6dcc2e68c" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Raspberry Pi Zero で赤外線リモコンを作る - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/ww24/items/32d2a78c20e6dcc2e68c">qiita.com</a></cite></p><p>IR Remoteの例<br/>
+<a href="http://asukiaaa.blogspot.com/2018/05/arduino.html">http://asukiaaa.blogspot.com/2018/05/arduino.html</a><cite class="hatena-citation"><a href="http://asukiaaa.blogspot.com/2018/05/arduino.html">asukiaaa.blogspot.com</a></cite></p><p>しかし、うちのエアコンが悪いのか、プログラムが悪いのか、動作させることはできませんでした。<br/>
+上手くいかない原因としては、基本周波数が違うとどう頑張ってもダメなことがあるようです。<br/>
+特にうちで今回ターゲットにした<a class="keyword" href="http://d.hatena.ne.jp/keyword/Panasonic">Panasonic</a>の製品は基本周波数が細かく、厳しいのではないかといううわさがあります。<br/>
+ちなみに<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>のIR Remoteではキーコードを一つ入れるとRAMがいっぱいで、つまり一つのキーしか入れられませんでした(<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a> Uno)。<br/>
+やろうと思っている人は注意です。</p><p>そこで、これらのライブラリではなく、動作するリモコンをラズパイでフィジカルハック（物理的ハック）することにしました。</p><p></p><h3>リモコンの回路解析とリード線の作成</h3>制御イメージはこのような感じです。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180715141718j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180715/20180715141718.jpg" title="f:id:s51517765:20180715141718j:plain"/></span><br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%DE%A5%DB">スマホ</a>からSlackを通して、ラズパイに指示を送り、GPIOを制御してリモコンを作動させます。<p>リモコンは安く売っているこちらを<a class="keyword" href="http://d.hatena.ne.jp/keyword/Amazon">Amazon</a>で購入しました。</p><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180708185355j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180708/20180708185355.jpg" title="f:id:s51517765:20180708185355j:plain"/></span><br/>
+</p><div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B005MIF2Y4/shirotoakb-22/"><img alt="Hanwha / K-1028E 国内外 合計1000種類のエアコンコードを内蔵した エアコン用 ユニバーサル マルチリモコン [詳細日本語マニュアル付][エアコン 汎用 リモコン]" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/41v45qSjZEL._SL160_.jpg" title="Hanwha / K-1028E 国内外 合計1000種類のエアコンコードを内蔵した エアコン用 ユニバーサル マルチリモコン [詳細日本語マニュアル付][エアコン 汎用 リモコン]"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B005MIF2Y4/shirotoakb-22/">Hanwha / K-1028E 国内外 合計1000種類のエアコンコードを内蔵した エアコン用 ユニバーサル マルチリモコン [詳細日本語マニュアル付][エアコン 汎用 リモコン]</a></p><ul><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> ハンファQセルズジャパン株式会社</li><li><span class="hatena-asin-detail-label">メディア:</span> </li><li><span class="hatena-asin-detail-label">購入</span>: 5人 <span class="hatena-asin-detail-label">クリック</span>: 52回</li><li><a href="http://d.hatena.ne.jp/asin/B005MIF2Y4/shirotoakb-22" target="_blank">この商品を含むブログを見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div><p>パターンを目視とテスターで調べ、ボタンは導電性のゴムで導通させることでONされることが分かります。<br/>
+ちょうどはんだ付けできどうな点があるので、ここにリード線を付けます。<br/>
+リード線は作業中や運用中に、変に力がかかってしまうと、はんだごとパターンが取れてしまう可能性があるので、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%DB%A5%C3%A5%C8%A5%DC%A5%F3%A5%C9">ホットボンド</a>で固めておきます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180708190033j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180708/20180708190033.jpg" title="f:id:s51517765:20180708190033j:plain"/></span></p><p></p><h3>回路作成</h3>【図1a】がリモコンの等価回路です。押しボタンの裏には導電性のゴムが付いていて、これにより回路が繋がるとスイッチが動作します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180708161649p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180708/20180708161649.png" title="f:id:s51517765:20180708161649p:plain"/></span><br/>
+これを、電気的に再現するために<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>で回路を作成しました。【図1b】<br/>
+しかしこれでは、Pin6とPin7がショートしてしまうようでボタンは動作しません。<p>そこで、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>のエミッタ側に抵抗を入れることで、リモコンのPin同士は完全では無いにしても絶縁をとり、しかも<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>が動作するように構成しました。</p><p>これで、Pin6とPin7のあいだは460kΩで接続していることになりますが、リモコン的には絶縁のようにふるまいます。<br/>
+（抵抗値は結構大きくしても<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>は動作するので手持ちから適当に選定）</p><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180708190958p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180708/20180708190958.png" title="f:id:s51517765:20180708190958p:plain"/></span></p><p>試験的にテスト用電源（ただの単三電池を2本直列につないだもの）でBaseに電圧を印加するとリモコンを動作させることができました。<br/>
+230kΩの抵抗は電池で動作させるときには1kΩでもうまく動いたのですがラズパイでやってみると上手くいかなかったのでできるだけ大きい抵抗にしてみました。</p><p>結果的にこれはエミッタフォロワーとなるのかな。</p><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180715195355j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180715/20180715195355.jpg" title="f:id:s51517765:20180715195355j:plain"/></span><br/>
+</p><h3>ラズパイで制御</h3>これをラズパイのGPIOから制御できるか確認します。<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Teraterm">Teraterm</a>からGPIOを制御して動作確認します。<br/>
+<a href="http://tomaberry.hatenablog.com/entry/2017/02/12/155910">コマンドラインからGPIOを操作する - IT父さんのロボブログ</a><br/>
+</p>
+<pre class="code" data-lang="" data-unlink="">#GPIOを出力に設定
+$ gpio -g mode 23 out
+$ gpio -g mode 24 out
+$ gpio -g mode 25 out</pre><pre class="code" data-lang="" data-unlink="">#GPIO をHIGH
+$ gpio -g write 25 1</pre><pre class="code" data-lang="" data-unlink="">#GPIO をLOW
+$ gpio -g write 25 0</pre><p>これで電源スイッチが作動すればOKです。</p><p><b>※ここまで上手くいったかなと思ったのですが、どうしてもラズパイで動かそうとするとリモコンがキー設定モードに入ってしまう現象が発生。制御するボタンを一つにすれば上手くいくのですが、何かいらないところでショートしているのか？仕方ないので制御するボタンを一つにして運用します。もしくは<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>ーではなくフォトカプラにすべきか？</b><br/>
+</p><h3>プログラミング</h3><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Fundo0530%2Fitems%2F2139a1e8b73b3eee6e00" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Raspberry PiでSlackbotを飼う - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/undo0530/items/2139a1e8b73b3eee6e00">qiita.com</a></cite><br/>
+こちらを参考に、slackに話しかけて制御します。<br/>
+ファイルは<code>slackbot_settings.py</code>→Slackの<a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>キーなどの設定、<code>SlackBotPlugin.py</code>→話しかけたときの応答内容、<code>bot.py</code>→Mainのプログラム（これを実行する）<code>airconSet.py</code>→GPIOの制御、を作成します。<p><code>SlackBotPlugin.py</code>には↓のようなキーワードを設定しました。</p>
+<table>
+<tr>
+<td>キーワード</td>
+<td>動作</td>
+</tr>
+<tr>
+<td>上 up </td>
+<td>温度を上げる設定を追加</td>
+</tr>
+<tr>
+<td>下 down</td>
+<td>温度を下げる設定を追加</td>
+</tr>
+<tr>
+<td>リセット 削除 </td>
+<td>タイマー設定を削除</td>
+</tr>
+<tr>
+<td>スタート</td>
+<td>タイマースタート</td>
+</tr>
+<tr>
+<td>ヘルプ</td>
+<td>これらの制御キーを表示</td>
+</tr>
+</table><pre class="code lang-python" data-lang="python" data-unlink=""><span class="synComment">#SlackBotPlugin.py</span>
+<span class="synComment"># -*- coding: utf-8 -*-</span>
+<span class="synPreProc">from</span> slackbot.bot <span class="synPreProc">import</span> respond_to, listen_to
+<span class="synPreProc">import</span> re
+<span class="synPreProc">import</span> time
+<span class="synPreProc">from</span> datetime <span class="synPreProc">import</span> datetime <span class="synStatement">as</span> dt
+<span class="synPreProc">import</span> airconSet
+
+<span class="synPreProc">@</span><span class="synIdentifier">respond_to</span>(<span class="synConstant">u'(上|up|下|down)+'</span>)
+<span class="synStatement">def</span> <span class="synIdentifier">OrderUpDown</span>(message, something):
+    <span class="synStatement">try</span>:
+        <span class="synComment"># someting = 反応したword</span>
+        text=message.body[<span class="synConstant">'text'</span>]
+        text=text.replace(something,<span class="synConstant">""</span>) <span class="synComment">#起動ワードを削除</span>
+        timeSet = re.search(<span class="synConstant">'[0-9]{4}'</span>, text)
+        timeSet=timeSet.group(<span class="synConstant">0</span>)
+        hh=timeSet[:<span class="synConstant">2</span>]
+        mm=timeSet[<span class="synConstant">2</span>:]
+        hh=<span class="synIdentifier">int</span>(hh)
+        mm=<span class="synIdentifier">int</span>(mm)
+        <span class="synStatement">if</span> hh&gt;<span class="synConstant">24</span>:
+            <span class="synStatement">raise</span> <span class="synType">ValueError</span>(<span class="synConstant">"error!"</span>)
+        <span class="synStatement">if</span> mm&gt;<span class="synConstant">59</span>:
+            mm=<span class="synConstant">59</span>
+        text = re.sub(<span class="synConstant">'[0-9]{4}'</span>,<span class="synConstant">""</span>, text)
+        tempertureSet =re.search(<span class="synConstant">'[0-9]{1}'</span>,text)
+        tempertureSet=tempertureSet.group(<span class="synConstant">0</span>)
+
+        <span class="synComment"># 命令を出したユーザ名を取得</span>
+        userID = message.channel._client.users[message.body[<span class="synConstant">'user'</span>]][<span class="synConstant">u'name'</span>]
+
+        tdatetime = dt.now()
+        <span class="synStatement">if</span> something==<span class="synConstant">"up"</span> <span class="synStatement">or</span> something==<span class="synConstant">"上"</span>:
+            airconSet.<span class="synIdentifier">set</span>(hh,mm,tempertureSet,<span class="synConstant">"up"</span>)
+            message.reply(<span class="synConstant">"時刻"</span> + timeSet + <span class="synConstant">"に"</span> + tempertureSet + <span class="synConstant">"℃上げるようにセットしました。"</span>)
+        <span class="synStatement">elif</span> something==<span class="synConstant">"down"</span> <span class="synStatement">or</span> something==<span class="synConstant">"下"</span>:
+            airconSet.<span class="synIdentifier">set</span>(hh,mm,tempertureSet,<span class="synConstant">"down"</span>)
+            message.reply(<span class="synConstant">"時刻"</span> + timeSet + <span class="synConstant">"に"</span> + tempertureSet + <span class="synConstant">"℃下げるようにセットしました。"</span>)
+        <span class="synIdentifier">print</span>(tdatetime, <span class="synConstant">"accept oder from "</span>, userID, )
+    <span class="synStatement">except</span> <span class="synType">Exception</span> <span class="synStatement">as</span> e:
+        <span class="synIdentifier">print</span>(e)
+        message.reply(<span class="synConstant">"タイマーセットの入力書式は hhmm temp up/down です"</span>)
+
+
+<span class="synPreProc">@</span><span class="synIdentifier">respond_to</span>(<span class="synConstant">u'(reset|リセット|削除|delete)+'</span>)
+<span class="synStatement">def</span> <span class="synIdentifier">timerReset</span>(message, something):
+    <span class="synStatement">try</span>:
+        text = message.body[<span class="synConstant">'text'</span>]
+        airconSet.timer_remove()
+        message.reply(<span class="synConstant">"タイマー設定を削除しました。"</span>)
+    <span class="synStatement">except</span> <span class="synType">Exception</span> <span class="synStatement">as</span> e:
+        <span class="synIdentifier">print</span>(e)
+        message.reply(<span class="synConstant">"指示を解釈できませんでした。"</span>)
+
+<span class="synPreProc">@</span><span class="synIdentifier">respond_to</span>(<span class="synConstant">u'(start|スタート)+'</span>)
+<span class="synStatement">def</span> <span class="synIdentifier">timerStart</span>(message, something):
+    <span class="synStatement">try</span>:
+        text = message.body[<span class="synConstant">'text'</span>]
+        message.reply(<span class="synConstant">"タイマースタートしました。"</span>)
+        airconSet.timer()
+    <span class="synStatement">except</span> <span class="synType">Exception</span> <span class="synStatement">as</span> e:
+        <span class="synIdentifier">print</span>(e)
+        message.reply(<span class="synConstant">"指示を解釈できませんでした。"</span>)
+
+<span class="synPreProc">@</span><span class="synIdentifier">respond_to</span>(<span class="synConstant">u'(help|ヘルプ|助け)+'</span>)
+<span class="synStatement">def</span> <span class="synIdentifier">help</span>(message, something):
+    <span class="synStatement">try</span>:
+        message.reply(<span class="synConstant">"タイマーセット→ hhmm temp up/down、 リセット、スタート"</span>)
+    <span class="synStatement">except</span> <span class="synType">Exception</span> <span class="synStatement">as</span> e:
+        <span class="synIdentifier">print</span>(e)
+        message.reply(<span class="synConstant">"指示を解釈できませんでした。"</span>)
+</pre><p>GPIOの制御はwiringpiを使いました。<br/>
+wiringpiはラズパイにはデフォルトでインストールされていますが、wiringpi2をインストールする必要があります。</p>
+<pre class="code" data-lang="" data-unlink="">$ sudo pip3 install wiringpi2</pre><p>wiringpi2をインストールしないと、<code>import wiringpi</code>でErrorがでてしまいます。</p><p>以前の記事には（自分で）記載していないがそうだったのかな？試行錯誤している間にインストールしたことを忘れたのかもしれないし、ラズビアンのVersionによっても違うのかもしれません。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2018%2F03%2F24%2F125345" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="ラズパイで来客を通知する - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2018/03/24/125345">s51517765.hatenadiary.jp</a></cite></p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>に繋がったGPIO 3つをOUTPUTモードにし、タクトスイッチをINPUT PULLUPになったGPIOに接続します。<br/>
+プルアップはラズパイの内部プルアップを使います。プルアップされたタクトスイッチをONすると電圧がLowになります。</p><p>このほかに、動作設定をslackから呼ばれた時にスペース区切りでテキストファイルに設定を記録します。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synComment">#airconSet.py</span>
+<span class="synComment"># -*- coding: utf-8 -*-</span>
+<span class="synPreProc">import</span> wiringpi
+<span class="synPreProc">import</span> time
+<span class="synPreProc">import</span> re
+<span class="synPreProc">from</span> datetime <span class="synPreProc">import</span> datetime <span class="synStatement">as</span> dt
+
+<span class="synComment"># OUTPUT</span>
+PIN_UP = <span class="synConstant">23</span>  <span class="synComment"># BCM No</span>
+PIN_DOWN = <span class="synConstant">24</span>
+PIN_POWER = <span class="synConstant">25</span>
+PIN_RESET = <span class="synConstant">15</span>
+
+<span class="synComment"># GPIO初期化</span>
+wiringpi.wiringPiSetupGpio()
+<span class="synComment"># GPIOを入力モード（0）/出力モード(1)に設定</span>
+wiringpi.pinMode(PIN_UP, <span class="synConstant">1</span>)
+wiringpi.pinMode(PIN_DOWN, <span class="synConstant">1</span>)
+wiringpi.pinMode(PIN_POWER, <span class="synConstant">1</span>)
+wiringpi.digitalWrite(PIN_RESET, <span class="synConstant">0</span>)
+
+<span class="synComment"># 出力をLow</span>
+wiringpi.digitalWrite(PIN_UP, <span class="synConstant">0</span>)
+wiringpi.digitalWrite(PIN_DOWN, <span class="synConstant">0</span>)
+wiringpi.digitalWrite(PIN_POWER, <span class="synConstant">0</span>)
+
+<span class="synComment">#ボタン押下時間</span>
+wait=<span class="synConstant">5</span>
+onWait=<span class="synConstant">0.3</span>
+
+<span class="synIdentifier">print</span>(<span class="synConstant">"Aircon set import!"</span>)
+
+<span class="synStatement">def</span> <span class="synIdentifier">timer</span>():
+    <span class="synIdentifier">print</span>(<span class="synConstant">"タイマースタート"</span>)
+    <span class="synIdentifier">file</span> = <span class="synIdentifier">open</span>(<span class="synConstant">'airconTimer.txt'</span>, <span class="synConstant">'r'</span>, encoding=<span class="synConstant">'utf'</span>)
+    text=<span class="synConstant">"up"</span>
+    <span class="synStatement">try</span>:
+        <span class="synStatement">while</span> <span class="synConstant">"up"</span> <span class="synStatement">in</span> text <span class="synStatement">or</span> <span class="synConstant">"down"</span> <span class="synStatement">in</span> text:
+            text = <span class="synIdentifier">file</span>.readline()
+            splitText = re.split(<span class="synConstant">" "</span>, text)
+            <span class="synStatement">if</span> <span class="synConstant">"up"</span> <span class="synStatement">in</span> text:
+                key = <span class="synConstant">1</span>
+            <span class="synStatement">elif</span> <span class="synConstant">"down"</span> <span class="synStatement">in</span> text:
+                key = -<span class="synConstant">1</span>
+            <span class="synStatement">else</span>: <span class="synComment">#キーワードがなければ</span>
+                <span class="synStatement">break</span>
+            hh = <span class="synIdentifier">int</span>(splitText[<span class="synConstant">0</span>])
+            mm = <span class="synIdentifier">int</span>(splitText[<span class="synConstant">1</span>])
+            tempertureSet = <span class="synIdentifier">int</span>(splitText[<span class="synConstant">2</span>])
+            <span class="synIdentifier">print</span>(<span class="synConstant">"up or down ="</span>, <span class="synIdentifier">str</span>(key), <span class="synConstant">"timer="</span>, <span class="synIdentifier">str</span>(hh), <span class="synIdentifier">str</span>(mm), <span class="synConstant">"temp="</span>, <span class="synIdentifier">str</span>(tempertureSet))
+    <span class="synStatement">except</span> <span class="synType">Exception</span> <span class="synStatement">as</span> e:
+        <span class="synIdentifier">print</span>(e)
+    <span class="synIdentifier">file</span>.close()
+
+    <span class="synStatement">while</span> (wiringpi.digitalRead(PIN_RESET)==<span class="synConstant">1</span>): <span class="synComment">#プルアップしているのでスイッチ押下でLOW</span>
+        time.sleep(<span class="synConstant">0.5</span>)
+        tdatetime = dt.now()
+        HH = <span class="synIdentifier">int</span>(tdatetime.strftime(<span class="synConstant">'%H'</span>))  <span class="synComment"># 時刻</span>
+        MM = <span class="synIdentifier">int</span>(tdatetime.strftime(<span class="synConstant">'%M'</span>))
+        <span class="synStatement">if</span> HH==hh <span class="synStatement">and</span> MM==mm:
+            <span class="synStatement">if</span> key==<span class="synConstant">1</span>:
+                aircon_temp_set_up(tempertureSet)
+            <span class="synStatement">elif</span> key==-<span class="synConstant">1</span>:
+                aircon_temp_set_down(tempertureSet)
+    <span class="synIdentifier">print</span>(<span class="synConstant">"タイマーストップ"</span>)
+
+<span class="synStatement">def</span> <span class="synIdentifier">timer_remove</span>():
+    <span class="synIdentifier">file</span> = <span class="synIdentifier">open</span>(<span class="synConstant">'airconTimer.txt'</span>, <span class="synConstant">'w'</span>, encoding=<span class="synConstant">'utf'</span>)
+    <span class="synIdentifier">file</span>.close()
+
+<span class="synStatement">def</span> <span class="synIdentifier">set</span>(hh,mm ,number,updown):
+    <span class="synIdentifier">print</span>(<span class="synConstant">"Aircon order!"</span>)
+    <span class="synIdentifier">print</span>(<span class="synConstant">"time= "</span>,hh,mm)
+    <span class="synIdentifier">print</span>(<span class="synConstant">"set= "</span>, number)
+    <span class="synIdentifier">file</span> = <span class="synIdentifier">open</span>(<span class="synConstant">'airconTimer.txt'</span>, <span class="synConstant">'a'</span>, encoding=<span class="synConstant">'utf'</span>)  <span class="synComment"># 追記モードでオープン</span>
+    <span class="synIdentifier">file</span>.write(<span class="synIdentifier">str</span>(hh)+<span class="synConstant">" "</span>+<span class="synIdentifier">str</span>(mm)+<span class="synConstant">" "</span>+<span class="synIdentifier">str</span>(number)+<span class="synConstant">" "</span>+updown+<span class="synConstant">"</span><span class="synSpecial">\n</span><span class="synConstant">"</span>)
+    <span class="synIdentifier">file</span>.close()
+
+<span class="synStatement">def</span> <span class="synIdentifier">aircon_power</span>():
+    <span class="synIdentifier">print</span>(<span class="synConstant">"Aircon power!"</span>)
+    wiringpi.digitalWrite(PIN_POWER, <span class="synConstant">1</span>)
+    time.sleep(onWait)
+    wiringpi.digitalWrite(PIN_POWER, <span class="synConstant">0</span>)
+    time.sleep(wait)
+
+<span class="synStatement">def</span> <span class="synIdentifier">aircon_temp_set_up</span>(count):
+    tdatetime = dt.now()
+    <span class="synIdentifier">print</span>(tdatetime)
+    <span class="synIdentifier">print</span>(<span class="synConstant">"aircon_temp_set_up"</span>)
+    <span class="synStatement">for</span> i <span class="synStatement">in</span> <span class="synIdentifier">range</span>(count):
+        wiringpi.digitalWrite(PIN_UP, <span class="synConstant">1</span>)
+        time.sleep(onWait)
+        wiringpi.digitalWrite(PIN_UP, <span class="synConstant">0</span>)
+        time.sleep(wait)
+    <span class="synIdentifier">print</span>(<span class="synConstant">"temp set complete!"</span>)
+    time.sleep(<span class="synConstant">60</span>)
+
+<span class="synStatement">def</span> <span class="synIdentifier">aircon_temp_set_down</span>(count):
+    tdatetime = dt.now()
+    <span class="synIdentifier">print</span>(tdatetime)
+    <span class="synIdentifier">print</span>(<span class="synConstant">"aircon_temp_set_down"</span>)
+    <span class="synStatement">for</span> i <span class="synStatement">in</span> <span class="synIdentifier">range</span>(count):
+        wiringpi.digitalWrite(PIN_DOWN, <span class="synConstant">1</span>)
+        time.sleep(onWait)
+        wiringpi.digitalWrite(PIN_DOWN, <span class="synConstant">0</span>)
+        time.sleep(wait)
+    <span class="synIdentifier">print</span>(<span class="synConstant">"temp set complete!"</span>)
+    time.sleep(<span class="synConstant">60</span>)
+
+<span class="synStatement">def</span> <span class="synIdentifier">initialize_GPIO</span>():
+    <span class="synComment"># GPIO初期化</span>
+    wiringpi.wiringPiSetupGpio()
+    <span class="synComment"># GPIOを入力モード（0）/出力モード(1)に設定</span>
+    wiringpi.pinMode(PIN_UP, <span class="synConstant">1</span>)
+    wiringpi.pinMode(PIN_DOWN, <span class="synConstant">1</span>)
+    wiringpi.pinMode(PIN_POWER, <span class="synConstant">1</span>)
+    wiringpi.digitalWrite(PIN_RESET, <span class="synConstant">0</span>)
+    <span class="synComment">#出力をLow</span>
+    wiringpi.digitalWrite(PIN_UP,<span class="synConstant">0</span>)
+    wiringpi.digitalWrite(PIN_DOWN, <span class="synConstant">0</span>)
+    wiringpi.digitalWrite(PIN_POWER, <span class="synConstant">0</span>)
+</pre><p></p><h3>完成</h3><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180715134419p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180715/20180715134419.png" title="f:id:s51517765:20180715134419p:plain"/></span><p></p><h3>部品リスト</h3>
+<table>
+<tr>
+<td>部品</td>
+<td>数量</td>
+</tr>
+<tr>
+<td>NPN<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a></td>
+<td>3</td>
+</tr>
+<tr>
+<td>抵抗 5k</td>
+<td>2</td>
+</tr>
+<tr>
+<td>抵抗230k</td>
+<td>2</td>
+</tr>
+<tr>
+<td><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%DC%A5%BF%A5%F3%C5%C5%C3%D3">ボタン電池</a>ボックス</td>
+<td>1</td>
+</tr>
+<tr>
+<td>ピンヘッダメス</td>
+<td>5穴</td>
+</tr>
+<tr>
+<td>ジャンパワイヤ</td>
+<td>5</td>
+</tr>
+<tr>
+<td>リード線</td>
+<td>少々</td>
+</tr>
+<tr>
+<td>ユニバーサル基板</td>
+<td>1</td>
+</tr>
+</table><p></p><div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B008QUVM4E/shirotoakb-22/"><img alt="10pcs シングル40ピン オス＋メスストレートタイプ　ピンヘッダー  PCB用 2.54 mm" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/416sWe1Vm8L._SL160_.jpg" title="10pcs シングル40ピン オス＋メスストレートタイプ　ピンヘッダー  PCB用 2.54 mm"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B008QUVM4E/shirotoakb-22/">10pcs シングル40ピン オス＋メスストレートタイプ　ピンヘッダー  PCB用 2.54 mm</a></p><ul><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B8%A5%A7%A5%CD%A5%EA%A5%C3%A5%AF">ジェネリック</a></li><li><span class="hatena-asin-detail-label">メディア:</span> Tools &amp; Hardware</li><li><a href="http://d.hatena.ne.jp/asin/B008QUVM4E/shirotoakb-22" target="_blank">この商品を含むブログを見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div><div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B00DTHJM32/shirotoakb-22/"><img alt="シリコントランジスター　2SC1815-GR　10個" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/41bsswzl%2BUL._SL160_.jpg" title="シリコントランジスター　2SC1815-GR　10個"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B00DTHJM32/shirotoakb-22/">シリコントランジスター　2SC1815-GR　10個</a></p><ul><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/%C5%EC%BC%C7">東芝</a></li><li><span class="hatena-asin-detail-label">メディア:</span> </li><li><a href="http://d.hatena.ne.jp/asin/B00DTHJM32/shirotoakb-22" target="_blank">この商品を含むブログを見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div><div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B00GYW39KG/shirotoakb-22/"><img alt="uxcell 電池ボックス　電池ホルダー　ボタン電池　ボタン電池対応　3V CR2032/ CR2025 10個入り" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/41sioagFkkL._SL160_.jpg" title="uxcell 電池ボックス　電池ホルダー　ボタン電池　ボタン電池対応　3V CR2032/ CR2025 10個入り"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B00GYW39KG/shirotoakb-22/">uxcell 電池ボックス　電池ホルダー　ボタン電池　ボタン電池対応　3V CR2032/ CR2025 10個入り</a></p><ul><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> uxcell</li><li><span class="hatena-asin-detail-label">メディア:</span> その他</li><li><a href="http://d.hatena.ne.jp/asin/B00GYW39KG/shirotoakb-22" target="_blank">この商品を含むブログを見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div><div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B0117G762U/shirotoakb-22/"><img alt="EasyWordMall 10個 PCB 5×7cm ユニバーサル基板 実験プレート" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/61%2B5lgZ-VdL._SL160_.jpg" title="EasyWordMall 10個 PCB 5×7cm ユニバーサル基板 実験プレート"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B0117G762U/shirotoakb-22/">EasyWordMall 10個 PCB 5×7cm ユニバーサル基板 実験プレート</a></p><ul><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/Apple">Apple</a> Trees E-commerce co., LT</li><li><span class="hatena-asin-detail-label">メディア:</span> その他</li><li><a href="http://d.hatena.ne.jp/asin/B0117G762U/shirotoakb-22" target="_blank">この商品を含むブログを見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div><div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B0746H9881/shirotoakb-22/"><img alt="Raspberry Pi Zero W Starter Kit" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/41R%2B-x-nw3L._SL160_.jpg" title="Raspberry Pi Zero W Starter Kit"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B0746H9881/shirotoakb-22/">Raspberry Pi Zero W Starter Kit</a></p><ul><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> ケイ<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A8%A5%B9">エス</a>ワイ</li><li><span class="hatena-asin-detail-label">メディア:</span> エレクトロニクス</li><li><a href="http://d.hatena.ne.jp/asin/B0746H9881/shirotoakb-22" target="_blank">この商品を含むブログ (1件) を見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div>
+</div>

@@ -1,0 +1,16 @@
+<div class="entry-content">
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Visual%20Studio">Visual Studio</a>で<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>コーディング中、よく起きるのが、まちがってフォームクリックイベントを作ってしまうこと。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">private</span> <span class="synType">void</span> Label1_Click(<span class="synType">object</span> sender, EventArgs e)
+{
+
+}
+</pre><p>これをだからといって、Codeから消そうとすると、DesignerがErrorを出す。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170323230004j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170323/20170323230004.jpg" title="f:id:s51517765:20170323230004j:plain"/></span></p><p>正しい解法は↓</p>
+<blockquote>
+<p>１．デザイン画面で、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A4%A5%D9%A5%F3%A5%C8%A5%CF%A5%F3%A5%C9%A5%E9">イベントハンドラ</a>を消したいコン<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%ED%A1%BC%A5%EB">トロール</a>を選択。<br/>
+２．プロパティウインドウのイベント一覧ボタン（雷マーク）をクリック。<br/>
+３．消したいイベント名（一覧左側のClickとか）を右クリック。<br/>
+４．「リセット」を選択。</p>
+</blockquote>
+<p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="//hatenablog-parts.com/embed?url=https%3A%2F%2Fdetail.chiebukuro.yahoo.co.jp%2Fqa%2Fquestion_detail%2Fq1185807226" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Visual Studio2005を使ってますが、うっかりフォームのコントロールをクリックしてしまったときに、.csファイルの中に、private void Label1_Click(object sender, Even..."></iframe><cite class="hatena-citation"><a href="https://detail.chiebukuro.yahoo.co.jp/qa/question_detail/q1185807226">detail.chiebukuro.yahoo.co.jp</a></cite></p>
+</div>

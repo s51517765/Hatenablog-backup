@@ -1,0 +1,151 @@
+<div class="entry-content">
+<p>このブログはプログラミングと電子工作に偏っているので、このブログを読んでいる人は、これらに興味があると考えられます。<br/>
+では、その人が書いているブログもプログラミングや電子工作に関係するのではないか？と考えて<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>とbeautifulsoupで取得することを考えました。</p><p>ブログの購読者は↓から取得できます。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fabout" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="このブログについて - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/about">s51517765.hatenadiary.jp</a></cite><br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20190102141259p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190102/20190102141259.png" title="f:id:s51517765:20190102141259p:plain"/></span><br/>
+</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synPreProc">import</span> requests
+<span class="synPreProc">from</span> bs4 <span class="synPreProc">import</span> BeautifulSoup
+
+<span class="synStatement">def</span> <span class="synIdentifier">get_aboutpage_2_subscriber</span>(url, id_list, profile_page_list):
+    html = requests.get(url)
+    soup = BeautifulSoup(html.text, <span class="synConstant">'lxml'</span>)  <span class="synComment">##lxmlを指定するほうがよい</span>
+    alink = soup.find_all(<span class="synConstant">'a'</span>)
+
+    <span class="synStatement">for</span> a <span class="synStatement">in</span> alink:
+        <span class="synStatement">if</span> a.get(<span class="synConstant">"href"</span>) != <span class="synIdentifier">None</span>:
+            link = a.get(<span class="synConstant">"href"</span>)
+            <span class="synStatement">if</span> <span class="synConstant">"https://blog.hatena.ne.jp/"</span> <span class="synStatement">in</span> link <span class="synStatement">and</span> <span class="synConstant">"abuse_report"</span> <span class="synStatement">not</span> <span class="synStatement">in</span> link:  <span class="synComment"># https://blog.hatena.ne.jp/-/abuse_report?target_url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fabout</span>
+                link2 = link.replace(<span class="synConstant">"https://blog.hatena.ne.jp/"</span>, <span class="synConstant">""</span>)
+                finded_id = link2.replace(<span class="synConstant">"/"</span>, <span class="synConstant">""</span>)
+                <span class="synStatement">if</span> finded_id <span class="synStatement">not</span> <span class="synStatement">in</span> id_list:
+                    id_list[finded_id] = <span class="synConstant">1</span>
+                    profile_page_list[finded_id] = link
+                <span class="synStatement">else</span>:
+                    id_list[finded_id] += <span class="synConstant">1</span>
+    <span class="synStatement">return</span> profile_page_list, id_list
+</pre><p>beautifulsoupで<code>alink = soup.find_all('a')</code>のようにLinkを取得し<code>"https://blog.hatena.ne.jp/"</code>が含まれているものが、読者のブログページです。ひとつだけ、<code>https://blog.hatena.ne.jp/-/abuse_report?target_url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fabout</code>が余計なので、除外します。<br/>
+ここから、読者のidを取得し、辞書に加えていきます。</p><p>次に、読者のidからプロフィールページを取得します。<br/>
+プロフィールページはLinkのうち<code>/about</code>が含まれているものです。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synPreProc">import</span> requests
+<span class="synPreProc">from</span> bs4 <span class="synPreProc">import</span> BeautifulSoup
+<span class="synPreProc">import</span> time
+
+<span class="synStatement">def</span> <span class="synIdentifier">get_subscriber_aboutpage</span>(<span class="synIdentifier">id</span>):
+    url = <span class="synConstant">"https://blog.hatena.ne.jp/"</span> + <span class="synIdentifier">id</span> + <span class="synConstant">"/"</span>
+    html = requests.get(url)
+    soup = BeautifulSoup(html.text, <span class="synConstant">'lxml'</span>)  <span class="synComment">##lxmlを指定するほうがよい</span>
+    alink = soup.find_all(<span class="synConstant">'a'</span>)
+
+    <span class="synStatement">for</span> a <span class="synStatement">in</span> alink:
+        <span class="synStatement">if</span> a.get(<span class="synConstant">"href"</span>) != <span class="synIdentifier">None</span>:
+            link = a.get(<span class="synConstant">"href"</span>)
+            <span class="synStatement">if</span> <span class="synConstant">"/about"</span> <span class="synStatement">in</span> link:
+                <span class="synStatement">return</span> link
+                <span class="synStatement">break</span>
+    time.sleep(<span class="synConstant">0.2</span>)
+</pre><p>これを繰り返し、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C9%FD%CD%A5%C0%E8%C3%B5%BA%F7">幅優先探索</a>の要領で、このブログの読者と読者のブログの読者を取得します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20190102143756p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190102/20190102143756.png" title="f:id:s51517765:20190102143756p:plain"/></span><br/>
+<a href="https://ja.wikipedia.org/wiki/%E5%B9%85%E5%84%AA%E5%85%88%E6%8E%A2%E7%B4%A2">幅優先探索 - Wikipedia</a></p><p>idの辞書をforで回しているときに、辞書を書き換えようとすると、<code>RuntimeError: dictionary changed size during iteration</code>というエラーが出るので、一旦読み取り用の辞書を<code> id_list_tmp = id_list.copy()</code>として用意します。 <code>id_list_tmp = id_list</code>とすると<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>では同じポインタにアクセス（参照渡し）するようでダメです。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">if</span> __name__ == <span class="synConstant">'__main__'</span>:
+    id_list = {}
+    id_list_tmp = {}  <span class="synComment"># RuntimeError: dictionary changed size during iteration</span>
+    about_page_list = {}
+    my_url = <span class="synConstant">"https://s51517765.hatenadiary.jp/about"</span>
+    about_page_list, id_list = get_aboutpage_2_subscriber(my_url, id_list, about_page_list)
+    i=<span class="synConstant">0</span>
+    <span class="synStatement">while</span> i&lt;<span class="synConstant">2</span>:
+        i+=<span class="synConstant">1</span>
+        id_list_tmp = id_list.copy() <span class="synComment">#辞書はループを回している間は書き換えできないので</span>
+        <span class="synStatement">for</span> <span class="synIdentifier">id</span> <span class="synStatement">in</span> id_list_tmp:
+            <span class="synIdentifier">print</span>(<span class="synIdentifier">id</span>)
+            <span class="synStatement">try</span>:
+                profile_link = get_subscriber_aboutpage(<span class="synIdentifier">id</span>)
+                get_aboutpage_2_subscriber(profile_link, id_list, about_page_list)
+            <span class="synStatement">except</span> <span class="synType">Exception</span> <span class="synStatement">as</span> e:
+                <span class="synIdentifier">print</span>(<span class="synConstant">"-------------------------------"</span>)
+                <span class="synIdentifier">print</span>(e)
+                <span class="synIdentifier">print</span>(profile_link)
+                <span class="synIdentifier">print</span>(<span class="synConstant">"-------------------------------"</span>)
+        <span class="synStatement">for</span> k, v <span class="synStatement">in</span> <span class="synIdentifier">sorted</span>(id_list.items(), key=<span class="synStatement">lambda</span> x: -x[<span class="synConstant">1</span>]):  <span class="synComment"># 降順ソート</span>
+            <span class="synStatement">if</span> v != <span class="synConstant">1</span>:
+                <span class="synIdentifier">print</span>(<span class="synIdentifier">str</span>(k) + <span class="synConstant">": "</span> + <span class="synIdentifier">str</span>(v))
+        <span class="synComment"># print(about_page_list)</span>
+        <span class="synIdentifier">print</span>(id_list)
+</pre><p>とりあえず、3階まで取得してみましたが予想とは異なる結果でした。<br/>
+ブログ読者であっても、自身はブログを書いていなかったりします。<br/>
+また、この集計方法では重複カウントも出てきますが、正規化されない<a class="keyword" href="http://d.hatena.ne.jp/keyword/google">google</a>の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%DA%A1%BC%A5%B8%A5%E9%A5%F3%A5%AF">ページランク</a>のようなものでこれはこれでいいのかとも思います。<br/>
+3階の時点で8000人近く出てきました。（私の読者の読者の読者）</p><p>3階までの結果の一部</p>
+<pre class="code" data-lang="" data-unlink="">ponyoponyokun: 79
+dmasaki: 62
+aka12aya70y: 62
+ironchocolate: 62
+riyunion2: 55
+akira2013web: 49
+sakuyaoi: 49
+grazieatutti: 47
+youhp01: 47
+nue0801: 45
+doubleworkandstock: 44
+opio8: 43
+oshaberiitboy: 42
+torus1: 41
+sayakasumi382: 41
+fukai19930806347: 40
+mksurf: 38
+at25250410: 38
+kihappy1: 38
+hidamaru: 37
+cat-whisker: 35
+AKI1200: 35
+brachiodesign: 35
+a24o92: 35
+bunntinnmalu: 35
+kihaseason2015: 34
+momokuri777: 34
+axia18: 33
+noritoikioi: 33
+je_online: 33
+mraka2015: 33
+m07v-sk160: 33
+sakabesharoushi: 32
+editman: 31
+koppamizin007: 30
+brd1267: 29
+kojiebi-gm: 29
+umauma-free: 29
+kotokunohate: 29
+periaki0813: 28
+syuusakukakizoe: 28
+takipon5: 28
+taicho-fujiyama: 27
+ko-chanblog95: 27
+azu-ryugaku: 27
+setsuyakufufu: 27
+karin88: 26
+esupro: 26
+mentalx: 26
+nie3: 26
+titirobo: 26
+gqp: 25
+chippyofficial: 25
+TAKOICHI: 25
+Hikaru-English: 25
+hal7pi: 25
+sara_pezzini: 25
+WhiteTree: 24
+ishideo: 24
+tai_mijinko: 24
+otasuke0411: 24
+myprivatecomedy: 23
+takahon: 23
+miwamomoka: 23
+for-mom: 23
+sorairo2000: 23
+sekiuti: 23
+dutch2017: 23
+nottoworry-money: 22
+c6amndbgr3: 22
+ev_traveler: 21
+salondealfurd: 21</pre>
+</div>

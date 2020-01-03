@@ -1,0 +1,231 @@
+<div class="entry-content">
+<p>今日作ったのは、「もぐらたたき」ゲームです。</p>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%E2%A5%B0%A5%E9">モグラ</a>に見立てたLEDが光ったときにスイッチを押すとポイントが加算されるというものです。</p>
+<p> </p>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%E2%A5%B0%A5%E9">モグラ</a>は今回4匹つくりました。</p>
+<p> </p>
+<p><a class="detailOn" href="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111943.jpg" id="i13591028426"><img alt="" border="0" height="146" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111943.jpg" width="220"/></a></p>
+<p> </p>
+<p>必要な回路構成としては、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%E2%A5%B0%A5%E9">モグラ</a>に見立てたLEDとそのLEDを光らせるための制限抵抗（300Ω)、タクトスイッチとプルアップ抵抗です。</p>
+<p>実際にはこれを4つ作ります。</p>
+<p> </p>
+<p><a class="detailOn" href="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111946.png" id="i13591025616"><img alt="" border="0" height="176" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111946.png" width="220"/></a></p>
+<p> </p>
+<p>■仕様</p>
+<p>もぐらは4匹</p>
+<p>もぐらはNo.4～7pin</p>
+<p>当たり判定はNo.10～13pin</p>
+<p>もぐら出現（LED点灯）時間は徐々に短くなる</p>
+<p>もぐら出現間隔は徐々に長くなる</p>
+<p>ゲーム時間はもぐら出現時間が指定より短くなったところで終了とする</p>
+<p> </p>
+<p>以下が<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%E2%A5%B0%A5%E9">モグラ</a>出現と<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%E2%A5%B0%A5%E9">モグラ</a>当たり判定</p>
+<p>＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝</p>
+<p>if (timeOn &gt; 100) {　　<span style="color: #0000ff;">//<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%E2%A5%B0%A5%E9">モグラ</a>出現時間が一定以下になったら終了させるのでその場合分け</span></p>
+<p>randNum = random(4, 8);　<span style="color: #0000ff;">//もぐら出現はもぐらが接続された4～7pinにランダム</span></p>
+<p>Serial.print("point= ");</p>
+<p>Serial.println(point);　<span style="color: #0000ff;">//ポイントカウンターを表示</span></p>
+<p> </p>
+<p>timeOn = timeOn * 0.90;　<span style="color: #0000ff;">//出現時間を徐々に短く</span></p>
+<p>timeOff = timeOff * 1.1;　<span style="color: #0000ff;">//出現間隔を徐々に長く</span></p>
+<p> </p>
+<p>for (c = 1; c &lt; 11; <a class="keyword" href="http://d.hatena.ne.jp/keyword/c%2B%2B">c++</a>) {</p>
+<p>digitalWrite(randNum, HIGH);　<span style="color: #0000ff;">//もぐら出現</span></p>
+<p> </p>
+<p>pin10 = digitalRead(10);</p>
+<p>pin11 = digitalRead(11);</p>
+<p>pin12 = digitalRead(12);</p>
+<p>pin13 = digitalRead(13);</p>
+<p>if (pin10 + pin11 + pin12 + pin13 == 1) {　<span style="color: #0000ff;">//当たり判定、ここでは4つをまとめて判定</span></p>
+<p>point++;　//ポイント加算</p>
+<p>}</p>
+<p> </p>
+<p>delay(timeOn);</p>
+<p>}</p>
+<p>digitalWrite(randNum, LOW);　<span style="color: #0000ff;">//もぐら退散</span></p>
+<p>delay(timeOff);</p>
+<p>}</p>
+<p>＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝</p>
+<p> </p>
+<p>ここで、このプログラムの要点はもぐら出現と当たり判定です。</p>
+<p> </p>
+<p>＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝</p>
+<p>digitalWrite(randNum, HIGH);</p>
+<p> </p>
+<p>pin10 = digitalRead(10);</p>
+<p>pin11 = digitalRead(11);</p>
+<p>pin12 = digitalRead(12);</p>
+<p>pin13 = digitalRead(13);</p>
+<p>if (pin10 + pin11 + pin12 + pin13 == 1) {</p>
+<p>point++;</p>
+<p>}</p>
+<p> </p>
+<p>delay(timeOn);</p>
+<p>}</p>
+<p>digitalWrite(randNum, LOW);</p>
+<p>delay(timeOff);</p>
+<p>＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝</p>
+<p>はじめはこのようにすればよいと考えましたが、</p>
+<p> </p>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%E2%A5%B0%A5%E9">モグラ</a>出現　→　たたく→　ポイントが加算されない？？？</p>
+<p>という状況になりました。</p>
+<p> </p>
+<p>おそらくプレイヤーがLEDが光ったのを見てスイッチを押すと、</p>
+<p>このときにはすでにプログラムは</p>
+<p>delay(timeOn);</p>
+<p>に入っているので、if () のところでカウントされないようです。</p>
+<p> </p>
+<p>ためしに、先にスイッチを押して待機しているとカウントされました。</p>
+<p>なので、</p>
+<p>for (c = 1; c &lt; 11; <a class="keyword" href="http://d.hatena.ne.jp/keyword/c%2B%2B">c++</a>)</p>
+<p>によって、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%E2%A5%B0%A5%E9">モグラ</a>出現期間中に10回、見に行くようにしてみると上手くいきました。</p>
+<p> </p>
+<p>ですから、delay(timeOn);は<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%E2%A5%B0%A5%E9">モグラ</a>出現時間の10分の1にしてあります。</p>
+<p> </p>
+<p>また、もぐら4匹分を</p>
+<p> </p>
+<p>pin10 or pin11 or pin12 or pin13 == 1</p>
+<p> </p>
+<p>のようなイメージでいずれかがHIGHであるときとするために</p>
+<p>交換可能条件である</p>
+<p>(pin10 + pin11 + pin12 + pin13 == 1)</p>
+<p>としました。</p>
+<p> </p>
+<p>＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝</p>
+<p>if (timeOn &lt; 100) {</p>
+<p>＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝</p>
+<p>は、ゲーム終了条件とゲーム終了時の動作</p>
+<p> </p>
+<p>ゲームスタートとリスタートの動作として以下のように設定しました。</p>
+<p> </p>
+<p>＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝</p>
+<p>Serial.begin(9600);</p>
+<p> </p>
+<p>if (Serial.available() &gt; 0) {　<span style="color: #0000ff;">//シリアル入力待機</span></p>
+<p> </p>
+<p>incomingByte = Serial.read();;　<span style="color: #0000ff;">//シリアル入力文字格納</span></p>
+<p>Serial.println("GAME START!! ");</p>
+<p>delay(1000);</p>
+<p>timeOn = timeOn_Const;　<span style="color: #0000ff;">//ゲームリセット</span></p>
+<p>timeOff = timeOff_Const;　<span style="color: #0000ff;">//ゲームリセット</span></p>
+<p>＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝</p>
+<p> </p>
+<p>これまで、</p>
+<p>Serial.printは使ってきましたが、シリアルモニタ上に入力できそうな窓があるのが気になっていました。</p>
+<p> </p>
+<p><a class="detailOn" href="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111950.jpg" id="i13591053071"><img alt="" border="0" height="33" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111950.jpg" width="220"/></a></p>
+<p> </p>
+<p>ここで、</p>
+<p>if (Serial.available() &gt; 0)</p>
+<p>このように、Serial入力を受け付けることができます。</p>
+<p>ここでは、</p>
+<p> </p>
+<p>int incomingByte = 0;　</p>
+<p>incomingByte = Serial.read();;</p>
+<p> </p>
+<p>として、整数だけを受けるような設定にしています。</p>
+<p> </p>
+<p>ここでは、最低限の機能にしていますが、Serial入出力を組み合わせれば</p>
+<p>アニメーションを表示させたり、難易度設定をさせることもできるはずです。</p>
+<p> </p>
+<p><iframe allowfullscreen="" frameborder="0" height="315" src="https://www.youtube.com/embed/aYdx60aA-ew" width="560"></iframe></p>
+<p> </p>
+<p>＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝</p>
+<p>int i ;</p>
+<p>int k ;</p>
+<p>int c;</p>
+<p>int pin10 = 0;</p>
+<p>int pin11 = 0;</p>
+<p>int pin12 = 0;</p>
+<p>int pin13 = 0;</p>
+<p>int point = 0;</p>
+<p>int timeOn_Const = 350;//10倍</p>
+<p>int timeOn;</p>
+<p>int timeOff_Const = 1000;</p>
+<p>int timeOff;</p>
+<p>int incomingByte = 0;</p>
+<p>int randNum;</p>
+<p>void setup() {</p>
+<p> </p>
+<p>Serial.begin(9600);</p>
+<p>for (i = 4; i &lt; 8; i++) {</p>
+<p>pinMode (i + 6, INPUT);</p>
+<p>pinMode(i, OUTPUT);</p>
+<p>}</p>
+<p> </p>
+<p>randomSeed(analogRead(0)); //乱数</p>
+<p> </p>
+<p>}</p>
+<p> </p>
+<p>void loop() {</p>
+<p>if (timeOn &gt; 100) {</p>
+<p>randNum = random(4, 8);</p>
+<p>Serial.print("point= ");</p>
+<p>Serial.println(point);</p>
+<p>Serial.print(timeOn);</p>
+<p>Serial.print(",");</p>
+<p>Serial.println(timeOff);</p>
+<p> </p>
+<p>timeOn = timeOn * 0.90;</p>
+<p>timeOff = timeOff * 1.1;</p>
+<p>for (c = 1; c &lt; 11; <a class="keyword" href="http://d.hatena.ne.jp/keyword/c%2B%2B">c++</a>) {</p>
+<p>digitalWrite(randNum, HIGH);</p>
+<p> </p>
+<p>pin10 = digitalRead(10);</p>
+<p>pin11 = digitalRead(11);</p>
+<p>pin12 = digitalRead(12);</p>
+<p>pin13 = digitalRead(13);</p>
+<p>if (pin10 + pin11 + pin12 + pin13 == 1) {</p>
+<p>point++;</p>
+<p>}</p>
+<p> </p>
+<p>delay(timeOn);</p>
+<p>}</p>
+<p>digitalWrite(randNum, LOW);</p>
+<p>delay(timeOff);</p>
+<p>}</p>
+<p>if (timeOn &lt; 100) {</p>
+<p>Serial.print("point= ");</p>
+<p>Serial.println(point);</p>
+<p>Serial.println("GAME OVER!!");</p>
+<p>Serial.println("Type Any Key.");</p>
+<p>for (c = 1; c &lt; 10; <a class="keyword" href="http://d.hatena.ne.jp/keyword/c%2B%2B">c++</a>) {</p>
+<p>delay(100);</p>
+<p>for (i = 4; i &lt; 8; i++) {</p>
+<p>digitalWrite(i, HIGH);</p>
+<p>}</p>
+<p>delay(100);</p>
+<p>for (i = 4; i &lt; 8; i++) {</p>
+<p>digitalWrite(i, LOW);</p>
+<p>}</p>
+<p>}</p>
+<p> </p>
+<p>if (Serial.available() &gt; 0) {</p>
+<p> </p>
+<p>incomingByte = Serial.read();;</p>
+<p>Serial.println("GAME START!! ");</p>
+<p>delay(1000);</p>
+<p>timeOn = timeOn_Const;</p>
+<p>timeOff = timeOff_Const;</p>
+<p>}</p>
+<p>}</p>
+<p>}</p>
+<p> </p>
+<p>＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝</p>
+<p> </p>
+<p>今回は<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a> Leonardo↓を使っています。</p>
+<div class="freezed">
+<div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B008A36R2Y/shirotoakb-22/"><img alt="Arduino Leonardo 開発ボード ソケット・ヘッダ付 A000057" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/41jG%2BZO-f6L._SL160_.jpg" title="Arduino Leonardo 開発ボード ソケット・ヘッダ付 A000057"/></a>
+<div class="hatena-asin-detail-info">
+<p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B008A36R2Y/shirotoakb-22/">Arduino Leonardo 開発ボード ソケット・ヘッダ付 A000057</a></p>
+<ul>
+<li><span class="hatena-asin-detail-label">出版社/メーカー:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/ARDUINO">ARDUINO</a></li>
+<li><span class="hatena-asin-detail-label">メディア:</span> 付属品</li>
+<li><a href="http://d.hatena.ne.jp/asin/B008A36R2Y/shirotoakb-22" target="_blank">この商品を含むブログ (2件) を見る</a></li>
+</ul>
+</div>
+<div class="hatena-asin-detail-foot"> </div>
+</div>
+</div>
+<p> </p>
+</div>

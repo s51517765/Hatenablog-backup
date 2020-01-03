@@ -1,0 +1,51 @@
+<div class="entry-content">
+<p>自身が作ったプログラムを公開した時に、使った人が何らかのトラブルが起きてしまったら…。</p><p>そのプログラムが動かないだけならたいした問題ではないですが、ローカルのファイルにアクセスしたり、ネット上のデータにアクセスするときは取り返しのつかない状況を起こしてしまうことが起きえます。</p><p>たとえば、誤ったプログラムで、ローカルのユーザーのファイルを削除してしまったり…。</p><p>そのようなときに、一般にはソフトウェアの製作者は正しい方法であろうとなかろうと提供したソフトウェアの対価を超える補償はしません。</p><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170415173411j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170415/20170415173411.jpg" title="f:id:s51517765:20170415173411j:plain"/></span></p><p>このような画面は必ずと言っていいほどインス<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A1%BC%A5%EB">トール</a>時に出てくるか、Readmeなどの添付ファイルがあります。</p><p>簡易的に、補償しないことを受諾しないと使えない仕組みを作ってみました。<br/>
+別の、本来の目的のためにプルダウンの中身を”ListKeyword.txt”に書き込む仕組みを作るので、ここに使用許諾の仕組みを追加します。</p><p>正しい方法でライセンスキーを入手しない限り、”OKCancel”がでてきて"OK"を押下しないと使えないようにします。</p><p>アプリケーションを起動したときに実行されるForm Loadに”ListKeyword.txt”をStreamReaderで読み込みComboBoxのItemに追加する本来の機能に、ライセンスを読み込ませます。</p><p>ここではライセンスキーは"123456789012"です。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""> <span class="synStatement">if</span> (listKeyword != <span class="synConstant">"123456789012"</span>)
+</pre><p>”!=” は一致しないときを示す<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B1%E9%BB%BB%BB%D2">演算子</a>です。<br/>
+"123456789012"以外はComboBoxのItemに追加する本来の機能を動作させ、"123456789012"のときはelseでライセンスキーをSetします。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">  UserSet == <span class="synConstant">true</span>
+</pre><p>ここで、UserSetは"Boolean型"の変数です。<br/>
+Boolean型はtrue or falseの2値をとる変数です。<br/>
+有効・無効、あり・なし、ON・OFF　などを入れるのに使います。<br/>
+intで0 or 1とする方法を使う人も良く見かけますが、ただしくはBoolean型で定義するべきです。</p><br/>
+<p>ライセンスキーがないときは<br/>
+OKCancelボタンをだします。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">  <span class="synStatement">if</span>( MessageBox.Show(<span class="synConstant">"このソフトウェアを使用してのいかなる場合も製作者は補償いたしません。"</span>, <span class="synConstant">"License confirmation"</span>, MessageBoxButtons.OKCancel) != DialogResult.OK)
+</pre><p>これは、MessageBoxと選択ボタンを組み合わせたものにさらに、ifで判断を加えたものです。<br/>
+ここでも"!="を使います。<br/>
+ここで、”OK”を選択したときにソフトウェアのメイン画面に進み、”キャンセル”を選択したときに許可しない、と考えがちですがこれだとたとえば、右上の×をクリックしてどちらも選択しないと、メイン画面に進めるようになってしまいます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170415180229j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170415/20170415180229.jpg" title="f:id:s51517765:20170415180229j:plain"/></span></p><p>これはOK、Cancelと見せかけて実は、その他の選択ができてしまうということです。</p><p>あとは、OKが選択されなかったらアプリケーションを終了させるようにします。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">close()
+</pre><p>あとは、なぜ起動できないのかのメッセージをだしてあげれば親切でしょうか。<br/>
+<br/>
+</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">
+    <span class="synType">private</span> <span class="synType">void</span> Form1_Load(<span class="synType">object</span> sender, EventArgs e)
+        {
+            Boolean UserSet = <span class="synConstant">false</span>;
+            var listKeyword = <span class="synConstant">""</span>;
+            StreamReader srKeyword = <span class="synStatement">new</span> StreamReader(<span class="synConstant">"ListKeyword.txt"</span>);
+            <span class="synStatement">while</span> ((listKeyword = srKeyword.ReadLine()) != <span class="synConstant">null</span>)      <span class="synComment">// ストリームの末尾まで繰り返す</span>
+            {
+                <span class="synStatement">if</span> (listKeyword != <span class="synConstant">"123456789012"</span>)　<span class="synComment">//ライセンスキーでないときは本来の動き</span>
+                {
+                    comboBoxKeyword.Items.Add(listKeyword);
+                }
+                <span class="synStatement">else</span>
+                {
+                    UserSet = <span class="synConstant">true</span>;　<span class="synComment">//ライセンスキーがあったら</span>
+                }
+            }
+            
+            <span class="synStatement">if</span> (UserSet == <span class="synConstant">false</span>)
+            {
+               <span class="synStatement">if</span>( MessageBox.Show(<span class="synConstant">"このソフトウェアを使用してのいかなる場合も製作者は補償いたしません。"</span>, <span class="synConstant">"License confirmation"</span>, MessageBoxButtons.OKCancel) != DialogResult.OK)
+                {
+                    MessageBox.Show(<span class="synConstant">"使用許諾に合意しないと使用することはできません。"</span>);
+                    Close();
+                }
+            } 
+        }
+</pre>
+</div>

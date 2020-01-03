@@ -1,0 +1,297 @@
+<div class="entry-content">
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/AKB48">AKB48</a>の顔認識に挑戦してみました。</p><p>人の目には認識の難しい(と言ったら怒られるか？)メンバーの認識も<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B5%A1%B3%A3%B3%D8%BD%AC">機械学習</a>なら出来るのか？というチャレンジです。</p><p></p><h3>学習用画像の収集</h3>学習用画像は<a class="keyword" href="http://d.hatena.ne.jp/keyword/google">google</a>画像検索を用いて収集しました。<br/>
+メンバーはいきなり48人に挑戦するのは、CPU的に過酷と推定されるので、10人程度集めることにしました。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Wikipedia">Wikipedia</a>を参考に総選挙の上位のメンバーを中心に13人に絞り収集しました。
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">def</span> <span class="synIdentifier">google_image_selenium</span>(keyword):
+    url = <span class="synConstant">"https://www.google.com/search?q="</span> + keyword + <span class="synConstant">"&amp;source=lnms&amp;tbm=isch&amp;sa=X&amp;ved=0ahUKEwjRpbL78LTbAhXIfrwKHTaVBLQQ_AUICigB&amp;biw=1280&amp;bih=620"</span>
+    driver=browserOpen(<span class="synConstant">"h"</span>) <span class="synComment">#ブラウザのインスタンスを起動</span>
+    driver.get(url)
+    html=driver.page_source
+    soup = BeautifulSoup(html, <span class="synConstant">'lxml'</span>)  <span class="synComment">##lxmlを指定するほうがよい</span>
+    <span class="synStatement">for</span> link <span class="synStatement">in</span> soup.find_all(<span class="synConstant">"img"</span>):
+        <span class="synStatement">try</span>:
+            image_link=<span class="synConstant">""</span>
+            <span class="synStatement">if</span> <span class="synConstant">"src"</span> <span class="synStatement">in</span> link.attrs:
+                image_link=link.attrs[<span class="synConstant">"src"</span>]
+            <span class="synStatement">elif</span> <span class="synConstant">"data-src"</span> <span class="synStatement">in</span> link.attrs:
+                image_link = link.attrs[<span class="synConstant">"data-src"</span>]
+            <span class="synStatement">if</span> <span class="synConstant">"http"</span> <span class="synStatement">in</span> image_link:
+                <span class="synIdentifier">print</span>(image_link)
+                data = urllib.request.urlopen(image_link).read()
+                tdatetime = dt.now()
+                filename=keyword+<span class="synConstant">'/'</span>+tdatetime.strftime(<span class="synConstant">'%Y%m%d%H%M%S'</span>)+<span class="synConstant">'.jpg'</span>
+                <span class="synStatement">with</span> <span class="synIdentifier">open</span>(filename, mode=<span class="synConstant">"wb"</span>) <span class="synStatement">as</span> f:
+                    f.write(data)
+            time.sleep(<span class="synConstant">1</span>)
+        <span class="synStatement">except</span> urllib.error.URLError <span class="synStatement">as</span> e:
+            <span class="synIdentifier">print</span>(e)
+
+<span class="synStatement">if</span> __name__ == <span class="synConstant">'__main__'</span>:
+    menber_list = [<span class="synConstant">"Kojima Mako"</span>,<span class="synConstant">"Yokoyama Yui"</span>, <span class="synConstant">"Hashimoto Haruna"</span>, <span class="synConstant">"Yokoyama Yui"</span>, <span class="synConstant">"Kashiwagi Yuki"</span>, <span class="synConstant">"Mutō Tomu"</span>, <span class="synConstant">"Iriyama Anna"</span>,<span class="synConstant">"Takahashi Juri"</span>, <span class="synConstant">"Megu Taniguchi"</span>, <span class="synConstant">"Okada Nana"</span>, <span class="synConstant">"Kojima Mako"</span>, <span class="synConstant">"Miyazaki Miho"</span>,<span class="synConstant">"Kato Rena"</span>,<span class="synConstant">"Sasaki Yukari"</span>,<span class="synConstant">"Ōmori Miyū"</span>]
+    <span class="synStatement">for</span> keyword <span class="synStatement">in</span> menber_list:
+        savedir = <span class="synConstant">"./"</span> + keyword
+        <span class="synStatement">if</span> <span class="synStatement">not</span> os.path.exists(savedir):
+            os.mkdir(savedir)  <span class="synComment"># フォルダーを作る</span>
+        google_image_selenium(keyword)
+</pre><p>ブラウザの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A4%A5%F3%A5%B9%A5%BF%A5%F3%A5%B9">インスタンス</a>は以前の記事参照。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2018%2F04%2F21%2F124342" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="pythonとseleniumでheadless browserを操作する - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2018/04/21/124342">s51517765.hatenadiary.jp</a></cite></p><p>ここでは、普通のPCとCPUを使っているので、読み込ませる画像をなるべく小さくしたいので、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Google">Google</a>のサムネイルをそのまま取得しました。<br/>
+高解像度で実施したい場合は、このサムネイルからLinkを取得してLink先の画像を取得する必要があります。<br/>
+明らかに別人だったり、人でなかったり、他の人が写りこんでいたりする写真は削除してメンバー当たり80枚ぐらい集めました。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/google">google</a>画像検索結果のhtmlからimageのリンクを取得しますが、urllibでは少ししか取れなかったので、<a class="keyword" href="http://d.hatena.ne.jp/keyword/selenium">selenium</a>を使用しました。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/selenium">selenium</a>で画面スクロールを入れてからhtmlを取得すればさらにたくさん取得することも可能だと思います。</p><p></p><h3>顔の切り取りと水増し</h3>次に<a class="keyword" href="http://d.hatena.ne.jp/keyword/Open%20CV">Open CV</a>で顔検出をして、顔の部分を切り取ります。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fnote.nkmk.me%2Fpython-opencv-face-detection-haar-cascade%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Python, OpenCVで顔検出と瞳検出（顔認識、瞳認識） | note.nkmk.me"></iframe><cite class="hatena-citation"><a href="https://note.nkmk.me/python-opencv-face-detection-haar-cascade/">note.nkmk.me</a></cite><br/>
+顔認識なんてこれでもすでにAIといっても通用するぐらいだと思うが、これがフリーで使えるとはすごい！<br/>
+顔認識は最近のデジカメなんか必ず入っている技術ですね。<p>顔検出したものを切り取って、水増しのために左右に18度づつ振った画像を作成しました。画像の回転は<a class="keyword" href="http://d.hatena.ne.jp/keyword/Open%20cv">Open cv</a>またはPILでできます。PILでのコードは以前のAI<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D7%A5%ED%A5%B0%A5%E9%A5%DE">プログラマ</a>養成ギプスの記事参照下さい。</p><p>なぜわからないのですが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/open%20cv">open cv</a>で開けないファイルが結構ありました。<br/>
+原因を調べたいところだが、長くなりそうなのでとりあえずあきらめました。<br/>
+これによって、サンプル数が少なくなったメンバーは除外して、最低120枚得られたのが、11人になりました。</p>
+<pre class="code" data-lang="" data-unlink="">OpenCV(3.4.1) Error: Assertion failed (scn == 3 || scn == 4) in cv::cvtColor, file C:\projects\opencv-python\opencv\modules\imgproc\src\color.cpp, line 11147</pre><p></p><h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C7%A5%A3%A1%BC%A5%D7%A5%E9%A1%BC%A5%CB%A5%F3%A5%B0">ディープラーニング</a>で学習</h3>これをMnistの認識で使ったプログラムの改造で学習させます。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2018%2F06%2F04%2F070000" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="TensorFlowとKerasでMnistをやってみた - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2018/06/04/070000">s51517765.hatenadiary.jp</a></cite><p>Mnistでは画像を数値にしたデータを入力として使えたが、今度は普通の画像ファイルなので、同じようなnumpyの配列に変換する必要があります。</p><p>globというメソッドを用いて、フォルダのファイルにアクセスし、フォルダをカテゴリとして、ファイル（picture）を読み込み、X-trainという配列に加えていきます。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">filelist = glob.glob(<span class="synConstant">"./*"</span>)
+<span class="synStatement">for</span> picture <span class="synStatement">in</span> filelist:
+      img = img_to_array(load_img(picture, target_size=(pixel, pixel)))
+      X_train.append(img)
+</pre><p>これをMnistと同じ<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%CB%A5%E5%A1%BC%A5%E9%A5%EB%A5%CD%A5%C3%A5%C8%A5%EF%A1%BC%A5%AF">ニューラルネットワーク</a>に入れてみました。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">    model = Sequential()
+    model.add(Dense(<span class="synConstant">64</span>, activation=<span class="synConstant">'relu'</span>, input_dim=pixel*pixel*<span class="synConstant">3</span>))
+    model.add(Dense(<span class="synIdentifier">len</span>(inputlist), activation=<span class="synConstant">'softmax'</span>))
+    model.<span class="synIdentifier">compile</span>(optimizer=<span class="synConstant">'rmsprop'</span>, loss=<span class="synConstant">'categorical_crossentropy'</span>, metrics=[<span class="synConstant">'accuracy'</span>])
+    model.fit(x_train, y_train, batch_size=<span class="synConstant">100</span>, epochs=<span class="synConstant">30</span>, verbose=<span class="synConstant">1</span>)  <span class="synComment"># データを学習</span>
+</pre><pre class="code" data-lang="" data-unlink="">&gt;&gt;&gt; acc: 0.23636363636363636</pre><p>→約23%</p><p>入出力が多くなったので、中間層を増やすといいのではないかとおもい、一層増やしてみます。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">model = Sequential()
+    model.add(Dense(<span class="synConstant">512</span>, activation=<span class="synConstant">'relu'</span>, input_dim=pixel*pixel*<span class="synConstant">3</span>))
+    model.add(Dense(<span class="synConstant">64</span>, activation=<span class="synConstant">'relu'</span>, input_dim=<span class="synConstant">512</span>))
+    model.add(Dense(<span class="synConstant">64</span>, activation=<span class="synConstant">'relu'</span>, input_dim=<span class="synConstant">64</span>))
+    model.add(Dense(<span class="synIdentifier">len</span>(inputlist), activation=<span class="synConstant">'softmax'</span>))
+    model.<span class="synIdentifier">compile</span>(optimizer=<span class="synConstant">'rmsprop'</span>, loss=<span class="synConstant">'categorical_crossentropy'</span>, metrics=[<span class="synConstant">'accuracy'</span>])
+    model.fit(x_train, y_train, batch_size=<span class="synConstant">100</span>, epochs=<span class="synConstant">30</span>, verbose=<span class="synConstant">1</span>)  <span class="synComment"># データを学習</span>
+</pre><pre class="code" data-lang="" data-unlink="">&gt;&gt;&gt; acc: 0.33560606060606063</pre><p>→約34%</p><p>もう一層増やしても、ほとんど変わらなかった。</p><h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C7%A5%A3%A1%BC%A5%D7%A5%E9%A1%BC%A5%CB%A5%F3%A5%B0">ディープラーニング</a>で学習　その２</h3>違うモデルも試してみようと思います。<br/>
+Kerasの公式サイトより、”VGG-likeなconvnet”　を試してみます。<br/>
+こちらは「畳み込み」をしているのが特徴です。Conv2Dのところ。<br/>
+これによって、ぼかしやエッジ強調の効果が入ることで画像認識に強くなるそうです。<br/>
+このサンプルコードにaccuracyの表示を追加して使用しました。<br/>
+<a href="https://keras.io/ja/getting-started/sequential-model-guide/">Sequentialモデルのガイド - Keras Documentation</a><br/>
+<pre class="code lang-python" data-lang="python" data-unlink="">    model = Sequential()
+    <span class="synComment"># 入力: サイズが100x100で3チャンネルをもつ画像 -&gt; (100, 100, 3) のテンソル</span>
+    <span class="synComment"># それぞれのlayerで3x3の畳み込み処理を適用している</span>
+    model.add(Conv2D(<span class="synConstant">32</span>, (<span class="synConstant">3</span>, <span class="synConstant">3</span>), activation=<span class="synConstant">'relu'</span>, input_shape=(<span class="synConstant">40</span>, <span class="synConstant">40</span>, <span class="synConstant">3</span>)))
+    model.add(Conv2D(<span class="synConstant">32</span>, (<span class="synConstant">3</span>, <span class="synConstant">3</span>), activation=<span class="synConstant">'relu'</span>))
+    model.add(MaxPooling2D(pool_size=(<span class="synConstant">2</span>, <span class="synConstant">2</span>)))
+    model.add(Dropout(<span class="synConstant">0.25</span>))
+
+    model.add(Conv2D(<span class="synConstant">64</span>, (<span class="synConstant">3</span>, <span class="synConstant">3</span>), activation=<span class="synConstant">'relu'</span>))
+    model.add(Conv2D(<span class="synConstant">64</span>, (<span class="synConstant">3</span>, <span class="synConstant">3</span>), activation=<span class="synConstant">'relu'</span>))
+    model.add(MaxPooling2D(pool_size=(<span class="synConstant">2</span>, <span class="synConstant">2</span>)))
+    model.add(Dropout(<span class="synConstant">0.25</span>))
+
+    model.add(Flatten())
+    model.add(Dense(<span class="synConstant">256</span>, activation=<span class="synConstant">'relu'</span>))
+    model.add(Dropout(<span class="synConstant">0.5</span>))
+    model.add(Dense(<span class="synConstant">11</span>, activation=<span class="synConstant">'softmax'</span>))
+
+    sgd = SGD(lr=<span class="synConstant">0.01</span>, decay=<span class="synConstant">1e-6</span>, momentum=<span class="synConstant">0.9</span>, nesterov=<span class="synIdentifier">True</span>)
+    model.<span class="synIdentifier">compile</span>(loss=<span class="synConstant">'categorical_crossentropy'</span>, optimizer=sgd,metrics=[<span class="synConstant">'accuracy'</span>]) <span class="synComment">#accuracy を表示するのを追加</span>
+
+    model.fit(x_train, y_train, batch_size=<span class="synConstant">32</span>, epochs=<span class="synConstant">10</span>)
+    os.chdir(root)
+    model.save_weights(<span class="synConstant">"akb.hdf5"</span>) <span class="synComment">#学習結果を保存</span>
+    <span class="synComment">#score = model.evaluate(x_test, y_test, batch_size=32)</span>
+    score = model.evaluate(x_test, y_test, verbose=<span class="synConstant">0</span>)
+    <span class="synComment">#score = model.evaluate(x_test, y_test)</span>
+    <span class="synIdentifier">print</span>(score[<span class="synConstant">0</span>])
+    <span class="synIdentifier">print</span>(score[<span class="synConstant">1</span>])
+</pre><pre class="code" data-lang="" data-unlink="">&gt;&gt;&gt; Loss 2.19148811860518
+&gt;&gt;&gt;acuracy 0.3</pre><p>→30%</p><p>Dropoutを0.1に変更</p>
+<pre class="code" data-lang="" data-unlink="">&gt;&gt;&gt; Loss 1.79073445124523
+&gt;&gt;&gt;acuracy 0.39099876634567</pre><p>→約39%</p><p>Dropoutを0.0に変更</p>
+<pre class="code" data-lang="" data-unlink="">&gt;&gt;&gt; Loss 1.8360017863186924
+&gt;&gt;&gt;acuracy 0.4090909094973044</pre><p>→約41%<br/>
+あまり変わらないのでこの間をとって、</p><p>Dropout=0.05にさらにepochs =30に。</p>
+<pre class="code" data-lang="" data-unlink="">&gt;&gt;&gt; loss:  1.9628488020463424
+&gt;&gt;&gt; accuracy:  0.681818183443763</pre><p>このときの学習履歴をグラフにすると、学習結果は98%まで行っているがテストは68%となり、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B2%E1%B3%D8%BD%AC">過学習</a>になっていると推定されます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180614224106p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180614/20180614224106.png" title="f:id:s51517765:20180614224106p:plain"/></span><br/>
+繰り返し（epochs）は15ぐらいでいいのではないか？と思われます。<br/>
+とりあえず、この（<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B2%E1%B3%D8%BD%AC">過学習</a>気味の）学習データを用いて「<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C3%E6%C4%F9%A4%E1">中締め</a>」として評価してみます。</p><p></p><h3>評価</h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>から適当な画像を探し、ディープ<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%CB%A5%E5%A1%BC%A5%E9%A5%EB%A5%CD%A5%C3%A5%C8%A5%EF%A1%BC%A5%AF">ニューラルネットワーク</a>に入れてみます。学習に使ったときと同様に、顔認識と切り取り、リサイズをして入力します。<p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180614224807j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180614/20180614224807.jpg" title="f:id:s51517765:20180614224807j:plain"/></span><br/>
+Prediction is  Hashimoto <a class="keyword" href="http://d.hatena.ne.jp/keyword/Haruna">Haruna</a>【正解】</p><br/>
+<p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180614224843j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180614/20180614224843.jpg" title="f:id:s51517765:20180614224843j:plain"/></span><br/>
+Prediction is  Iriyama Anna【正解】</p><br/>
+<p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180614224920j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180614/20180614224920.jpg" title="f:id:s51517765:20180614224920j:plain"/></span><br/>
+Prediction is  Hashimoto Harun【不正解】→Kojima <a class="keyword" href="http://d.hatena.ne.jp/keyword/Mako">Mako</a></p><br/>
+<p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180614225028j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180614/20180614225028.jpg" title="f:id:s51517765:20180614225028j:plain"/></span><br/>
+Prediction is  Megu Taniguchi【不正解】→Miyazaki Miho</p><br/>
+<p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180614225119j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180614/20180614225119.jpg" title="f:id:s51517765:20180614225119j:plain"/></span><br/>
+Prediction is  Okada <a class="keyword" href="http://d.hatena.ne.jp/keyword/Nana">Nana</a>【不正解】→Megu Taniguchi</p><br/>
+<p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180614225229j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180614/20180614225229.jpg" title="f:id:s51517765:20180614225229j:plain"/></span><br/>
+Prediction is  Sasaki Yukari【不正解】→Yokoyama <a class="keyword" href="http://d.hatena.ne.jp/keyword/Yui">Yui</a></p><br/>
+<p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180614225306j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180614/20180614225306.jpg" title="f:id:s51517765:20180614225306j:plain"/></span><br/>
+Prediction is  Kashiwagi <a class="keyword" href="http://d.hatena.ne.jp/keyword/Yuki">Yuki</a>【正解】</p><br/>
+<p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180614225337j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180614/20180614225337.jpg" title="f:id:s51517765:20180614225337j:plain"/></span><br/>
+Prediction is  Kato Rena【正解】</p><br/>
+<p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180614225411j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180614/20180614225411.jpg" title="f:id:s51517765:20180614225411j:plain"/></span><br/>
+Prediction is  Takahashi Juri【不正解】→Sasaki Yukari</p><br/>
+<p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180614225501j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180614/20180614225501.jpg" title="f:id:s51517765:20180614225501j:plain"/></span><br/>
+Prediction is  Okada <a class="keyword" href="http://d.hatena.ne.jp/keyword/Nana">Nana</a>【正解】</p><p></p><h3>まとめ</h3>テスト結果は５勝５敗で５０%でした。<br/>
+そうはいっても、Kerasを使うことで簡単に<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C7%A5%A3%A1%BC%A5%D7%A5%E9%A1%BC%A5%CB%A5%F3%A5%B0">ディープラーニング</a>ができました。<br/>
+最適化には経験が必要なのではないかと思いますが、普通のPCでもここまでできるとは思いませんでした。<br/>
+最大で300epochsを学習させましたが、これでも15分程度でした。<br/>
+これで、１１分の１の分類が５０％の精度なら遊びとしては十分すぎますね。<p></p><h3>最終的な<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C7%A5%A3%A1%BC%A5%D7%A5%E9%A1%BC%A5%CB%A5%F3%A5%B0">ディープラーニング</a>コード</h3>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synPreProc">from</span> keras.utils.np_utils <span class="synPreProc">import</span> to_categorical
+<span class="synPreProc">from</span> keras.models <span class="synPreProc">import</span> Sequential
+<span class="synPreProc">from</span> keras.layers <span class="synPreProc">import</span> Dense
+<span class="synPreProc">import</span> os
+<span class="synPreProc">import</span> glob
+<span class="synPreProc">from</span> keras.preprocessing.image <span class="synPreProc">import</span> array_to_img, img_to_array, list_pictures, load_img
+<span class="synPreProc">import</span> numpy <span class="synStatement">as</span> np
+<span class="synPreProc">from</span> keras.layers <span class="synPreProc">import</span> Conv2D, MaxPooling2D
+<span class="synPreProc">from</span> keras.layers <span class="synPreProc">import</span> Dense, Dropout, Flatten
+<span class="synPreProc">from</span> keras.optimizers <span class="synPreProc">import</span> SGD
+
+<span class="synComment">#顔認識のための</span>
+<span class="synPreProc">import</span> cv2
+face_cascade_path = <span class="synConstant">'C:/Users/***/Anaconda3/Lib/site-packages/cv2/data'</span>
+cascade_fie=<span class="synConstant">'haarcascade_frontalface_default.xml'</span>
+face_cascade_path=face_cascade_path +<span class="synConstant">"/"</span>+cascade_fie
+face_cascade = cv2.CascadeClassifier(face_cascade_path)
+
+root = <span class="synConstant">"C:/Users/***/Projects/Akb48"</span>
+pixel = <span class="synConstant">40</span>
+input_image_count=<span class="synConstant">110</span> <span class="synComment">#max120</span>
+test_image_count=<span class="synConstant">10</span>
+
+<span class="synStatement">def</span> <span class="synIdentifier">model_build</span>():
+    X_train,Y_train=[],[]
+    X_test,Y_test=[],[]
+    inputlist = [<span class="synConstant">"OutHashimoto Haruna"</span>, <span class="synConstant">"OutIriyama Anna"</span>, <span class="synConstant">"OutKashiwagi Yuki"</span>, <span class="synConstant">"OutKato Rena"</span>, <span class="synConstant">"OutKojima Mako"</span>, <span class="synConstant">"OutMegu Taniguchi"</span>, <span class="synConstant">"OutMiyazaki Miho"</span>, <span class="synConstant">"OutOkada Nana"</span>, <span class="synConstant">"OutSasaki Yukari"</span>, <span class="synConstant">"OutTakahashi Juri"</span>, <span class="synConstant">"OutYokoyama Yui"</span>]
+    no=<span class="synConstant">0</span> <span class="synComment">#正解ラベル</span>
+    <span class="synIdentifier">print</span>(<span class="synIdentifier">len</span>(inputlist))
+    <span class="synStatement">for</span> name <span class="synStatement">in</span> inputlist:
+        <span class="synIdentifier">print</span>(<span class="synConstant">"No="</span>,no, <span class="synConstant">" "</span>,name)
+        image_count=<span class="synConstant">0</span>
+        os.chdir(root)
+        folder = name
+        os.chdir(folder)
+        filelist = glob.glob(<span class="synConstant">"./*"</span>)
+        <span class="synStatement">for</span> picture <span class="synStatement">in</span> filelist:
+            img = img_to_array(load_img(picture, target_size=(pixel, pixel)))
+            image_count += <span class="synConstant">1</span>
+            <span class="synStatement">if</span> image_count &lt;=input_image_count:
+                X_train.append(img)
+                Y_train.append(no)
+            <span class="synStatement">elif</span> image_count &lt;= input_image_count+test_image_count: <span class="synComment">#max 120</span>
+                X_test.append(img)
+                Y_test.append(no)
+            <span class="synStatement">elif</span> image_count &gt; input_image_count+test_image_count: <span class="synComment">#max 120</span>
+                <span class="synStatement">break</span>
+        no+=<span class="synConstant">1</span>
+
+    <span class="synComment"># arrayに変換</span>
+    x_train = np.asarray(X_train)
+    x_test = np.asarray(X_test)
+    y_train = np.asarray(Y_train)
+    y_test = np.asarray(Y_test)
+
+    <span class="synComment"># 画素を0~1の範囲に変換(正規化)</span>
+    x_train = x_train.astype(<span class="synConstant">'float32'</span>) / <span class="synConstant">255</span>
+    x_test = x_test.astype(<span class="synConstant">'float32'</span>) / <span class="synConstant">255</span>
+
+    <span class="synComment"># 正解ラベルをone-hot-encoding</span>
+    y_train = to_categorical(y_train, <span class="synConstant">11</span>)
+    y_test = to_categorical(y_test, <span class="synConstant">11</span>)
+
+    <span class="synComment"># VGG-likeなconvnet</span>
+    model = Sequential()
+    <span class="synComment"># それぞれのlayerで3x3の畳み込み処理を適用している</span>
+    model.add(Conv2D(<span class="synConstant">32</span>, (<span class="synConstant">3</span>, <span class="synConstant">3</span>), activation=<span class="synConstant">'relu'</span>, input_shape=(<span class="synConstant">40</span>, <span class="synConstant">40</span>, <span class="synConstant">3</span>)))
+    model.add(Conv2D(<span class="synConstant">32</span>, (<span class="synConstant">3</span>, <span class="synConstant">3</span>), activation=<span class="synConstant">'relu'</span>))
+    model.add(MaxPooling2D(pool_size=(<span class="synConstant">2</span>, <span class="synConstant">2</span>)))
+    model.add(Dropout(<span class="synConstant">0.05</span>))
+
+    model.add(Conv2D(<span class="synConstant">64</span>, (<span class="synConstant">3</span>, <span class="synConstant">3</span>), activation=<span class="synConstant">'relu'</span>))
+    model.add(Conv2D(<span class="synConstant">64</span>, (<span class="synConstant">3</span>, <span class="synConstant">3</span>), activation=<span class="synConstant">'relu'</span>))
+    model.add(MaxPooling2D(pool_size=(<span class="synConstant">2</span>, <span class="synConstant">2</span>)))
+    model.add(Dropout(<span class="synConstant">0.05</span>))
+
+    model.add(Flatten())
+    model.add(Dense(<span class="synConstant">256</span>, activation=<span class="synConstant">'relu'</span>))
+    model.add(Dropout(<span class="synConstant">0.05</span>))
+    model.add(Dense(<span class="synConstant">11</span>, activation=<span class="synConstant">'softmax'</span>))
+
+    sgd = SGD(lr=<span class="synConstant">0.01</span>, decay=<span class="synConstant">1e-6</span>, momentum=<span class="synConstant">0.9</span>, nesterov=<span class="synIdentifier">True</span>)
+    model.<span class="synIdentifier">compile</span>(loss=<span class="synConstant">'categorical_crossentropy'</span>, optimizer=sgd,metrics=[<span class="synConstant">'accuracy'</span>])
+
+    model.fit(x_train, y_train, batch_size=<span class="synConstant">32</span>, epochs=<span class="synConstant">15</span>)
+    os.chdir(root)
+    model.save_weights(<span class="synConstant">"akb.hdf5"</span>) <span class="synComment">#学習結果を保存</span>
+    score = model.evaluate(x_test, y_test, verbose=<span class="synConstant">0</span>)
+
+    <span class="synIdentifier">print</span>(<span class="synConstant">"------------------------------"</span>)
+    <span class="synIdentifier">print</span>(<span class="synConstant">"Test loss: "</span>,score[<span class="synConstant">0</span>])
+    <span class="synIdentifier">print</span>(<span class="synConstant">"Test accuracy: "</span>,score[<span class="synConstant">1</span>])
+
+<span class="synStatement">def</span> <span class="synIdentifier">model_read</span>():
+  <span class="synComment"># モデルを読み込む</span>
+  model = Sequential()
+  model.add(Conv2D(<span class="synConstant">32</span>, (<span class="synConstant">3</span>, <span class="synConstant">3</span>), activation=<span class="synConstant">'relu'</span>, input_shape=(<span class="synConstant">40</span>, <span class="synConstant">40</span>, <span class="synConstant">3</span>)))
+  model.add(Conv2D(<span class="synConstant">32</span>, (<span class="synConstant">3</span>, <span class="synConstant">3</span>), activation=<span class="synConstant">'relu'</span>))
+  model.add(MaxPooling2D(pool_size=(<span class="synConstant">2</span>, <span class="synConstant">2</span>)))
+  model.add(Dropout(<span class="synConstant">0.05</span>))
+
+  model.add(Conv2D(<span class="synConstant">64</span>, (<span class="synConstant">3</span>, <span class="synConstant">3</span>), activation=<span class="synConstant">'relu'</span>))
+  model.add(Conv2D(<span class="synConstant">64</span>, (<span class="synConstant">3</span>, <span class="synConstant">3</span>), activation=<span class="synConstant">'relu'</span>))
+  model.add(MaxPooling2D(pool_size=(<span class="synConstant">2</span>, <span class="synConstant">2</span>)))
+  model.add(Dropout(<span class="synConstant">0.05</span>))
+
+  model.add(Flatten())
+  model.add(Dense(<span class="synConstant">256</span>, activation=<span class="synConstant">'relu'</span>))
+  model.add(Dropout(<span class="synConstant">0.05</span>))
+  model.add(Dense(<span class="synConstant">11</span>, activation=<span class="synConstant">'softmax'</span>))
+
+  sgd = SGD(lr=<span class="synConstant">0.01</span>, decay=<span class="synConstant">1e-6</span>, momentum=<span class="synConstant">0.9</span>, nesterov=<span class="synIdentifier">True</span>)
+  model.<span class="synIdentifier">compile</span>(loss=<span class="synConstant">'categorical_crossentropy'</span>, optimizer=sgd, metrics=[<span class="synConstant">'accuracy'</span>])
+
+  <span class="synComment"># 学習済みモデルの重みのデータを読み込み</span>
+  model.load_weights(<span class="synConstant">'akb_300.hdf5'</span>)
+  <span class="synStatement">return</span> model
+
+<span class="synStatement">def</span> <span class="synIdentifier">check</span>(<span class="synIdentifier">file</span>):
+    <span class="synStatement">try</span>:
+        src = cv2.imread(<span class="synIdentifier">file</span>)
+        src_gray = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
+        faces = face_cascade.detectMultiScale(src_gray)
+        x_test=[]
+        inputlist = [<span class="synConstant">"Hashimoto Haruna"</span>, <span class="synConstant">"Iriyama Anna"</span>, <span class="synConstant">"Kashiwagi Yuki"</span>, <span class="synConstant">"Kato Rena"</span>, <span class="synConstant">"Kojima Mako"</span>,<span class="synConstant">"Megu Taniguchi"</span>, <span class="synConstant">"Miyazaki Miho"</span>, <span class="synConstant">"Okada Nana"</span>, <span class="synConstant">"Sasaki Yukari"</span>, <span class="synConstant">"Takahashi Juri"</span>, <span class="synConstant">"Yokoyama Yui"</span>]
+        <span class="synStatement">if</span> <span class="synIdentifier">len</span>(faces) &gt; <span class="synConstant">0</span>:  <span class="synComment"># 顔認識できたら</span>
+            <span class="synStatement">for</span> rect <span class="synStatement">in</span> faces:
+                <span class="synComment"># 顔だけ切り出して保存</span>
+                x = rect[<span class="synConstant">0</span>]
+                y = rect[<span class="synConstant">1</span>]
+                width = rect[<span class="synConstant">2</span>]
+                height = rect[<span class="synConstant">3</span>]
+            <span class="synStatement">if</span> width &gt; <span class="synConstant">40</span> <span class="synStatement">and</span> height &gt; <span class="synConstant">40</span>:  <span class="synComment"># 一定サイズに</span>
+                src = src[y:y + height, x:x + width]
+                resize_src = cv2.resize(src, (<span class="synConstant">40</span>, <span class="synConstant">40</span>))
+                cv2.imwrite(<span class="synConstant">"temp.jpg"</span>, resize_src) <span class="synComment">#なぜかうまくいかないので一旦保存して読み込む</span>
+            img = img_to_array(load_img(<span class="synConstant">"temp.jpg"</span>, target_size=(pixel, pixel)))
+            model = model_read()
+            x_test.append(img)
+            x_test = np.asarray(x_test)  <span class="synComment"># テストデータをセット</span>
+            x_test = x_test.astype(<span class="synConstant">'float32'</span>) / <span class="synConstant">255</span>
+
+            <span class="synComment"># 判定</span>
+            res = model.predict(x_test)
+            <span class="synIdentifier">print</span>(<span class="synConstant">"res = "</span>, res)
+            y = res.argmax()  <span class="synComment"># 値の中で最も値が大きいものが答え</span>
+            <span class="synIdentifier">print</span>(y)
+            <span class="synIdentifier">print</span>(<span class="synConstant">"Prediction is "</span>,inputlist[y])
+        <span class="synStatement">else</span>:
+            <span class="synIdentifier">print</span>(<span class="synConstant">"Face recognition failed!"</span>)
+    <span class="synStatement">except</span>:
+        <span class="synStatement">pass</span>
+
+<span class="synStatement">if</span> __name__ == <span class="synConstant">"__main__"</span>:
+    <span class="synComment">#model_build()</span>
+    check(<span class="synConstant">"kashiwagi.jpg"</span>)
+    check(<span class="synConstant">"kato.jpg"</span>)
+    check(<span class="synConstant">"sasaki.jpg"</span>)
+    check(<span class="synConstant">"okada.jpg"</span>)
+</pre>
+</div>

@@ -1,0 +1,61 @@
+<div class="entry-content">
+<p>実物の景色を撮影したのに、ミニチュア（<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B8%A5%AA%A5%E9%A5%DE">ジオラマ</a>）風に見える写真というものがあります。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%DE%A5%DB">スマホ</a>のアプリも多数あるようですが、これを<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>でやってみました。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20181216173442p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20181216/20181216173442.png" title="f:id:s51517765:20181216173442p:plain"/></span></p><p><a href="https://liginc.co.jp/web/camera/65147">ミニチュア・ジオラマ風の写真を撮りたい！簡単にチルトシフト写真を作る5つの方法 | 東京上野のWeb制作会社LIG</a></p><p>以下のような特性を持たせると、ミニチュア風に見えるそうです。</p>
+<blockquote>
+<p>①アオリ（見下ろし）で遠景を撮る<br/>
+②端をぼかす<br/>
+③彩度を上げる</p>
+</blockquote>
+<p>このうちの①は撮影時の設定ですが、②と③に関しては後から加工が可能です。<br/>
+これを<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>でPILとNumpyで実施してみました。<br/>
+画像加工のライブラリを使えば一発ですが、ここでは画像加工の仕組みを調べることも合わせて、加工部分は自分で実装してみました。<br/>
+ですが、やってみるとそもそも①の要素を満たした写真はミニチュア風に加工しやすいこともわかりました。</p><table border="0" cellpadding="0" cellspacing="0" style=" border:1px solid #ccc; width:300px;"><tr style="border-style:none;"><td style="vertical-align:top; border-style:none; padding:10px; width:44px;"><a href="https://rpx.a8.net/svt/ejp?a8mat=2ZTMYI+8S5702+2HOM+BWGDT&amp;rakuten=y&amp;a8ejpredirect=http%3A%2F%2Fhb.afl.rakuten.co.jp%2Fhgc%2Fg00pukw4.2bo116e3.g00pukw4.2bo12fbb%2Fa18110135300_2ZTMYI_8S5702_2HOM_BWGDT%3Fpc%3Dhttp%253A%252F%252Fitem.rakuten.co.jp%252Fjism%252F4549292056389-34-38987-n%252F%26m%3Dhttp%253A%252F%252Fm.rakuten.co.jp%252Fjism%252Fi%252F11632035%252F" rel="nofollow" target="_blank"><img alt="" border="0" src="http://thumbnail.image.rakuten.co.jp/@0_mall/jism/cabinet/0475/4549292056389.jpg?_ex=64x64"/></a></td><td style="font-size:12px; vertical-align:middle; border-style:none; padding:10px;"><p style="padding:0; margin:0;"><a href="https://rpx.a8.net/svt/ejp?a8mat=2ZTMYI+8S5702+2HOM+BWGDT&amp;rakuten=y&amp;a8ejpredirect=http%3A%2F%2Fhb.afl.rakuten.co.jp%2Fhgc%2Fg00pukw4.2bo116e3.g00pukw4.2bo12fbb%2Fa18110135300_2ZTMYI_8S5702_2HOM_BWGDT%3Fpc%3Dhttp%253A%252F%252Fitem.rakuten.co.jp%252Fjism%252F4549292056389-34-38987-n%252F%26m%3Dhttp%253A%252F%252Fm.rakuten.co.jp%252Fjism%252Fi%252F11632035%252F" rel="nofollow" target="_blank">PSG7XMARK2 キヤノン デジタルカメラ「PowerShot G7 X Mark II」</a></p><p style="color:#666; margin-top:5px line-height:1.5;">価格:<span style="font-size:14px; color:#C00; font-weight:bold;">55,130円</span><br/><span style="font-size:10px; font-weight:normal;">(2018/12/16 18:29時点)</span><br/><span style="font-weight:bold;">感想(5件)</span></p></td></tr></table><img alt="" border="0" height="1" src="https://www14.a8.net/0.gif?a8mat=2ZTMYI+8S5702+2HOM+BWGDT" width="1"/><br/>
+<h3>ぼかし加工</h3>ぼかしとは、画素を周囲の色と平均化することで実現できます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20181216175557j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20181216/20181216175557.jpg" title="f:id:s51517765:20181216175557j:plain"/></span><br/>
+<a href="https://howto.clip-studio.com/library/page/view/illuststudio_tora_filter_050">https://howto.clip-studio.com/library/page/view/illuststudio_tora_filter_050</a><p>filter_sizeを例えば5pxにして、5x5=25pxの範囲のRGBの色要素をそれぞれ足して、25で割ると平均化できます。<br/>
+このとき、基準とするpxを中心として、上下左右を平均化します。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""> <span class="synStatement">for</span> i <span class="synStatement">in</span> <span class="synIdentifier">range</span>(filter_size):
+       <span class="synStatement">for</span> j <span class="synStatement">in</span> <span class="synIdentifier">range</span>(filter_size):
+            filterOutput += image_input[x + i - <span class="synIdentifier">int</span>(filter_size / <span class="synConstant">2</span>), y + j - <span class="synIdentifier">int</span>(filter_size / <span class="synConstant">2</span>), RGB]
+       image_output1[x, y, RGB] = filterOutput / filter_size ** <span class="synConstant">2</span>
+</pre><p>これを画像の端部にだけかけるようにするので、画像の中心からの距離が一定以上の部分、ここでは画像の中心から楕円形の外にのみぼかしをかけるようにしました。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synComment"># redion_x , redion_y ぼかし範囲半径</span>
+<span class="synComment"># size_x, size_y 画像の範囲 </span>
+hankei = ((x - size_x / <span class="synConstant">2</span>) / redion_x) ** <span class="synConstant">2</span> + ((y - size_y / <span class="synConstant">2</span>) / redion_y) ** <span class="synConstant">2</span> <span class="synComment">#楕円形</span>
+ <span class="synStatement">if</span> filter_region(x, y, size_x, size_y, filter_size, hankei) == <span class="synIdentifier">True</span>:  <span class="synComment"># 外側がフィルター範囲</span>
+　<span class="synComment"># ぼかし加工</span>
+
+<span class="synStatement">def</span> <span class="synIdentifier">filter_region</span>(x, y, size_x, size_y, filter_size, hankei):
+    <span class="synStatement">if</span> x &gt; filter_size / <span class="synConstant">2</span> <span class="synStatement">and</span> y &gt; filter_size / <span class="synConstant">2</span> <span class="synStatement">and</span> x &lt; size_x - filter_size / <span class="synConstant">2</span> <span class="synStatement">and</span> y &lt; size_y - filter_size / <span class="synConstant">2</span> <span class="synStatement">and</span> hankei &gt; <span class="synConstant">1</span>:
+        <span class="synStatement">return</span> <span class="synIdentifier">True</span>
+    <span class="synStatement">else</span>:
+        <span class="synStatement">return</span> <span class="synIdentifier">False</span>
+</pre><p></p><h3>彩度を上げる</h3>彩度とは画像の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%F3%A5%C8%A5%E9">コントラ</a>ストのことで、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%F3%A5%C8%A5%E9">コントラ</a>ストとは色味がある（明るい）色から色味がない（暗く黒に近い）までの幅のことを言います。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20181216175436p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20181216/20181216175436.png" title="f:id:s51517765:20181216175436p:plain"/></span><br/>
+<a href="http://aceartacademy.net/hpgen/HPB/entries/365.html">http://aceartacademy.net/hpgen/HPB/entries/365.html</a><p>色味がある状態とは、RGBの要素が255に近い状態で、色味がないとはRGBがの要素が0に近い状態です。<br/>
+ただし、<code>RGB=255,255,255</code>は"白"を表し、<code>RGB=0,0,0</code>は"黒"を表します。</p><p>彩度を上げるには、色味がある部分をより色味を強くし、色味がない部分をより色味がない状態にすることで最大限に引き出すことができますが、暗い部分が多くなると画像が暗くつぶれてしまったので色味がある部分のみを上げるようにしました。<br/>
+要素が40以上の部分を比例して上げるようにして、255を超えてしまう場合は255にしました。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">def</span> <span class="synIdentifier">tone_function</span>(value, x, y, RGB):  <span class="synComment"># 彩度が高いところをより高く</span>
+    lowerLimit = <span class="synConstant">40</span>
+    outputValue = (value - lowerLimit) * <span class="synConstant">1.4</span> + lowerLimit
+    <span class="synStatement">if</span> outputValue &gt; <span class="synConstant">255</span>:
+        <span class="synStatement">return</span> <span class="synConstant">255</span>
+    <span class="synStatement">elif</span> value &gt; lowerLimit:
+        <span class="synStatement">return</span> outputValue
+    <span class="synStatement">else</span>:
+        value
+</pre><p></p><h3>結果</h3>加工前<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20181216181301j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20181216/20181216181301.jpg" title="f:id:s51517765:20181216181301j:plain"/></span><br/>
+加工後<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20181216173442p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20181216/20181216173442.png" title="f:id:s51517765:20181216173442p:plain"/></span><br/>
+<a href="https://www.pakutaso.com/traffic/train/">https://www.pakutaso.com/traffic/train/</a><p>加工前<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20181216181859j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20181216/20181216181859.jpg" title="f:id:s51517765:20181216181859j:plain"/></span><br/>
+加工後<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20181216181927p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20181216/20181216181927.png" title="f:id:s51517765:20181216181927p:plain"/></span><br/>
+<a href="http://seimas.cocolog-nifty.com/blog/2014/07/post-da98.html">ジオラマ風（ミニチュア風）写真: てーへんカメラマンの日々 -seimas-</a></p><p>加工前<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20181216181427j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20181216/20181216181427.jpg" title="f:id:s51517765:20181216181427j:plain"/></span><br/>
+加工後<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20181216181446p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20181216/20181216181446.png" title="f:id:s51517765:20181216181446p:plain"/></span><br/>
+※最後の写真は自身の撮影（ミニチュア加工する前提の構図じゃないのが厳しい）</p><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fs51517765%2FMiniature_photo" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="s51517765/Miniature_photo"></iframe><cite class="hatena-citation"><a href="https://github.com/s51517765/Miniature_photo">github.com</a></cite></p>
+</div>

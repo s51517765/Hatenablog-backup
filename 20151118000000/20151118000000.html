@@ -1,0 +1,70 @@
+<div class="entry-content">
+<p>今日は、タクトスイッチで複数の状態を遷移する方法を考えます。</p><p>入力として、スイッチが押されたことを検知すると、状態0→状態1→状態2→状態0→　…<br/>
+という風に変わることを実装します。<br/>
+これができると、一つのタクトスイッチで、たとえばLEDのONとOFFを切り替えることができます。</p><p>回路は前回使ったものを流用しています。</p><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170826172131j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170826/20170826172131.jpg" title="f:id:s51517765:20170826172131j:plain"/></span></p><p>状態の表現として、sという文字を定義します。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""> s = <span class="synConstant">0</span>; <span class="synComment">//状態を格納</span>
+</pre><p>for(;;)で常にループさせて、タクトスイッチを監視し続けます。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synStatement">if</span> (digitalRead(<span class="synConstant">7</span>) == LOW) { <span class="synComment">//タクトスイッチが押されたことを検知</span>
+     s = s + <span class="synConstant">1</span>; <span class="synComment">//状態を進める</span>
+     <span class="synStatement">if</span> (s &gt; <span class="synConstant">2</span>) <span class="synComment">//3水準なので0,1,2の次は0</span>
+       s = <span class="synConstant">0</span>;
+     delay(<span class="synConstant">20</span>);
+</pre><p>ifで7pinを監視し、押されたことを検知したら、状態sを進めます。<br/>
+s=3となったときは、0に戻すことで3水準が作れます。<br/>
+2水準でよければ、s &gt; 1とすればLEDのONとOFFを切り替えられますが、ここでは実験として、LEDを3段階に明るさを変化させるようにしました。<br/>
+delayは<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C1%A5%E3%A5%BF%A5%EA%A5%F3%A5%B0">チャタリング</a>防止です。数値は適当ですので、環境によって最適化が必要です。</p><p>プログラムが複雑になってくると、初心者にはどこの状態にいるのか分からなくなるので、ポイントごとに適当な数字を表示させるなどするとバグ出しに便利です。<br/>
+状態ごとに　s の値(状態No)を表示させることを考えるのと、繰り返した回数が分かるように i を設定しました。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""> Serial.print(i);
+   Serial.print(<span class="synConstant">"s="</span>);
+   Serial.println(s);
+</pre><p>タクトスイッチが押されたことを検知して</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synStatement">while</span> (digitalRead(<span class="synConstant">7</span>) == LOW) {} 
+</pre><p>ifでsの数値によって、3つの状態の動作に移ります。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synStatement">if</span> (s == <span class="synConstant">0</span>) {}
+<span class="synStatement">if</span> (s == <span class="synConstant">1</span>) {}
+<span class="synStatement">if</span> (s == <span class="synConstant">2</span>) {}
+</pre><p>3つの状態にできました。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">
+<span class="synComment">//ボタンを押すごとにs=0~2の状態に遷移</span>
+ <span class="synType">int</span> s = <span class="synConstant">0</span>;
+ <span class="synType">int</span> i = <span class="synConstant">0</span>;
+ <span class="synType">void</span> setup()
+ {  Serial.begin(<span class="synConstant">1200</span>); 
+  pinMode(<span class="synConstant">5</span>, OUTPUT); 
+} 
+
+<span class="synType">void</span> loop() {
+  s = <span class="synConstant">0</span>;  <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>;; i++)  { <span class="synComment">//繰り返しの設定    </span>
+delay(<span class="synConstant">400</span>); <span class="synComment">//チャタリング防止    </span>
+<span class="synStatement">if</span> (digitalRead(<span class="synConstant">7</span>) == LOW) { <span class="synComment">//タクトスイッチが押されたことを検知      </span>
+s = s + <span class="synConstant">1</span>; <span class="synComment">//状態を進める      </span>
+<span class="synStatement">if</span> (s &gt; <span class="synConstant">2</span>) <span class="synComment">//3水準なので0,1,2の次は0        </span>
+s = <span class="synConstant">0</span>;      
+delay(<span class="synConstant">20</span>);      
+<span class="synStatement">if</span> (i &gt; <span class="synConstant">30</span>) <span class="synComment">//繰り返し動作の状態の確認        </span>
+i = <span class="synConstant">0</span>;      
+delay(<span class="synConstant">20</span>);     
+ 
+<span class="synStatement">while</span> (digitalRead(<span class="synConstant">7</span>) == LOW) {} <span class="synComment">//タクトスイッチが押されたことを検知    </span>
+}
+
+    <span class="synStatement">if</span> (s == <span class="synConstant">0</span>) {      <span class="synComment">//第一の状態      </span>
+analogWrite(<span class="synConstant">5</span>, <span class="synConstant">1</span>);    
+}   
+
+    <span class="synStatement">if</span> (s == <span class="synConstant">1</span>) {      <span class="synComment">//第二の状態      </span>
+analogWrite(<span class="synConstant">5</span>, <span class="synConstant">50</span>);    
+}    
+
+    <span class="synStatement">if</span> (s == <span class="synConstant">2</span>) {      <span class="synComment">//第三の状態      </span>
+analogWrite(<span class="synConstant">5</span>, <span class="synConstant">250</span>);    
+}    
+
+Serial.print(i);    
+Serial.print(<span class="synConstant">"s="</span>);    
+Serial.println(s);  
+
+} <span class="synComment">//forのend </span>
+}
+</pre>
+</div>

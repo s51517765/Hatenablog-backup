@@ -1,0 +1,38 @@
+<div class="entry-content">
+<p>以前作った<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EC%A5%A4%A5%D4%A5%F3%A5%B0">スクレイピング</a>アプリなのだが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Chrome">Chrome</a>からURLをコピペして…実行し、ということを延々と行っていた。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2017%2F05%2F12%2F201846" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="C#でウェブスクレイピング - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="http://s51517765.hatenadiary.jp/entry/2017/05/12/201846">s51517765.hatenadiary.jp</a></cite></p><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20171021223347j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20171021/20171021223347.jpg" title="f:id:s51517765:20171021223347j:plain"/></span></p><p>この本を読んでいたら、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AF%A5%EA%A5%C3%A5%D7%A5%DC%A1%BC%A5%C9">クリップボード</a>のテキストを取得する方法が載っているのを見つけました。</p><div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/487311778X/shirotoakb-22/"><img alt="退屈なことはPythonにやらせよう ―ノンプログラマーにもできる自動化処理プログラミング" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/51hk%2B5bKNrL._SL160_.jpg" title="退屈なことはPythonにやらせよう ―ノンプログラマーにもできる自動化処理プログラミング"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/487311778X/shirotoakb-22/">退屈なことはPythonにやらせよう ―ノンプログラマーにもできる自動化処理プログラミング</a></p><ul><li><span class="hatena-asin-detail-label">作者:</span> Al Sweigart,相川愛三</li><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AA%A5%E9%A5%A4%A5%EA%A1%BC%A5%B8%A5%E3%A5%D1%A5%F3">オライリージャパン</a></li><li><span class="hatena-asin-detail-label">発売日:</span> 2017/06/03</li><li><span class="hatena-asin-detail-label">メディア:</span> 単行本（ソフトカバー）</li><li><a href="http://d.hatena.ne.jp/asin/487311778X/shirotoakb-22" target="_blank">この商品を含むブログ (5件) を見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div><p>もしかしたら、<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>でもできるんじゃないか？と思い調べたら、もちろんできたので紹介します。</p><p>これを組み込めば、</p><p>①<a class="keyword" href="http://d.hatena.ne.jp/keyword/Chrome">Chrome</a>で必要なPageを探す。<br/>
+②①のURLをコピー<br/>
+③<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EC%A5%A4%A5%D4%A5%F3%A5%B0">スクレイピング</a>アプリをアクティブに<br/>
+④<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AF%A5%EA%A5%C3%A5%D7%A5%DC%A1%BC%A5%C9">クリップボード</a>の中身をペースト<br/>
+⑤ボタンクリックで必要な情報ゲット！</p><p>という工程が、</p><p>①<a class="keyword" href="http://d.hatena.ne.jp/keyword/Chrome">Chrome</a>で必要なPageを探す。<br/>
+②①のURLをコピー<br/>
+③ボタンクリックで必要な情報ゲット！</p><p>とすることができます。</p><p>ボタンクリックも省略することも可能ですが、必要なURLを取得しているかどうか確認する必要があるので、やりすぎは逆効果になることもあると思い今回は組み込みません。</p><p>ボタンクリックの時に<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AF%A5%EA%A5%C3%A5%D7%A5%DC%A1%BC%A5%C9">クリップボード</a>の中身を取得し、web取得を走らせることもできるが、ここでは、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AF%A5%EA%A5%C3%A5%D7%A5%DC%A1%BC%A5%C9">クリップボード</a>にURLが取り込まれたらアプリにURLを入力するようにしました。<br/>
+このためには定期的に<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AF%A5%EA%A5%C3%A5%D7%A5%DC%A1%BC%A5%C9">クリップボード</a>を確認し、URLが取り込まれたら、URL boxに取り込み、アプリをアクティブにする、というようにします。<br/>
+（省略しますが、URLであるかどうかを<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AF%A5%EA%A5%C3%A5%D7%A5%DC%A1%BC%A5%C9">クリップボード</a>のテキストが"http"で始まるかどうかを確認することでURL以外では動作させないということもできます。）</p><p>これにはタイマーイベントを利用します。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Visual%20Studio">Visual Studio</a>のForm1.cs[デザイン]の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C4%A1%BC%A5%EB%A5%DC%A5%C3%A5%AF%A5%B9">ツールボックス</a>から、Timer<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%F3%A5%DD%A1%BC%A5%CD%A5%F3%A5%C8">コンポーネント</a>を追加すします。<br/>
+デザイン画面のフォーム外にタイマー<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%F3%A5%DD%A1%BC%A5%CD%A5%F3%A5%C8">コンポーネント</a>が追加されるので、タイマー<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%F3%A5%DD%A1%BC%A5%CD%A5%F3%A5%C8">コンポーネント</a>をダブルクリックします。<br/>
+すると、タイマーイベント　private void timer1_Tick() が作成されます。</p><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20171021225237j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20171021/20171021225237.jpg" title="f:id:s51517765:20171021225237j:plain"/></span></p><p>Form1_Loadでtimer1を起動し、Intervalをセットします。これが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AF%A5%EA%A5%C3%A5%D7%A5%DC%A1%BC%A5%C9">クリップボード</a>のチェック間隔になります。<br/>
+Form1起動時に、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AF%A5%EA%A5%C3%A5%D7%A5%DC%A1%BC%A5%C9">クリップボード</a>の中身を取得し、初期化。これを変数”clp_text0”としました。<br/>
+timer1_Tick()がInterval毎に実行され、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AF%A5%EA%A5%C3%A5%D7%A5%DC%A1%BC%A5%C9">クリップボード</a>の中身が変化していれば、textBoxURLに中身をテキストで入力されます。<br/>
+bool check_clp　というbool型変数を設定し、一度しか実行されないようにします。これをつけないと何度も起動されてしまいます。<br/>
+異なるURLを連続して取得したいので、テキストの取得が完了したら、この変数は初期化します。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">
+<span class="synType">private</span> <span class="synType">void</span> Form1_Load(<span class="synType">object</span> sender, EventArgs e)
+    {
+        InitializeComponent();
+        <span class="synType">string</span> clp_text0;
+        <span class="synType">bool</span> check_clp=<span class="synConstant">false</span>;
+        timer1.Interval = <span class="synConstant">1000</span>;　<span class="synComment">//タイマーインターバル</span>
+        timer1.Start();
+        clp_text0 = Clipboard.GetText(); <span class="synComment">//クリップボードの中身を取得、初期化</span>
+     }
+       <span class="synType">private</span> <span class="synType">void</span> timer1_Tick(<span class="synType">object</span> sender, EventArgs e)
+        {
+            <span class="synStatement">if</span> (clp_text0 != Clipboard.GetText()&amp;&amp;check_clp==<span class="synConstant">false</span>)
+            {
+                textBoxURL.Text(Clipboard.GetText());
+                check_clp = <span class="synConstant">true</span>;
+                <span class="synStatement">this</span>.TopMost = !<span class="synStatement">this</span>.TopMost;  <span class="synComment">//フォームを最前面に</span>
+            }
+        }
+</pre>
+</div>

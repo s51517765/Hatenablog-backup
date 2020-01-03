@@ -1,0 +1,43 @@
+<div class="entry-content">
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/selenium">selenium</a>を使う目的は、beautifulsoupがページの情報を取得するだけであるので＜a＞のようなLinkが設定されていないとLink先の情報が取得できないのに対し、ボタンクリックやフォーム入力によって次のページに遷移するような形のページに対して利用できるという点になるのだと思います。</p><p>ここではWindows10での設定と簡易動作までを説明します。</p><p>まずはPhantomJSのインストールとパスの設定をします。<br/>
+パスの設定とは<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>とPhantomJSを紐づけることです。</p><p><a href="http://phantomjs.org/">PhantomJS | PhantomJS</a><br/>
+からPhantomJSをダウンロードします。特に"ダマシ"はないので画面に従ってDownloadできると思います。<br/>
+記事執筆時点ではv2.1.1です。 （phantomjs-2.1.1-<a class="keyword" href="http://d.hatena.ne.jp/keyword/windows">windows</a>.zip）<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180107134758j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180107/20180107134758.jpg" title="f:id:s51517765:20180107134758j:plain"/></span></p><p>ダウンロードしたzipを解凍すると、<br/>
+\Desktop\phantomjs-2.1.1-<a class="keyword" href="http://d.hatena.ne.jp/keyword/windows">windows</a>.zip\phantomjs-2.1.1-<a class="keyword" href="http://d.hatena.ne.jp/keyword/windows">windows</a>\bin<br/>
+の中にPhantomjs.exeがあります。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%B0%A4%B0%A4%EB">ぐぐる</a>と<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>でのインストール（主に、<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>からのpathを通す方法について）が出てきますが、うまくいきません。<br/>
+<script src="https://gist.github.com/maechabin/7632c460ceede823cbde.js"> </script><cite class="hatena-citation"><a href="https://gist.github.com/maechabin/7632c460ceede823cbde">gist.github.com</a></cite><br/>
+pathを通すというのは、要するに<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>からモジュールとしphantomJS(以下PJS)をインポートするにあたって、このPJS本体がどこにあるかを設定することなのですが、なにがどう違うのか？よくわかりません。</p><p>そこで、逆転の発想をしました。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>(私の環境ではanaconda)にPJSの場所を設定するのではなく、anacondaが知っている場所にPJSを入れたらいいのではないか？<br/>
+結果、うまくいきました。</p><p>anacondaのrootはanaconda promptを起動したときDefoultで立ち上がる場所です。ここにPJSを入れようと思います。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180107135658j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180107/20180107135658.jpg" title="f:id:s51517765:20180107135658j:plain"/></span><br/>
+ここでは、</p>
+<pre class="code" data-lang="" data-unlink="">C:\ProgramData\Anaconda3</pre><p>です。<br/>
+これを<a class="keyword" href="http://d.hatena.ne.jp/keyword/windows">windows</a>の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A8%A5%AF%A5%B9%A5%D7%A5%ED%A1%BC%A5%E9">エクスプローラ</a>で開き、実行ファイルをコピーします。<br/>
+（windows10ではこのあたりのフォルダは隠しフォルダになっています。）</p><p>コピーできたら、anaconda promptで↓のように実行してphantomjsのversion情報が取得できればこれで設定はOKです。</p>
+<pre class="code" data-lang="" data-unlink="">$phantomjs -v</pre><p>次に実際にPJSをつかってブラウザの操作をしてみます。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/twitter">twitter</a>のホームを開き、ログインボタンをクリックしてみます。<br/>
+PJSはヘッドレスブラウザといって、コマンドで操作するために特化されたブラウザで、よって画面描画しないものです。<br/>
+これでは、うまく動いたのかどうかが判断できないので、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EA%A1%BC%A5%F3%A5%B7%A5%E7%A5%C3%A5%C8">スクリーンショット</a>をとることで動作確認します。<br/>
+ログインボタンは、<code>browser.find_elements_by_link_text("###")</code>で指定します。</p>
+<pre class="code" data-lang="" data-unlink="">※＜code＞＜/code＞でかこむとグレーの四角でハイライトされる。「code記法」と呼ばれるもの。
+本来は＜＞を半角で書くが、半角で書くとタグとみなされるので説明できない。</pre><p>おもな<a class="keyword" href="http://d.hatena.ne.jp/keyword/CSS">CSS</a><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%BB%A5%EC%A5%AF%A5%BF">セレクタ</a>については↓に例が載っている。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Fkinpira%2Fitems%2F383b0fbee6bf229ea03d" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="PythonでSeleniumを使ってスクレイピング (基礎) - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/kinpira/items/383b0fbee6bf229ea03d">qiita.com</a></cite><br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Fmochio%2Fitems%2Fdc9935ee607895420186" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Selenium webdriverよく使う操作メソッドまとめ - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/mochio/items/dc9935ee607895420186">qiita.com</a></cite><br/>
+</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synPreProc">from</span> selenium <span class="synPreProc">import</span> webdriver
+browser = webdriver.PhantomJS()
+
+url = <span class="synConstant">"https://twitter.com/"</span>
+browser.get(url)
+browser.save_screenshot(<span class="synConstant">"twitter.png"</span>) <span class="synComment">#スクリーンショット</span>
+login = browser.find_elements_by_link_text(<span class="synConstant">'ログイン'</span>) <span class="synComment">#Linkのテキストを探す</span>
+login[<span class="synConstant">0</span>].click() <span class="synComment">#Linkを踏む</span>
+browser.save_screenshot(<span class="synConstant">"login.png"</span>) <span class="synComment">#スクリーンショット</span>
+</pre><p>↓で例題にもなっているので<a class="keyword" href="http://d.hatena.ne.jp/keyword/firefox">firefox</a>も試してみた。</p><div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/487311778X/shirotoakb-22/"><img alt="退屈なことはPythonにやらせよう ―ノンプログラマーにもできる自動化処理プログラミング" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/51hk%2B5bKNrL._SL160_.jpg" title="退屈なことはPythonにやらせよう ―ノンプログラマーにもできる自動化処理プログラミング"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/487311778X/shirotoakb-22/">退屈なことはPythonにやらせよう ―ノンプログラマーにもできる自動化処理プログラミング</a></p><ul><li><span class="hatena-asin-detail-label">作者:</span> Al Sweigart,相川愛三</li><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AA%A5%E9%A5%A4%A5%EA%A1%BC%A5%B8%A5%E3%A5%D1%A5%F3">オライリージャパン</a></li><li><span class="hatena-asin-detail-label">発売日:</span> 2017/06/03</li><li><span class="hatena-asin-detail-label">メディア:</span> 単行本（ソフトカバー）</li><li><a href="http://d.hatena.ne.jp/asin/487311778X/shirotoakb-22" target="_blank">この商品を含むブログ (5件) を見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/firefox">firefox</a>用の<a class="keyword" href="http://d.hatena.ne.jp/keyword/selenium">selenium</a> driverは↓<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fmozilla%2Fgeckodriver%2Freleases" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="mozilla/geckodriver"></iframe><cite class="hatena-citation"><a href="https://github.com/mozilla/geckodriver/releases">github.com</a></cite><br/>
+これも同様に、実行ファイルを</p>
+<pre class="code" data-lang="" data-unlink="">C:\ProgramData\Anaconda3</pre><p>にコピーすればよい。（<a class="keyword" href="http://d.hatena.ne.jp/keyword/firefox">firefox</a> <a href="https://www.mozilla.org/ja/firefox/new/">https://www.mozilla.org/ja/firefox/new/</a> がインストールされている前提）</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/firefox">firefox</a>を使う場合は上のコードでブラウザ指定を書き換える。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">browser = webdriver.Firefox()
+</pre><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/firefox">firefox</a>の場合は画面がでるブラウザなので、画面が立ち上がってくる。</p>
+</div>

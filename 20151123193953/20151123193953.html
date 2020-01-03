@@ -1,0 +1,92 @@
+<div class="entry-content">
+<p>土壌センサのLogicを組みます。</p>
+<p> </p>
+<p>土壌センサは市販のものもありますが、</p>
+<p> </p>
+<p><a href="http://akizukidenshi.com/catalog/g/gM-07047/" target="_blank">http://akizukidenshi.com/catalog/g/gM-07047/</a></p>
+<p> </p>
+<p>ここでは簡単な擬似的な仕組みを作ります。</p>
+<p>その方法はネットでもたくさん出ていますが、土壌の抵抗を測定します。</p>
+<p> </p>
+<p>回路としては、5Vを<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B0%F5%B2%C4">印可</a>して　Analog Inputで電位を読みます。</p>
+<p> </p>
+<p>ボリューム抵抗をここでは、土壌抵抗とみなして、テストします。</p>
+<p> </p>
+<p><a class="detailOn" href="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111858.jpg" id="i13492176761"><img alt="" border="0" height="313" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111858.jpg" width="220"/></a></p>
+<p> </p>
+<p>=====================================</p>
+<p>//土壌抵抗検知</p>
+<p> </p>
+<p>int regist = 0; //抵抗値を格納</p>
+<p>void setup()</p>
+<p>{</p>
+<p>Serial.begin(9600);</p>
+<p>}</p>
+<p> </p>
+<p>void loop()</p>
+<p>{</p>
+<p>regist = analogRead(A3); // アナログ入力ピンの電位を読む</p>
+<p>Serial.println(regist); // 読んだ値を出力</p>
+<p>delay(500);</p>
+<p>}</p>
+<p>=====================================</p>
+<p>今日の回路は簡単ですね。</p>
+<p>ボリューム抵抗を変化させると、これに応じて、出力が変わります。</p>
+<p> </p>
+<p>これは、回路としては、土壌抵抗R1と、ブレッドボード上の抵抗R2を直列に接続し、5Vを<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B0%F5%B2%C4">印可</a>、R1とR2の間にAnalog Readをいれています。</p>
+<p> </p>
+<p>このとき、Analog Readの電圧は</p>
+<p>5V * R2 /(R1 + R2) となります。</p>
+<p>よって、R1の変化を電圧の読み値として観測することができます。</p>
+<p> </p>
+<p>今はあまり深く考えずに思考を具現化しましたがR1(土壌抵抗)をGND側にしたほうが、</p>
+<p>5V * R1 /(R1+R2)となり直感的になるかもしれません。</p>
+<p>以下ではこの方針で行きます。</p>
+<p> </p>
+<p>Analog Readの読みは5Vのとき1024(これは10bit = 2の10乗)を示し、電位に比例します。</p>
+<p>たとえば、2.5Vなら512、2Vなら409…など。</p>
+<p> </p>
+<p>土壌抵抗が実装される観葉植物の土壌の抵抗がどれくらいかわからないですが、</p>
+<p>もし、抵抗が大きければ、読みは大きな値をしめします。※ 5V * R1 /(R1+R2)この計算による</p>
+<p> </p>
+<p>想定としては、土壌の水分が多くなると、電流が流れやすい状態 = 抵抗が低い、になり、水分が少なくなると、　電流が流れ難い状態 = 抵抗が高い、　になります。</p>
+<p> </p>
+<p>R2の値は、実装しながら適当な値をさがします。</p>
+<p>水分が不足すると、抵抗が高くなるので、Analog Readは高くなり、これによって、水遣りが必要であることを検知することができます。</p>
+<p> </p>
+<p><a class="detailOn" href="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111901.jpg" id="i13492176759"><img alt="" border="0" height="146" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111901.jpg" width="220"/></a></p>
+<p> </p>
+<p>このような端子を作成しました。</p>
+<p> </p>
+<p>このクリップの先端を土にさしこみ、Analog ReadとGNDに接続します。</p>
+<p> </p>
+<p>さて、ここまで先に書いてしまいましたが、今作ろうとしているものは観葉植物自動水やり器です。</p>
+<p> </p>
+<p>先日発注した、給水のためのポンプも入手できました。</p>
+<p>こちらは、実験がしやすいようにジャンパー線を半田つけして、ブレッドボード上で試作をできるようにしました。</p>
+<p> </p>
+<p><a class="detailOn" href="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111904.jpg" id="i13492176760"><img alt="" border="0" height="146" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111904.jpg" width="220"/></a></p>
+<p> </p>
+<p><a class="detailOn" href="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111907.jpg" id="i13492176867"><img alt="" border="0" height="146" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111907.jpg" width="220"/></a></p>
+<p> </p>
+<p>半田付けした部分は導線がむき出しですので、テープを張って絶縁しておきます。</p>
+<p>5Vの電源を接続すると、水を給水することが確認できましたが、</p>
+<p>5Vだからかどうか分かりませんが、給水部からポンプまで高さがあると水を運びませんでした。</p>
+<p>出水部は高さがあっても問題なしです。</p>
+<p>よって、ポンプ本体を水の中に沈める必要がありそうです。</p>
+<p> </p>
+<p>↓給水ポンプ</p>
+<div class="freezed">
+<div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B00MCIPBO8/shirotoakb-22/"><img alt="DC 12V 水中ポンプ DC30A-1230 小型ポンプ ハイパワー 直流DC5V?DC12V 池ポンプ 揚程 3M　水族館給水・排水ポンプ　水槽水循環 潜水ポンプ 静音 水中の使用可能 静音 ブラシレスモーター 潜水インストール 濾過ポンプ 庭池 循環ポンプ　自作 ポンプ DIY ガーデニング 水中ポンプ" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/41S7Y2WcxwL._SL160_.jpg" title="DC 12V 水中ポンプ DC30A-1230 小型ポンプ ハイパワー 直流DC5V?DC12V 池ポンプ 揚程 3M　水族館給水・排水ポンプ　水槽水循環 潜水ポンプ 静音 水中の使用可能 静音 ブラシレスモーター 潜水インストール 濾過ポンプ 庭池 循環ポンプ　自作 ポンプ DIY ガーデニング 水中ポンプ"/></a>
+<div class="hatena-asin-detail-info">
+<p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B00MCIPBO8/shirotoakb-22/">DC 12V 水中ポンプ DC30A-1230 小型ポンプ ハイパワー 直流DC5V?DC12V 池ポンプ 揚程 3M　水族館給水・排水ポンプ　水槽水循環 潜水ポンプ 静音 水中の使用可能 静音 ブラシレスモーター 潜水インストール 濾過ポンプ 庭池 循環ポンプ　自作 ポンプ DIY ガーデニング 水中ポンプ</a></p>
+<ul>
+<li><span class="hatena-asin-detail-label">メディア:</span> おもちゃ＆ホビー</li>
+<li><a href="http://d.hatena.ne.jp/asin/B00MCIPBO8/shirotoakb-22" target="_blank">この商品を含むブログを見る</a></li>
+</ul>
+</div>
+<div class="hatena-asin-detail-foot"> </div>
+</div>
+</div>
+<p> </p>
+</div>

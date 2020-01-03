@@ -1,0 +1,94 @@
+<div class="entry-content">
+<p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180729213935p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180729/20180729213935.png" title="f:id:s51517765:20180729213935p:plain"/></span><br/>
+7月も例年通り「例年に無い」暑さでしたね。<br/>
+暑くなってくると、「水不足になるんじゃないか？」と心配になります。<br/>
+節水制限ですめばまぁいいとしても、断水になんてなったら…。</p><p>私のなかでは1994年（平成6年）の時の水不足が印象的です。<br/>
+<a href="https://ja.wikipedia.org/wiki/%E5%B9%B3%E6%88%906%E5%B9%B4%E6%B8%87%E6%B0%B4">平成6年渇水 - Wikipedia</a></p><p>現在のダムの貯水状況は各種HPで確認できて、東京（関東）の状況は東京都水道局のHPで確認できます。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fwww.waterworks.metro.tokyo.jp%2Fsuigen%2Fsuigen.html" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="貯水量情報 | 水源・水質 | 東京都水道局"></iframe><cite class="hatena-citation"><a href="https://www.waterworks.metro.tokyo.jp/suigen/suigen.html">www.waterworks.metro.tokyo.jp</a></cite></p><p>そこで、貯水状況を取得して<a class="keyword" href="http://d.hatena.ne.jp/keyword/Tweet">Tweet</a>する<a class="keyword" href="http://d.hatena.ne.jp/keyword/bot">bot</a>を作ってみました。<br/>
+今回はBeautifulsoupを使うことで表組を取得し、ダイジェストとして3水系（<a class="keyword" href="http://d.hatena.ne.jp/keyword/%CD%F8%BA%AC%C0%EE">利根川</a>、荒川、 <a class="keyword" href="http://d.hatena.ne.jp/keyword/%C2%BF%CB%E0%C0%EE">多摩川</a>）の合計<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C3%F9%BF%E5%CE%A8">貯水率</a>を<a class="keyword" href="http://d.hatena.ne.jp/keyword/tweet">tweet</a>します。</p><p>beautifulsoupのインストールは以下でできます。</p>
+<pre class="code" data-lang="" data-unlink="">$ pip3 install beautifulsoup4</pre><p>東京都水道局のHPでは3水系にわかれて表組（table）になっています。<br/>
+表組は、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Chrome">Chrome</a>の右クリックから「検証」を使うと<code>tbl-c2</code>というクラスになっていることが分かります。<br/>
+Beautifulsoupでは表組も取得できます。</p>
+<pre class="code" data-lang="" data-unlink="">tables = html.findAll("table", {"class": "tbl-c2"})</pre><p>取得するデータは、<code>以上合計</code><code>前年同日量</code><code>前々年同日量</code>の「<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C3%F9%BF%E5%CE%A8">貯水率</a>（％）」となります。<br/>
+3水系（<a class="keyword" href="http://d.hatena.ne.jp/keyword/%CD%F8%BA%AC%C0%EE">利根川</a>、荒川、 <a class="keyword" href="http://d.hatena.ne.jp/keyword/%C2%BF%CB%E0%C0%EE">多摩川</a>）あるので、<a class="keyword" href="http://d.hatena.ne.jp/keyword/3x3">3x3</a>のlistとしてデータを取得します。<br/>
+listはデータがない状態として、”-”で初期化した<a class="keyword" href="http://d.hatena.ne.jp/keyword/3x3">3x3</a>のlistを作ります。</p>
+<pre class="code" data-lang="" data-unlink="">dam_list=["-" ,"-" ,"-" ],["-" ,"-" ,"-" ],["-" ,"-" ,"-" ]</pre><p>表組（table）のなかのセルは"td"というタグで取得できます。</p>
+<pre class="code" data-lang="" data-unlink="">rows = table.findAll("td")</pre><p>何番目のセル、という形で指定してもいいですが、もしダムが増えても使えるようにしようと思います。<br/>
+そのためには、<code>以上合計</code>の次にある100以下の数値、<code>前年同日量</code>の次にある100以下の数値、<code>前々年同日量</code>の次にある100以下の数値、を取得すれば実現できます。</p><p>ここで出てくるのが<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C0%B5%B5%AC%C9%BD%B8%BD">正規表現</a>です。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C3%F9%BF%E5%CE%A8">貯水率</a>は100未満（100もあるのかな？あるとしても起きる可能性はきわめて低いので無視しても実質的には問題ないはず）で、少数点以下1桁の数値です。<br/>
+これを<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C0%B5%B5%AC%C9%BD%B8%BD">正規表現</a>で表現すると↓になります。</p>
+<pre class="code" data-lang="" data-unlink="">per = re.match('[0-9]{2}\.[0-9]{1}', row.text).group(0)</pre><p><code>[0-9]{2}</code>は0~9の数字が連続して2つ、<code>\.</code>はバックスラッシュで<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A8%A5%B9">エス</a>ケープしたピリオド、<code>[0-9]{1}</code>は0~9の数字が1つです。<br/>
+これで、99.9以下の少数が表現できます。<br/>
+取得した数字をlistに格納していきます。<br/>
+該当が見つからなければ、<code>None</code>となり、このときはlistへの格納をしないようにすると、初期化したままの”-”になります。</p><p>これを、一つの文字列にします。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/twitter">twitter</a>では<code>"\n"</code>の改行コードを入力すれば改行を使うことができます。<br/>
+これを利用して、簡単な表組を<a class="keyword" href="http://d.hatena.ne.jp/keyword/Tweet">Tweet</a>することができます。<br/>
+（ちなみに、初期の<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>には改行はなかったですよね。）</p>
+<pre class="code" data-lang="" data-unlink="">    text="今日のダム貯水率(%)【東京都水道局エリア】""\n"
+    text+="             今日   前年   前々年""\n"
+    text+="利根川水系   "+dam_list[0][0]+"   "+dam_list[0][1]+"   "+dam_list[0][2]+"\n"
+    text+="荒川水系     "+dam_list[1][0]+"   "+dam_list[1][1]+"   "+dam_list[1][2]+"\n"
+    text+="多摩川水系   "+dam_list[2][0]+"   "+dam_list[2][1]+"   "+dam_list[2][2]+"\n"</pre><p>これをtweepyで<a class="keyword" href="http://d.hatena.ne.jp/keyword/tweet">tweet</a>します。</p><p></p><h3>コード全体</h3>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synPreProc">from</span> bs4 <span class="synPreProc">import</span> BeautifulSoup
+
+<span class="synStatement">def</span> <span class="synIdentifier">dam_tokyo</span>():
+    <span class="synIdentifier">print</span>(<span class="synConstant">"ダム beautiflsoup"</span>)
+    url=<span class="synConstant">"https://www.waterworks.metro.tokyo.jp/suigen/suigen.html"</span>
+    html = urllib.request.urlopen(url)
+    html = BeautifulSoup(html, <span class="synConstant">"html.parser"</span>)
+
+    tables = html.findAll(<span class="synConstant">"table"</span>, {<span class="synConstant">"class"</span>: <span class="synConstant">"tbl-c2"</span>})
+
+    <span class="synComment">#"利根川　 荒川　　 多摩川"</span>
+    dam_list=[<span class="synConstant">"-"</span> ,<span class="synConstant">"-"</span> ,<span class="synConstant">"-"</span> ],[<span class="synConstant">"-"</span> ,<span class="synConstant">"-"</span> ,<span class="synConstant">"-"</span> ],[<span class="synConstant">"-"</span> ,<span class="synConstant">"-"</span> ,<span class="synConstant">"-"</span> ]
+    i = <span class="synConstant">0</span>
+
+    <span class="synStatement">for</span> table <span class="synStatement">in</span> tables:
+        rows = table.findAll(<span class="synConstant">"td"</span>)
+        zennen = <span class="synIdentifier">False</span>
+        zen2nen = <span class="synIdentifier">False</span>
+        today=<span class="synIdentifier">False</span>
+        <span class="synStatement">for</span> row <span class="synStatement">in</span> rows:
+            <span class="synStatement">try</span>:
+                <span class="synStatement">if</span> row.text==<span class="synConstant">"以上合計"</span>:
+                    today=<span class="synIdentifier">True</span>
+                <span class="synStatement">if</span> row.text==<span class="synConstant">"前年同日量"</span>:
+                    zennen=<span class="synIdentifier">True</span>
+                <span class="synStatement">if</span> row.text==<span class="synConstant">"前々年同日量"</span>:
+                    zen2nen = <span class="synIdentifier">True</span>
+                <span class="synStatement">if</span> zen2nen==<span class="synIdentifier">True</span>:
+                    per = re.match(<span class="synConstant">'[0-9]{2}\.[0-9]{1}'</span>, row.text).group(<span class="synConstant">0</span>)
+                    <span class="synStatement">if</span> per!=<span class="synIdentifier">None</span>:
+                        <span class="synIdentifier">print</span>(<span class="synConstant">"前々年同日量"</span>)
+                        <span class="synIdentifier">print</span>(per)
+                        dam_list[i][<span class="synConstant">2</span>]=per
+                <span class="synStatement">elif</span> zennen==<span class="synIdentifier">True</span> :
+                    per = re.match(<span class="synConstant">'[0-9]{2}\.[0-9]{1}'</span>, row.text).group(<span class="synConstant">0</span>)
+                    <span class="synStatement">if</span> per!=<span class="synIdentifier">None</span>:
+                        <span class="synIdentifier">print</span>(<span class="synConstant">"前年同日量"</span>)
+                        <span class="synIdentifier">print</span>(per)
+                        dam_list[i][<span class="synConstant">1</span>] = per
+                <span class="synStatement">elif</span> today==<span class="synIdentifier">True</span>:
+                    per = re.match(<span class="synConstant">'[0-9]{2}\.[0-9]{1}'</span>, row.text).group(<span class="synConstant">0</span>)
+                    <span class="synStatement">if</span> per!=<span class="synIdentifier">None</span>:
+                        <span class="synIdentifier">print</span>(<span class="synConstant">"今日"</span>)
+                        <span class="synIdentifier">print</span>(per)
+                        dam_list[i][<span class="synConstant">0</span>] = per
+            <span class="synStatement">except</span>:
+                <span class="synStatement">pass</span>
+        i += <span class="synConstant">1</span>
+    <span class="synIdentifier">print</span>(dam_list)
+    <span class="synIdentifier">print</span>(<span class="synConstant">"-----"</span>)
+
+    text=<span class="synConstant">"今日のダム貯水率(%)【東京都水道局エリア】""</span><span class="synSpecial">\n</span><span class="synConstant">"</span>
+    text+=<span class="synConstant">"             今日   前年   前々年""</span><span class="synSpecial">\n</span><span class="synConstant">"</span>
+    text+=<span class="synConstant">"利根川水系   "</span>+dam_list[<span class="synConstant">0</span>][<span class="synConstant">0</span>]+<span class="synConstant">"   "</span>+dam_list[<span class="synConstant">0</span>][<span class="synConstant">1</span>]+<span class="synConstant">"   "</span>+dam_list[<span class="synConstant">0</span>][<span class="synConstant">2</span>]+<span class="synConstant">"</span><span class="synSpecial">\n</span><span class="synConstant">"</span>
+    text+=<span class="synConstant">"荒川水系     "</span>+dam_list[<span class="synConstant">1</span>][<span class="synConstant">0</span>]+<span class="synConstant">"   "</span>+dam_list[<span class="synConstant">1</span>][<span class="synConstant">1</span>]+<span class="synConstant">"   "</span>+dam_list[<span class="synConstant">1</span>][<span class="synConstant">2</span>]+<span class="synConstant">"</span><span class="synSpecial">\n</span><span class="synConstant">"</span>
+    text+=<span class="synConstant">"多摩川水系   "</span>+dam_list[<span class="synConstant">2</span>][<span class="synConstant">0</span>]+<span class="synConstant">"   "</span>+dam_list[<span class="synConstant">2</span>][<span class="synConstant">1</span>]+<span class="synConstant">"   "</span>+dam_list[<span class="synConstant">2</span>][<span class="synConstant">2</span>]+<span class="synConstant">"</span><span class="synSpecial">\n</span><span class="synConstant">"</span>
+    text+=<span class="synConstant">"詳しくは→ https://www.waterworks.metro.tokyo.jp/suigen/suigen.html"</span>
+    <span class="synIdentifier">print</span>(text)
+
+    api.update_status(text) <span class="synComment">#tweepyでtweet</span>
+</pre><p></p><blockquote class="twitter-tweet" data-lang="ja"><p dir="ltr" lang="ja">今日のダム<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C3%F9%BF%E5%CE%A8">貯水率</a>(%)【東京都水道局エリア】<br/>             今日   前年   前々年<br/><a class="keyword" href="http://d.hatena.ne.jp/keyword/%CD%F8%BA%AC%C0%EE%BF%E5%B7%CF">利根川水系</a>   64.1   84.0   55.3<br/><a class="keyword" href="http://d.hatena.ne.jp/keyword/%B9%D3%C0%EE%BF%E5%B7%CF">荒川水系</a>     94.8   57.9   -<br/><a class="keyword" href="http://d.hatena.ne.jp/keyword/%C2%BF%CB%E0%C0%EE%BF%E5%B7%CF">多摩川水系</a>   87.5   79.1   69.8<br/>詳しくは→ <a href="https://t.co/LZl0c7Is0a">https://t.co/LZl0c7Is0a</a></p>— プログラミング素人 (@s51517765) <a href="https://twitter.com/s51517765/status/1023403509985599491?ref_src=twsrc%5Etfw">2018年7月29日</a></blockquote><script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script><p></p><h3>関連記事</h3><iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2017%2F09%2F24%2F130650" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="Anacondaでpythonプログラミング &amp; TeratermでRaspberry Piに転送 - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2017/09/24/130650">s51517765.hatenadiary.jp</a></cite><br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2017%2F12%2F02%2F113434" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="janome(蛇の目)でマルコフ連鎖【正規表現の初歩】 - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2017/12/02/113434">s51517765.hatenadiary.jp</a></cite>
+</div>

@@ -1,0 +1,35 @@
+<div class="entry-content">
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Raspberry%20Pi">Raspberry Pi</a>で電子工作を進めているとラズパイから何らかの通知を送りたくなることがあります。<br/>
+いつもコンソールを立ち上げている訳にはいかないので。</p><p>そこで、LANに標準で接続するラズパイだからこそ、ラズパイと<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>で<a class="keyword" href="http://d.hatena.ne.jp/keyword/web%A5%B5%A1%BC%A5%D3%A5%B9">webサービス</a>を組み合わせて<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%DE%A5%DB">スマホ</a>に通知することをやってみます。</p><p>まずは、こちらのブログでも何度か取り上げていて私が最も力を入れている<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>です。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>にはDirect Messageがありますので、<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>でDirect Messageを送信し、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%DE%A5%DB">スマホ</a>のTwiiterアプリやブラウザで受信します。</p><p>Direct Messageももちろんtweepyに盛り込まれていますので、公式Referenceをみて実装しました。<br/>
+<a href="http://tweepy.readthedocs.io/en/v3.5.0/api.html">API Reference — tweepy 3.5.0 documentation</a><br/>
+</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">API.send_direct_message(user/screen_name/user_id, text)
+</pre><p>こちらが、Direct messageの<a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>　classです。<br/>
+（）のなかがパラメータでスクリーン名もしくはユーザーID、ユーザー名と実際に送りたいMessage（text）であると推測できます。私はスクリーン名を使用しました。<br/>
+スクリーン名とは@に続いて表示される、↓の例では "MomentsJapan" のようなもののことです。<br/>
+ユーザーIDはint型の数字で表せれる固有の番号です。user classのデータを取得すると調べることができます。<br/>
+userが "<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a> モーメント" のことでしょう（未確認なので使う場合は確認してね）<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20171007220108j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20171007/20171007220108.jpg" title="f:id:s51517765:20171007220108j:plain"/></span><br/>
+</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synComment"># -*- coding: utf-8 -*-</span>
+<span class="synPreProc">import</span> datetime
+<span class="synPreProc">import</span> tweepy
+
+CONSUMER_KEY=<span class="synConstant">"****************"</span>
+CONSUMER_SECRET=<span class="synConstant">"****************"</span>
+ACCESS_TOKEN=<span class="synConstant">"****************"</span>
+ACCESS_SECRET=<span class="synConstant">"***************"</span>
+auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+auth.set_access_token(ACCESS_TOKEN, ACCESS_SECRET)
+api = tweepy.API(auth)
+
+<span class="synStatement">def</span> <span class="synIdentifier">direct_messag</span>():
+    tdatetime = dt.now()
+    api.send_direct_message(screen_name=<span class="synConstant">"宛先のスクリーン名"</span>,text=<span class="synConstant">"test "</span>+tdatetime.strftime(<span class="synConstant">'%H%M%S'</span>))
+</pre><p>defで始まるものが、関数（メソッド）で<a class="keyword" href="http://d.hatena.ne.jp/keyword/api">api</a>.send_direct_messageで送信することができます。<br/>
+ちなみに、Direct Messageは自分あてにも送信できるので、ラズパイから自身のアカウントへDMをを送信し<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%DE%A5%DB">スマホ</a>で確認することもできます。<br/>
+text（DMの本文）はstring型なので、その中に含める内容はア<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A4%A5%C7%A5%A2">イデア</a>次第です。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20171007221338j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20171007/20171007221338.jpg" title="f:id:s51517765:20171007221338j:plain"/></span></p><p>ちなみに、↑が私が現在ラズパイで運用している<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>アカウントです。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Ftwitter.com%2Fclassic_CD" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="classic_CD (@classic_CD) | Twitter"></iframe><cite class="hatena-citation"><a href="https://twitter.com/classic_CD">twitter.com</a></cite></p>
+</div>

@@ -1,0 +1,82 @@
+<div class="entry-content">
+<p>私の会社での勤務時間は、自分で出退勤時間をweb上で入力することになっている。<br/>
+私は現在、社会人として3社目だが2社目が一時期 ID Cardの記録から自動反映であった以外は、すべて自身で入力する形である。<br/>
+世の中的にはまだこんな無駄な作業が行われているのが一般的なのがありえないと思っている。<br/>
+そうはいっても、そこそこまじめに勤務記録をつけないわけにもいかないが、朝はあわただしいし、帰りはそれはそれで電車の時間を気にしたりであわただしいので、月末にまとめて入力したりする。</p><p>そんなことのために、PCの起動終了時間を記録するアプリを作った。<br/>
+一般にはブートロガーというらしい。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Vector">Vector</a>などにも探せばあるのだが、2日目からなぜか動かなくなったので、自分で作ったものを使っている。<br/>
+1月半ほど使って安定動作しているので、バグ出しOKということで公開します。<br/>
+UIは↓の練習問題で作ったアラーム・タイマーのアプリを流用した。</p><div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B01D14LDAC/shirotoakb-22/"><img alt="ゴールからはじめるC#　?「作りたいもの」でプログラミングのきほんがわかる" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/51IXG5wWa9L._SL160_.jpg" title="ゴールからはじめるC#　?「作りたいもの」でプログラミングのきほんがわかる"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B01D14LDAC/shirotoakb-22/">ゴールからはじめるC#　?「作りたいもの」でプログラミングのきほんがわかる</a></p><ul><li><span class="hatena-asin-detail-label">作者:</span> 菅原朋子</li><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/%B5%BB%BD%D1%C9%BE%CF%C0%BC%D2">技術評論社</a></li><li><span class="hatena-asin-detail-label">発売日:</span> 2016/03/16</li><li><span class="hatena-asin-detail-label">メディア:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/Kindle">Kindle</a>版</li><li><a href="http://d.hatena.ne.jp/asin/B01D14LDAC/shirotoakb-22" target="_blank">この商品を含むブログを見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div><p>↓こんな感じ。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20171221222811j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20171221/20171221222811.jpg" title="f:id:s51517765:20171221222811j:plain"/></span></p><p>元の時計の動作用のTimerとは別にTimerを用意し、時計の動作に影響しないように、”hh:mm:00:500”で更新するようにしている。<br/>
+”hh:mm:00:000”で更新しようとすると、時計が一瞬とは言え止まって見えてしまうため。</p><p>これを<a class="keyword" href="http://d.hatena.ne.jp/keyword/windows">windows</a>のスタートアップに登録しておけば良い。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""> <span class="synType">public</span> <span class="synStatement">partial</span> <span class="synType">class</span> Form1 : Form
+    {
+        <span class="synType">private</span> <span class="synType">bool</span> openToday = <span class="synConstant">false</span>;
+        <span class="synType">private</span> DateTime [] timeStartEnd=<span class="synStatement">new</span> DateTime[<span class="synConstant">2</span>];
+　　}
+<span class="synType">private</span> <span class="synType">void</span> timer2_Tick(<span class="synType">object</span> sender, EventArgs e)
+        {
+            <span class="synStatement">if</span> (openToday == <span class="synConstant">false</span>)
+            {
+                <span class="synComment">//起動時刻取得</span>
+                timeStartEnd[<span class="synConstant">0</span>] = DateTime.Now;
+                openToday = <span class="synConstant">true</span>;
+                System.Threading.Thread.Sleep(<span class="synConstant">1000</span>); <span class="synComment">//1秒停止</span>
+            }
+            DateTime now = DateTime.Now;
+            <span class="synStatement">if</span> (now.Second == <span class="synConstant">0</span>&amp;&amp; now.Millisecond&gt;<span class="synConstant">500</span>) <span class="synComment">//時計が止まる対策</span>
+            {                         
+                    <span class="synComment">//現在時刻を終了時刻として書き込む＆覚える</span>
+                    timeStartEnd[<span class="synConstant">1</span>] = DateTime.Now;
+                    System.Threading.Thread.Sleep(<span class="synConstant">500</span>); <span class="synComment">//0.5秒停止                </span>
+                <span class="synStatement">try</span>
+                {
+                    <span class="synStatement">using</span> (StreamWriter writer = <span class="synStatement">new</span> StreamWriter(<span class="synConstant">"timecard.txt"</span>, <span class="synConstant">true</span>, System.Text.Encoding.GetEncoding(<span class="synConstant">"utf-8"</span>)))
+                    {
+                      <span class="synComment">// Logファイルがあるかどうか確認</span>
+                    }
+                }
+                <span class="synStatement">catch</span>
+                {
+                    <span class="synStatement">using</span> (StreamWriter writer = <span class="synStatement">new</span> StreamWriter(<span class="synConstant">"timecard.txt"</span>, <span class="synConstant">true</span>, System.Text.Encoding.GetEncoding(<span class="synConstant">"utf-8"</span>)))
+                    {
+                        <span class="synComment">//ファイルがないときの処理</span>
+                        writer.Write(<span class="synConstant">"timecard"</span> + System.Environment.NewLine);
+                    }
+                }
+            
+            <span class="synComment">//テキストファイルからすべての行を読み込む</span>
+            <span class="synType">string</span>[] line = System.IO.File.ReadAllLines(<span class="synConstant">"timecard.txt"</span>);
+            <span class="synStatement">try</span>
+            {
+                <span class="synComment">//最後の1行を削除する</span>
+                <span class="synStatement">if</span> (line[line.Length-<span class="synConstant">1</span> ] == <span class="synConstant">""</span>)
+                {
+                    line = line.Take(line.Length - <span class="synConstant">1</span>).ToArray();
+                }
+                <span class="synStatement">else</span> <span class="synComment">//最後の一行が空白でなければ</span>
+                {
+                    <span class="synType">string</span>[] lastLine = line[line.Length - <span class="synConstant">1</span>].Split(<span class="synConstant">' '</span>);
+                    <span class="synStatement">if</span> (lastLine[<span class="synConstant">0</span>] == now.ToString(<span class="synConstant">"MM/dd"</span>))  　　　　　<span class="synComment">//今日のData</span>
+                    {
+                        timeStartEnd[<span class="synConstant">0</span>] = DateTime.Parse(lastLine[<span class="synConstant">3</span>]); <span class="synComment">//文字列をDatetimeにparse</span>
+                        line = line.Take(line.Length - <span class="synConstant">1</span>).ToArray();
+                    }
+                }
+                System.IO.File.WriteAllLines(<span class="synConstant">"timecard.txt"</span>, line);
+            }
+            <span class="synStatement">catch</span>
+            {
+                <span class="synComment">//pass</span>
+            }
+
+            <span class="synComment">//書き込む</span>
+            <span class="synStatement">using</span> (StreamWriter writer = <span class="synStatement">new</span> StreamWriter(<span class="synConstant">"timecard.txt"</span>, <span class="synConstant">true</span>, System.Text.Encoding.GetEncoding(<span class="synConstant">"utf-8"</span>)))
+            {
+                writer.Write(now.ToString(<span class="synConstant">"MM/dd dddd"</span>) + <span class="synConstant">" Start "</span> + timeStartEnd[<span class="synConstant">0</span>].ToShortTimeString() + <span class="synConstant">" End "</span> + timeStartEnd[<span class="synConstant">1</span>].ToShortTimeString()+ System.Environment.NewLine);                    
+                writer.Close();
+            }
+            }
+</pre><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20171221223751j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20171221/20171221223751.jpg" title="f:id:s51517765:20171221223751j:plain"/></span></p><p></p><h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/Vector">Vector</a>で公開しました。</h3>公開ファイルはタスクトレイ常駐でタイムカード機能のみのものにしました。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fwww.vector.co.jp%2Fsoft%2Fwinnt%2Futil%2Fse517863.html" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="タイムカードの詳細情報 : Vector ソフトを探す！"></iframe><cite class="hatena-citation"><a href="https://www.vector.co.jp/soft/winnt/util/se517863.html">www.vector.co.jp</a></cite>
+</div>

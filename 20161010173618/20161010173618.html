@@ -1,0 +1,95 @@
+<div class="entry-content">
+<p>さらにリモコン解析。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>でリモコン解析をしている例をいろいろ調べていると、もっと分かりやすくデータを取得できるんじゃないかと思えてきました。<br/>
+単純に、一定時間ごとに出力を観測し、HIGH = 1 、LOW = 0として吐き出してくれば、その様子が見れるんじゃないかと。</p><p>また、リモコンには通常、スタートとストップ（または信号の終わり)を示すきまったパターンがあるということなので、<br/>
+これを利用するともっとスマートに信号が取れそうということで。</p><p><a href="http://www.geocities.jp/zattouka/GarageHouse/micon/InfraredCOM/InfraredCOM2.htm">マイコンの実験：赤外線通信実験２</a></p><p>ここを参考に、スタートは3.3m以上のLOWとした。<br/>
+(引用元は3.4msとしているが、とくにこの差に深い意味はない）</p>
+<pre class="code lang-c" data-lang="c" data-unlink="">  <span class="synStatement">if</span> (digitalRead(<span class="synConstant">4</span>) == LOW) { <span class="synComment">//リーダ部のチェック</span>
+    t = micros() ;
+    <span class="synStatement">while</span> (digitalRead(<span class="synConstant">4</span>) == LOW) ; <span class="synComment">// HIGHになるまで待つ</span>
+    t = micros() - t ;     <span class="synComment">// LOWの部分をはかる</span>
+    
+  }
+
+  <span class="synComment">// リーダ部有り(3.3ms以上のLOWにて判断する)</span>
+  <span class="synStatement">if</span> (t &gt; <span class="synConstant">3300</span>)
+ {
+</pre><p>このように3.3ms以上のLOWがあったときを起点とする。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""> <span class="synStatement">for</span> (i = <span class="synConstant">1</span>; i &lt; n; i++) {
+   
+      <span class="synStatement">if</span> (digitalRead(<span class="synConstant">4</span>) == LOW) {
+        state[i] = <span class="synConstant">1</span>;
+        i++;
+      }
+      <span class="synStatement">else</span> {
+        state[i] = <span class="synConstant">0</span>;
+        i++;
+      }
+      delayMicroseconds(<span class="synConstant">80</span>);
+    }
+</pre><p>つぎに、digitalReadがLOWかそうでない（HIGH）かによって、 1 or 0を吐き出す。<br/>
+気持ちdelayを入れる。</p><p> delayMicroseconds(80);</p><p>delayは信号がうまく違いを取れることを目的に調整する。<br/>
+ここでは、テレビのリモコンを使っているが、 1~12までの数字を押してみて、違いが現れるものをえらぶ。</p><p>なぜか少し大きめの数字のほうが上手くとれた。</p>
+<pre class="code lang-c" data-lang="c" data-unlink="">   <span class="synStatement">for</span> (i = <span class="synConstant">1</span>; i &lt; n - <span class="synConstant">1</span>; i++) {
+      Serial.print(state[i]);
+      Serial.print(<span class="synConstant">","</span>);
+    }
+    Serial.println(state[i]);
+  }
+  t = <span class="synConstant">0</span>;
+
+}
+</pre><p>最後にまとめて、Printする。</p><p>printlnに限らないが、このような処理は時間を要してしまうので、samplingをしながら出力を行おうとすると、時間にずれが生じてしまうのは、以前書いた。<br/>
+delayMicroseconds を利用しているときは特にである。</p><p>ここで変数としてstate[i] というものを定義した。<br/>
+iには整数が入り、state[1], state[2], state[3], ...というような連続する変数を作ることができる。これは「配列」という。<br/>
+ここでは、これに digitalReadの結果として、1 or 0 を連続的に格納する。<br/>
+これを200個用意した。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synType">unsigned</span> <span class="synType">long</span> state[<span class="synConstant">200</span>];
+</pre><p>[]の200が200こという意味になる。</p>
+<pre class="code lang-c" data-lang="c" data-unlink="">
+<span class="synType">unsigned</span> <span class="synType">long</span> i = <span class="synConstant">0</span>;
+<span class="synType">unsigned</span> <span class="synType">long</span> t;
+<span class="synType">unsigned</span> <span class="synType">long</span> state[<span class="synConstant">200</span>];
+<span class="synType">int</span> n = <span class="synConstant">200</span>; <span class="synComment">//繰り返し回数</span>
+<span class="synType">void</span> setup() {
+
+  pinMode(<span class="synConstant">4</span>, INPUT);
+  Serial.begin(<span class="synConstant">9600</span>);
+}
+
+<span class="synType">void</span> loop() {
+
+  t = <span class="synConstant">0</span> ;
+
+  <span class="synStatement">if</span> (digitalRead(<span class="synConstant">4</span>) == LOW) { <span class="synComment">//リーダ部のチェックを行う</span>
+    t = micros() ;
+    <span class="synStatement">while</span> (digitalRead(<span class="synConstant">4</span>) == LOW) ; <span class="synComment">// HIGHになるまで待つ</span>
+    t = micros() - t ;     <span class="synComment">// LOWの部分をはかる</span>
+    
+  }
+
+  <span class="synComment">// リーダ部有り(3.3ms以上のLOWにて判断する)</span>
+  <span class="synStatement">if</span> (t &gt; <span class="synConstant">3300</span>) {
+    <span class="synStatement">for</span> (i = <span class="synConstant">1</span>; i &lt; n; i++) {
+   
+      <span class="synStatement">if</span> (digitalRead(<span class="synConstant">4</span>) == LOW) {
+        state[i] = <span class="synConstant">1</span>;
+        i++;
+      }
+      <span class="synStatement">else</span> {
+        state[i] = <span class="synConstant">0</span>;
+        i++;
+      }
+      delayMicroseconds(<span class="synConstant">80</span>);
+    }
+ <span class="synComment">//   Serial.println(t); //デバック</span>
+    <span class="synStatement">for</span> (i = <span class="synConstant">1</span>; i &lt; n - <span class="synConstant">1</span>; i++) {
+      Serial.print(state[i]);
+      Serial.print(<span class="synConstant">","</span>);
+    }
+    Serial.println(state[i]);
+  }
+  t = <span class="synConstant">0</span>;
+
+}
+</pre>
+</div>

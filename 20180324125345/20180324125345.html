@@ -1,0 +1,83 @@
+<div class="entry-content">
+<p>最近はどこのマンションにもあるモニターホンですが、リビングから離れた部屋に居たり、イヤホンでテレビを見ていたりすると気が付かないことがあります。<br/>
+そこで、ラズパイを使って<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%DE%A5%DB">スマホ</a>に通知する仕組みを作りました。<br/>
+<a href="https://px.a8.net/svt/ejp?a8mat=2ZTOIZ+893BN6+43SA+5ZU29" rel="nofollow" target="_blank"><br/>
+<img alt="" border="0" height="60" src="https://www29.a8.net/svt/bgt?aid=181103723499&amp;wid=001&amp;eno=01&amp;mid=s00000019153001007000&amp;mc=1" width="468"/></a><br/>
+<img alt="" border="0" height="1" src="https://www10.a8.net/0.gif?a8mat=2ZTOIZ+893BN6+43SA+5ZU29" width="1"/><br/>
+モニターホンは来客があると、カメラでお客さんの姿を映します。<br/>
+このとき液晶が明るくなるので、これをセンサーで検出しました。<br/>
+このへんの話は、以前の<a class="keyword" href="http://d.hatena.ne.jp/keyword/CDS">CDS</a>を使った話のそのままです。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2018%2F02%2F11%2F170058" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="ラズパイのGPIOを使う - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="http://s51517765.hatenadiary.jp/entry/2018/02/11/170058">s51517765.hatenadiary.jp</a></cite></p><p>これによって、来客を検出したらLINEのメッセージを送ります。<br/>
+LINE <a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>の使い方はこの辺で説明しています。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2017%2F10%2F08%2F143812" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="ラズパイから通知を送信　その2（LINE) - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="http://s51517765.hatenadiary.jp/entry/2017/10/08/143812">s51517765.hatenadiary.jp</a></cite></p><p>もちろん、Slackやその他、メールなども応用できます。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2018%2F03%2F04%2F183357" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="SeleniumとOpen CVでリアルタイム雨雲情報を取得 - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="http://s51517765.hatenadiary.jp/entry/2018/03/04/183357">s51517765.hatenadiary.jp</a></cite></p><p></p><h3>完成イメージ</h3>モニターホンにラズパイと回路を設置します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180324122054j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180324/20180324122054.jpg" title="f:id:s51517765:20180324122054j:plain"/></span><p></p><h3>工程 (じゃー～～ｎ)</h3>　(※脳内BGM<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%BF%A5%E2%A5%EA%B6%E6%B3%DA%C9%F4">タモリ倶楽部</a>風にベートーベンのピアノ協奏曲第五番「皇帝」)<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/CDS">CDS</a>の土台はTAMIYAの5mmの角棒を加工して作成しました。<br/>
+500円ほどで買えて、カッターやのこぎり、ドリルなどで加工できて便利です。</p><div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B001Q11EHA/shirotoakb-22/"><img alt="タミヤ 楽しい工作シリーズ No.131 プラ材5mm角棒 6本入 (70131)" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/31k6yfFVnqL._SL160_.jpg" title="タミヤ 楽しい工作シリーズ No.131 プラ材5mm角棒 6本入 (70131)"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B001Q11EHA/shirotoakb-22/">タミヤ 楽しい工作シリーズ No.131 プラ材5mm角棒 6本入 (70131)</a></p><ul><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%BF%A5%DF%A5%E4">タミヤ</a>(TAMIYA)</li><li><span class="hatena-asin-detail-label">発売日:</span> 2009/06/23</li><li><span class="hatena-asin-detail-label">メディア:</span> おもちゃ＆ホビー</li><li><span class="hatena-asin-detail-label">購入</span>: 1人 <span class="hatena-asin-detail-label">クリック</span>: 5回</li><li><a href="http://d.hatena.ne.jp/asin/B001Q11EHA/shirotoakb-22" target="_blank">この商品を含むブログを見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div>ちなみに今回は、100円ローソンで見つけたのこぎりで切断しました。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180324122536j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180324/20180324122536.jpg" title="f:id:s51517765:20180324122536j:plain"/></span><p>先端にドリルで半分ぐらいの深さまで穴を掘ります。<br/>
+実際に<a class="keyword" href="http://d.hatena.ne.jp/keyword/CDS">CDS</a>をはめ込みながら深さを調整します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180324122943j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180324/20180324122943.jpg" title="f:id:s51517765:20180324122943j:plain"/></span><br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180324123203j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180324/20180324123203.jpg" title="f:id:s51517765:20180324123203j:plain"/></span></p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/CDS">CDS</a>の足にリード線をつけて埋め込みます。<br/>
+本来は接着するのがベストですが、とりあえず動作確認からということでテープで止めているだけです。<br/>
+今回は足を片側に2本とも出したので、ショートしないように気を付けます。<br/>
+本来は両側に出す予定だったが、空けた穴が少し寄ってしまったのでこんな形に。</p><p>はんだ小手は今まで使っていた30Wのものから23Wに変えました。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Amazon">Amazon</a>では温度が低すぎて使えない、という意見もありますがそんなことはないと思います。<br/>
+(品番はKS-20Rと20Wのような名前なのに、実際には23Wと書かれている。)</p><div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B0016V9DZU/shirotoakb-22/"><img alt="goot 一般電気用はんだこて KS-20R" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/31jQeINCOUL._SL160_.jpg" title="goot 一般電気用はんだこて KS-20R"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B0016V9DZU/shirotoakb-22/">goot 一般電気用はんだこて KS-20R</a></p><ul><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> 太洋電機産業(goot)</li><li><span class="hatena-asin-detail-label">メディア:</span> Tools &amp; Hardware</li><li><span class="hatena-asin-detail-label">購入</span>: 1人 <span class="hatena-asin-detail-label">クリック</span>: 11回</li><li><a href="http://d.hatena.ne.jp/asin/B0016V9DZU/shirotoakb-22" target="_blank">この商品を含むブログ (1件) を見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div>今後はこちらをメインに使ってみようと思います。<p></p><h3>プログラム</h3>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synComment"># -*- coding: utf-8 -*-</span>
+<span class="synPreProc">import</span> wiringpi
+<span class="synPreProc">import</span> time
+<span class="synPreProc">import</span> requests
+<span class="synPreProc">from</span> datetime <span class="synPreProc">import</span> datetime <span class="synStatement">as</span> dt
+<span class="synPreProc">import</span> token1
+<span class="synIdentifier">print</span>(<span class="synConstant">"Start WiringPi!"</span>)
+
+<span class="synComment"># プルアップ　INPUT</span>
+collector_pin = <span class="synConstant">15</span> <span class="synComment"># 10番pin(GPIO15)</span>
+<span class="synComment"># OUTPUT</span>
+LED_pin =<span class="synConstant">23</span> <span class="synComment">#16番pin(GPIO23)</span>
+
+<span class="synComment"># GPIO初期化</span>
+wiringpi.wiringPiSetupGpio()
+<span class="synComment"># GPIOを入力モード（0）/出力モード(1)に設定</span>
+wiringpi.pinMode( collector_pin,<span class="synConstant">0</span>)
+wiringpi.pinMode( LED_pin,<span class="synConstant">1</span>)
+
+wiringpi.digitalWrite(LED_pin,<span class="synConstant">0</span>)
+
+<span class="synStatement">def</span> <span class="synIdentifier">send_line</span>():
+    url = <span class="synConstant">"https://notify-api.line.me/api/notify"</span>
+    LINE_TOKEN=token1.LINE_TOKEN　<span class="synComment">#トークンは別ファイル（token1.py）から読み込む</span>
+    headers = {<span class="synConstant">"Authorization"</span>: <span class="synConstant">"Bearer "</span> + LINE_TOKEN}
+    tdatetime = dt.now()
+    message = <span class="synConstant">'お客さんだよ! '</span>+tdatetime.strftime(<span class="synConstant">'%H%M%S'</span>)
+    payload = {<span class="synConstant">"message"</span>: message}
+    r = requests.post(url, headers=headers, params=payload)
+
+<span class="synStatement">while</span>(<span class="synIdentifier">True</span>):
+    <span class="synStatement">if</span> (wiringpi.digitalRead(collector_pin))==<span class="synConstant">1</span>:
+        <span class="synComment">#print("High")</span>
+        wiringpi.digitalWrite(LED_pin, <span class="synConstant">1</span>)
+    <span class="synStatement">else</span>:
+        tdatetime = dt.now()
+        <span class="synIdentifier">print</span>(<span class="synConstant">"来客!"</span>+tdatetime.strftime(<span class="synConstant">'%H%M%S'</span>))
+        wiringpi.digitalWrite(LED_pin, <span class="synConstant">0</span>)
+        send_line()
+        <span class="synIdentifier">print</span>(<span class="synConstant">"Send message!"</span>)
+        time.sleep(<span class="synConstant">10</span>)　<span class="synComment">#短い時間の間に複数回LINE を呼び出すと実行されないため</span>
+    time.sleep(<span class="synConstant">1</span>)
+</pre><p></p><h3>動作確認</h3><iframe allowfullscreen="" frameborder="0" height="315" src="//www.youtube.com/embed/Ir_unszjnUo" width="560"></iframe><br/><a href="https://youtube.com/watch?v=Ir_unszjnUo">Cds(明るさセンサー)で来客を通知する</a><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180324124548p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180324/20180324124548.png" title="f:id:s51517765:20180324124548p:plain"/></span></p><p></p><h3>注意</h3>tokenのキーを読み込ませるファイルを最初token.pyとしたら、なぜかErrorが。<br/>
+何かしらの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%CD%BD%CC%F3%B8%EC">予約語</a>と被ってしまったのでしょう。<br/>
+突然WiringpiのErrorになってかなり迷ってしまった。<br/>
+前にも似たようなことがあったなぁ。
+<pre class="code" data-lang="" data-unlink="">Traceback (most recent call last):
+  File "cds.py", line 2, in &lt;module&gt;
+    import wiringpi
+  File "/usr/local/lib/python3.4/dist-packages/wiringpi.py", line 28, in &lt;module&gt;
+    _wiringpi = swig_import_helper()
+  File "/usr/local/lib/python3.4/dist-packages/wiringpi.py", line 15, in swig_import_helper
+    import imp
+  File "/usr/lib/python3.4/imp.py", line 26, in &lt;module&gt;
+    import tokenize
+  File "/usr/lib/python3.4/tokenize.py", line 40, in &lt;module&gt;
+    __all__ = token.__all__ + ["COMMENT", "tokenize", "detect_encoding",
+AttributeError: 'module' object has no attribute '__all__'</pre><p></p><div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B01F3673TQ/shirotoakb-22/"><img alt="抵抗器，SODIAL(R)30個のフォトレジスタLDRフォトライト依存抵抗性5ミリメートル" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/41xFNJ5C6FL._SL160_.jpg" title="抵抗器，SODIAL(R)30個のフォトレジスタLDRフォトライト依存抵抗性5ミリメートル"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B01F3673TQ/shirotoakb-22/">抵抗器，SODIAL(R)30個のフォトレジスタLDRフォトライト依存抵抗性5ミリメートル</a></p><ul><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> SODIAL</li><li><span class="hatena-asin-detail-label">メディア:</span> その他</li><li><a href="http://d.hatena.ne.jp/asin/B01F3673TQ/shirotoakb-22" target="_blank">この商品を含むブログを見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div>
+</div>

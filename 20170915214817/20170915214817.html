@@ -1,0 +1,36 @@
+<div class="entry-content">
+<p><b>一個人の感想ですが<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>開発環境としてはお薦めしません。後続記事のpycharmの方が良いです。</b><br/>
+(2017/10/01 追記)</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Raspberry%20Pi">Raspberry Pi</a>の "Pi" は<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>の "pi" だとか…<br/>
+ラズパイでプログラミングするために<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>を使おうと思います。<br/>
+ラズパイ上でコーディングするのは大変なので、<a class="keyword" href="http://d.hatena.ne.jp/keyword/windows">windows</a>上に<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>の環境を構築します。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/windows">windows</a>上でコードを作成しラズパイに転送し実行することを目指します。</p><p>実は<a class="keyword" href="http://d.hatena.ne.jp/keyword/Visual%20Studio">Visual Studio</a>で<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>プログラミングができるらしいです。<br/>
+↓は<a class="keyword" href="http://d.hatena.ne.jp/keyword/Visual%20Studio">Visual Studio</a>での<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>設定がインストール済んだところですが。<br/>
+ここまでは、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Visual%20Studio">Visual Studio</a>で<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>　プロジェクトを選択することで、インストールできます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170915194134j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170915/20170915194134.jpg" title="f:id:s51517765:20170915194134j:plain"/></span></p><p>ここで、簡単なプログラムを書いて実行してみると、何かErrorになっています。<br/>
+実は、<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>本体はインストールされていないようです。<br/>
+（<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>の環境はインストールされたが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>自体はインストールされていないということみたいです、ややこしい。）<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170915194237j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170915/20170915194237.jpg" title="f:id:s51517765:20170915194237j:plain"/></span></p><p>一番上のLink　”Download and Install <a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>”を選択すると、<br/>
+このような画面が現れて、<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>のインストールができます。<br/>
+64bitのPCなのになぜか32bitですがいいのだろうか？<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170915194321j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170915/20170915194321.jpg" title="f:id:s51517765:20170915194321j:plain"/></span></p><p>これでも、まだ<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>は動きません。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Visual%20Studio">Visual Studio</a>のメニュウーの　表示￥その他のウィンドウ￥<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a> Environmentsで　Custum　を選択しCustumを開き、環境を設定します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170915194812j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170915/20170915194812.jpg" title="f:id:s51517765:20170915194812j:plain"/></span></p><p>このような感じで、<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>のpathを設定します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170915203306j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170915/20170915203306.jpg" title="f:id:s51517765:20170915203306j:plain"/></span><br/>
+applyします。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a> Environmentsで新しく作られた環境を、”Make this the default environment for new project ”をクリックします。<br/>
+これで、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Visual%20Studio">Visual Studio</a>を再起動すると、<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>が使えるようになります。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Visual%20Studio">Visual Studio</a>でpyhthonを開発することで、Debug modeのブレイクポイントも使うことができますし、<br/>
+予測入力も使うことができます。</p><p>ライブラリのインストールは<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a> Environmentsからpipを選択し、検索します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170915210908j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170915/20170915210908.jpg" title="f:id:s51517765:20170915210908j:plain"/></span></p><p>これでひととおり使えそうです。</p><p>ちょっと、簡単なプログラムを作ってみましたが、</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synPreProc">import</span> datetime
+</pre><p>をわすれて、datetime classを使おうとすると、実行して初めて、例外が発生します。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synComment">#import datetime   #ここをコメントアウトすると</span>
+<span class="synIdentifier">print</span>(<span class="synConstant">"Test_python"</span>)
+<span class="synStatement">for</span> i <span class="synStatement">in</span> <span class="synIdentifier">range</span>(<span class="synConstant">10</span>):
+    <span class="synIdentifier">print</span>(<span class="synConstant">"Test_python"</span>+<span class="synIdentifier">str</span>(i))
+    <span class="synStatement">if</span> i==<span class="synConstant">5</span>:
+        ntime = datetime.datetime.today()　　<span class="synComment">#ここで例外が発生する</span>
+        <span class="synIdentifier">print</span>(ntime)
+        <span class="synIdentifier">print</span>(<span class="synConstant">"No = 5"</span>)
+</pre><p>構文エラーの検知機能がないようです。<br/>
+これでは、便利さが半減なので”pylint”というエラーチェックツールをインストールします。<br/>
+これもpipからインストールできます。<br/>
+これでも、警告の出方が中途半端な気がしますが…。</p>
+</div>

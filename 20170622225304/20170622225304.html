@@ -1,0 +1,157 @@
+<div class="entry-content">
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a> <a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>を利用して、定期的にTweetするものを作りました。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170622223753j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170622/20170622223753.jpg" title="f:id:s51517765:20170622223753j:plain"/></span></p><p>以前の記事の発展。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2017%2F05%2F07%2F135735" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="C#でTwitterにつぶやく - プログラミング素人のArduino"></iframe><cite class="hatena-citation"><a href="http://s51517765.hatenadiary.jp/entry/2017/05/07/135735">s51517765.hatenadiary.jp</a></cite></p><p>CoreTweetの基本機能はこの辺を参考に。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fblog.ch3cooh.jp%2Fentry%2F20140808%2F1407464147" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="C#とCoreTweetを使って簡単にTwitterへツイートするbotを作る - 酢ろぐ！"></iframe><cite class="hatena-citation"><a href="http://blog.ch3cooh.jp/entry/20140808/1407464147">blog.ch3cooh.jp</a></cite></p><p>テキストファイルからStreamreaderで読み込んで、ランダムにTweetします。</p><p>private void timer1_Tick　でタイマー設定。<br/>
+(プログラミング初心者にありがちな失敗は　Thread.Sleepメソッドを使ってしまうこと。<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>のグルグルが出てきて何もできなくなってしまいます。)<br/>
+private void AutoTweet()　がTweetの本体。<br/>
+private void buttonPause_Click　が自動投稿の停止。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synStatement">using</span> System;
+<span class="synStatement">using</span> System.Collections.Generic;
+<span class="synStatement">using</span> System.ComponentModel;
+<span class="synStatement">using</span> System.Data;
+<span class="synStatement">using</span> System.Drawing;
+<span class="synStatement">using</span> System.Linq;
+<span class="synStatement">using</span> System.Text;
+<span class="synStatement">using</span> System.Threading.Tasks;
+<span class="synStatement">using</span> System.Windows.Forms;
+<span class="synStatement">using</span> CoreTweet;
+<span class="synStatement">using</span> System.Diagnostics;
+<span class="synStatement">using</span> System.IO;
+<span class="synStatement">using</span> CoreTweet.Streaming;
+
+<span class="synType">namespace</span> twitter
+{
+    <span class="synType">public</span> <span class="synStatement">partial</span> <span class="synType">class</span> Form1 : Form
+    { 
+       <span class="synType">public</span> Boolean AutoTweet_bool = <span class="synConstant">false</span>;
+       <span class="synType">public</span> <span class="synType">int</span> Set;    <span class="synComment">//Next Tweet time</span>
+       <span class="synType">public</span> <span class="synType">int</span> interval;     <span class="synComment">//Tweet Interval</span>
+
+        <span class="synType">public</span> Form1()
+        {
+            InitializeComponent();
+        }
+
+        <span class="synType">private</span> <span class="synType">void</span> Form1_Load(<span class="synType">object</span> sender, EventArgs e)
+        {             
+     
+            var tokens = Tokens.Create(<span class="synConstant">"******"</span>, <span class="synConstant">"******"</span>, A_Token, A_TokenSecret);        
+
+ 	<span class="synComment">//Auto Tweet Interval</span>
+            comboBoxInterval.Items.Add(<span class="synConstant">"15"</span>);
+            comboBoxInterval.Items.Add(<span class="synConstant">"30"</span>);
+            comboBoxInterval.Items.Add(<span class="synConstant">"59"</span>);
+            comboBoxInterval.Text = <span class="synConstant">"59"</span>;
+        }
+
+        <span class="synType">private</span> <span class="synType">void</span> button_AutoTweet_Click(<span class="synType">object</span> sender, EventArgs e)
+        {
+            interval = <span class="synType">int</span>.Parse(comboBoxInterval.Text);
+            button_AutoTweet.Enabled = <span class="synConstant">false</span>;
+            buttonPause.Enabled = <span class="synConstant">true</span>;
+            AutoTweet_bool = <span class="synConstant">true</span>;
+    
+            <span class="synStatement">if</span> (interval &gt; <span class="synConstant">59</span>)
+            {
+                interval = <span class="synConstant">59</span>;
+                comboBoxInterval.Text = <span class="synConstant">"59"</span>;
+            }
+
+            DateTime Now = DateTime.Now;
+            timer1.Start();                 <span class="synComment">// タイマー起動</span>
+            Set = Now.Minute + interval;
+
+            <span class="synStatement">if</span> (Set &gt; <span class="synConstant">59</span>)
+            {
+                Set = Set - <span class="synConstant">60</span>;
+            }
+
+            AutoTweet(); <span class="synComment">//初回Tweet</span>
+        }
+
+        <span class="synType">private</span> <span class="synType">void</span> timer1_Tick(<span class="synType">object</span> sender, EventArgs e)　　 <span class="synComment">//タイマー</span>
+        {
+            <span class="synStatement">if</span> (AutoTweet_bool == <span class="synConstant">true</span>)
+            {
+                DateTime Now = DateTime.Now;
+                <span class="synStatement">if</span> (Now.Minute == Set)
+                {
+                    Set = Now.Minute + interval;
+　　　　　　　　　　 <span class="synStatement">if</span> (Set &gt; <span class="synConstant">59</span>)
+          　　　　　  {
+           　　　　     Set = Set - <span class="synConstant">60</span>;
+         　　　　　   }
+                   
+                        AutoTweet();
+                }
+            }
+        }
+
+       <span class="synType">private</span> <span class="synType">void</span> AutoTweet()
+        {
+            <span class="synType">int</span> ListCount=<span class="synConstant">0</span>;
+    
+                <span class="synType">string</span> AutoTweetText = <span class="synConstant">""</span>;
+                System.IO.StreamReader sr = <span class="synStatement">new</span> System.IO.StreamReader(<span class="synSpecial">@</span><span class="synConstant">"C:\Users\***\List.txt"</span>, System.Text.Encoding.UTF8);                <span class="synComment">//ファイルを絶対参照で指定したいときは先頭に@を使う</span>
+                <span class="synType">int</span> LineCount = <span class="synConstant">1</span>;
+            button_AutoTweet.Enabled = <span class="synConstant">false</span>;
+            <span class="synStatement">while</span> (sr.Peek() &gt;= <span class="synConstant">0</span>)
+            {
+                <span class="synComment">//一行ずつ読み込む</span>
+                AutoTweetText = sr.ReadLine();
+                ListCount++;
+       
+            }
+            sr.Close();
+
+            System.Random r = <span class="synStatement">new</span> System.Random();
+            <span class="synType">int</span> rand = r.Next(<span class="synConstant">1</span>,ListCount);  <span class="synComment">//LineCount</span>
+  
+               System.IO.StreamReader sr2 = <span class="synStatement">new</span> System.IO.StreamReader(<span class="synSpecial">@</span><span class="synConstant">"C:\Users\***\List.txt"</span>, System.Text.Encoding.UTF8);
+
+            <span class="synStatement">while</span> (sr2.Peek() &gt;= <span class="synConstant">0</span>)
+                {
+                    <span class="synComment">//一行ずつ読み込む</span>
+                    AutoTweetText = sr2.ReadLine();
+                    LineCount++;
+                    <span class="synStatement">if</span> (LineCount == rand)
+                    {
+                        <span class="synStatement">break</span>;
+                    }
+                }
+                <span class="synComment">//閉じる</span>
+                sr2.Close();
+       
+           <span class="synStatement">try</span>
+             {
+                    var tokens = Tokens.Create(<span class="synConstant">"******"</span>, <span class="synConstant">"******"</span>, A_Token, A_TokenSecret);
+                <span class="synStatement">if</span> (checkBoxDebug.Checked == <span class="synConstant">false</span>)
+                {
+                    tokens.Statuses.Update(status =&gt; AutoTweetText); <span class="synComment">//tweet</span>
+                }
+                <span class="synStatement">else</span>
+                {
+                    MessageBox.Show(AutoTweetText);
+                }
+                    DateTime dt = DateTime.Now;
+                    textBoxStatus.AppendText(dt.ToString(<span class="synConstant">"HH:mm:ss"</span>) +<span class="synConstant">" "</span>+AutoTweetText.Substring(<span class="synConstant">0</span>,<span class="synConstant">17</span>) +<span class="synConstant">"… Complete!"</span> + Environment.NewLine);
+             }
+
+           <span class="synStatement">catch</span>
+            {
+                    DateTime dt = DateTime.Now;
+                    textBoxStatus.AppendText(dt.ToString(<span class="synConstant">"HH:mm:ss"</span>) + <span class="synConstant">"Auto Tweet Error!"</span> + Environment.NewLine);
+            }
+        }
+
+        <span class="synType">private</span> <span class="synType">void</span> buttonPause_Click(<span class="synType">object</span> sender, EventArgs e)
+        {
+            buttonPause.Enabled = <span class="synConstant">false</span>;
+            button_AutoTweet.Enabled = <span class="synConstant">true</span>;
+            AutoTweet_bool = <span class="synConstant">false</span>;
+        }
+    }
+}
+</pre>
+</div>

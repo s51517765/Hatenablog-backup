@@ -1,0 +1,136 @@
+<div class="entry-content">
+<p>例としてHearth Loggerを作ります。<br/>
+Form１は以下のようなものを作りました。</p><p>仕様としては、<br/>
+・入力は日付、体重、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C2%CE%BB%E9%CB%C3%CE%A8">体脂肪率</a><br/>
+・プログラムを起動したら、日付は今日の日付を表示。ただし、手入力で変更可能<br/>
+・OKを押下でファイルに記録。<br/>
+・OKを押したときグラフCheckboxがONならグラフを表示</p><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170329203915j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170329/20170329203915.jpg" title="f:id:s51517765:20170329203915j:plain"/></span></p><br/>
+<p>まず、ファイル入出力を扱うので、以下を追加します。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synStatement">using</span> System.IO;
+</pre><p>OKボタンを押下したときに、日付、体重、体脂肪を「カンマ」区切りでtxtもしくは<a class="keyword" href="http://d.hatena.ne.jp/keyword/csv">csv</a>に取り込みます。<br/>
+日付は後述で自動的に今日の日付を入れるようにしてありますが、体重と体脂肪が空欄の時は追記をスキップします。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C1%A5%A7%A5%C3%A5%AF%A5%DC%A5%C3%A5%AF%A5%B9">チェックボックス</a>がCheckedのときは、グラフを表示します。<br/>
+グラフの表示にCheckboxの判断を掛け合わせていますが、グラフの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A4%A5%F3%A5%B9%A5%BF%A5%F3%A5%B9">インスタンス</a>生成のところはよくわかってないので適切かどうか…。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""> private <span class="synType">void</span> button1_Click(object sender, EventArgs e)
+        {
+            <span class="synType">double</span> weight;
+            <span class="synType">double</span> fat;
+            <span class="synStatement">if</span> (<span class="synType">double</span>.TryParse(textBoxWeight.Text, out weight) == <span class="synConstant">true</span> &amp;&amp;
+                <span class="synType">double</span>.TryParse(textBoxFat.Text, out fat)==<span class="synConstant">true</span>)
+            {
+                using (StreamWriter writer = new StreamWriter(<span class="synConstant">"data.txt"</span>, <span class="synConstant">true</span>)) 
+                      <span class="synComment">//書き込む先のファイル名は"data.text"</span>
+                {
+                    writer.Write(textboxDate.Text);　<span class="synComment">//textboxの内容を書き込む</span>
+                    writer.Write(<span class="synConstant">","</span>);　　　　　　　　　　<span class="synComment">//任意（ここではカンマ）のTextを書き込む。</span>
+                    writer.Write(textBoxWeight.Text);
+                    writer.Write(<span class="synConstant">","</span>);
+                    writer.WriteLine(textBoxFat.Text);
+                    writer.Flush();
+                    textBoxWeight.Text = <span class="synConstant">""</span>;　　<span class="synComment">//入力欄であるtextboxをクリア</span>
+                    textBoxFat.Text = <span class="synConstant">""</span>;
+                }
+            }
+
+            Graph Form2 = new Graph();   <span class="synComment">//グラフのインスタンス生成</span>
+            <span class="synStatement">if</span> (checkBoxGraph.Checked == <span class="synConstant">true</span>)　　<span class="synComment">//Checkbox判断</span>
+            {
+                <span class="synStatement">if</span> (Form2.ShowDialog() == DialogResult.OK) <span class="synComment">//OKボタンが押されたら</span>
+                {
+
+                }
+            }
+
+            Form2.Dispose();
+
+        }
+</pre><p>日付は今日の日付を取得し、年月日の形式で表示します。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">     <span class="synType">private</span> <span class="synType">void</span> Form1_Load(<span class="synType">object</span> sender, EventArgs e)
+        {   <span class="synComment">//Form1が開いたときの動作</span>
+            DateTime dt = DateTime.Now;　<span class="synComment">//dtに今日の日付（と現在時刻）</span>
+            textboxDate.Text = dt.ToString(<span class="synConstant">"yyyy-MM-dd"</span>);  <span class="synComment">//textboxに文字列として"dt"をyyyy-mm-ddの日付形式で</span>
+        }
+</pre><p>ここまでが、Form1。</p><p>ここからForm2。<br/>
+Form2が読み込まれたときの動作。<br/>
+始めにまとめて変数を定義しています。<br/>
+Tryの中でファイルを開いて、日付、体重、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C2%CE%BB%E9%CB%C3%CE%A8">体脂肪率</a>にわけて配列に読み込むようにしています。<br/>
+ここで、Tryは処理に例外が発生した場合、CatchにすすみErrorを出します。<br/>
+Try,Catchの構文で、予期せぬErrorで止まってしまうのを防ぎます。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">   <span class="synType">private</span> <span class="synType">void</span> Form2_Load(<span class="synType">object</span> sender, EventArgs e)
+        {
+            <span class="synType">int</span> n = <span class="synConstant">1</span>;
+            <span class="synType">int</span> no = <span class="synConstant">0</span>;
+            <span class="synType">int</span> Data_Count=<span class="synConstant">4</span>;
+            <span class="synType">int</span> Array_Length = <span class="synConstant">400</span>;
+            <span class="synType">string</span>[] date = <span class="synStatement">new</span> <span class="synType">string</span>[Array_Length];
+            <span class="synType">string</span>[] Weight_text= <span class="synStatement">new</span> <span class="synType">string</span>[Array_Length];
+            <span class="synType">double</span>[] Weight = <span class="synStatement">new</span> <span class="synType">double</span>[Array_Length];
+            <span class="synType">string</span>[] Fat_text=<span class="synStatement">new</span> <span class="synType">string</span>[Array_Length];
+            <span class="synType">double</span>[] Fat = <span class="synStatement">new</span> <span class="synType">double</span>[Array_Length];
+            DateTime[] date_style = <span class="synStatement">new</span> DateTime[Array_Length];
+
+<span class="synStatement">try</span>
+            {　<span class="synComment">//csvファイルを開いて、日付、体重、体脂肪率にわけて配列に読み込む</span>
+
+                <span class="synType">string</span>[] StrArryData = <span class="synStatement">new</span> <span class="synType">string</span>[<span class="synConstant">3</span>]; <span class="synComment">// １行分のﾃﾞｰﾀを格納する</span>
+                <span class="synStatement">using</span> (var sr = <span class="synStatement">new</span> System.IO.StreamReader(<span class="synSpecial">@</span><span class="synConstant">"data.txt"</span>))　<span class="synComment">//読み込むファイル名</span>
+                {
+
+                    <span class="synStatement">while</span> (!sr.EndOfStream) <span class="synComment">//ファイルエンドまで</span>
+                    {
+                        var line = sr.ReadLine();    <span class="synComment">// ファイルから一行読み込む</span>
+                        StrArryData = line.Split(<span class="synConstant">','</span>); <span class="synComment">//一行を区切る</span>
+
+                        <span class="synStatement">foreach</span> (<span class="synType">string</span> <span class="synStatement">value</span> <span class="synStatement">in</span> StrArryData)　<span class="synComment">//strArrayDatsをStringとして、そのすべてに対して</span>
+                        {
+
+　　　　　　　　　　　<span class="synComment">//Data3つごとに分けて配列に格納</span>
+                            <span class="synStatement">if</span> (n % <span class="synConstant">3</span> == <span class="synConstant">1</span>)
+                            {
+                                date[no] = <span class="synStatement">value</span>;
+                                DateTime.TryParse(date[no], <span class="synStatement">out</span> date_style[no]); <span class="synComment">//textをDateTime型に</span>
+                            }
+                            <span class="synStatement">else</span> <span class="synStatement">if</span> (n % <span class="synConstant">3</span> == <span class="synConstant">2</span>)
+                            {
+                                Weight_text[no] = <span class="synStatement">value</span>;
+                                <span class="synType">double</span>.TryParse(Weight_text[no], <span class="synStatement">out</span> Weight[no]); <span class="synComment">//Textを数値に型変換</span>
+                            }
+                            <span class="synStatement">else</span> <span class="synStatement">if</span> (n % <span class="synConstant">3</span> == <span class="synConstant">0</span>)
+                            {
+                                Fat_text[no] = <span class="synStatement">value</span>;
+                                <span class="synType">double</span>.TryParse(Fat_text[no], <span class="synStatement">out</span> Fat[no]);
+                                no++;
+                            }
+                            n++;
+                        }
+                        Data_Count = no;
+                    }
+                }
+            }
+           <span class="synStatement">catch</span> (System.Exception ee)
+            {
+                MessageBox.Show(<span class="synConstant">"Error"</span>);
+                <span class="synComment">// ファイルを開くのに失敗したとき</span>
+            }
+</pre><p>次に、グラフの表示内容</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">           <span class="synComment">// 1.Seriesの追加</span>
+            Chart1.Series.Clear();
+            Chart1.Series.Add(<span class="synConstant">"Weight (kg)"</span>);
+            Chart1.Series.Add(<span class="synConstant">"Body fat (%)"</span>);
+            
+
+            <span class="synComment">// 2.グラフのタイプの設定</span>
+              Chart1.Series[<span class="synConstant">"Weight (kg)"</span>].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+              Chart1.Series[<span class="synConstant">"Weight (kg)"</span>].MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Diamond;
+              Chart1.Series[<span class="synConstant">"Body fat (%)"</span>].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+              Chart1.Series[<span class="synConstant">"Body fat (%)"</span>].MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Diamond;
+          
+            <span class="synComment">// 3.座標の入力</span>
+            <span class="synStatement">for</span> (no = <span class="synConstant">0</span>; no &lt; Data_Count; no++)
+            {
+                Chart1.Series[<span class="synConstant">"Weight (kg)"</span>].Points.AddXY(date_style[no],Weight[no]);
+                    Chart1.Series[<span class="synConstant">"Body fat (%)"</span>].Points.AddXY(date_style[no], Fat[no]);
+               }
+</pre><p>グラフはこのページを参考にした…というより丸写しに近い。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="http://whoopsidaisies.hatenablog.com/embed/2013/11/26/030331" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="C#でグラフを描く（Chartコントロールによる方法） - whoopsidaisies's diary"></iframe><cite class="hatena-citation"><a href="http://whoopsidaisies.hatenablog.com/entry/2013/11/26/030331">whoopsidaisies.hatenablog.com</a></cite></p><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170329220510j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170329/20170329220510.jpg" title="f:id:s51517765:20170329220510j:plain"/></span></p>
+</div>

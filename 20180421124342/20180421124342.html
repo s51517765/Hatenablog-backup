@@ -1,0 +1,130 @@
+<div class="entry-content">
+<p>wed上の情報を集めるには<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EC%A5%A4%A5%D4%A5%F3%A5%B0">スクレイピング</a>という方法がありますが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/JavaScript">JavaScript</a>でリンクが形成されていたりするとソースを解析しただけでは、リンク先のアドレスが分からないので目的の情報にたどり着くことはできません。</p><p>そこで使うのが<a class="keyword" href="http://d.hatena.ne.jp/keyword/selenium">selenium</a>になります。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/selenium">selenium</a>ではソースを取得することももちろんできますが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/JavaScript">JavaScript</a>で形成されたリンクを動かすことができます。<br/>
+これができることで<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>でプログラミングすることで、ブラウザを自動操作できます。</p><p></p><h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D6%A5%E9%A5%A6%A5%B6%A1%BC">ブラウザー</a>の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A4%A5%F3%A5%B9%A5%BF%A5%F3%A5%B9">インスタンス</a>を作成</h3>前回の<a class="keyword" href="http://d.hatena.ne.jp/keyword/selenium">selenium</a>の記事ではPhantomJSをを使用しましたが、開発も停止しているということで、開発者も他の物をつかってくれと言っているらしいので、今後は<a class="keyword" href="http://d.hatena.ne.jp/keyword/firefox">firefox</a>を使おうと思います（いまのところ）。<p><iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2018%2F01%2F07%2F173244" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="Seleniumでブラウザの制御 - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="http://s51517765.hatenadiary.jp/entry/2018/01/07/173244">s51517765.hatenadiary.jp</a></cite><br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2018%2F03%2F04%2F183357" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="SeleniumとOpen CVでリアルタイム雨雲情報を取得 - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="http://s51517765.hatenadiary.jp/entry/2018/03/04/183357">s51517765.hatenadiary.jp</a></cite></p><p>PhantomJSはヘッドレスブラウザですが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/firefox">firefox</a>は画面あり・なしの両方が使えるので、Debugは画面ありで行い、運用は画面なしでおこなうということも切り替えることができます。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/firefox">firefox</a>の<a class="keyword" href="http://d.hatena.ne.jp/keyword/windows">windows</a>でのヘッドレスの使い方は↓を参考にしました。<br/>
+<a href="http://wp.sakaki333.com/2018/01/26/pythonselenium%E3%81%A7webdriver%E3%81%A8%E3%81%97%E3%81%A6firefox%E3%82%92%E4%BD%BF%E3%81%86%E6%96%B9%E6%B3%95/">Python+seleniumでwebdriverとしてheadlessなFirefoxを使う方法 | Sakaki333.com</a></p><br/>
+<p>引数で、ブラウザの種類と画面ありなしを指定します。<br/>
+以下の関数でブラウザの切り替えをします。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/firefox">firefox</a>にのみ最適化されていますので、<a class="keyword" href="http://d.hatena.ne.jp/keyword/chrome">chrome</a>とPhantomJSは途中でErrorが出ることもあります。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synPreProc">from</span> selenium.webdriver.support.ui <span class="synPreProc">import</span> WebDriverWait
+<span class="synPreProc">from</span> selenium <span class="synPreProc">import</span> webdriver
+<span class="synPreProc">from</span> selenium.webdriver.firefox.options <span class="synPreProc">import</span> Options
+
+<span class="synStatement">def</span> <span class="synIdentifier">browserOpen</span>(driver):
+    <span class="synStatement">if</span> driver== <span class="synConstant">"h"</span>:
+        options = Options()
+        options.set_headless(Options.headless)
+        geckodriver_path = <span class="synConstant">"C:/ProgramData/Anaconda3/geckodriver.exe"</span> <span class="synComment">#各自の環境での実行ファイルのパスを設定</span>
+        driver = webdriver.Firefox(executable_path=geckodriver_path, options=options)
+        <span class="synIdentifier">print</span>(<span class="synConstant">"Headless Firefox"</span>)
+    <span class="synStatement">elif</span> driver ==<span class="synConstant">"f"</span>:
+        driver = webdriver.Firefox()
+        <span class="synIdentifier">print</span>(<span class="synConstant">"Firefox"</span>)
+    <span class="synStatement">elif</span> driver== <span class="synConstant">"c"</span>:
+        <span class="synIdentifier">print</span>(<span class="synConstant">"Chrome"</span>)
+        options = Options()
+        driver=webdriver.Chrome()
+    <span class="synStatement">else</span>:
+        driver = webdriver.PhantomJS()
+        <span class="synIdentifier">print</span>(<span class="synConstant">"PhantomJS"</span>)
+    <span class="synStatement">return</span> driver
+</pre><p></p><h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/selenium">selenium</a>で要素を取得してデータを送る</h3>Amaz〇nにログインするところを例に説明します<br/>
+<a href="https://www.amaz">https://www.amaz</a>〇n.co.jpのトップページから始めても構いませんが、プログラミングの工数を削減するため直アドレスで入れるところから始めます。<br/>
+ログインしていない状態で、画面の下のほうに「サインイン」があるので、この先からスタートします。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180408163843p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180408/20180408163843.png" title="f:id:s51517765:20180408163843p:plain"/></span><p>ここからスタート<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180408164309p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180408/20180408164309.png" title="f:id:s51517765:20180408164309p:plain"/></span></p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/firefox">firefox</a>の画面上で右クリックすると、「要素を調査」というメニューを起動すると、HTMLが現れて、HTMLのタグをポイントすると、これに対応する画面上の要素がハイライトされます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180408164743p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180408/20180408164743.png" title="f:id:s51517765:20180408164743p:plain"/></span></p><p>これより、このインプットボックスの要素のタグが<code>input id ="ap_email"</code>であることが分かり、<code>id ="ap_email"</code>であることが分かります。<br/>
+HTMLの画面上のタグ上で右クリックで、「コピー￥<a class="keyword" href="http://d.hatena.ne.jp/keyword/CSS">CSS</a><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%BB%A5%EC%A5%AF%A5%BF">セレクタ</a>」と選択すると<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AF%A5%EA%A5%C3%A5%D7%A5%DC%A1%BC%A5%C9">クリップボード</a>に取得できます。<br/>
+同様のことは<a class="keyword" href="http://d.hatena.ne.jp/keyword/chrome">chrome</a>でもできます。</p><p>ここにメールアドレスを入れたいので<a class="keyword" href="http://d.hatena.ne.jp/keyword/selenium">selenium</a>の<code>send_key</code>でデータを送ります。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">email=<span class="synConstant">"aaa@gmail.com"</span>
+driver.find_element_by_id(<span class="synConstant">"ap_email"</span>).send_keys(email)
+</pre><p>その次は、「次へ進む」をクリックします。<br/>
+これも同様に要素を探し、クリックを送ります。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">driver.find_element_by_id(<span class="synConstant">"continue"</span>).click()
+</pre><p>これが<a class="keyword" href="http://d.hatena.ne.jp/keyword/selenium">selenium</a>の基本と言っていいと思います。<br/>
+タグのidは名前のようなもので、タグを特定することができます。</p><p>idがみつけられれば確実ですが、結構idがないのかどこにあるのかわからないとき、idではどうしてもうまくいかないときはX-pathを使うとうまくいきます。</p><p>たとえば、検索ボックスの虫眼鏡マーク。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">driver.find_element_by_id(<span class="synConstant">"twotabsearchtextbox"</span>).send_keys(keyword)
+driver.find_element_by_xpath(<span class="synConstant">"/html/body/header/div/div[1]/div[3]/div/form/div[2]/div/input"</span>).click()
+</pre><p>虫眼鏡は<code>id="nav-search-submit-text</code>のようなのですが、これでid指定しても　”is not clickable”というErrorが返ってきました。</p><p></p><h3>ポップアップや子windowに対応する</h3>検索結果画面から、例えば一つ目の結果をクリックしたときは、その後扱うべき画面は2つ目の画面（タブ）になります。<br/>
+このとき、アクティブなタブを移動しなければなりません。<br/>
+普段、人間向けのブラウザでは自動的に新しいタブがアクティブになったりしますが、ここでは明示的に遷移しなければなりません。<br/>
+最初、ここで躓きました。<br/>
+画面あり<a class="keyword" href="http://d.hatena.ne.jp/keyword/firefox">firefox</a>でデバックしていると、画面は新しいタブに切り替わるのでidが見つからないのが気付きにくいです。<br/>
+このようなときは、現在のアドレスを表示したり、タブの数をprint()したりするとわかりやすくなります。<p>検索画面から結果の1つ目をクリックし、新しいタブをアクティブにするには次のようになります。<br/>
+ここで、新しいタブを立ち上げるには時間がかかることがあるのでsleepを入れるとうまくいくことがあります。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">driver.find_element_by_id(<span class="synConstant">"result_0"</span>).click()
+time.sleep(<span class="synConstant">3</span>)
+driver.switch_to.window(driver.window_handles[<span class="synConstant">1</span>]) <span class="synComment">#2つ目のタブに移動、1つ目は[0]</span>
+<span class="synIdentifier">print</span>(<span class="synIdentifier">len</span>(driver.window_handles)) <span class="synComment">#今認識されているタブの数を表示 --&gt;2 とでる</span>
+</pre><p>時間をおいてもダメなときはスクロールしたり、適当な位置にクリックすると上手くいくという話もある。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">driver.execute_script(<span class="synConstant">"window.scrollTo(0, document.body.scrollHeight);"</span>) <span class="synComment">#スクロール</span>
+</pre><p>ウィンドウの数を見て増えるまで待つ</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">WebDriverWait(driver, <span class="synConstant">3</span>).until(<span class="synStatement">lambda</span> d: <span class="synIdentifier">len</span>(d.window_handles) &gt; <span class="synConstant">1</span>)
+</pre><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2FQUANON%2Fitems%2F285ad7157619b0da5c67" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Selenium で別ウィンドウが開くまで待つ - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/QUANON/items/285ad7157619b0da5c67">qiita.com</a></cite></p><p></p><h3>メインプログラム</h3>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">def</span> <span class="synIdentifier">main</span>(driver, keyword):
+    driver =browserOpen(driver)
+    <span class="synComment"># ログイン情報 login.pyに保存してある情報を読み込む</span>
+    email=login.email 
+    password=login.password
+    twitter=login.twitter <span class="synComment">#twitter id</span>
+    tw_password=login.tw_password <span class="synComment">#twitter pass</span>
+
+    <span class="synComment"># ログイン</span>
+    url = <span class="synConstant">"長いので省略"</span>
+    driver.get(url)
+    driver.find_element_by_id(<span class="synConstant">"ap_email"</span>).send_keys(email)
+    driver.find_element_by_id(<span class="synConstant">"continue"</span>).click()
+    driver.find_element_by_id(<span class="synConstant">"ap_password"</span>).send_keys(password)
+    driver.find_element_by_id(<span class="synConstant">"signInSubmit"</span>).click()
+    time.sleep(<span class="synConstant">3</span>)
+
+    driver.find_element_by_id(<span class="synConstant">"twotabsearchtextbox"</span>).send_keys(keyword)
+    driver.find_element_by_xpath(<span class="synConstant">"/html/body/header/div/div[1]/div[3]/div/form/div[2]/div/input"</span>).click()
+
+    <span class="synComment"># 検索結果の1つ目</span>
+    driver.find_element_by_id(<span class="synConstant">"result_0"</span>).click()
+    time.sleep(<span class="synConstant">3</span>)
+    driver.switch_to.window(driver.window_handles[<span class="synConstant">1</span>])
+    <span class="synComment"># 検索結果の2つ目</span>
+    <span class="synComment"># id="result_1"</span>
+
+    <span class="synComment">#Twiiter shere</span>
+    driver.execute_script(<span class="synConstant">"window.scrollTo(0, document.body.scrollHeight);"</span>)
+    time.sleep(<span class="synConstant">15</span>)
+    driver.find_element_by_xpath(<span class="synConstant">'//*[@id="amzn-ss-twitter-share"]/div/a/i'</span>).click()
+    time.sleep(<span class="synConstant">3</span>)
+
+    <span class="synComment">#ポップアップが現れるまで待ち、アクティブ画面を遷移する</span>
+    WebDriverWait(driver, <span class="synConstant">3</span>).until(<span class="synStatement">lambda</span> d: <span class="synIdentifier">len</span>(d.window_handles) &gt; <span class="synConstant">2</span>)
+    driver.switch_to.window(driver.window_handles[<span class="synConstant">2</span>])
+
+    <span class="synComment"># テキストを取得</span>
+    text=driver.find_element_by_id(<span class="synConstant">"status"</span>).text
+    <span class="synIdentifier">print</span>(<span class="synConstant">"Original = "</span>+text)
+
+    driver.find_element_by_xpath(<span class="synConstant">'//*[@id="username_or_email"]'</span>).send_keys(twitter)
+    driver.find_element_by_id(<span class="synConstant">"password"</span>).send_keys(tw_password)
+    screen_shot(driver, <span class="synConstant">9</span>)
+    driver.find_element_by_xpath(<span class="synConstant">'/html/body/div[2]/form/div[3]/fieldset[2]/input'</span>).click()
+    <span class="synComment">#ログインしてツイート</span>
+
+    text=text.replace(<span class="synConstant">"@さんから"</span>,<span class="synConstant">""</span>)
+    text = text.replace(<span class="synConstant">"Amazon.co.jp"</span>, <span class="synConstant">""</span>)
+    text=text +<span class="synConstant">"  //python + seleniumによる自動投稿テスト"</span>
+    time.sleep(<span class="synConstant">3</span>)
+    driver.find_element_by_id(<span class="synConstant">"status"</span>).clear()
+    <span class="synIdentifier">print</span>(<span class="synConstant">"Shaping = "</span>+text)
+    driver.find_element_by_id(<span class="synConstant">"status"</span>).send_keys(text)
+    driver.find_element_by_xpath(<span class="synConstant">'/ html / body / div[2] / form / div[3] / fieldset / input'</span>).click()
+
+    <span class="synIdentifier">print</span>(<span class="synConstant">"Sucess get Twitter link!"</span>)
+</pre><p></p><h3>参考</h3><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2FAzunyan1111%2Fitems%2Fb161b998790b1db2ff7a" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Python Webスクレイピング テクニック集「取得できない値は無い」JavaScript対応@追記あり2/28 - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/Azunyan1111/items/b161b998790b1db2ff7a">qiita.com</a></cite><br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Fkinpira%2Fitems%2F383b0fbee6bf229ea03d" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="PythonでSeleniumを使ってスクレイピング (基礎) - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/kinpira/items/383b0fbee6bf229ea03d">qiita.com</a></cite><br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2FQUANON%2Fitems%2F285ad7157619b0da5c67" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Selenium で別ウィンドウが開くまで待つ - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/QUANON/items/285ad7157619b0da5c67">qiita.com</a></cite><br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Fmochio%2Fitems%2Fdc9935ee607895420186" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Selenium webdriverよく使う操作メソッドまとめ - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/mochio/items/dc9935ee607895420186">qiita.com</a></cite><p></p><h3>注意</h3>Amaz○nなど大手のsiteはこのような機械アクセスが禁止されています。最悪アカウント停止などされる危険性もあるので、注意。このエントリーはあくまでもヘッドレス<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D6%A5%E9%A5%A6%A5%B6%A1%BC">ブラウザー</a>のプログラミングの例題として言及しただけです。。
+
+    
+
+  
+</div>

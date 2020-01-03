@@ -1,0 +1,84 @@
+<div class="entry-content">
+<p>マウス操作を<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a> で自動化するツールを作ってみました。</p><p>使うだけであれば、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%B0%A4%B0%A4%EB">ぐぐる</a>といろいろ出てきますのであってア<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A4%A5%C7%A5%A2">イデア</a>自体は昔からあるものです。<br/>
+<a href="https://www.google.co.jp/search?q=%E3%83%9E%E3%82%A6%E3%82%B9%E8%87%AA%E5%8B%95%E5%8C%96&amp;oq=%E3%83%9E%E3%82%A6%E3%82%B9%E8%87%AA%E5%8B%95&amp;gs_l=psy-ab.1.0.0l6.19005.23152.0.24912.17.17.0.0.0.0.136.1719.9j8.17.0....0...1.1j4.64.psy-ab..2.15.1516.6..35i39k1j0i4k1j0i131k1j0i3k1j0i4i30k1.evLqPwAvj_U">マウス自動化 - Google 検索</a></p><p>↓のサイトを参考にプログラミングしてみました。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fwhoopsidaisies.hatenablog.com%2Fentry%2F2013%2F03%2F22%2F142031" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="C#で指定した位置をクリックする - whoopsidaisies's diary"></iframe><cite class="hatena-citation"><a href="http://whoopsidaisies.hatenablog.com/entry/2013/03/22/142031">whoopsidaisies.hatenablog.com</a></cite></p><p>目標は<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EC%A5%A4%A5%D4%A5%F3%A5%B0">スクレイピング</a>では対応しきれない（自分の技術力的に）部分をマウスエミュレーションで解決することです。</p><p>◆目指す機能<br/>
+マウスで座標をもとにブラウザ上のLinkをたどって目的のWeb Pageへ<br/>
+そのために、クリックすべき座標を記録する。<br/>
+記録した座標をもとにWeb Pageをたどる</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synStatement">using</span> System.Runtime.InteropServices;
+  <span class="synType">public</span> <span class="synStatement">partial</span> <span class="synType">class</span> Form1 : Form
+    {
+
+        <span class="synType">int</span> interval = <span class="synConstant">2000</span>;
+        <span class="synType">private</span> <span class="synType">const</span> <span class="synType">int</span> MOUSEEVENTF_LEFTDOWN = <span class="synConstant">0x2</span>;
+        <span class="synType">private</span> <span class="synType">const</span> <span class="synType">int</span> MOUSEEVENTF_LEFTUP = <span class="synConstant">0x4</span>;
+        <span class="synType">private</span> <span class="synType">const</span> <span class="synType">int</span> MOUSEEVENTF_RIGHTTDOWN = <span class="synConstant">0x8</span>;
+        <span class="synType">private</span> <span class="synType">const</span> <span class="synType">int</span> MOUSEEVENTF_RIGHTUP = <span class="synConstant">0x10</span>;
+        [DllImport(<span class="synConstant">"USER32.dll"</span>, CallingConvention = CallingConvention.StdCall)]
+        <span class="synType">static</span> <span class="synType">extern</span> <span class="synType">void</span> mouse_event(<span class="synType">int</span> dwFlags, <span class="synType">int</span> dx, <span class="synType">int</span> dy, <span class="synType">int</span> cButtons, <span class="synType">int</span> dwExtraInfo);
+        <span class="synType">int</span>[] cursorLogX = <span class="synStatement">new</span> <span class="synType">int</span>[<span class="synConstant">10</span>] { -<span class="synConstant">1</span>, -<span class="synConstant">1</span>, -<span class="synConstant">1</span>, -<span class="synConstant">1</span>, -<span class="synConstant">1</span>, -<span class="synConstant">1</span>, -<span class="synConstant">1</span>, -<span class="synConstant">1</span>, -<span class="synConstant">1</span>, -<span class="synConstant">1</span> };
+        <span class="synType">int</span>[] cursorLogY = <span class="synStatement">new</span> <span class="synType">int</span>[<span class="synConstant">10</span>] { -<span class="synConstant">1</span>, -<span class="synConstant">1</span>, -<span class="synConstant">1</span>, -<span class="synConstant">1</span>, -<span class="synConstant">1</span>, -<span class="synConstant">1</span>, -<span class="synConstant">1</span>, -<span class="synConstant">1</span>, -<span class="synConstant">1</span>, -<span class="synConstant">1</span> };
+        <span class="synType">int</span> n = <span class="synConstant">0</span>;
+
+        <span class="synType">private</span> <span class="synType">void</span> Form1_Load(<span class="synType">object</span> sender, EventArgs e)
+        {
+            <span class="synStatement">this</span>.KeyPreview = <span class="synConstant">true</span>;   
+            comboBoxInterval.Items.Add(<span class="synConstant">"2000"</span>);
+            comboBoxInterval.Text = <span class="synConstant">"2000"</span>;
+        }
+}
+</pre><p>Using System.Runtime.InteropServices;の宣言を追加し、Classの直下に<br/>
+ [DllImport("USER32.dll", CallingConvention = CallingConvention.StdCall)]<br/>
+を追加します。<br/>
+これが、マウス操作のためのRuntimeのようです。（詳細はよくわかってない）<br/>
+MOUSEEVENTF_LEFTDOWN　…などの変数を設定します。<br/>
+この16進数で示された値を渡すことでマウスを操作します。<br/>
+x,yの座標を最大10個記憶するため、配列を持たせます。（必要に応じて配列の大きさは変更可能）<br/>
+座標は0以上の整数として入ってくるので、"-1"で初期化するとことで、呼び出された座標が"-1"であれば座標が記録されていないということになります。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">  <span class="synType">private</span> <span class="synType">void</span> Form1_Load(<span class="synType">object</span> sender, EventArgs e)
+        {
+　　　　　　<span class="synStatement">this</span>.KeyPreview = <span class="synConstant">true</span>;  
+　　　　}
+</pre><p>これで、キー操作を受け取るようになります。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">        <span class="synType">private</span> <span class="synType">void</span> Form1_KeyDown(<span class="synType">object</span> sender, KeyEventArgs e)
+        { 
+           <span class="synStatement">if</span> ((e.Modifiers &amp; Keys.Alt) == Keys.Alt)
+            {                
+                <span class="synComment">//マウスポインタのX座標を取得する</span>
+                <span class="synType">int</span> x = System.Windows.Forms.Cursor.Position.X;
+                <span class="synComment">//マウスポインタのY座標を取得する</span>
+                <span class="synType">int</span> y = System.Windows.Forms.Cursor.Position.Y;
+
+                textBoxLog.AppendText( x.ToString()+<span class="synConstant">" "</span>+y.ToString()+ System.Environment.NewLine);
+                cursorLogX[n] = x;
+                cursorLogY[n] = y;
+                n++;
+            }
+</pre><p>private void Form1_KeyDown( ～　という関数を作成し、ここでは「Alt」キーを押したときのマウス座標を記録します。<br/>
+<br/>
+</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">        <span class="synType">private</span> <span class="synType">void</span> button1_Click(<span class="synType">object</span> sender, EventArgs e)
+        {
+            interval = <span class="synType">int</span>.Parse(comboBoxInterval.Text);
+            <span class="synStatement">for</span> (<span class="synType">int</span> m = <span class="synConstant">0</span>; m &lt; <span class="synConstant">10</span>; m++)
+            {
+                <span class="synStatement">if</span> (cursorLogX[m] != -<span class="synConstant">1</span>)
+                {
+                    <span class="synComment">//マウスポインタの位置を画面左上基準の座標(x,y)にする</span>
+                    System.Windows.Forms.Cursor.Position = <span class="synStatement">new</span> System.Drawing.Point(cursorLogX[m], cursorLogY[m]);
+                    mouse_event(MOUSEEVENTF_LEFTDOWN, <span class="synConstant">0</span>, <span class="synConstant">0</span>, <span class="synConstant">0</span>, <span class="synConstant">0</span>);      
+                      <span class="synComment">// マウスの左ボタンダウンイベントを発生させる             </span>
+                    mouse_event(MOUSEEVENTF_LEFTUP, <span class="synConstant">0</span>, <span class="synConstant">0</span>, <span class="synConstant">0</span>, <span class="synConstant">0</span>);        
+                      <span class="synComment">// マウスの左ボタンアップイベントを発生させる</span>
+                    System.Threading.Thread.Sleep(interval);
+                }
+                <span class="synStatement">else</span>
+                {
+                    <span class="synStatement">break</span>;
+                }
+            }
+  
+        }
+</pre><p>ボタン１を押すと再現します。<br/>
+webを扱うときには、読み込みにかかる時間を計算に入れておかないと、ItemがすべてDownloadされないうちに次のステップに進んでしまうと、座標とWeb Linkがずれてしまいます。のでここではIntervalとして、2000msほど入れています。</p>
+</div>

@@ -1,0 +1,60 @@
+<div class="entry-content">
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/twitter">twitter</a>は情報の宝庫です。<br/>
+tweepyを使って「ねこ」の画像を集めてみたいと思います。<br/>
+しかしながら、tweepy(<a class="keyword" href="http://d.hatena.ne.jp/keyword/twitter">twitter</a> <a class="keyword" href="http://d.hatena.ne.jp/keyword/api">api</a>に無い)には画像を保存するメソッドが無いようなので、tweepyで画像のurlを取得して<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>のreqestsでアクセスして画像を保存します。</p><p>画像の保存の動きは↓を使わせてもらいました。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Fpollenjp%2Fitems%2F0c39c35120cd60575647" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="python3のrequestsを使って画像を保存 - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/pollenjp/items/0c39c35120cd60575647">qiita.com</a></cite></p><p>tweepyで検索を実行して、</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">for</span> tweet <span class="synStatement">in</span> api.search(q=keyword, count=<span class="synConstant">200</span>):
+</pre><p>Tweetの中にmediaがあるときに、mediaのurlを取得して、qiitaからいただいた関数にurlを渡します。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">tweet.extended_entities[<span class="synConstant">'media'</span>][<span class="synConstant">0</span>][<span class="synConstant">'media_url'</span>]
+</pre><p>tweepyではmedia（画像や動画）がないときにはこのKeyが無いので、本来ならこのkeyがあることを確認してからアクセスするべきですが、tryでくくることで省略しています。</p><p>この、extended_entitiesのkeyが変な構造になっていて、media keyのなかに要素が１のlistがあって、そのなかにmedia_urlのkeyがあります。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">extended_entities={
+<span class="synConstant">'media'</span>:{
+[
+<span class="synConstant">'media_url'</span> :<span class="synConstant">'http://pbs.twimg.com/media/hogehoge.jpg'</span>
+]
+}
+}
+</pre><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/twitter">twitter</a>の<a class="keyword" href="http://d.hatena.ne.jp/keyword/api">api</a>のloginは関数を作っておくことで、別の<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>ファイルにすることもできます。<br/>
+importするような形にすることで、間違って<a class="keyword" href="http://d.hatena.ne.jp/keyword/api">api</a> keyが流出することを防止できます。</p><p>login.pyとかにしておく。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">def</span> <span class="synIdentifier">login</span>(acount):
+  <span class="synStatement">if</span> acount==<span class="synConstant">"s51517765"</span>:
+    auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+    auth.set_access_token(ACCESS_TOKEN, ACCESS_SECRET)
+    api = tweepy.API(auth)
+    <span class="synStatement">return</span> api
+  <span class="synStatement">else</span>:
+    exit()
+</pre><p>画像を保存するときは適当な連番をつけたりしないと、次々上書きされてしまいます。<br/>
+数字（整数）を使って１～という方法が簡単ですが、これでは実行するたびに１～始まって上書きされてしまうので、日付と時刻を使うことでこれを防ぐことができます。<br/>
+ただし、これでも1秒以内は同じ名前になって上書きされるので注意です。<br/>
+ms(ミリ秒)までつかうという方法もありますが。</p><p>main.py</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synPreProc">import</span> login
+<span class="synPreProc">import</span> datetime
+<span class="synPreProc">import</span> tweepy
+<span class="synPreProc">from</span> datetime <span class="synPreProc">import</span> datetime <span class="synStatement">as</span> dt
+<span class="synPreProc">import</span> time
+<span class="synPreProc">import</span> requests
+<span class="synPreProc">import</span> shutil
+
+<span class="synStatement">def</span> <span class="synIdentifier">download_img</span>(url, file_name):
+    r = requests.get(url, stream=<span class="synIdentifier">True</span>)
+    <span class="synStatement">if</span> r.status_code == <span class="synConstant">200</span>:
+        <span class="synStatement">with</span> <span class="synIdentifier">open</span>(file_name, <span class="synConstant">'wb'</span>) <span class="synStatement">as</span> f:
+            r.raw.decode_content = <span class="synIdentifier">True</span>
+            shutil.copyfileobj(r.raw, f)
+
+<span class="synStatement">if</span> __name__ == <span class="synConstant">'__main__'</span>:
+        keyword=<span class="synConstant">"ねこ"</span>
+        api=login.login(<span class="synConstant">"s51517765"</span>)
+        <span class="synStatement">for</span> tweet <span class="synStatement">in</span> api.search(q=keyword, count=<span class="synConstant">200</span>):
+            <span class="synStatement">try</span>:
+                url=tweet.extended_entities[<span class="synConstant">'media'</span>][<span class="synConstant">0</span>][<span class="synConstant">'media_url'</span>]
+                <span class="synIdentifier">print</span>(url)
+                tdatetime = dt.now()
+                filename=<span class="synConstant">'img/'</span>+tdatetime.strftime(<span class="synConstant">'%Y%m%d%H%M%S'</span>)+<span class="synConstant">'.jpg'</span>  <span class="synComment">#"img"というサブフォルダに保存</span>
+                download_img(url,filename)
+                time.sleep(<span class="synConstant">1</span>) <span class="synComment">#上書きされるので1秒待ってファイル名が変わるようにする</span>
+            <span class="synStatement">except</span>:
+                <span class="synStatement">pass</span> <span class="synComment">#画像がないときはなにもしない</span>
+</pre><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180217192131j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180217/20180217192131.jpg" title="f:id:s51517765:20180217192131j:plain"/></span></p>
+</div>

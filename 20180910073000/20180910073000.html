@@ -1,0 +1,179 @@
+<div class="entry-content">
+<p><a href="https://px.a8.net/svt/ejp?a8mat=2ZTOIZ+893BN6+43SA+609HT" rel="nofollow" target="_blank"><br/>
+<img alt="" border="0" height="250" src="https://www25.a8.net/svt/bgt?aid=181103723499&amp;wid=001&amp;eno=01&amp;mid=s00000019153001009000&amp;mc=1" width="300"/></a><br/>
+<img alt="" border="0" height="1" src="https://www18.a8.net/0.gif?a8mat=2ZTOIZ+893BN6+43SA+609HT" width="1"/><br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>の<a class="keyword" href="http://d.hatena.ne.jp/keyword/GUI">GUI</a>アプリでグラフを作成することができます。<br/>
+しかし、このグラフ機能はいろんな機能がありますがなかなか情報が少ない（個人の見解です）ので、使いこなしには苦労しました。<br/>
+グラフの種類もプロパティから変更すれば<a class="keyword" href="http://d.hatena.ne.jp/keyword/Excel">Excel</a>に匹敵するぐらい？ありますが、本記事では私がよく使うグラフ機能として、x-yグラフ（散布図）について整理しました。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180909214343g:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180909/20180909214343.gif" title="f:id:s51517765:20180909214343g:plain"/></span></p><p></p><h3>目次</h3>chartオブジェクトの作成<br/>
+系列データを配列で準備し指定<br/>
+カーソルを追加<br/>
+カーソルが示す系列を変更<br/>
+表示する系列を変更<br/>
+カーソルが指すグラフの数値を表示<br/>
+横軸の表示範囲を設定<br/>
+<p></p><h3>Chartオブジェクトの作成</h3>まず、新規のプロジェクトとして<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>フォームアプリケーションを作成します。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C4%A1%BC%A5%EB%A5%DC%A5%C3%A5%AF%A5%B9">ツールボックス</a>から”Chart”を追加します。<br/>
+追加されたグラフをクリックし、プロパティから”シリーズ”の”コレクション”を選択します。<br/>
+グラフのChartTypeのドロップダウンリストから"ポイント"を選択します。<br/>
+このなかにはマーカーの装飾もいろいろあります。<br/>
+”データ”のnameで系列名を設定します。<br/>
+これで<a class="keyword" href="http://d.hatena.ne.jp/keyword/Excel">Excel</a>でいう散布図が作成されたと思います。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180909184644p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180909/20180909184644.png" title="f:id:s51517765:20180909184644p:plain"/></span><br/>
+(初期値では上図のような棒グラフになっています。)<p></p><h3>系列データを配列で準備し指定</h3>Form1をダブルクリックし、Form1.csを表示します。<br/>
+Form1_Loadに以下のようなコードを記述すると、散布図をChart1およびChart2に作成できます。<br/>
+<code>Points.AddXY(x, y)</code>のような形で、一つのプロットを作成できるので、それを配列の長さ分繰り返します。
+<pre class="code lang-cs" data-lang="cs" data-unlink="">        <span class="synType">private</span> <span class="synType">void</span> Form1_Load(<span class="synType">object</span> sender, EventArgs e)
+        {
+            <span class="synType">double</span>[] x1 = <span class="synStatement">new</span> <span class="synType">double</span>[<span class="synConstant">100</span>];
+            <span class="synType">double</span>[] y1 = <span class="synStatement">new</span> <span class="synType">double</span>[<span class="synConstant">100</span>];
+            <span class="synType">double</span>[] x2 = <span class="synStatement">new</span> <span class="synType">double</span>[<span class="synConstant">100</span>];
+            <span class="synType">double</span>[] y2 = <span class="synStatement">new</span> <span class="synType">double</span>[<span class="synConstant">100</span>];
+
+            <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; <span class="synConstant">100</span>; i++)
+            {
+                x1[i] = i * <span class="synConstant">0.5</span>;
+                y1[i] = Math.Sin((<span class="synType">double</span>)i / <span class="synConstant">20</span>);
+                y2[i] = i;
+                y2[i] = Math.Sin((<span class="synType">double</span>)i / <span class="synConstant">10</span>);
+
+                chart1.Series[<span class="synConstant">"S1"</span>].Points.AddXY(x1[i], y1[i]);
+                chart2.Series[<span class="synConstant">"S2"</span>].Points.AddXY(x2[i], y2[i]);
+            }
+</pre><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180909184654j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180909/20180909184654.jpg" title="f:id:s51517765:20180909184654j:plain"/></span></p><p></p><h3>カーソルを追加</h3>カーソルとは、グラフ上でポイントを示すためのもので<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>では縦横のLineを作成することができます。<br/>
+Chartのプロパティから”MouseMove”のイベントを作成します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180909184706j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180909/20180909184706.jpg" title="f:id:s51517765:20180909184706j:plain"/></span><p>できたMouseMoveのなかに以下のようなコードを作成すると、ポインタに合わせてカーソルが動きます。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">        <span class="synType">private</span> <span class="synType">void</span> chart1_MouseMove(<span class="synType">object</span> sender, MouseEventArgs e)
+        {
+            Point mousePoint = <span class="synStatement">new</span> Point(e.X, e.Y);
+            chart1.ChartAreas[<span class="synConstant">0</span>].CursorX.SetCursorPixelPosition(mousePoint, <span class="synConstant">false</span>);
+            chart1.ChartAreas[<span class="synConstant">0</span>].CursorY.SetCursorPixelPosition(mousePoint, <span class="synConstant">false</span>);
+            chart1.ChartAreas[<span class="synConstant">0</span>].CursorX.Interval = <span class="synConstant">0.001</span>;
+            chart1.ChartAreas[<span class="synConstant">0</span>].CursorY.Interval = <span class="synConstant">0.001</span>;
+        }
+</pre><p>"Interval"を設定しないと、カーソルの刻みが１になってしまうので、動きがカクカクになってしまいます（この場合、特に縦）。<br/>
+そこで適切な刻みを設定します。ここではX,Yとも0.001にしました。<br/>
+これで、カーソルは滑らかに動きますが、これでは<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%DE%A5%A6%A5%B9%A5%DD%A5%A4%A5%F3%A5%BF">マウスポインタ</a>についてくるだけで、グラフ上で特別な意味を持ちません。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%DE%A5%A6%A5%B9%A5%DD%A5%A4%A5%F3%A5%BF">マウスポインタ</a>の指すXに対する、グラフのYを指すようにしたいですね。</p><p>そのためには、カーソルの位置をグラフ上のxの値に変換<code>AxisX.PixelPositionToValue(e.X)</code>し、このもとめたxの値からyの値を算出しCursorYの位置を設定します。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">        <span class="synType">private</span> <span class="synType">void</span> chart1_MouseMove(<span class="synType">object</span> sender, MouseEventArgs e)
+        {
+            chart1.ChartAreas[<span class="synConstant">0</span>].CursorX.Interval = <span class="synConstant">0.001</span>;
+            chart1.ChartAreas[<span class="synConstant">0</span>].CursorY.Interval = <span class="synConstant">0.001</span>;
+            <span class="synStatement">try</span>
+            {
+                <span class="synType">double</span> x = chart1.ChartAreas[<span class="synConstant">0</span>].AxisX.PixelPositionToValue(e.X);
+                <span class="synType">double</span> y = Math.Sin((<span class="synType">double</span>)x / <span class="synConstant">0.5</span> / <span class="synConstant">20</span>);
+                chart1.ChartAreas[<span class="synConstant">0</span>].CursorX.Position = x;
+                chart1.ChartAreas[<span class="synConstant">0</span>].CursorY.Position = y;
+            }
+            <span class="synStatement">catch</span>
+            {
+                <span class="synComment">//pass</span>
+            }
+        }
+</pre><p>x,yとも今回の例のような数式で表せるとは限らないし、<a class="keyword" href="http://d.hatena.ne.jp/keyword/csv">csv</a>からデータを読み込んで配列として使いたい場合もあります。<br/>
+そのときは、カーソルのxに相当するx[index]をさがして、同じindexのyを探してやるという方法ができます。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">        <span class="synType">private</span> <span class="synType">void</span> chart1_MouseMove(<span class="synType">object</span> sender, MouseEventArgs e)
+        {
+            chart1.ChartAreas[<span class="synConstant">0</span>].CursorX.Interval = <span class="synConstant">0.001</span>;
+            chart1.ChartAreas[<span class="synConstant">0</span>].CursorY.Interval = <span class="synConstant">0.001</span>;
+            <span class="synStatement">try</span>
+            {
+                <span class="synType">int</span> x = (<span class="synType">int</span>)chart1.ChartAreas[<span class="synConstant">0</span>].AxisX.PixelPositionToValue(e.X);
+
+                <span class="synType">int</span> index=<span class="synConstant">0</span>;
+                <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; y1.Length; i++)
+                {
+                    <span class="synStatement">if</span> (x - x1[i] &lt; <span class="synConstant">0.1</span>) <span class="synStatement">break</span>; <span class="synComment">//取得した座標（x）に対して近い配列の要素をさがし、そのindexを取得する　</span>
+                    index = i;
+                }
+
+                chart1.ChartAreas[<span class="synConstant">0</span>].CursorX.Position = x;
+                chart1.ChartAreas[<span class="synConstant">0</span>].CursorY.Position = y1[index];
+            }
+            <span class="synStatement">catch</span>
+            {
+                <span class="synComment">//pass</span>
+            }
+        }
+</pre><p></p><h3>カーソルが示す系列を変更</h3>radiobuttonでカーソルが示すデータ系列を変更できるようにします。<br/>
+あらかじめ、Chart1に系列を追加しておきます。<br/>
+radiobuttonとは、いずれか一つを選択するためのツールですので、この状態を読み取って<br/>
+<code>chart1.ChartAreas[0].CursorY.Position = y1[index];</code>にあたえるyの値を変更します。<br/>
+カーソルの色も系列に合わせると視認性が高まります。
+<pre class="code lang-cs" data-lang="cs" data-unlink="">             chart1.ChartAreas[<span class="synConstant">0</span>].CursorX.Position = x;
+                <span class="synStatement">if</span> (radioButtonS1.Checked)
+                {
+                    chart1.ChartAreas[<span class="synConstant">0</span>].CursorY.Position = y1[index];
+                    chart1.ChartAreas[<span class="synConstant">0</span>].CursorX.LineColor = Color.Red;
+                    chart1.ChartAreas[<span class="synConstant">0</span>].CursorY.LineColor = Color.Red;
+                }
+                <span class="synStatement">else</span> <span class="synStatement">if</span> (radioButtonS2.Checked)
+                {
+                    chart1.ChartAreas[<span class="synConstant">0</span>].CursorY.Position = y2[index];
+                    chart1.ChartAreas[<span class="synConstant">0</span>].CursorX.LineColor = Color.Aqua;
+                    chart1.ChartAreas[<span class="synConstant">0</span>].CursorY.LineColor = Color.Aqua;
+                }
+</pre><p></p><h3>表示する系列を変更</h3>チェックボックすの状態によって、グラフの表示有無を変更しようとするときは、非表示にしたい系列の表示colorを<code>Transparent</code>（透明）にします
+<pre class="code lang-cs" data-lang="cs" data-unlink="">        <span class="synType">private</span> <span class="synType">void</span> checkBox1_CheckedChanged(<span class="synType">object</span> sender, EventArgs e)
+        {
+            <span class="synStatement">if</span> (checkBox1.Checked)
+            {
+                chart1.Series[<span class="synConstant">"S1"</span>].MarkerColor = Color.Red;
+            }
+            <span class="synStatement">else</span>
+            {
+                chart1.Series[<span class="synConstant">"S1"</span>].MarkerColor = Color.Transparent;
+            }
+        }
+
+        <span class="synType">private</span> <span class="synType">void</span> checkBox2_CheckedChanged(<span class="synType">object</span> sender, EventArgs e)
+        {
+            <span class="synStatement">if</span> (checkBox2.Checked)
+            {
+                chart1.Series[<span class="synConstant">"S2"</span>].MarkerColor = Color.Aqua;
+            }
+            <span class="synStatement">else</span>
+            {
+                chart1.Series[<span class="synConstant">"S2"</span>].MarkerColor = Color.Transparent;
+            }
+        }
+</pre><p></p><h3>カーソルが指すグラフの数値を表示</h3>グラフの数値が細かいときはその数値が「見える」ようにすると扱いやすいです。
+<pre class="code lang-cs" data-lang="cs" data-unlink=""> label1.Text = <span class="synConstant">"S1= "</span> + y1[index].ToString(<span class="synConstant">"0.00"</span>);
+</pre><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180909184722j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180909/20180909184722.jpg" title="f:id:s51517765:20180909184722j:plain"/></span></p><p></p><h3>横軸の表示範囲を設定</h3>グラフの表示を拡大したいことありますよね。<br/>
+ここでは、現在の表示範囲の最大値に対してボタンクリックで表示範囲を比例で大小させるようにしました。
+<pre class="code lang-cs" data-lang="cs" data-unlink="">        <span class="synType">private</span> <span class="synType">void</span> buttonExp_Click(<span class="synType">object</span> sender, EventArgs e)
+        {
+            <span class="synType">double</span> maximum_C2 = chart2.ChartAreas[<span class="synConstant">0</span>].AxisX.Maximum; <span class="synComment">//現在の最大値を取得</span>
+            chart2.ChartAreas[<span class="synConstant">0</span>].AxisX.Maximum = <span class="synConstant">0.5</span> * maximum_C2;
+        }
+
+        <span class="synType">private</span> <span class="synType">void</span> buttonShrink_Click(<span class="synType">object</span> sender, EventArgs e)
+        {
+            <span class="synType">double</span> maximum_C2 = chart2.ChartAreas[<span class="synConstant">0</span>].AxisX.Maximum;
+            chart2.ChartAreas[<span class="synConstant">0</span>].AxisX.Maximum = <span class="synConstant">2</span> * maximum_C2;
+        }
+</pre><p>直接数値で設定することもできます。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""> chart2.ChartAreas[<span class="synConstant">0</span>].AxisX.Minimum = <span class="synConstant">0</span>;
+ chart2.ChartAreas[<span class="synConstant">0</span>].AxisX.Maximum = <span class="synConstant">40</span>;
+</pre><p>グラフに入力するデータ範囲が変動するときあえて、表示範囲を固定しておくという使い方もできます。<br/>
+Form1_Loadで初期化時に呼び出しておくとよいです。</p><p>しかし、これだと0基準に拡大になるので、0付近を見たいときはいいですが、そうでないときはScaleViewを使います。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">        <span class="synType">private</span> <span class="synType">void</span> buttonExp_Click(<span class="synType">object</span> sender, EventArgs e)
+        {
+            <span class="synType">double</span> maximum_C2 = chart2.ChartAreas[<span class="synConstant">0</span>].AxisX.Maximum; <span class="synComment">//現在の最大値を取得</span>
+            viewRate *= <span class="synConstant">0.5</span>;
+            chart2.ChartAreas[<span class="synConstant">0</span>].AxisX.Interval = <span class="synConstant">10</span>;
+            chart2.ChartAreas[<span class="synConstant">0</span>].AxisX.ScaleView.Size = maximum_C2*viewRate;
+        }
+
+        <span class="synType">private</span> <span class="synType">void</span> buttonShrink_Click(<span class="synType">object</span> sender, EventArgs e)
+        {            
+            <span class="synType">double</span> maximum_C2 = chart2.ChartAreas[<span class="synConstant">0</span>].AxisX.Maximum;
+            viewRate *= <span class="synConstant">2</span>;
+            chart2.ChartAreas[<span class="synConstant">0</span>].AxisX.ScaleView.Size = maximum_C2 * viewRate;
+        }
+</pre><p></p><h3>まとめ</h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>のグラフ機能について整理しました。<br/>
+これだけ使いこなせればかなり便利だと思います。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fs51517765%2FCS_graph" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="s51517765/CS_graph"></iframe><cite class="hatena-citation"><a href="https://github.com/s51517765/CS_graph">github.com</a></cite><p></p><h3>参考</h3><div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/4774179868/shirotoakb-22/"><img alt="ゴールからはじめるC# ~「作りたいもの」でプログラミングのきほんがわかる" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/51g0wcYCvgL._SL160_.jpg" title="ゴールからはじめるC# ~「作りたいもの」でプログラミングのきほんがわかる"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/4774179868/shirotoakb-22/">ゴールからはじめるC# ~「作りたいもの」でプログラミングのきほんがわかる</a></p><ul><li><span class="hatena-asin-detail-label">作者:</span> 菅原朋子</li><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/%B5%BB%BD%D1%C9%BE%CF%C0%BC%D2">技術評論社</a></li><li><span class="hatena-asin-detail-label">発売日:</span> 2016/03/16</li><li><span class="hatena-asin-detail-label">メディア:</span> 単行本（ソフトカバー）</li><li><a href="http://d.hatena.ne.jp/asin/4774179868/shirotoakb-22" target="_blank">この商品を含むブログ (2件) を見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div>Visual <a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>(<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>による<a class="keyword" href="http://d.hatena.ne.jp/keyword/GUI">GUI</a>アプリ)の基本的なところ、を習得するのにちょうどいいと思います。<p></p><h3>GIF動画アプリ</h3>実は<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%CF%A4%C6%A4%CA%A5%D6%A5%ED%A5%B0">はてなブログ</a>ではGIF動画を張り付けることが出来るんです。<br/>
+冒頭の動画はこちらのアプリで作成しました。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fwww.screentogif.com%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="ScreenToGif - Record your screen, edit and save as a Gif or video"></iframe><cite class="hatena-citation"><a href="https://www.screentogif.com/">www.screentogif.com</a></cite>
+</div>

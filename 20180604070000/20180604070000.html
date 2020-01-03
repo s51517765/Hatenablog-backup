@@ -1,0 +1,102 @@
+<div class="entry-content">
+<p>いよいよMnistをやってみました。<br/>
+Mnistは「エムニスト」と読むそうです。</p><p>TensorflowとKerasの環境構築は以前の記事を参照してください。</p><p>こちらの記事を参考（というよりほとんどコピペ）に学習と評価をfunctionに分離するようにしました。<br/>
+<a href="https://qiita.com/wataoka/items/5c6766d3e1c674d61425">脳死で覚えるkeras入門</a></p><p></p><h3>ところでMnistってどんなテストなの？</h3>有名なのはみんな知ってる。<br/>
+でも、どんなデータなの？<br/>
+画像認識なんだから画像データ集なんだよね？？？<p>と思って、HPを見に行くと…<br/>
+<a href="http://yann.lecun.com/exdb/mnist/">MNIST handwritten digit database, Yann LeCun, Corinna Cortes and Chris Burges</a></p><p>画像ではなく数値のデータが入ったファイルになっています。<br/>
+↓のような<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>プログラムを作ってそのデータの中身を見てみました。<br/>
+変数numberは適当な数字を入れます。<br/>
+これによって、テストデータのnumber-1番目のデータ(リストなので０始まり)を確認してみました。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synPreProc">from</span> keras.datasets <span class="synPreProc">import</span> mnist
+(x_train, y_train), (x_test, y_test) = mnist.load_data()  
+　　　<span class="synComment"># 最初に実行するときダウンロードされる、これ以降はダウンロードしたデータを読み込む</span>
+data = x_test[number]  <span class="synComment"># テストデータをセット</span>
+<span class="synIdentifier">print</span>(data)
+Anser =ytest[number]
+<span class="synIdentifier">print</span>(Anser)
+</pre><p>numpyのリストは適当なところで改行されてしまいますが手動で編集して、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Excel">Excel</a>にはりつけ、スペース区切りでセルに配置し条件付き書式をセットします。[]は手動削除。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C6%A5%AD%A5%B9%A5%C8%A5%A8%A5%C7%A5%A3%A5%BF">テキストエディタ</a>で余計な改行を削除したところ。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180602172409p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180602/20180602172409.png" title="f:id:s51517765:20180602172409p:plain"/></span><br/>
+勘のいい人ならこの時点でわかりますね。</p><p>number=7 ,Answer=9<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180602171356j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180602/20180602171356.jpg" title="f:id:s51517765:20180602171356j:plain"/></span><br/>
+number=100 ,Answer=6<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180602171618j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180602/20180602171618.jpg" title="f:id:s51517765:20180602171618j:plain"/></span><br/>
+number=23 , Answer=5<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180602171657j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180602/20180602171657.jpg" title="f:id:s51517765:20180602171657j:plain"/></span></p><p>つまり、画素が0～255のモノクロの画像の画素データであることが分かります。<br/>
+これで、すっきりしました。<br/>
+ちなみに、Mnistのデータはテスト用データとト<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EC%A1%BC%A5%CB%A5%F3">レーニン</a>グ用（学習用）データに丁寧にも分けてあるようです。<br/>
+そして、xが画素データでyが正解ラベルとなっています。</p><p></p><h3>早速学習させてみる</h3>先のQiitaの記事から学習部分を抜き出して関数化しました。<br/>
+まず、二次元のリストである画像データをnumpyでreshapeします。<br/>
+これでト<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EC%A1%BC%A5%CB%A5%F3">レーニン</a>グデータは784の要素を持った1次元のリストになり、これが60000個できます。<br/>
+正解ラベルは、正解がそのままの数字で入っているのですが、これをone-hot-encodingと呼ぶようですが、変換します。<br/>
+<a href="https://qiita.com/akr-student/items/b606b88303a099016fce">One hot表現を実装してみた</a><br/>
+例えば、「3」というデータは、<code>[0, 0, 0, 1, 0, 0, 0, 0, 0, 0]</code>という形になります。（0始まり）<p>先のQiitaの記事にはなかったのが、一度学習させた結果を</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""> model.save_weights(<span class="synConstant">"mnist.hdf5"</span>) <span class="synComment">#学習結果を保存</span>
+</pre><p>というように保存しておくことができます。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synPreProc">from</span> keras.datasets <span class="synPreProc">import</span> mnist
+<span class="synPreProc">from</span> keras.utils.np_utils <span class="synPreProc">import</span> to_categorical
+<span class="synPreProc">from</span> keras.models <span class="synPreProc">import</span> Sequential
+<span class="synPreProc">from</span> keras.layers <span class="synPreProc">import</span> Dense
+
+<span class="synStatement">def</span> <span class="synIdentifier">model_build</span>():
+    (x_train, y_train), (x_test, y_test) = mnist.load_data()  
+　　　　<span class="synComment"># 最初に実行するときダウンロードされる</span>
+    <span class="synComment"># 画像を1次元化</span>
+    x_train = x_train.reshape(<span class="synConstant">60000</span>, <span class="synConstant">784</span>)
+    x_test = x_test.reshape(<span class="synConstant">10000</span>, <span class="synConstant">784</span>)
+
+    <span class="synComment"># 画素を0~1の範囲に変換(正規化)</span>
+    x_train = x_train.astype(<span class="synConstant">'float32'</span>) / <span class="synConstant">255</span>
+    x_test = x_test.astype(<span class="synConstant">'float32'</span>) / <span class="synConstant">255</span>
+
+    <span class="synComment"># 正解ラベルをone-hot-encoding</span>
+    y_train = to_categorical(y_train, <span class="synConstant">10</span>)
+    y_test = to_categorical(y_test, <span class="synConstant">10</span>)
+
+    model = Sequential()
+    model.add(Dense(<span class="synConstant">64</span>, activation=<span class="synConstant">'relu'</span>, input_dim=<span class="synConstant">784</span>))
+    model.add(Dense(<span class="synConstant">10</span>, activation=<span class="synConstant">'softmax'</span>))
+
+    model.<span class="synIdentifier">compile</span>(optimizer=<span class="synConstant">'rmsprop'</span>, loss=<span class="synConstant">'categorical_crossentropy'</span>, metrics=[<span class="synConstant">'accuracy'</span>])
+
+    model.fit(x_train, y_train, batch_size=<span class="synConstant">100</span>, epochs=<span class="synConstant">6</span>, verbose=<span class="synConstant">1</span>)  <span class="synComment"># データを学習</span>
+    model.save_weights(<span class="synConstant">"mnist.hdf5"</span>) <span class="synComment">#学習結果を保存</span>
+
+    score = model.evaluate(x_test, y_test) <span class="synComment">#モデル評価結果</span>
+    <span class="synIdentifier">print</span>(score[<span class="synConstant">0</span>])
+    <span class="synIdentifier">print</span>(score[<span class="synConstant">1</span>])
+</pre><p></p><h3>予測を動かす</h3>テスト用のデータのなかから適当なサンプルを選び、これを学習させた時と同様に1次元のリストに変換して、モデルに予測をさせます。<br/>
+予測結果もone-hot-encodingで帰ってくるので、これをラベルに変換します。<br/>
+学習結果を保存しておいて、これを読み込むようにすることで予測だけを素早く動かすことができます。<br/>
+また、今後もっと複雑なNNを使うときには当然、学習結果を使いまわせるようにしておくほうがよいし、例えば<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a> PCで学習させてラズパイで予測を動かす、といった使い方もできるはずです。
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">def</span> <span class="synIdentifier">model_read</span>():
+  <span class="synComment"># モデルを読み込む</span>
+  model = Sequential()
+  model.add(Dense(<span class="synConstant">64</span>, activation=<span class="synConstant">'relu'</span>, input_dim=<span class="synConstant">784</span>))
+  model.add(Dense(<span class="synConstant">10</span>, activation=<span class="synConstant">'softmax'</span>))
+  model.<span class="synIdentifier">compile</span>(optimizer=<span class="synConstant">'rmsprop'</span>, loss=<span class="synConstant">'categorical_crossentropy'</span>, metrics=[<span class="synConstant">'accuracy'</span>])
+  <span class="synComment"># 学習済みモデルの重みのデータを読み込み</span>
+  model.load_weights(<span class="synConstant">'mnist.hdf5'</span>) 
+  <span class="synStatement">return</span> model
+
+<span class="synStatement">def</span> <span class="synIdentifier">check</span>(number):
+    (x_train, y_train), (x_test, y_test) = mnist.load_data()  <span class="synComment">#mnistデータを読み込む</span>
+    model = model_read()
+    data = x_test[number]  <span class="synComment"># テストデータをセット</span>
+    <span class="synIdentifier">print</span>(data)
+    data = x_test[number].reshape(<span class="synConstant">1</span>, <span class="synConstant">784</span>)  <span class="synComment"># 1次元化</span>
+    <span class="synComment"># 判定</span>
+    res = model.predict([data])
+    <span class="synIdentifier">print</span>(<span class="synConstant">"res = "</span>, res)
+    y = res.argmax()  <span class="synComment"># 値の中で最も値が大きいものが答え</span>
+    <span class="synIdentifier">print</span>(y)
+    rabel = [<span class="synConstant">0</span>, <span class="synConstant">1</span>, <span class="synConstant">2</span>, <span class="synConstant">3</span>, <span class="synConstant">4</span>, <span class="synConstant">5</span>, <span class="synConstant">6</span>, <span class="synConstant">7</span>, <span class="synConstant">8</span>, <span class="synConstant">9</span>]
+    <span class="synIdentifier">print</span>(<span class="synConstant">"Prediction is "</span>, rabel[y])
+    <span class="synIdentifier">print</span>(<span class="synConstant">"Anser is "</span>, y_test[number])
+
+<span class="synStatement">if</span> __name__ == <span class="synConstant">"__main__"</span>:
+    <span class="synComment">#model_build() #学習させるとき</span>
+    check(<span class="synConstant">134</span>) <span class="synComment"># テストデータの中から適当に選ぶ</span>
+</pre><p></p><h3>まとめ</h3>学習量もQiita引用より少なくepochs=6 ですが手動でいくつか動かしてみたところ、外れることはありませんでした。<br/>
+モデル評価結果も96%と出ているので、10数個試さないと外れないぐらいの精度になっているようです。<p></p><h3>参考</h3><div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B07765H5JP/shirotoakb-22/"><img alt="日経ソフトウエア 2018年 1 月号" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/61qODzhAZWL._SL160_.jpg" title="日経ソフトウエア 2018年 1 月号"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B07765H5JP/shirotoakb-22/">日経ソフトウエア 2018年 1 月号</a></p><ul><li><span class="hatena-asin-detail-label">作者:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/%C6%FC%B7%D0%A5%BD%A5%D5%A5%C8%A5%A6%A5%A8%A5%A2">日経ソフトウエア</a></li><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/%C6%FC%B7%D0BP">日経BP</a>社</li><li><span class="hatena-asin-detail-label">発売日:</span> 2017/11/24</li><li><span class="hatena-asin-detail-label">メディア:</span> 雑誌</li><li><a href="http://d.hatena.ne.jp/asin/B07765H5JP/shirotoakb-22" target="_blank">この商品を含むブログ (1件) を見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div>
+</div>

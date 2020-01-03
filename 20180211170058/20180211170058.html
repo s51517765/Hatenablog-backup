@@ -1,0 +1,91 @@
+<div class="entry-content">
+<p><iframe allow="autoplay; encrypted-media" allowfullscreen="" frameborder="0" height="344" src="https://www.youtube.com/embed/Q8fX_2xcUp8?feature=oembed" width="459"></iframe><cite class="hatena-citation"><a href="https://youtu.be/Q8fX_2xcUp8">youtu.be</a></cite></p><p>まずは、ラズパイでGPIOの基本的な使い方を確認していきます。<br/>
+↓のような回路を作って、<a class="keyword" href="http://d.hatena.ne.jp/keyword/CDS">CDS</a>で明るさを検出し、LEDを制御します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180211152302p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180211/20180211152302.png" title="f:id:s51517765:20180211152302p:plain"/></span></p><p></p><h3>回路図用パーツを作る</h3>ここで、回路図は水魚堂のエディタ<a href="http://www.suigyodo.com/online/schsoft.htm">http://www.suigyodo.com/online/schsoft.htm</a>を使っていますが、ラズパイの回路図部品がないので作成しました。<p>部品の作成はLcoV.exeというエディタで作成します。「回路図エディタBSch3V」 をダウンロードすると一緒に入っているはずです。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180211125536j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180211/20180211125536.jpg" title="f:id:s51517765:20180211125536j:plain"/></span><br/>
+これを立ち上げて、”編集￥部品の新規作成”とクリックします。<br/>
+ここで名前を「RASPBERRYPI」とつけます。<br/>
+サイズを設定してOKで枠がつくられます。<br/>
+"ピン"のアイコンまたは、"ツール￥ピン"を選択し、ピンを配置していきます。<br/>
+ピンを必要数配置したら、”表示￥ピン編集ウィンドウ”でGPIO名やピン番号を設定して、保存します。<br/>
+これで部品は完成です。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180211130749j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180211/20180211130749.jpg" title="f:id:s51517765:20180211130749j:plain"/></span></p><p>次に、回路図エディタBSch3Vで、”設定￥ライブラリ￥add”　でさきほど作成したライブラリを読み込みます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180211163210j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180211/20180211163210.jpg" title="f:id:s51517765:20180211163210j:plain"/></span><br/>
+これで、部品にラズパイが追加され、ラズパイを含む回路図が作成できます。<br/>
+部品ファイルは↓にアップしておきました。よかったらご自由にご活用ください。<br/>
+<a href="https://drive.google.com/open?id=13ddiGm8ZNBYyIpNzR5V-_pq7lUAPEqsu">RaspberryPi.zip - Google ドライブ</a></p><p></p><h3>ターミナルでGPIOの状態を確認する</h3>現在のGPIOの状態は、ターミナルからGPIO Readallコマンドで確認することができます。<br/>
+ちょっと、最初はわかりにくいですが以下のように一覧で、ピン配置と同じように、段組みで表示されます。<br/>
+前回調べた通り、10番Pin（physical）はGPIOの15(BCM)でINPUT MODEになっていることが確認できます。<br/>
+WiringPiでは16番になるようです。
+<pre class="code" data-lang="" data-unlink="">pi@raspberrypi:~ $ gpio readall
++-----+-----+---------+------+---+-Pi ZeroW-+---+------+---------+-----+-----+
+ | BCM | wPi |   Name  | Mode | V | Physical | V | Mode | Name    | wPi | BCM |
+ +-----+-----+---------+------+---+----++----+---+------+---------+-----+-----+
+ |     |     |    3.3v |      |   |  1 || 2  |   |      | 5v      |     |     |
+ |   2 |   8 |   SDA.1 |   IN | 1 |  3 || 4  |   |      | 5v      |     |     |
+ |   3 |   9 |   SCL.1 |   IN | 1 |  5 || 6  |   |      | 0v      |     |     |
+ |   4 |   7 | GPIO. 7 |   IN | 1 |  7 || 8  | 0 | IN   | TxD     | 15  | 14  |
+ |     |     |      0v |      |   |  9 || 10 | 0 | IN   | RxD     | 16  | 15  |
+ |  17 |   0 | GPIO. 0 |   IN | 0 | 11 || 12 | 0 | IN   | GPIO. 1 | 1   | 18  |
+ |  27 |   2 | GPIO. 2 |   IN | 0 | 13 || 14 |   |      | 0v      |     |     |
+ |  22 |   3 | GPIO. 3 |   IN | 0 | 15 || 16 | 0 | IN   | GPIO. 4 | 4   | 23  |
+ |     |     |    3.3v |      |   | 17 || 18 | 0 | IN   | GPIO. 5 | 5   | 24  |
+ |  10 |  12 |    MOSI |   IN | 0 | 19 || 20 |   |      | 0v      |     |     |
+ |   9 |  13 |    MISO |   IN | 0 | 21 || 22 | 0 | IN   | GPIO. 6 | 6   | 25  |
+ |  11 |  14 |    SCLK |   IN | 0 | 23 || 24 | 1 | IN   | CE0     | 10  | 8   |
+ |     |     |      0v |      |   | 25 || 26 | 1 | IN   | CE1     | 11  | 7   |
+ |   0 |  30 |   SDA.0 |   IN | 1 | 27 || 28 | 1 | IN   | SCL.0   | 31  | 1   |
+ |   5 |  21 | GPIO.21 |   IN | 1 | 29 || 30 |   |      | 0v      |     |     |
+ |   6 |  22 | GPIO.22 |   IN | 1 | 31 || 32 | 0 | IN   | GPIO.26 | 26  | 12  |
+ |  13 |  23 | GPIO.23 |   IN | 0 | 33 || 34 |   |      | 0v      |     |     |
+ |  19 |  24 | GPIO.24 |   IN | 0 | 35 || 36 | 0 | IN   | GPIO.27 | 27  | 16  |
+ |  26 |  25 | GPIO.25 |   IN | 0 | 37 || 38 | 0 | IN   | GPIO.28 | 28  | 20  |
+ |     |     |      0v |      |   | 39 || 40 | 0 | IN   | GPIO.29 | 29  | 21  |
+ +-----+-----+---------+------+---+----++----+---+------+---------+-----+-----+
+ | BCM | wPi |   Name  | Mode | V | Physical | V | Mode | Name    | wPi | BCM |
+ +-----+-----+---------+------+---+-Pi ZeroW-+---+------+---------+-----+-----+</pre><p></p><h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>の状態</h3>ここで、<a class="keyword" href="http://d.hatena.ne.jp/keyword/CDS">CDS</a>を手で覆う用にして「暗い」状態にすると、10番ピンがHIGHになります。<br/>
+事前に<a class="keyword" href="http://d.hatena.ne.jp/keyword/CDS">CDS</a>の抵抗を調べてあって、暗いときは10kΩ、明るいときは1kΩぐらいになっています。<br/>
+3.3Vを<a class="keyword" href="http://d.hatena.ne.jp/keyword/CDS">CDS</a>、抵抗（ここでは1kΩ）に接続し、<a class="keyword" href="http://d.hatena.ne.jp/keyword/CDS">CDS</a>と抵抗の分圧された位置からNPN<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>のBaseに接続しています。<br/>
+明るいとき、<a class="keyword" href="http://d.hatena.ne.jp/keyword/CDS">CDS</a>の抵抗が低くなり、BaseはHighになり、E-Cはつながり、10番がLowになります（GNDと10番がつながるため）。<br/>
+暗いとき、<a class="keyword" href="http://d.hatena.ne.jp/keyword/CDS">CDS</a>の抵抗が高くなりBaseはLowになり、E-Cは切れて、10番がHigh（プルアップされているため）になります。<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/CDS">CDS</a>と抵抗の間からラズパイのGPIOに直接入力しても、電位水準は変わりますが読み取ることができます。<br/>
+しかし、GPIOには中途半端な電位を入力するのはあまり良くないらしいので、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>でHigh/Lowを明確にします。</p><p>いつも迷う、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>のECB。刻印のある面を見て左から「エクボ」<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180211133319p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180211/20180211133319.png" title="f:id:s51517765:20180211133319p:plain"/></span></p><div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B00ILDNSM0/shirotoakb-22/"><img alt="シリコントランジスター　2SA1015-GR　10個" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/419DitPt3qL._SL160_.jpg" title="シリコントランジスター　2SA1015-GR　10個"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B00ILDNSM0/shirotoakb-22/">シリコントランジスター　2SA1015-GR　10個</a></p><ul><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/%C5%EC%BC%C7">東芝</a></li><li><span class="hatena-asin-detail-label">メディア:</span> </li><li><a href="http://d.hatena.ne.jp/asin/B00ILDNSM0/shirotoakb-22" target="_blank">この商品を含むブログを見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div><a href="http://www.op316.com/tubes/tips/image/2sc1815.pdf">http://www.op316.com/tubes/tips/image/2sc1815.pdf</a><p>これで、ラズパイでHigh/Lowが読み取れることが確認できました。</p><p></p><h3>WiringPiのインストール</h3>WiringPiはもともと<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%B8%C0%B8%EC">C言語</a>でGPIOを制御するライブラリで、いろんな言語のラッパーが提供されています。<br/>
+ここではpyhton3用のラッパーをインストールします。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>には標準ではインストールされていないので、anaconda pronptからpipインストールします。
+<pre class="code" data-lang="" data-unlink="">$pip install wiringpi</pre><p>て、やろうとしたが、インストール失敗。<br/>
+っていうか、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a> PCではどちらにしろGPIOの動作はできないのか…<br/>
+だが、インストール出来ている例がｇｇｒと出てくるので、これはこれで別途調査する必要がある。</p><p>ラズパイにはインストール済みのようです。<br/>
+インストール済みのライブラリは↓で確認できます。</p>
+<pre class="code" data-lang="" data-unlink="">$dpkg -l</pre><p>入っていなければ、同様にpip3でインストールします。</p><p></p><h3>GPIOの基本のプログラミング</h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/CDS">CDS</a>で明るさを検出してLEDを制御するプログラムをpython3で作成しました。
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synComment"># -*- coding: utf-8 -*-</span>
+<span class="synPreProc">import</span> wiringpi
+<span class="synPreProc">import</span> time
+<span class="synIdentifier">print</span>(<span class="synConstant">"Start WiringPi!"</span>)
+
+<span class="synComment"># プルアップ　INPUT</span>
+collector_pin = <span class="synConstant">15</span> <span class="synComment"># 10番pin(GPIO15)</span>
+<span class="synComment"># OUTPUT</span>
+LED_pin =<span class="synConstant">23</span> <span class="synComment">#16番pin(GPIO23)</span>
+
+<span class="synComment"># GPIO初期化</span>
+wiringpi.wiringPiSetupGpio()
+<span class="synComment"># GPIOを入力モード（0）/出力モード(1)に設定</span>
+wiringpi.pinMode( collector_pin,<span class="synConstant">0</span>)
+wiringpi.pinMode( LED_pin,<span class="synConstant">1</span>)
+
+wiringpi.digitalWrite(LED_pin,<span class="synConstant">0</span>)
+
+<span class="synStatement">while</span>(<span class="synIdentifier">True</span>):
+    <span class="synStatement">if</span> (wiringpi.digitalRead(collector_pin))==<span class="synConstant">1</span>:
+        <span class="synIdentifier">print</span>(<span class="synConstant">"High"</span>)
+        wiringpi.digitalWrite(LED_pin, <span class="synConstant">1</span>)
+    <span class="synStatement">else</span>:
+        <span class="synIdentifier">print</span>(<span class="synConstant">"Low"</span>)
+        wiringpi.digitalWrite(LED_pin, <span class="synConstant">0</span>)
+    time.sleep(<span class="synConstant">1</span>)
+</pre><p>ラズパイのGPIOを操作するライブラリは数種類ありますが、私にとっては"WiringPi"が<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>と似ていて使いやすそうなのでこれを選びました。</p><p></p><h3>参考資料</h3>日経<a class="keyword" href="http://d.hatena.ne.jp/keyword/Linux">Linux</a>付属のラズパイマガジンビギナーズ<div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B074NZ384C/shirotoakb-22/"><img alt="日経Linux（リナックス） 2017年 9月号 [雑誌]" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/61RDLTmhPcL._SL160_.jpg" title="日経Linux（リナックス） 2017年 9月号 [雑誌]"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B074NZ384C/shirotoakb-22/">日経Linux（リナックス） 2017年 9月号 [雑誌]</a></p><ul><li><span class="hatena-asin-detail-label">作者:</span> 日経<a class="keyword" href="http://d.hatena.ne.jp/keyword/Linux">Linux</a>編集部</li><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/%C6%FC%B7%D0BP">日経BP</a>社</li><li><span class="hatena-asin-detail-label">発売日:</span> 2017/08/10</li><li><span class="hatena-asin-detail-label">メディア:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/Kindle">Kindle</a>版</li><li><a href="http://d.hatena.ne.jp/asin/B074NZ384C/shirotoakb-22" target="_blank">この商品を含むブログを見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div>WiringPiの基本的な使い方の例が載っていて解りやすいです。
+
+    
+
+  
+</div>

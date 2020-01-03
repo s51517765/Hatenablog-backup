@@ -1,0 +1,55 @@
+<div class="entry-content">
+<p>言語先日、<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%B8%C0%B8%EC">C言語</a>で自作関数を作りました。</p>
+<p> </p>
+<p><iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2016%2F06%2F14%2F123418" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="自作関数 - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="http://s51517765.hatenadiary.jp/entry/2016/06/14/123418">s51517765.hatenadiary.jp</a></cite></p>
+<p> </p>
+<p> </p>
+<p>これを<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>に移植します。</p>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%B8%C0%B8%EC">C言語</a>の記述がほぼそのまま使えるといいましたが、少し変更する必要があるようです。</p>
+<p> </p>
+<p>大きく異なる点は</p>
+<p> </p>
+<p>void main() →　void loop()</p>
+<p>void ***(int a, int b) →　int ***(int a, int b)</p>
+<p>printf →　Serial.println　および、Serial.begin()</p>
+<p> </p>
+<p>という点です。<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%B8%C0%B8%EC">C言語</a>ではSerial.Printは改行の入れ方や、変数タイプの宣言が複雑です。</p>
+<p>このあたりが、教育用に作られていて、簡単な<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>のメリットではないでしょうか？</p>
+<p> </p>
+<p>ここでは、自作関数を作るうえでの文法の確認なので、Serial入力は省略しました。</p>
+<p> </p>
+<p> </p>
+<p>＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝</p>
+<p>void setup() {</p>
+<p>Serial.begin(9600);</p>
+<p> </p>
+<p>}</p>
+<p>void loop() {　<span style="color: #0000ff;">//<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%B8%C0%B8%EC">C言語</a>ではvuoid main()</span></p>
+<p>int sum(int, int); //sumという自作関数を作ったという宣言</p>
+<p>int times(int, int);</p>
+<p>int <a class="keyword" href="http://d.hatena.ne.jp/keyword/value">value</a>;</p>
+<p> </p>
+<p>int e = 8;　//Serial入力は省略</p>
+<p>int f = 10;</p>
+<p> </p>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/value">value</a> = sum(e , f); //関数にdataを渡す</p>
+<p>int value2;</p>
+<p>value2 = times(e, f);</p>
+<p>Serial.print(<a class="keyword" href="http://d.hatena.ne.jp/keyword/value">value</a>);　<span style="color: #0000ff;">//SerialPrintは構文が異なる</span></p>
+<p>Serial.print(",");</p>
+<p>Serial.println(value2);</p>
+<p>}</p>
+<p> </p>
+<p>int sum(int a, int b) {<span style="color: #0000ff;"> //関数の中身 変数としてaとbを定義、<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%B8%C0%B8%EC">C言語</a>ではvoid sum()としていた</span></p>
+<p>int c;</p>
+<p>c = a + b;</p>
+<p>return c;</p>
+<p>}</p>
+<p> </p>
+<p>int times(int a, int b) { <span style="color: #0000ff;">//関数の中身 変数としてaとbを定義、<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%B8%C0%B8%EC">C言語</a>ではvoid times()としていた </span></p>
+<p>int d;</p>
+<p>d = a * b;</p>
+<p>return d;</p>
+<p>}</p>
+<p>＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝</p>
+</div>

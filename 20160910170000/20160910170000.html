@@ -1,0 +1,93 @@
+<div class="entry-content">
+<p>今日は、前回続きです。<br/>
+スイッチが押下されている時間を計測します。<br/>
+下図のようなプルアップ回路を作って、タクトスイッチが押されている時間を計測します。<br/>
+（Input I/Oが3だったり4だったりしますがあしからず）</p><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20160919131858j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919131858.jpg" title="f:id:s51517765:20160919131858j:plain"/></span></p><p>スイッチが押されれていないと、<span style="color: #0000cc">digitalRead</span>はHIGHです。　</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synStatement">while</span> (digitalRead(<span class="synConstant">4</span>) == HIGH) {}　
+</pre><p>ｗhileは（）のなかの条件が成立している間、｛｝のなかを実行しますが、ここでは｛｝の中を空欄にすることで、<span style="color: #0000cc">digitalRead(4) == HIGH</span>　のあいだ、ここに留まります。<br/>
+スイッチが押されて、<span style="color: #0000cc">digitalRead == LOW</span>となると、この<span style="color: #0000cc">while</span>を抜けて、 </p>
+<pre class="code lang-c" data-lang="c" data-unlink="">time_m = micros();<span class="synComment">//スイッチが押され始めた時刻&lt;200b&gt;</span>
+</pre><p>に進みます。<br/>
+次に</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synStatement">while</span> (digitalRead(<span class="synConstant">4</span>) == HIGH) {}　
+</pre><p>に進みdigitalRead(4) == LOW　となるとこのwhileを抜けて<br/>
+<span style="color: #0000cc">time_n = micros();</span>　//スイッチが離された時刻<br/>
+に進みます。<br/>
+この時刻の差が　押下されている時間になります。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synType">unsigned</span> <span class="synType">long</span> time_m = <span class="synConstant">0</span>;
+<span class="synType">unsigned</span> <span class="synType">long</span> time_n = <span class="synConstant">0</span>;
+<span class="synType">unsigned</span> <span class="synType">long</span> time_nagasa = <span class="synConstant">0</span>;
+ 
+<span class="synType">void</span> setup() {
+  pinMode(<span class="synConstant">4</span>, INPUT);
+  Serial.begin(<span class="synConstant">57600</span>);
+}
+ 
+<span class="synType">void</span> loop() {
+  <span class="synStatement">while</span> (digitalRead(<span class="synConstant">4</span>) == HIGH) {}
+  time_m = micros();　<span class="synComment">//スイッチが押され始めた時刻</span>
+  delayMicroseconds(<span class="synConstant">20</span>); <span class="synComment">//チャタリング対策</span>
+  <span class="synStatement">while</span> (digitalRead(<span class="synConstant">4</span>) == LOW) {}
+  time_n = micros();　<span class="synComment">//スイッチが離された時刻</span>
+  delayMicroseconds(<span class="synConstant">20</span>);
+  time_nagasa = time_n - time_m; <span class="synComment">//スイッチが押下されて離された時間を算出</span>
+
+  delayMicroseconds(<span class="synConstant">20</span>);
+  Serial.print(<span class="synConstant">"ms ="</span>);
+  Serial.println(time_nagasa);
+}
+</pre><p>これを繰り返すことで、押された時刻、離された時刻を次々取得することを考えます。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Excel">Excel</a>などにSerial出力を貼り付けられるように、HIGH　or LOW、それぞれの継続時間、total時間、　HIGH　= 1、LOW　=　0を　「,」（カンマ）区切りで出力します。<br/>
+カンマ区切りを入れることで、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Excel">Excel</a>上で　<span style="color: #0000cc">「区切り位置」</span>　を設定することで、グラフ作成が容易になります。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synType">unsigned</span> <span class="synType">long</span> time_m = <span class="synConstant">0</span>;
+<span class="synType">unsigned</span> <span class="synType">long</span> time_n = <span class="synConstant">0</span>;
+<span class="synType">unsigned</span> <span class="synType">long</span> time_nagasa = <span class="synConstant">0</span>;
+<span class="synType">unsigned</span> <span class="synType">long</span> time_total = <span class="synConstant">0</span>;
+<span class="synType">int</span> i = <span class="synConstant">0</span>;
+<span class="synType">void</span> setup() {
+  pinMode(<span class="synConstant">4</span>, INPUT);
+  Serial.begin(<span class="synConstant">57600</span>);
+}
+<span class="synType">void</span> loop() {
+  Serial.print(<span class="synConstant">"START  = "</span>);
+  Serial.println(<span class="synConstant">"0,0,1"</span>);
+  <span class="synStatement">for</span> (;;) { <span class="synComment">//繰り返し範囲設定　無限繰り返し</span>
+    <span class="synStatement">while</span> (digitalRead(<span class="synConstant">4</span>) == HIGH) {}
+    time_m = micros();
+    time_nagasa = time_m - time_n;　<span class="synComment">//スイッチが押下されていない時間を算出</span>
+    time_total = time_total + time_nagasa;
+    Serial.print(<span class="synConstant">"---  = "</span>);
+    Serial.print(<span class="synConstant">"  "</span>);
+    Serial.print(time_nagasa);
+    Serial.print(<span class="synConstant">","</span>);
+    Serial.print(time_total);
+    Serial.println(<span class="synConstant">",1"</span>);
+    Serial.print(<span class="synConstant">"LOW  = "</span>);
+    Serial.print(time_nagasa);
+    Serial.print(<span class="synConstant">","</span>);
+    Serial.print(time_total);
+    Serial.println(<span class="synConstant">",0"</span>);
+    delayMicroseconds(<span class="synConstant">20</span>);
+    <span class="synStatement">while</span> (digitalRead(<span class="synConstant">4</span>) == LOW) {}
+    time_n = micros();
+    delayMicroseconds(<span class="synConstant">20</span>);
+    time_nagasa = time_n - time_m; <span class="synComment">//スイッチが押下されて離された時間を算出</span>
+    time_total = time_total + time_nagasa;
+    Serial.print(<span class="synConstant">"---  = "</span>);
+    Serial.print(<span class="synConstant">"  "</span>);
+    Serial.print(time_nagasa);
+    Serial.print(<span class="synConstant">","</span>);
+    Serial.print(time_total);
+    Serial.println(<span class="synConstant">",0"</span>);
+    Serial.print(<span class="synConstant">"HIGH = "</span>);
+    Serial.print(time_nagasa);
+    Serial.print(<span class="synConstant">","</span>);
+    Serial.print(time_total);
+    Serial.print(<span class="synConstant">","</span>);
+    Serial.println(<span class="synConstant">"1"</span>);
+  }
+}
+</pre><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20160919132403p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919132403.png" title="f:id:s51517765:20160919132403p:plain"/></span><br/>
+ここまでできたら、ほぼ完成したも同然。<br/>
+次は赤外線リモコン解析をします。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Amazon">Amazon</a>で買える、赤外線センサー。</p><div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B00FR2UAXI/shirotoakb-22/"><img alt="10pcs VS1838 TL1838 VS1838B赤外線 ヘッド リモコン 受光部 受信機" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/41RkobJAXPL._SL160_.jpg" title="10pcs VS1838 TL1838 VS1838B赤外線 ヘッド リモコン 受光部 受信機"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B00FR2UAXI/shirotoakb-22/">10pcs VS1838 TL1838 VS1838B赤外線 ヘッド リモコン 受光部 受信機</a></p><ul><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> GAOHOU</li><li><span class="hatena-asin-detail-label">メディア:</span> エレクトロニクス</li><li><a href="http://d.hatena.ne.jp/asin/B00FR2UAXI/shirotoakb-22" target="_blank">この商品を含むブログを見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div>
+</div>

@@ -1,0 +1,256 @@
+<div class="entry-content">
+<p>ウェブ<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EC%A5%A4%A5%D4%A5%F3%A5%B0">スクレイピング</a>という言葉がありますが、これはウェブ（特定のHP上）から必要な情報を取り出すものです。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="//hatenablog-parts.com/embed?url=http%3A%2F%2Fwww.fascinatedwithtofu.com%2F2017%2F01%2F08%2Fscraping1%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Google 先生に聞いても意外とわからなかったウェブスクレイピング基礎編"></iframe><cite class="hatena-citation"><a href="http://www.fascinatedwithtofu.com/2017/01/08/scraping1/">www.fascinatedwithtofu.com</a></cite></p><p>仕事（電子機器開発）上で機械の動作ログがテキストで出てくるのですが、これを解析するのに通常は<a class="keyword" href="http://d.hatena.ne.jp/keyword/Excel">Excel</a>のマクロで行っています。<br/>
+機能としては十分なことが可能なのですが、実行速度が遅い。</p><p>ここで、これを<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>で作ってみようと思いました。<br/>
+StreamReaderをつかえばできそうなことは容易に想像がつきます。<br/>
+結果的には<a class="keyword" href="http://d.hatena.ne.jp/keyword/Excel">Excel</a>　<a class="keyword" href="http://d.hatena.ne.jp/keyword/VBA">VBA</a>より高速に抽出が完了します。<br/>
+また、<a class="keyword" href="http://d.hatena.ne.jp/keyword/VBA">VBA</a>の場合はファイルの読み込み中に他の<a class="keyword" href="http://d.hatena.ne.jp/keyword/Excel">Excel</a>での作業ができませんが（できなくもないけど）<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>で作れば、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Excel">Excel</a>のプロセスが使われるわけではないので<a class="keyword" href="http://d.hatena.ne.jp/keyword/Excel">Excel</a>の作業を止めることもありません。</p><p>UIとしては↓のようなものを作成し、「Target / URL」ボックスは今後作るウェブ<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EC%A5%A4%A5%D4%A5%F3%A5%B0">スクレイピング</a>向け。<br/>
+Kyewordに目的のIndexを入れて「File」クリックで実行します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170430122815j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170430/20170430122815.jpg" title="f:id:s51517765:20170430122815j:plain"/></span></p><p>＜命名ルール＞<br/>
+デザイナーは敢えて公開しませんが、<br/>
+ボタンクリックイベントは<br/>
+「ボタン名_Click」　→ex) private void FileOpen_Click …<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C1%A5%A7%A5%C3%A5%AF%A5%DC%A5%C3%A5%AF%A5%B9">チェックボックス</a>の状態は<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C1%A5%A7%A5%C3%A5%AF%A5%DC%A5%C3%A5%AF%A5%B9">チェックボックス</a>のDefaolt名がcheckBox(Number)だと思うので、checkBoxという名前を残して、<br/>
+「checkBox名称」　→　ex) checkBoxPreview<br/>
+コンボボックスなら「comboBox名称」→　ex) comboBoxKeyword<br/>
+というようにつけていくと後々わかりやすいのではないかと思います。<br/>
+もっといい方法（きちんとした命名ルール）があるかもしれなくて、自作の方法ですが。</p><p>＜機能＞<br/>
+・テキストまたはそれに準ずるファイルを読み込むことができる。<br/>
+・Keywordが含まれている「行」を抽出しTextファイルに出力する。<br/>
+・Previewボックスに出すこともできる。<br/>
+・上記２つの出力先は<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C1%A5%A7%A5%C3%A5%AF%A5%DC%A5%C3%A5%AF%A5%B9">チェックボックス</a>で切り替え可能。<br/>
+・上記<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C1%A5%A7%A5%C3%A5%AF%A5%DC%A5%C3%A5%AF%A5%B9">チェックボックス</a>がいずれもチェックされていないときはErrorをだす。<br/>
+・読み込み中は読み込みが実行中であることを示す。（今回はPreviewボックスのグレーアウトと、ボタンの無効化）<br/>
+・Previewボックスには読み込みが続けて行われても、区別できるようにする（今回は読み込み開始時刻をいれる）<br/>
+・使用許諾に了承しない人には使わせない</p><p>＜ロジック設計＞<br/>
+プログラムを実行するにはそのプログラムが正しく動作する条件が必要です。<br/>
+まず捜索するKeywordが必要です。これがないときは基本的にはErrorです。<br/>
+しかし、「Blank」というのもありといえばあり。<br/>
+出力条件はそのプログラムの実行結果の出力なので、これがないとなにも意味を成しません。<br/>
+この条件判断はなくてもErrorが出るわけではありませんが、その他のErrorがあるのか、本当に動作した結果何も出力がないのか、の判断がつかないのは困るので入れておくほうがいいと考えられます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170430132003j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170430/20170430132003.jpg" title="f:id:s51517765:20170430132003j:plain"/></span></p><p>＜実行結果＞<br/>
+テスト用の題材としては<a class="keyword" href="http://d.hatena.ne.jp/keyword/Wikipedia">Wikipedia</a>のあるページのHTMLソースをテキストに保存したものを使いました。<br/>
+例えば、"＜h"　をKeywordにすると、＜h1、＜h2、＜h3…などの含まれた行だけを取り出すことができます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170430182103j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170430/20170430182103.jpg" title="f:id:s51517765:20170430182103j:plain"/></span></p><p></p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synStatement">using</span> System;
+<span class="synStatement">using</span> System.Collections.Generic;
+<span class="synStatement">using</span> System.ComponentModel;
+<span class="synStatement">using</span> System.Data;
+<span class="synStatement">using</span> System.Drawing;
+<span class="synStatement">using</span> System.Linq;
+<span class="synStatement">using</span> System.Text;
+<span class="synStatement">using</span> System.Threading.Tasks;
+<span class="synStatement">using</span> System.Windows.Forms;
+<span class="synStatement">using</span> System.IO;
+<span class="synStatement">using</span> System.Collections;
+
+<span class="synType">namespace</span> mojiretsu
+{
+    <span class="synType">public</span> <span class="synStatement">partial</span> <span class="synType">class</span> Form1 : System.Windows.Forms.Form
+    {
+
+        <span class="synType">private</span> <span class="synType">void</span> Form1_Load(<span class="synType">object</span> sender, EventArgs e)
+        {
+
+            Boolean UserSet = <span class="synConstant">false</span>;
+            var listKeyword = <span class="synConstant">""</span>;
+            <span class="synStatement">try</span>
+            {
+                StreamReader srKeyword = <span class="synStatement">new</span> StreamReader(<span class="synConstant">"ListKeyword.txt"</span>);
+                <span class="synStatement">while</span> ((listKeyword = srKeyword.ReadLine()) != <span class="synConstant">null</span>)      <span class="synComment">// ストリームの末尾まで繰り返す</span>
+                {
+                    <span class="synStatement">if</span> (listKeyword != <span class="synConstant">"123456789012"</span>)
+                    {
+                        comboBoxKeyword.Items.Add(listKeyword);
+                    }
+                    <span class="synStatement">else</span>
+                    {
+                        UserSet = <span class="synConstant">true</span>;
+                    }
+                }
+            }
+            <span class="synStatement">catch</span>
+            {
+                MessageBox.Show(<span class="synConstant">"Keyword List is not found, and make it."</span>);
+                <span class="synStatement">using</span> (System.IO.FileStream hStream = System.IO.File.Create(<span class="synConstant">"ListKeyword.txt"</span>))
+                {
+                    <span class="synComment">// 作成時に返される FileStream を利用して閉じる</span>
+                    <span class="synStatement">if</span> (hStream != <span class="synConstant">null</span>)
+                    {
+                        hStream.Close();
+                    }
+                }
+            }
+
+            <span class="synStatement">if</span> (UserSet == <span class="synConstant">false</span>)
+            {
+                <span class="synStatement">if</span> (MessageBox.Show(<span class="synConstant">"The producer does not compensate for any damage using this software."</span>, <span class="synConstant">"License confirmation"</span>, MessageBoxButtons.OKCancel) != DialogResult.OK)
+                {
+                    MessageBox.Show(<span class="synConstant">"Not agree and can not use this."</span>);
+                    Close();
+                }
+            }
+        }
+
+        String Keyword;
+
+        <span class="synType">public</span> Form1()
+        {
+            InitializeComponent();
+        }
+
+        <span class="synType">private</span> <span class="synType">void</span> FileOpen_Click(<span class="synType">object</span> sender, EventArgs e)
+               {
+            <span class="synStatement">if</span> (textBoxURL.Text == <span class="synConstant">""</span>)
+            {
+                <span class="synStatement">if</span> (keywordCheck() == <span class="synConstant">true</span>)
+                {
+                    <span class="synStatement">if</span> (writeOutCheck() == <span class="synConstant">true</span>)
+                    {
+
+                        FileOpen();
+                    }
+                 }
+   
+            }
+            <span class="synStatement">else</span>   <span class="synComment">//URLがあったら</span>
+            {
+
+
+
+            }
+        }
+  
+        <span class="synType">private</span> <span class="synType">void</span> buttonGethtml_Click(<span class="synType">object</span> sender, EventArgs e)
+        {  <span class="synComment">//作成中</span>
+         }
+
+        <span class="synType">public</span> Boolean keywordCheck()
+        {
+            Keyword = comboBoxKeyword.Text;
+
+            <span class="synStatement">if</span> (Keyword == <span class="synConstant">""</span>)
+            {
+                <span class="synStatement">if</span> (MessageBox.Show(<span class="synConstant">"Kyeword is Blank is OK ?"</span>, <span class="synConstant">"Notice"</span>, MessageBoxButtons.OKCancel) == DialogResult.OK)
+                {
+                    <span class="synStatement">return</span> <span class="synConstant">true</span>;
+                }
+                <span class="synStatement">return</span> <span class="synConstant">false</span>;
+            }
+            <span class="synStatement">else</span>
+            {
+                <span class="synStatement">return</span> <span class="synConstant">true</span>;
+            }
+
+        }
+
+        <span class="synType">public</span> <span class="synType">bool</span> writeOutCheck()
+        {
+            <span class="synStatement">if</span> (checkBoxWriteOut.Checked == <span class="synConstant">false</span> &amp;&amp; checkBoxPreview.Checked == <span class="synConstant">false</span>)
+            {
+                MessageBox.Show(<span class="synConstant">"Select output"</span>);
+                <span class="synStatement">return</span> <span class="synConstant">false</span>;
+            }
+            <span class="synStatement">else</span>
+            {
+                <span class="synStatement">return</span> <span class="synConstant">true</span>;
+            }
+        }
+
+        <span class="synType">public</span> <span class="synType">void</span> FileOpen()
+        {
+
+                DateTime dt = DateTime.Now;
+                <span class="synType">string</span> date = dt.ToString(<span class="synConstant">"yyyy_MM_dd_HH_mm_ss"</span>);
+
+                OpenFileDialog ofd = <span class="synStatement">new</span> OpenFileDialog();
+
+                <span class="synStatement">if</span> (ofd.ShowDialog() == DialogResult.OK)
+
+                {
+
+                    ViewBoxBackColorSet();
+                    textBoxPreview.AppendText(dt.ToString(<span class="synConstant">"HH:mm:ss"</span> + Environment.NewLine));
+
+                    <span class="synComment">//   string[] StrArryData = new string[3]; // １行分のﾃﾞｰﾀを格納する作業ｵﾌﾞｼﾞｪｸﾄ</span>
+                    <span class="synStatement">using</span> (var sr = <span class="synStatement">new</span> StreamReader(ofd.FileName))  <span class="synComment">//型はVariant</span>
+                    {
+                        <span class="synType">int</span> lineCount = <span class="synConstant">0</span>;
+                        <span class="synStatement">if</span> (checkBoxWriteOut.Checked == <span class="synConstant">true</span>)
+                        {
+                            <span class="synStatement">using</span> (StreamWriter writer = <span class="synStatement">new</span> StreamWriter(date + <span class="synConstant">".txt"</span>, <span class="synConstant">true</span>))
+                            {  <span class="synComment">//インデックス</span>
+                                writer.Write(<span class="synConstant">"Souce File Name = "</span> + ofd.FileName + Environment.NewLine);
+                                writer.Write(<span class="synConstant">"Keyword = "</span> + Keyword + Environment.NewLine + <span class="synConstant">""</span> + Environment.NewLine);
+                                writer.Write(<span class="synConstant">"＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝ "</span> + Environment.NewLine + Environment.NewLine + Environment.NewLine);
+                            }
+                        }
+                        var line = <span class="synConstant">""</span>;
+                        <span class="synStatement">while</span> ((line = sr.ReadLine()) != <span class="synConstant">null</span>)      <span class="synComment">// ストリームの末尾まで繰り返す</span>
+                        {
+                            <span class="synType">int</span> index_check = line.IndexOf(Keyword); <span class="synComment">//含まれてないときは"-1"</span>
+                            <span class="synStatement">if</span> (index_check &gt; -<span class="synConstant">1</span>)
+                            {
+                                lineCount++;
+
+                                <span class="synStatement">if</span> (checkBoxPreview.Checked == <span class="synConstant">true</span>)
+                                {
+                                    textBoxPreview.AppendText(line + Environment.NewLine); <span class="synComment">//追記モード</span>
+                                }
+                                <span class="synStatement">if</span> (checkBoxWriteOut.Checked == <span class="synConstant">true</span>)
+                                {
+                                    <span class="synStatement">using</span> (StreamWriter writer = <span class="synStatement">new</span> StreamWriter(date + <span class="synConstant">".txt"</span>, <span class="synConstant">true</span>))
+                                    {
+                                        writer.Write(line);
+                                        writer.Write(Environment.NewLine);
+                                    }
+                                }
+                            }
+                        }
+                        labelLineCount.Text = lineCount.ToString();
+                        ViewBoxBackColorReset();
+                    }
+                }
+       　　 }
+
+
+        <span class="synType">private</span> <span class="synType">void</span> buttonClear_Click(<span class="synType">object</span> sender, EventArgs e)
+        {
+            textBoxPreview.ResetText();
+            comboBoxKeyword.ResetText();
+            textBoxPreview.ResetText();
+            labelLineCount.Text = <span class="synConstant">"0"</span>;
+            textBoxURL.ResetText();
+        }
+
+        <span class="synType">private</span> <span class="synType">void</span> buttonKeywordOpen_Click(<span class="synType">object</span> sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start(<span class="synConstant">"notepad.exe"</span>, <span class="synSpecial">@</span><span class="synConstant">"""ListKeyword.txt"""</span>);
+        }
+
+
+        <span class="synType">public</span> <span class="synType">void</span> ViewBoxBackColorSet()
+        {
+            textBoxPreview.BackColor = Color.FromArgb(<span class="synConstant">0xdd</span>, <span class="synConstant">0xdd</span>, <span class="synConstant">0xdd</span>);
+            buttonGethtml.Enabled = <span class="synConstant">false</span>;
+            buttonFileOpen.Enabled = <span class="synConstant">false</span>;
+            buttonClear.Enabled = <span class="synConstant">false</span>;
+            buttonKeywordOpen.Enabled = <span class="synConstant">false</span>;
+        }
+        <span class="synType">public</span> <span class="synType">void</span> ViewBoxBackColorReset()
+        {
+            textBoxPreview.BackColor = Color.White;
+            buttonGethtml.Enabled = <span class="synConstant">true</span>;
+            buttonFileOpen.Enabled = <span class="synConstant">true</span>;
+            buttonClear.Enabled = <span class="synConstant">true</span>;
+            buttonKeywordOpen.Enabled = <span class="synConstant">true</span>;
+        }
+
+        }
+
+    }
+
+}
+
+</pre>
+</div>

@@ -1,0 +1,116 @@
+<div class="entry-content">
+<p><a class="detailOn" href="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111755.jpg" id="i13470226592"><img alt="" border="0" height="146" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111755.jpg" width="220"/></a></p>
+<p> </p>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>を始めました。</p>
+<p>少し前から興味を持っていたのですが、今日買ってきました。</p>
+<p> </p>
+<p>買ってきたものは、</p>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a> Uno Rev.3</p>
+<p>ブレッドボードLEDフラッシャーキット</p>
+<p>ジャンパー線</p>
+<p>マイクロサーボ　SG92R</p>
+<p>です。</p>
+<p> </p>
+<p><img alt="f:id:s51517765:20190105113422j:plain" class="hatena-fotolife" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190105/20190105113422.jpg" title="f:id:s51517765:20190105113422j:plain"/></p>
+<p> </p>
+<p>まずは基本のLEDを点けてみようと思います。</p>
+<p> </p>
+<p><img alt="f:id:s51517765:20190105113348j:plain" class="hatena-fotolife" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190105/20190105113348.jpg" title="f:id:s51517765:20190105113348j:plain"/></p>
+<p> </p>
+<p>まずはこちらから、<a class="keyword" href="http://d.hatena.ne.jp/keyword/IDE">IDE</a>という開発ツールをインストールします。</p>
+<p><a href="https://www.arduino.cc/en/Main/Software" target="_blank">https://www.arduino.cc/en/Main/Software</a></p>
+<p> </p>
+<p>Downloadページへ行くとどうやら寄付を求められているようですが、とりあえずなしを選びます。</p>
+<p>必須ではないようです。</p>
+<p> </p>
+<p>インストールしつつ、上の写真のようにLEDを配線しUSB接続していたら、配線しただけでLEDがつきました。</p>
+<p>どうやらDefoultで13pinに電圧が出るようです。</p>
+<p>ちかちかしています。</p>
+<p>所謂エルチカですが、これでは何もしたうちに入りません。</p>
+<p> </p>
+<p>そうこうしているうちに、インストールが完了します。</p>
+<p>続いて、USBドライバのインストールも始まりますので、これもインストールします。</p>
+<p> </p>
+<p>インストールが完了したら<a class="keyword" href="http://d.hatena.ne.jp/keyword/IDE">IDE</a>で早速プログラミングです。</p>
+<p> </p>
+<p>書き込んだら「検証」ボタンを押します。</p>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C1%A5%A7%A5%C3%A5%AF%A5%DC%A5%C3%A5%AF%A5%B9">チェックボックス</a>のアイコンです。</p>
+<p> </p>
+<p><img alt="f:id:s51517765:20190105113145p:plain" class="hatena-fotolife" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190105/20190105113145.png" title="f:id:s51517765:20190105113145p:plain"/></p>
+<p>エラーがあると写真のようにハイライト表示されます。</p>
+<p>ネットで見ていた中で、簡単そうだと思って始めたのですが、なんでしょう？このエラー。</p>
+<p> </p>
+<p>どうやら、大文字と小文字は厳格に区別されるようです。</p>
+<p>ここでは「OUTPUT」が「output」となっていることが原因です。</p>
+<p>エラーが出なくなるまで、修正しました。</p>
+<p> </p>
+<p>これで、基本はできました。</p>
+<p>次に、今日買ったパーツのなかに入っていたタクトスイッチを使ってみます。</p>
+<p>タクトスイッチはブレッドボード上では真ん中の溝をまたぐように設置するといいようです。</p>
+<p>タクトスイッチは、足が出ている面の同じ面に出ている2本は常時、ショートしています。</p>
+<p>向かい合っている足は、スイッチが押されている間ショートします。</p>
+<p> </p>
+<p><img alt="f:id:s51517765:20190105113253j:plain" class="hatena-fotolife" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190105/20190105113253.jpg" title="f:id:s51517765:20190105113253j:plain"/></p>
+<p> </p>
+<p>プログラムは先ほどのまま、回路を変更します。</p>
+<p> </p>
+<p>これで、スイッチを手で押している間はエルチカし、手を離すと消灯になります。</p>
+<p> </p>
+<p>まずは、触ってみたいのがやまやまなので、いろいろプログラムをいじってみようと思います。</p>
+<p> </p>
+<p>delayの時間を変更しながら、<a class="keyword" href="http://d.hatena.ne.jp/keyword/IDE">IDE</a>の使い方を覚えていきます。</p>
+<p>プログラムを変更（<a class="keyword" href="http://d.hatena.ne.jp/keyword/delay%20time">delay time</a>の変更など)したら検証して、アップロードする必要があります。</p>
+<p>検証はしなくても、アップロードとするだけで、同時に検証を行うようですが慣れるまではすこしずつ検証しながらプログラムを作成していくほうがよいのではないでしょうか？</p>
+<p> </p>
+<p>なんどかアップロードしていると、突然アップロードが完了しなくなりました。</p>
+<p>フリーズです。</p>
+<p> </p>
+<p>いきなり壊れたか？と不安になりますが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%B0%A4%B0%A4%EB">ぐぐる</a>と解決します。</p>
+<p>まずは、一度USBを抜きます。</p>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>の「デ<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D0%A5%A4%A5%B9">バイス</a>とプリンター」をコン<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%ED%A1%BC%A5%EB">トロール</a>パネルから呼び出します。</p>
+<p><img alt="f:id:s51517765:20190105113231p:plain" class="hatena-fotolife" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190105/20190105113231.png" title="f:id:s51517765:20190105113231p:plain"/></p>
+<p>もういちど<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>を接続します。</p>
+<p>デ<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D0%A5%A4%A5%B9">バイス</a>の一覧の中で、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>は　COM4と表示されています。</p>
+<p>一方<a class="keyword" href="http://d.hatena.ne.jp/keyword/IDE">IDE</a>の右下に<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>/Genuino Uno on COM1と表示されています。</p>
+<p> </p>
+<p>つまり、実際に繋がっているUSB　portと<a class="keyword" href="http://d.hatena.ne.jp/keyword/IDE">IDE</a>が認識しているPortが異なるため、通信ができないということです。</p>
+<p> </p>
+<p>最初のうちはできていたのになぜでしょう？</p>
+<p> </p>
+<p>とりあえず、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>　<a class="keyword" href="http://d.hatena.ne.jp/keyword/IDE">IDE</a>から通信ポートを変更します。</p>
+<p><img alt="f:id:s51517765:20190105113210p:plain" class="hatena-fotolife" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190105/20190105113210.png" title="f:id:s51517765:20190105113210p:plain"/></p>
+<p>これで復活です。</p>
+<p> </p>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>は<a class="keyword" href="http://d.hatena.ne.jp/keyword/Amazon">Amazon</a>でも買えます。↓↓ </p>
+<div class="freezed">
+<div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B0044X2E5S/shirotoakb-22/"><img alt="【永久保証付き】Arduino Uno" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/51%2BN-57gSiL._SL160_.jpg" title="【永久保証付き】Arduino Uno"/></a>
+<div class="hatena-asin-detail-info">
+<p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B0044X2E5S/shirotoakb-22/">【永久保証付き】Arduino Uno</a></p>
+<ul>
+<li><span class="hatena-asin-detail-label">出版社/メーカー:</span> スイッチサイエンス</li>
+<li><span class="hatena-asin-detail-label">メディア:</span> Personal Computers</li>
+<li><span class="hatena-asin-detail-label">購入</span>: 2人 <span class="hatena-asin-detail-label">クリック</span>: 15回</li>
+<li><a href="http://d.hatena.ne.jp/asin/B0044X2E5S/shirotoakb-22" target="_blank">この商品を含むブログを見る</a></li>
+</ul>
+</div>
+<div class="hatena-asin-detail-foot"> </div>
+</div>
+</div>
+<p>  </p>
+<p>とりあえず、プログラミングしてみたいなら一通りの部品がそろっている↓↓ </p>
+<div class="freezed">
+<div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B0025Y6C5G/shirotoakb-22/"><img alt="Arduinoをはじめようキット" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/413sKH40bxL._SL160_.jpg" title="Arduinoをはじめようキット"/></a>
+<div class="hatena-asin-detail-info">
+<p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B0025Y6C5G/shirotoakb-22/">Arduinoをはじめようキット</a></p>
+<ul>
+<li><span class="hatena-asin-detail-label">出版社/メーカー:</span> スイッチサイエンス</li>
+<li><span class="hatena-asin-detail-label">メディア:</span> おもちゃ＆ホビー</li>
+<li><span class="hatena-asin-detail-label">購入</span>: 64人 <span class="hatena-asin-detail-label">クリック</span>: 1,164回</li>
+<li><a href="http://d.hatena.ne.jp/asin/B0025Y6C5G/shirotoakb-22" target="_blank">この商品を含むブログ (50件) を見る</a></li>
+</ul>
+</div>
+<div class="hatena-asin-detail-foot"> </div>
+</div>
+</div>
+<p> </p>
+</div>

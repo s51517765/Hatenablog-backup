@@ -1,0 +1,163 @@
+<div class="entry-content">
+<p>今回はウェブ<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EC%A5%A4%A5%D4%A5%F3%A5%B0">スクレイピング</a>をやってみます。<br/>
+↓の続きになります。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2017%2F05%2F01%2F123314" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="C# でテキストファイルスクレイピング - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="http://s51517765.hatenadiary.jp/entry/2017/05/01/123314">s51517765.hatenadiary.jp</a></cite></p><p>ウェブ<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EC%A5%A4%A5%D4%A5%F3%A5%B0">スクレイピング</a>として、Webの情報を取得する基本的な構文は↓を参考にしました。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fwww.casleyconsulting.co.jp%2Fblog-engineer%2Fc%2F%25E3%2582%25A6%25E3%2582%25A7%25E3%2583%2596%25E3%2582%25B9%25E3%2582%25AF%25E3%2583%25AC%25E3%2582%25A4%25E3%2583%2594%25E3%2583%25B3%25E3%2582%25B0%25E5%2587%25A6%25E7%2590%2586c%25E3%2580%2590%25E5%2585%25A5%25E9%2596%2580%25E7%25B7%25A8%25E3%2580%2591%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="ウェブスクレイピング処理@C#【入門編】 | キャスレーコンサルティング株式会社"></iframe><cite class="hatena-citation"><a href="http://www.casleyconsulting.co.jp/blog-engineer/c/%E3%82%A6%E3%82%A7%E3%83%96%E3%82%B9%E3%82%AF%E3%83%AC%E3%82%A4%E3%83%94%E3%83%B3%E3%82%B0%E5%87%A6%E7%90%86c%E3%80%90%E5%85%A5%E9%96%80%E7%B7%A8%E3%80%91/">www.casleyconsulting.co.jp</a></cite></p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Visual%20Studio">Visual Studio</a>上でクラスファイルを追加して、ウェブ<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EC%A5%A4%A5%D4%A5%F3%A5%B0">スクレイピング</a>のコードを作成します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170505154304j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170505/20170505154304.jpg" title="f:id:s51517765:20170505154304j:plain"/></span></p><p>これは、URLを指定するとそのページのHTMLをstring型の文字列として取得します。<br/>
+この内容は、あまり深く考えずにこういう一つのメソッドとして理解しておけばとりあえずいいと思います。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">        <span class="synType">public</span> <span class="synType">string</span> Gethtml(<span class="synType">string</span> url)
+        {
+            <span class="synComment">// 指定されたURLに対してのRequestを作成します。</span>
+            var req = (HttpWebRequest)WebRequest.Create(url);     <span class="synComment">//using System.Net;</span>
+
+            <span class="synComment">// html取得文字列</span>
+            <span class="synType">string</span> html;
+
+            <span class="synComment">// 指定したURLに対してReqestを投げてResponseを取得します。</span>
+            <span class="synStatement">using</span> (var res = (HttpWebResponse)req.GetResponse())
+            <span class="synStatement">using</span> (var resSt = res.GetResponseStream())
+            <span class="synComment">// 取得した文字列をUTF8でエンコードします。</span>
+            <span class="synStatement">using</span> (var sr = <span class="synStatement">new</span> StreamReader(resSt, Encoding.UTF8))     <span class="synComment">//using System.IO;</span>
+            {
+                <span class="synComment">// HTMLを取得する。</span>
+                html = sr.ReadToEnd();
+            }
+
+            <span class="synStatement">return</span> html;
+        }
+</pre><p>このとき、System.NetとSystem.IOを使いますので、以下をファイルの先頭に追加しておきます。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synStatement">using</span> System.Net;
+<span class="synStatement">using</span> System.IO;
+</pre><p>つぎに、同じクラスファイル上にキーワードを抽出するプログラムを作成します。<br/>
+引数としては先ほどのメソッドで取得したHTMLとキーワードを指定します。<br/>
+考え方としては、Keywordを含む文を＜P＞＜/P＞で囲まれる部分で区切り取得します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170506121935j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170506/20170506121935.jpg" title="f:id:s51517765:20170506121935j:plain"/></span></p><p>①まずHTML全体の中からKeywordをさがす。html.IndexOf(Keyword)構文でhtmlのなかでKeywordの位置を探します。<br/>
+Substring(start,Length)構文で、start =0(最初)から前記Keyword位置までを取得。<br/>
+②前記Keywordよりまえの部分の中から後ろからさがして＜p＞を探す。<br/>
+ここでは、Keywordから前へひとつづつ文字を追加して＜p＞をさがし、見つかったらこれがほしいKeywordより前の部分になります。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synStatement">for</span> (<span class="synType">int</span> n = <span class="synConstant">1</span>; n &lt;= buf_buf_mae.Length; n++)
+            {
+                buf_mae = buf_buf_mae.Substring((buf_buf_mae.Length) - n, n);
+</pre><p>③～⑤後ろは同様に＜/p＞を探します。<br/>
+これを足し合わせるとKeywordを含む文が取得できます。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">string</span> getWord = buf_mae + buf_ushiro;
+</pre><p>これをまとめると、Keywordの取得メソッド</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">        <span class="synType">public</span> <span class="synType">string</span> GetKeyword(<span class="synType">string</span> html, <span class="synType">string</span> Keyword)
+        {
+　　　　　　　　header = <span class="synConstant">"&lt;p"</span>
+　　　　　　　　footer = <span class="synConstant">"&lt;/p"</span>
+
+            <span class="synComment">// html文字列内からKeywordをさがしその位置を返す</span>
+            <span class="synType">int</span> keywordStart = html.IndexOf(Keyword);
+
+            <span class="synType">string</span> buf_buf_mae = html.Substring(<span class="synConstant">0</span>, keywordStart);
+            <span class="synType">string</span> buf_mae = <span class="synConstant">""</span>;
+            <span class="synStatement">for</span> (<span class="synType">int</span> n = <span class="synConstant">1</span>; n &lt;= buf_buf_mae.Length; n++)
+            {
+                buf_mae = buf_buf_mae.Substring((buf_buf_mae.Length) - n, n);
+                <span class="synStatement">if</span> (buf_mae.IndexOf(header) &gt; <span class="synConstant">0</span>)
+                {  <span class="synComment">//後ろからさがして見つかったら</span>
+                    <span class="synStatement">break</span>;
+                }
+                <span class="synStatement">if</span> (n &gt; <span class="synConstant">5000</span>)
+                {
+                    MessageBox.Show(<span class="synConstant">"Header get Error."</span>);
+                    <span class="synStatement">break</span>;
+                }
+            }
+
+            <span class="synType">string</span> buf_ushiro = html.Substring(keywordStart); <span class="synComment">//indexOfから後ろを取得第2引数省略</span>
+            <span class="synType">int</span> nagasa_u = buf_ushiro.IndexOf(footer);
+            buf_ushiro = html.Substring(keywordStart, nagasa_u + <span class="synConstant">4</span>); <span class="synComment">//start位置,対象文字列長さ</span>
+
+            <span class="synType">string</span> getWord = buf_mae + buf_ushiro;
+            <span class="synStatement">return</span> getWord;
+
+        }
+</pre><p>次にForm1にHTMLのボタンクリックイベントを作成します。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">     <span class="synType">private</span> <span class="synType">void</span> buttonGethtml_Click(<span class="synType">object</span> sender, EventArgs e)
+        {
+            ViewBoxBackColorSet();
+
+            <span class="synStatement">if</span> (checkBoxWriteOut.Checked == <span class="synConstant">false</span> &amp;&amp; checkBoxPreview.Checked == <span class="synConstant">false</span>)
+            {
+                MessageBox.Show(<span class="synConstant">"Select output"</span>);
+            }
+            <span class="synStatement">else</span>
+            {
+                DateTime dt = DateTime.Now;
+                <span class="synType">string</span> date = dt.ToString(<span class="synConstant">"yyyy_MM_dd_HH_mm_ss"</span>);
+                <span class="synStatement">try</span>
+                {
+                    textBoxPreview.AppendText(dt.ToString(<span class="synConstant">"HH:mm:ss"</span> + Environment.NewLine));
+
+                    var scr = <span class="synStatement">new</span> Scraping();  <span class="synComment">//クラスScrapingを使うためにインスタンス作成</span>
+                    <span class="synType">string</span> url = textBoxURL.Text;
+                    <span class="synType">string</span> html = scr.Gethtml(url);
+
+                      Keyword = comboBoxKeyword.Text;
+                    
+                    <span class="synType">string</span> getWord;
+                    getWord = scr.GetKeyword(html, Keyword);
+                    <span class="synStatement">if</span> (checkBoxPreview.Checked == <span class="synConstant">true</span>)
+                    {
+                        textBoxPreview.AppendText(getWord + Environment.NewLine);
+                    }
+                    <span class="synStatement">if</span> (checkBoxWriteOut.Checked == <span class="synConstant">true</span>)
+                    {
+                        <span class="synStatement">using</span> (StreamWriter writer = <span class="synStatement">new</span> StreamWriter(<span class="synConstant">"H_"</span> + date + <span class="synConstant">".txt"</span>, <span class="synConstant">true</span>))
+                        {
+                            writer.Write(getWord);
+                        }
+                    }
+
+                }
+                <span class="synStatement">catch</span>
+                {
+                    MessageBox.Show(<span class="synConstant">"Check URL"</span>);
+                }
+                ViewBoxBackColorReset();
+            }
+        }
+</pre><p>このへんが<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AA%A5%D6%A5%B8%A5%A7%A5%AF%A5%C8%BB%D8%B8%FE">オブジェクト指向</a>（クラス設計）っぽいところ。<br/>
+クラスを使うために<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A4%A5%F3%A5%B9%A5%BF%A5%F3%A5%B9">インスタンス</a>の宣言をして、入力（ここではURL）と出力（ここではHTML）(および、HTMLとKeywordとWord)だけが見えている状態になります。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""> var scr = <span class="synStatement">new</span> Scraping();  <span class="synComment">//クラスScrapingを使うためにインスタンス作成</span>
+ <span class="synType">string</span> url = textBoxURL.Text;
+ <span class="synType">string</span> html = scr.Gethtml(url);
+
+ <span class="synType">string</span> getWord;
+ getWord = scr.GetKeyword(html, Keyword);
+</pre><p>これで、必要部分は取得できましたが、HTMLのタグが不要です。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170506123724j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170506/20170506123724.jpg" title="f:id:s51517765:20170506123724j:plain"/></span><br/>
+</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">  <span class="synType">public</span> <span class="synType">string</span> deleteTag(<span class="synType">string</span> getWord)
+        {
+            <span class="synType">int</span> buf_int = -<span class="synConstant">1</span>;
+            <span class="synType">int</span> buf_int2;
+            <span class="synType">string</span> tukau1, tukau2;
+            <span class="synType">string</span> buf_1;
+            <span class="synType">string</span> deleteTag_getword;
+
+            <span class="synStatement">for</span> (<span class="synType">int</span> n = <span class="synConstant">1</span>; n &lt; <span class="synConstant">80</span>; n++)
+            {
+                buf_int = getWord.IndexOf(<span class="synConstant">"&lt;"</span>);
+                <span class="synStatement">if</span> (buf_int &lt; <span class="synConstant">0</span>)
+                {
+                    <span class="synStatement">break</span>;
+                }
+
+                tukau1 = getWord.Substring(<span class="synConstant">0</span>, buf_int);
+                buf_1 = getWord.Substring(buf_int + <span class="synConstant">1</span>);
+                buf_int2 = buf_1.IndexOf(<span class="synConstant">"&gt;"</span>);
+                tukau2 = buf_1.Substring(buf_int2 + <span class="synConstant">1</span>);
+
+                getWord = tukau1 + tukau2;
+              
+            }
+            deleteTag_getword = getWord;
+                 <span class="synStatement">return</span> deleteTag_getword;
+        }
+</pre><p>このように＜＞で囲まれた部分をHTML Tagとみなして削除するメソッドを入れると、すっきりします。<br/>
+タグのスタート＜を探し、これ以前の文字列を取得し、＜の次の文字から＞を探しこれをタグとみなして捨てる。＞の次の文字から同じようにタグを探し、文字列を取得し最初に取得したタグの外とつなげて…という風にしていきます。<br/>
+forの構文の繰り返し数は適当にいれていますが、タグが見つからなくなったら、IndexOf = -1となるので、こうなったらBreak；で終了。</p><p>bufはbufferの略であまり綺麗とは言えないがよく使われる一時的な変数のことです。</p><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170506125852j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170506/20170506125852.jpg" title="f:id:s51517765:20170506125852j:plain"/></span></p><p>※HTMLのタグは「半角＜＞」を使いますが、ブログ上で半角＜＞を使うタグとみなされて表示されないので、全角＜＞を使っています。</p>
+</div>

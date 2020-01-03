@@ -1,0 +1,70 @@
+<div class="entry-content">
+<p><br/>今日は土壌抵抗の平均化処理を考えます。</p>
+<p> </p>
+<p>前回までに土壌抵抗を読むことと、それに応じてポンプまたはLEDを動作させることを実装しました。</p>
+<p> </p>
+<p>実験的には金属膜抵抗をつかっているので、抵抗はある程度安定しています。</p>
+<p>しかし、土壌抵抗はそのようにいかないと予想しています。</p>
+<p>これは、土壌の中の水分は動いていて、また、センサーと土壌との<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C0%DC%BF%A8">接触</a>が不安定である可能性があり、観測値が乱れるためです。</p>
+<p>そのため、数回の測定を連続して実施することで、”確<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%AB%A4%E9%A4%B7">からし</a>い”土壌抵抗を測定する必要があります。</p>
+<p> </p>
+<p>ここでは、土壌抵抗を測定するタイミングにきたら、設定した（平均化の）サンプリング周期で、設定した（平均化の）サンプリング数をサンプリングし、平均の土壌抵抗をもって、このときの土壌抵抗とします。</p>
+<p> </p>
+<p>前回からの追加変更点は青字です。</p>
+<p> </p>
+<p>＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝</p>
+<p><span style="color: #0000ff;">float</span> regist = 900; //土壌抵抗</p>
+<p>int power = 255; //ポンプpwm</p>
+<p>int threshold = 600; //水遣り敷居値</p>
+<p>int GREEN = A1;</p>
+<p>int YELLOW = A2;</p>
+<p>int RED = A3;</p>
+<p>int POMP = 5;</p>
+<p>int LED = 150;</p>
+<p>int cycle = 1000; //水遣りチェック周期(ms)</p>
+<p>int aveNum = 10;//平均化のサンプリング数</p>
+<p>int aveCycle = 30; //平均化サンプリング周期(ms)</p>
+<p> </p>
+<p>void setup() {</p>
+<p>Serial.begin(9600); //シリアルモニタを使う(カッコ内は通信速度)</p>
+<p> </p>
+<p>pinMode(A0, INPUT); //土壌抵抗Read</p>
+<p>pinMode(5, OUTPUT); //電圧を<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B0%F5%B2%C4">印可</a>する宣言</p>
+<p>pinMode(A1, OUTPUT); //GREEN</p>
+<p>pinMode(A2, OUTPUT); //YELLOW</p>
+<p>pinMode(A3, OUTPUT); //RED</p>
+<p>}</p>
+<p>void loop() {</p>
+<p> </p>
+<p>float REGIST = 0; //平均計算のための中間の数値を格納</p>
+<p>int i; //繰り返しのためのカウンター</p>
+<p>for (i = 0 ; i &lt; aveNum; i++) {</p>
+<p>regist = analogRead(A0);</p>
+<p>REGIST = REGIST + regist; //読み値を足し合わせ合計していく</p>
+<p>Serial.print(regist);</p>
+<p>delay(aveCycle);</p>
+<p>}</p>
+<p>regist = REGIST / aveNum; //合計から平均を算出しregistとして出力</p>
+<p> </p>
+<p> </p>
+<p>～～続きは前回と同じ</p>
+<p> </p>
+<p>＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝</p>
+<p> </p>
+<p>平均化のサンプリング数、一度のタイミングでサンプリングする回数をaveNum、その周期をaveCycleと定義しました。</p>
+<p>測定された土壌抵抗　registは小数点以下を有効にするため、これまで使っていた「int」ではなく「float」に変更します。</p>
+<p>intは正の整数しかとれないので、少数が使えるfloatにします。</p>
+<p> </p>
+<p>for (i = 0 ; i &lt; aveNum; i++) {</p>
+<p> </p>
+<p>の文で、analogReadの抵抗値をサンプリング回数分、測定し、自身に足していきます。</p>
+<p>ここで、REGISTという仮の数を用意し、ここにregistの読み値を足していきます。</p>
+<p>このようにして、読むごとにREGISTに足していくと、registの合計が算出できます。</p>
+<p> </p>
+<p>最後にREGISTをサンプリング回数で割ることで、registの平均が算出できます。</p>
+<p> </p>
+<p>そのサンプリングの様子と、平均化した結果をSerial.printに表示してみました。</p>
+<p><img alt="f:id:s51517765:20190105114159p:plain" class="hatena-fotolife" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190105/20190105114159.png" title="f:id:s51517765:20190105114159p:plain"/></p>
+<p> </p>
+<p>これで平均処理の完成です。</p>
+</div>

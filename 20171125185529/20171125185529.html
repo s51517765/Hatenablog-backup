@@ -1,0 +1,248 @@
+<div class="entry-content">
+<p><iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2017%2F11%2F18%2F172319" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="Twitterで趣味の似た人を探す - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="http://s51517765.hatenadiary.jp/entry/2017/11/18/172319">s51517765.hatenadiary.jp</a></cite></p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/twitter">twitter</a>から趣味の似たユーザーを探すために、もっと多くのキーワードを抽出したいと思い、言語解析に挑戦しました。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>で使える言語解析パッケージとしては、<a class="keyword" href="http://d.hatena.ne.jp/keyword/mecab">mecab</a>（めかぶ）が有名なようです。<br/>
+しかし、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>ではなかなかインストールが一筋縄ではいかないということで、↓の記事のように簡単にできるよ、と書かれていても私にはやり遂げることはできませんでした。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Fyukinoi%2Fitems%2F990b6933d9f21ba0fb43" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Windows で pip で mecab-python をいれる - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/yukinoi/items/990b6933d9f21ba0fb43">qiita.com</a></cite></p><p>例に漏れず、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%CA%B8%BB%FA%A5%B3%A1%BC%A5%C9">文字コード</a>が分からないよ＾＾というErrorでくじけました。</p>
+<pre class="code" data-lang="" data-unlink="">C:\Users\****&gt;pip install mecab-python3
+Collecting mecab-python3
+  Downloading mecab-python3-0.7.tar.gz (41kB)
+    100% |████████████████████████████████| 51kB 1.1MB/s
+Exception:
+Traceback (most recent call last):
+  File "C:\ProgramData\Anaconda3\lib\site-packages\pip\compat\__init__.py", line 73, in console_to_str
+    return s.decode(sys.__stdout__.encoding)
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0x82 in position 15: invalid start byte
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):</pre><p>そこで、重いのでお勧めしないという声がありますが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/janome">janome</a>（蛇の目）をインストールすることにしました。<br/>
+こちらは、数分かかりましたがインストールできました。</p>
+<pre class="code" data-lang="" data-unlink="">C:\Users\***&gt;pip install janome
+Collecting janome
+  Downloading Janome-0.3.5.tar.gz (20.0MB)
+    100% |████████████████████████████████| 20.0MB 137kB/s
+Building wheels for collected packages: janome
+  Running setup.py bdist_wheel for janome ... done
+  Stored in directory: C:\Users\nakas\AppData\Local\pip\Cache\wheels\35\26\c9\43f2970612ffeda9113bd1c345d7d39216fdfe5118c40a18b3
+Successfully built janome
+Installing collected packages: janome
+Successfully installed janome-0.3.5</pre><p>早速試してみます。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synPreProc">from</span> janome.tokenizer <span class="synPreProc">import</span> Tokenizer
+t = Tokenizer()
+<span class="synStatement">for</span> token <span class="synStatement">in</span> t.tokenize(<span class="synConstant">'今日はpythonが終わったら、夕ご飯に餃子を食べようと思っている。'</span>):
+    <span class="synIdentifier">print</span>(token)
+</pre><pre class="code" data-lang="" data-unlink="">今日	名詞,副詞可能,*,*,*,*,今日,キョウ,キョー
+は	助詞,係助詞,*,*,*,*,は,ハ,ワ
+python	名詞,固有名詞,組織,*,*,*,python,*,*
+が	助詞,格助詞,一般,*,*,*,が,ガ,ガ
+終わっ	動詞,自立,*,*,五段・ラ行,連用タ接続,終わる,オワッ,オワッ
+たら	助動詞,*,*,*,特殊・タ,仮定形,た,タラ,タラ
+、	記号,読点,*,*,*,*,、,、,、
+夕	名詞,副詞可能,*,*,*,*,夕,ユウ,ユー
+ご飯	名詞,一般,*,*,*,*,ご飯,ゴハン,ゴハン
+に	助詞,格助詞,一般,*,*,*,に,ニ,ニ
+餃子	名詞,一般,*,*,*,*,餃子,ギョウザ,ギョーザ
+を	助詞,格助詞,一般,*,*,*,を,ヲ,ヲ
+食べよ	動詞,自立,*,*,一段,未然ウ接続,食べる,タベヨ,タベヨ
+う	助動詞,*,*,*,不変化型,基本形,う,ウ,ウ
+と	助詞,格助詞,引用,*,*,*,と,ト,ト
+思っ	動詞,自立,*,*,五段・ワ行促音便,連用タ接続,思う,オモッ,オモッ
+て	助詞,接続助詞,*,*,*,*,て,テ,テ
+いる	動詞,非自立,*,*,一段,基本形,いる,イル,イル
+。	記号,句点,*,*,*,*,。,。,。</pre><p>とりあえず、ただしく動作しているようです。<br/>
+ちなみにここで、ファイル名を"<a class="keyword" href="http://d.hatena.ne.jp/keyword/janome">janome</a>.py"にしたら、Errorになりました。</p>
+<pre class="code" data-lang="" data-unlink="">ModuleNotFoundError: No module named 'janome.Tokenizer';'janome' is not a package</pre><p>こんな罠があるんですよ。<br/>
+Errorが出る場合は、その中で一番最後に出てくるもののなかに、一番重要なものがありますので、そのメッセージで<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%B0%A4%B0%A4%EB">ぐぐる</a>とqiitaやstackoverflow、<a class="keyword" href="http://d.hatena.ne.jp/keyword/teraterm">teraterm</a>の該当記事にたどりつくことができます。<br/>
+<a href="https://teratail.com/questions/84652">Python 3.x - janomeを使った形態素解析が出来ない(84652)｜teratail</a></p><p>ここからが、本題。<br/>
+まず、解析にかけるテキストとしては、自身のtimeLineを約3時間分取得しました。<br/>
+タイムラインはtweepyで以下のように指定すれば取得できます。<br/>
+最大取得数が100のようなので、30分ごとに取得します。<br/>
+これをテキストファイルとして保存しておきます。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">for</span> tweet <span class="synStatement">in</span> api.home_timeline(count=<span class="synConstant">100</span>): <span class="synComment">#タイムライン</span>
+</pre><p>このファイルを<a class="keyword" href="http://d.hatena.ne.jp/keyword/janome">janome</a>にかけます。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synComment"># -*- coding: utf-8 -*-</span>
+<span class="synPreProc">from</span> janome.tokenizer <span class="synPreProc">import</span> Tokenizer
+t = Tokenizer()
+
+<span class="synIdentifier">file</span> = <span class="synIdentifier">open</span>(<span class="synConstant">'s51517765_timeline.txt'</span>, <span class="synConstant">'r'</span>, encoding=<span class="synConstant">'utf'</span>)  <span class="synComment"># UTFを指定する</span>
+text=<span class="synIdentifier">file</span>.read()
+<span class="synIdentifier">dict</span>={} <span class="synComment">#カウント用の辞書の初期化</span>
+
+<span class="synStatement">for</span> token <span class="synStatement">in</span> t.tokenize(text):
+    hinshi = token.part_of_speech.split(<span class="synConstant">','</span>)[<span class="synConstant">0</span>]
+    isNum = token.part_of_speech.split(<span class="synConstant">','</span>)[<span class="synConstant">1</span>]
+    word = token.base_form <span class="synComment">#単語</span>
+    <span class="synStatement">if</span> hinshi == <span class="synConstant">'名詞'</span> <span class="synStatement">and</span> (isNum!=<span class="synConstant">'数'</span> <span class="synStatement">and</span> isNum!=<span class="synConstant">'サ変接続'</span>):
+        <span class="synIdentifier">print</span>(token)
+        <span class="synStatement">if</span> word <span class="synStatement">in</span> <span class="synIdentifier">dict</span>:
+            <span class="synIdentifier">dict</span>[word] += <span class="synConstant">1</span>
+        <span class="synStatement">else</span>:
+            <span class="synIdentifier">dict</span>[word] = <span class="synConstant">1</span>
+
+    <span class="synStatement">elif</span> hinshi == <span class="synConstant">'動詞'</span>:
+        <span class="synIdentifier">print</span>(token)
+        <span class="synStatement">if</span> word <span class="synStatement">in</span> <span class="synIdentifier">dict</span>:
+            <span class="synIdentifier">dict</span>[word] += <span class="synConstant">1</span>
+        <span class="synStatement">else</span>:
+            <span class="synIdentifier">dict</span>[word] = <span class="synConstant">1</span>
+<span class="synStatement">for</span> k, v <span class="synStatement">in</span> <span class="synIdentifier">sorted</span>(<span class="synIdentifier">dict</span>.items(), key=<span class="synStatement">lambda</span> x: -x[<span class="synConstant">1</span>]): <span class="synComment">#降順ソート</span>
+    <span class="synStatement">if</span> v&gt;<span class="synConstant">3</span>:
+        <span class="synIdentifier">print</span>(<span class="synIdentifier">str</span>(k) + <span class="synConstant">" : "</span> + <span class="synIdentifier">str</span>(v))
+</pre><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20171125181815p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20171125/20171125181815.png" title="f:id:s51517765:20171125181815p:plain"/></span><br/>
+ここで、品詞を確認し、名詞と動詞だけを抽出します。ただし、名詞の中の”数”と”サ変接続”は除外します。<br/>
+"数"はいわゆるアラビア数字でサ変接続は：（コロン）や；（セミコロン）などの記号を除外します。<br/>
+elif　hinshi=='動詞'のところは、うまく記述すればifの中に含めることも可能だとは思いますが、ここでは視認性を重視し分割しました。</p><p>これで、欲しい単語のみを抽出できました。<br/>
+これを辞書に登録しながらカウントし、降順ソートします。</p>
+<pre class="code" data-lang="" data-unlink="">する : 156
+https : 133
+t : 133
+co : 128
+RT : 94
+いる : 46
+の : 41
+てる : 35
+なる : 34
+人 : 31
+こと : 29
+れる : 28
+ある : 26
+やる : 21
+ん : 20
+できる : 18
+ブログ : 17
+くる : 16
+思う : 15
+さん : 15
+見る : 14
+的 : 14
+よう : 13
+化 : 12
+中 : 12
+時間 : 12
+これ : 12
+使う : 11
+記事 : 11
+今日 : 11
+みる : 10
+そう : 10
+フレーム : 10
+暗号 : 10
+x : 9
+電子 : 9
+者 : 9
+出る : 9
+ため : 9
+方 : 8
+自分 : 8
+言う : 8
+私 : 8
+わかる : 8
+年 : 8
+それ : 8
+時 : 8
+せる : 7
+駅 : 7
+A : 7
+ー : 7
+方式 : 7
+られる : 7
+出す : 7
+日 : 7
+みたい : 7
+鍵 : 7
+くれる : 6
+作る : 6
+書く : 6
+系 : 6
+電気 : 6
+さ : 6
+持つ : 6
+つく : 6
+前 : 6
+知る : 6
+映画 : 6
+気 : 6
+危険 : 6
+物 : 6
+ケーブル : 6
+学生 : 6
+code : 6
+festival : 6
+しまう : 5
+以外 : 5
+しれる : 5
+コード : 5
+アプリ : 5
+人間 : 5
+Android : 5
+技術 : 5
+m : 5
+C : 5
+回路 : 5
+回 : 5
+読む : 5
+PC : 5
+手 : 5
+いう : 5
+たち : 5
+情報 : 5
+ロボット : 5
+普通 : 5
+英語 : 5
+機器 : 5
+企業 : 5
+おる : 5
+買う : 5
+綺麗 : 5
+問題 : 4
+切る : 4
+いただく : 4
+w : 4
+インターネット : 4
+すぎる : 4
+可能 : 4
+y : 4
+穴 : 4
+ちゃう : 4
+県 : 4
+u : 4
+日本 : 4
+何 : 4
+s : 4
+全体 : 4
+見える : 4
+r : 4
+食べる : 4
+GitLab : 4
+数学 : 4
+ガール : 4
+秘密 : 4
+分 : 4
+頭 : 4
+以上 : 4
+もの : 4
+対象 : 4
+度 : 4
+T : 4
+聞く : 4
+思い出す : 4
+姿 : 4
+アニメ : 4
+死ぬ : 4
+でる : 4
+つける : 4
+ツイート : 4
+画像 : 4
+車 : 4
+ぶつ : 4
+森 : 4
+どこ : 4
+定期 : 4
+経済 : 4
+今 : 4
+本 : 4
+必要 : 4
+ナイフ : 4
+Excel : 4
+アクセサリー : 4</pre><p>まだ、一般的すぎる単語が多い気がしますが、うまく組み合わせれば使えそうな単語が拾えているようにも思います。<br/>
+このListを見たら何となく理系っぽいイメージが出ているのではないでしょうか？</p><p></p><h3>参考資料</h3>辞書型の使い方<div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/487311778X/shirotoakb-22/"><img alt="退屈なことはPythonにやらせよう ―ノンプログラマーにもできる自動化処理プログラミング" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/51hk%2B5bKNrL._SL160_.jpg" title="退屈なことはPythonにやらせよう ―ノンプログラマーにもできる自動化処理プログラミング"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/487311778X/shirotoakb-22/">退屈なことはPythonにやらせよう ―ノンプログラマーにもできる自動化処理プログラミング</a></p><ul><li><span class="hatena-asin-detail-label">作者:</span> Al Sweigart,相川愛三</li><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AA%A5%E9%A5%A4%A5%EA%A1%BC%A5%B8%A5%E3%A5%D1%A5%F3">オライリージャパン</a></li><li><span class="hatena-asin-detail-label">発売日:</span> 2017/06/03</li><li><span class="hatena-asin-detail-label">メディア:</span> 単行本（ソフトカバー）</li><li><a href="http://d.hatena.ne.jp/asin/487311778X/shirotoakb-22" target="_blank">この商品を含むブログ (5件) を見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div>
+</div>

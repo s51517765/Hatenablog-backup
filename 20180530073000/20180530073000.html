@@ -1,0 +1,72 @@
+<div class="entry-content">
+<p>以前の記事でTensolfrowとKerasをインストールしました。<br/>
+（ただし、TensolfrowとKerasのVersionがマッチしなかったので、後述するように<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C6%FC%B7%D0%A5%BD%A5%D5%A5%C8%A5%A6%A5%A7%A5%A2">日経ソフトウェア</a>のツールでインストールしなおしました。）<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2018%2F05%2F14%2F070000" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="WindowsでTensorFlowが使いたい (python3) - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2018/05/14/070000">s51517765.hatenadiary.jp</a></cite></p><p>今日は、この環境を使って実際に<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%CB%A5%E5%A1%BC%A5%E9%A5%EB%A5%CD%A5%C3%A5%C8%A5%EF%A1%BC%A5%AF">ニューラルネットワーク</a>（<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C7%A5%A3%A1%BC%A5%D7%A5%E9%A1%BC%A5%CB%A5%F3%A5%B0">ディープラーニング</a>）を動かしてみました。<br/>
+↓の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C6%FC%B7%D0%A5%BD%A5%D5%A5%C8%A5%A6%A5%A7%A5%A2">日経ソフトウェア</a>のソースを参考にしました。</p><p></p><div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B07765H5JP/shirotoakb-22/"><img alt="日経ソフトウエア 2018年 1 月号" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/61qODzhAZWL._SL160_.jpg" title="日経ソフトウエア 2018年 1 月号"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B07765H5JP/shirotoakb-22/">日経ソフトウエア 2018年 1 月号</a></p><ul><li><span class="hatena-asin-detail-label">作者:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/%C6%FC%B7%D0%A5%BD%A5%D5%A5%C8%A5%A6%A5%A8%A5%A2">日経ソフトウエア</a></li><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/%C6%FC%B7%D0BP">日経BP</a>社</li><li><span class="hatena-asin-detail-label">発売日:</span> 2017/11/24</li><li><span class="hatena-asin-detail-label">メディア:</span> 雑誌</li><li><a href="http://d.hatena.ne.jp/asin/B07765H5JP/shirotoakb-22" target="_blank">この商品を含むブログ (1件) を見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div>まず初めにソースをそのまま動かしてみました。<br/>
+まだTensorFlowやKerasの理解度も低いので、コメントも結構細かく書かれているので理解の助けになります。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C6%FC%B7%D0%A5%BD%A5%D5%A5%C8%A5%A6%A5%A7%A5%A2">日経ソフトウェア</a>はすぐ品切れになってしまうのが残念です。<br/>
+現在すでに、この号は中古しか<a class="keyword" href="http://d.hatena.ne.jp/keyword/Amazon">Amazon</a>では入手できないですが、他のネット書店をさがせば見つかるかもしれません。<p></p><h3>動作環境</h3>動作環境は以下です。<br/>
+Pillow(PIL)は画像処理のライブラリで必須ではありませんが、画像の水増し処理につかいました。
+<pre class="code" data-lang="" data-unlink="">Python 3.5.2 |Anaconda 4.2.0 (64-bit)|
+tensorflow==1.8.0
+Keras==2.0.5
+Pillow==3.3.1</pre><p></p><h3>ごく簡単な<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%CB%A5%E5%A1%BC%A5%E9%A5%EB%A5%CD%A5%C3%A5%C8%A5%EF%A1%BC%A5%AF">ニューラルネットワーク</a>の概念</h3><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180528214609p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180528/20180528214609.png" title="f:id:s51517765:20180528214609p:plain"/></span><br/>
+今回の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%CB%A5%E5%A1%BC%A5%E9%A5%EB%A5%CD%A5%C3%A5%C8%A5%EF%A1%BC%A5%AF">ニューラルネットワーク</a>は図のような3層で、入力が、75px四方のRGB画像のため、 75x75x3 = 16875です。<br/>
+この入力が0~255の値を持ったサイズ16875のlistになっているイメージです。<br/>
+隠れ層1層と、出力層があります。<p></p><h3>工程 じゃーん～～</h3><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180528213512p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180528/20180528213512.png" title="f:id:s51517765:20180528213512p:plain"/></span><br/>
+<h4>ステップ１　Anacondaのインストール</h4>　これは、以前の記事の通りpython3.5のVersionのものをインストールしているのでスキップ<h4>ステップ２　TensorFlowとKerasのインストール</h4>　一度、すでに構築していた環境で進めてみましたが、NNが動かなかったのでこちらに戻ってtensorflowとkerasを再構築しました。<h4>ステップ３　学習用の画像を集める　<a class="keyword" href="http://d.hatena.ne.jp/keyword/Flickr">Flickr</a>の<a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>キーを取得</h4>　<a class="keyword" href="http://d.hatena.ne.jp/keyword/Flickr">Flickr</a>というサイトから学習用の画像データを収集するために、<a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>キーを取得します。<br/>
+この時に、YAHOO.COMのアカウントが必要になります。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fwww.flickr.com%2Fservices%2Fapps%2Fcreate%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="The App Garden on Flickr"></iframe><cite class="hatena-citation"><a href="https://www.flickr.com/services/apps/create/">www.flickr.com</a></cite><br/>
+<h4>ステップ４～5　<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>のパッケージ「flickrapi」をインストールし、<a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>キーを設定する</h4><h4>ステップ６～８　画像をダウンロード</h4>　これも、同梱の<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>プログラムで自動的にできますが、このプログラムをここに載せるのは<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C3%F8%BA%EE%B8%A2">著作権</a>的にアレなので…。<br/>
+　キーワード（sakura, sunflower, rose）を指定して、それぞれ300枚ダウンロードします。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180527185645p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180527/20180527185645.png" title="f:id:s51517765:20180527185645p:plain"/></span><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180527185655p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180527/20180527185655.png" title="f:id:s51517765:20180527185655p:plain"/></span><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180527185702p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180527/20180527185702.png" title="f:id:s51517765:20180527185702p:plain"/></span><br/>
+<h4>ステップ９　学習用の画像を手動で選ぶ</h4>　ここでは間違っている画像、余計なものが映っている画像を "手動で" 削除するように指示されていますが、特に変なものがなかったので何もしませんでした。<h4>ステップ１０　学習用の画像から<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B5%A1%B3%A3%B3%D8%BD%AC">機械学習</a>用のデー<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%BF%A5%BB%A5%C3%A5%C8">タセット</a>を作る</h4>　これも同梱の<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>プログラムで…<br/>
+　<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B5%A1%B3%A3%B3%D8%BD%AC">機械学習</a>用のデー<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%BF%A5%BB%A5%C3%A5%C8">タセット</a><code>photo.npz</code>とテスト用のデー<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%BF%A5%BB%A5%C3%A5%C8">タセット</a><code>photo-test.npz</code>が生成されます。<h4>ステップ１１　<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B5%A1%B3%A3%B3%D8%BD%AC">機械学習</a>のプログラムを動かす</h4>　学習済みモデル<code>nn.hdf5</code>が作成されます。<br/>
+　これがいわゆる学習ですね。<h4>ステップ１４（最終）画像を判定するプログラムを動かす</h4>　１２～１３で水増しをするステップがありますが、とりあえずスキップ。<p></p><h3>AIによる画像の判定結果</h3>画像読み込み①<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180528212457j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180528/20180528212457.jpg" title="f:id:s51517765:20180528212457j:plain"/></span><br/>
+→桜99%【正解】<p>画像読み込み②<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180528212420j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180528/20180528212420.jpg" title="f:id:s51517765:20180528212420j:plain"/></span><br/>
+→ひまわり(99%)【正解】</p><p>画像読み込み③<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180528212400j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180528/20180528212400.jpg" title="f:id:s51517765:20180528212400j:plain"/></span><br/>
+→ひまわり(99%)【不正解】<br/>
+学習させていない”たんぽぽ"を読み込ませると、"ひまわり"と判定された。</p><p>画像読み込み④<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180528214042j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180528/20180528214042.jpg" title="f:id:s51517765:20180528214042j:plain"/></span><br/>
+→桜(99%)【不正解】<br/>
+学習させていない"<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%A2%A4%B8">あじ</a>さい"を読み込ませると”桜”と判定された。</p><p></p><h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%A2%A4%B8">あじ</a>さいと<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%BF%A5%F3%A5%DD%A5%DD">タンポポ</a>を追加したAIによる画像の判定結果</h3>同様に<a class="keyword" href="http://d.hatena.ne.jp/keyword/flickr">flickr</a>から<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%BF%A5%F3%A5%DD%A5%DD">タンポポ</a>と<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%A2%A4%B8">あじ</a>さいをダウンロードし学習に追加しました。<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%BF%A5%F3%A5%DD%A5%DD">タンポポ</a>を追加しようと画像をダウンロードしたら、黄色と綿毛の2種類があることに気づき、ラベルに”わたげ”も追加しました。<br/>
+このため、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%BF%A5%F3%A5%DD%A5%DD">タンポポ</a>とわたげのサンプル数が少なくなったので、PILというライブラリで回転させた画像を作成し、水増ししました。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synPreProc">from</span> PIL <span class="synPreProc">import</span> Image
+<span class="synPreProc">import</span> os
+
+<span class="synComment">#画像を回転して保存</span>
+
+path=<span class="synConstant">"C:/Users/***/Documents/Projects/AiGips/Dandelion"</span>
+files = os.listdir(path)
+<span class="synStatement">for</span> name <span class="synStatement">in</span> files:
+    <span class="synIdentifier">file</span>=Image.<span class="synIdentifier">open</span>(path+<span class="synConstant">"/"</span>+name)
+    <span class="synIdentifier">file</span> = <span class="synIdentifier">file</span>.rotate(<span class="synConstant">180</span>)
+    <span class="synIdentifier">file</span>.save(path+<span class="synConstant">"/"</span>+<span class="synConstant">"0"</span>+name, <span class="synConstant">'JPEG'</span>, quality=<span class="synConstant">100</span>, optimize=<span class="synIdentifier">True</span>)
+</pre><p>画像読み込み①<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180528212457j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180528/20180528212457.jpg" title="f:id:s51517765:20180528212457j:plain"/></span><br/>
+→桜 (97 %)【正解】</p><p>画像読み込み②<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180528212420j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180528/20180528212420.jpg" title="f:id:s51517765:20180528212420j:plain"/></span><br/>
+→ひまわり(99%)【正解】</p><p>画像読み込み③<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180528214042j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180528/20180528214042.jpg" title="f:id:s51517765:20180528214042j:plain"/></span><br/>
+→<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A2%A5%B8%A5%B5%A5%A4">アジサイ</a>(99 %)【正解】</p><p>画像読み込み④<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180528212400j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180528/20180528212400.jpg" title="f:id:s51517765:20180528212400j:plain"/></span><br/>
+たんぽぽ (99 %)【正解】</p><p>画像読み込み⑤<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180528223040j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180528/20180528223040.jpg" title="f:id:s51517765:20180528223040j:plain"/></span><br/>
+→<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A2%A5%B8%A5%B5%A5%A4">アジサイ</a> (69 %)【不正解】</p><p>画像読み込み⑥再チャレンジ<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180529221640j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180529/20180529221640.jpg" title="f:id:s51517765:20180529221640j:plain"/></span><br/>
+→わたげ (84 %)【正解】</p><p>うちで妻が育てている<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A2%A5%B8%A5%B5%A5%A4">アジサイ</a><br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180529222809j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180529/20180529222809.jpg" title="f:id:s51517765:20180529222809j:plain"/></span><br/>
+これを75px四方に切り取って読み込ませました。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180529224606j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180529/20180529224606.jpg" title="f:id:s51517765:20180529224606j:plain"/></span><br/>
+→<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A2%A5%B8%A5%B5%A5%A4">アジサイ</a> (99 %)【正解】<br/>
+　　（ちなみに白いほうは "わたげ" と認識されました。）</p><p></p><h3>まとめ</h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/%C6%FC%B7%D0%A5%BD%A5%D5%A5%C8%A5%A6%A5%A7%A5%A2">日経ソフトウェア</a>のサンプルコードの改造で、"桜", "ヒマワリ", "バラ","たんぽぽ","わたげ","<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A2%A5%B8%A5%B5%A5%A4">アジサイ</a>"　の認識を実装できました。<br/>
+精度としては白い<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A2%A5%B8%A5%B5%A5%A4">アジサイ</a>が低いようです。<br/>
+これは、もとの学習データの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A2%A5%B8%A5%B5%A5%A4">アジサイ</a>が青、紫系が多かったためかもしれません。
+
+    
+
+  
+</div>

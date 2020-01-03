@@ -1,0 +1,51 @@
+<div class="entry-content">
+<p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180820225759p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180820/20180820225759.png" title="f:id:s51517765:20180820225759p:plain"/></span><br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/google">google</a>がこんな特許を出したことがネット上で話題になっている。</p><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fjapan.cnet.com%2Farticle%2F35124127%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="グーグル、歌詞に合わせてメロディを自動作曲する機械学習システム--公開特許に"></iframe><cite class="hatena-citation"><a href="https://japan.cnet.com/article/35124127/">japan.cnet.com</a></cite></p><p>記事では、その中身についてはかなり簡略化した説明がされている可能性があるので、公開特許を見てみました。<br/>
+この特許は<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A2%A5%E1%A5%EA">アメリ</a>カで出願されているようなので、<a class="keyword" href="http://d.hatena.ne.jp/keyword/google">google</a> patentで見ることができます。</p><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fpatents.google.com%2Fpatent%2FUS20180190249A1%2Fen" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="US20180190249A1 - Machine Learning to Generate Music from Text - Google Patents"></iframe><cite class="hatena-citation"><a href="https://patents.google.com/patent/US20180190249A1/en">patents.google.com</a></cite></p><p></p><h3>特許とは</h3>特許というのは出願されても、即権利が確保されるというものではあくまでもありません。<br/>
+登録となって初めて独占使用ができるようになります。<br/>
+この特許については、約1年半前 "2016-12-30" に出願されて、最近 ”2018-07-05” 公開になりました。<p>仮に特許登録となれば、出願の "2016-12-30"に遡って権利が行使できます。<br/>
+特許登録となればその技術は出願人である<a class="keyword" href="http://d.hatena.ne.jp/keyword/google">google</a>が独占的に使用、またはライセンス料を取るなどして許可したものだけが使うことができます。<br/>
+仮に特許登録となればライセンス契約を結ばずに使用すると、<a class="keyword" href="http://d.hatena.ne.jp/keyword/google">google</a>が訴えを起こしてきて損害賠償やライセンス契約を要求してきたり、この技術を使った製品の販売差し止めなどを要求してくることになります。</p><p></p><h3>実際に権利登録をしようとしている技術とは</h3>実際に権利化しようとしている技術範囲のことを、請求項（特許請求の範囲）と呼びます。<br/>
+英語ではClaimと言います。<p>この内容を見てみます。を要約すると、</p>
+<blockquote>
+<p>テキストから楽曲を生成するコンピュータシステムで、入力テキストから1つ以上の構造的特徴にもとづいて楽曲を生成するように構成された<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B5%A1%B3%A3%B3%D8%BD%AC">機械学習</a>された音声生成モデルとプロセッサによって実行される、コンピュータシステム</p>
+</blockquote>
+<p>これは、テキストを入力として楽曲（音符の並び）を出力すると考えれば、基本的な<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B5%A1%B3%A3%B3%D8%BD%AC">機械学習</a>システムと考えられます。</p><p>＜請求項２＞</p>
+<blockquote>
+<p>請求項1において構造的特徴のシーケンスに少なくとも部分的に基づいて入力テキストから楽曲を生成する</p>
+</blockquote>
+<p>＜請求項3＞</p>
+<blockquote>
+<p>構造的特徴のシーケンスに少なくとも部分的に基づいて入力テキストから楽曲を生成するように構成され…</p>
+</blockquote>
+<p>＜請求項4＞<br/>
+LSTMだと書かれている</p><p>＜請求項5＞</p>
+<blockquote>
+<p>人間が生成した歌曲からの複数の歌詞セットを含む訓練デー<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%BF%A5%BB%A5%C3%A5%C8">タセット</a>で訓練され、各歌詞セットは1つ以上の音楽特徴で注釈付けされている</p>
+</blockquote>
+<p>訓練の仕方を説明しているだけ</p><p>＜請求項6＞</p>
+<blockquote>
+<p>音楽特徴は、テンポ特徴、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%E9%A5%A6%A5%C9%A5%CD%A5%B9">ラウドネス</a>特徴、ダイナミック特徴、ピッチ<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D2%A5%B9%A5%C8%A5%B0%A5%E9%A5%E0">ヒストグラム</a>特徴、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C9%A5%DF%A5%CA%A5%F3%A5%C8">ドミナント</a>メ<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%ED%A5%C7%A5%A3%A5%C3%A5%AF">ロディック</a>の1つ以上を含む</p>
+</blockquote>
+<p>音楽の構成要素の基本的なことを述べているに過ぎない</p><p>＜請求項7＞</p>
+<blockquote>
+<p>入力テキストは詩を含む。前記詩の前記複数の部分は複数の線を含み、複数の行によって示される韻のパターンを記述する</p>
+</blockquote>
+<p>入力データについて説明しているだけ</p><p>＜請求項8＞<br/>
+入力についての特徴の分類について説明している</p><p>＜請求項9＞<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B5%A1%B3%A3%B3%D8%BD%AC">機械学習</a>ネットワークは adversarial networkである（adversarial networkとはどういうものか、私はわかりません？）</p><p>＜請求項10＞</p>
+<blockquote>
+<p>複数のコンピューティングデ<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D0%A5%A4%A5%B9">バイス</a>によって、複数の部分を含む入力テキストを取得する</p>
+</blockquote>
+<p>入力を多彩にしたといっている</p><p>＜請求項11＞</p>
+<blockquote>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%B5%A1%B3%A3%B3%D8%BD%AC">機械学習</a>された深層<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%CB%A5%E5%A1%BC%A5%E9%A5%EB%A5%CD%A5%C3%A5%C8%A5%EF%A1%BC%A5%AF">ニューラルネットワーク</a>…</p>
+</blockquote>
+<p>ディープだったり、マージがあったり</p><p>＜請求項12＞以下は請求項10や11に対して、請求項2～９と同じことを言っている（多分…）。</p><p>もう英語読むのつかれた…。</p><p></p><h3>結論</h3>特許とは出願されただけでは権利行使できず、あくまで登録とならなければなりません。<br/>
+今回の特許については、公開されている範囲としては「<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B5%A1%B3%A3%B3%D8%BD%AC">機械学習</a>で詩を入力して曲を出力する」というものとその<br/>
+詳細についてのべているだけなので、これ自体は<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B5%A1%B3%A3%B3%D8%BD%AC">機械学習</a>の基本的な技術を記述していに過ぎず、「新規性がない」と考えられます。<p>「新規性がない」と判断するには、同じ技術が特許として出願されているか、もしくは論文などで公開されているものもでも構いません。</p><p>よって、この出願は登録となるとは考えにくいです。</p><p>では、なぜこんな特許を出願したかというと、推測ですが、<br/>
+①他社が万が一このような特許を出願し登録されてしまうと（自社だけでなくみんなも）困る<br/>
+②<a class="keyword" href="http://d.hatena.ne.jp/keyword/google">google</a>が自ら特許取得して、だれでも自由に使えるように開放する<br/>
+③技術（力）を開示したい<br/>
+といった思惑ではないかと考えられます。</p><p>②のような考え方は<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E8%A5%BF">トヨタ</a>が<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C7%B3%CE%C1%C5%C5%C3%D3">燃料電池</a>の特許について実施しています。</p><p></p><h3>参考</h3>こんな特許出てるんだ！というへんな特許が盛りだくさんで読み物として面白いです。<div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/4778313887/shirotoakb-22/"><img alt="すばらしき特殊特許の世界" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/41LtdBXX7ZL._SL160_.jpg" title="すばらしき特殊特許の世界"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/4778313887/shirotoakb-22/">すばらしき特殊特許の世界</a></p><ul><li><span class="hatena-asin-detail-label">作者:</span> 稲森謙太郎</li><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/%C2%C0%C5%C4%BD%D0%C8%C7">太田出版</a></li><li><span class="hatena-asin-detail-label">発売日:</span> 2014/01/23</li><li><span class="hatena-asin-detail-label">メディア:</span> 単行本</li><li><a href="http://d.hatena.ne.jp/asin/4778313887/shirotoakb-22" target="_blank">この商品を含むブログ (3件) を見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div><div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B00JO6ICYM/shirotoakb-22/"><img alt="知られざる特殊特許の世界" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/51j8INoanKL._SL160_.jpg" title="知られざる特殊特許の世界"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B00JO6ICYM/shirotoakb-22/">知られざる特殊特許の世界</a></p><ul><li><span class="hatena-asin-detail-label">作者:</span> 稲森謙太郎</li><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/%C2%C0%C5%C4%BD%D0%C8%C7">太田出版</a></li><li><span class="hatena-asin-detail-label">発売日:</span> 2014/04/18</li><li><span class="hatena-asin-detail-label">メディア:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/Kindle">Kindle</a>版</li><li><a href="http://d.hatena.ne.jp/asin/B00JO6ICYM/shirotoakb-22" target="_blank">この商品を含むブログを見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div>
+</div>

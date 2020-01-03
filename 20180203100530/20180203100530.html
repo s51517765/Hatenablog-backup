@@ -1,0 +1,26 @@
+<div class="entry-content">
+<p>ラズパイでいよいよIOTを始めようとGPIOの資料を読み漁っていたら、ラズパイのGPIOは内部プルアップまたはプルダウンされているという情報を見つけた。</p><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fd.hatena.ne.jp%2Fhnw%2F20150607" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Raspberry PiのGPIOは起動直後から内部プルダウンされている"></iframe><cite class="hatena-citation"><a href="http://d.hatena.ne.jp/hnw/20150607">d.hatena.ne.jp</a></cite></p><p>プルアップ・ダウンは、使われていないGPIOをHIGH(3.3Vや5V) or Low(0V = GND)に高抵抗で接続して、入力を安定させるためのものである。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180128180703p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180128/20180128180703.png" title="f:id:s51517765:20180128180703p:plain"/></span><br/>
+GPIOの内部は上左図のように電源(3.3V or 5V)が直接ヘッダピンに来ていると思いがちだが、上右図のように、10kΩ程度の抵抗が入っていることがある。これがプルアップである。</p><p>プルアップがあるかないかで、どのように影響があるかはたとえばGPIOの1番と3番にLEDをつけてみるとわかる。<br/>
+GPIO1はいわゆる3.3Vピンで、GPIO3は出力をプログラムで制御できるピンである。<br/>
+開放状態でテスターをあてるとどちらも3.32V(個体差があるかも)であるが、LEDの明るさが全く違う。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180128183857j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180128/20180128183857.jpg" title="f:id:s51517765:20180128183857j:plain"/></span><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180128183850j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180128/20180128183850.jpg" title="f:id:s51517765:20180128183850j:plain"/></span><br/>
+このように見かけ上同じ3.3Vでもプルアップであるかそうでないかは出力におおきな違いをもたらす。<br/>
+そこで、実際のところどれくらいの抵抗が入っているのか？設定はプルアップなのかプルダウンなのかを実際に調べてみた。</p><p>プルアップ抵抗は↓のように適当な抵抗（ここでは680Ω）を接続し、その抵抗の両端の電圧を測定するとわかる。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180129213617p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180129/20180129213617.png" title="f:id:s51517765:20180129213617p:plain"/></span></p><p>ここでは、ラズパイゼロは電源を入れただけの状態（Raspbianが起動している状態）である。<br/>
+（また別途試す予定だが、プルアップ・ダウンの有効無効は<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>などで切り替えられる。）</p><p>次の表は、GPIO開放状態の電圧と、680Ωの抵抗を接続したときの電圧をすべてのピンについて実測したものである。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180128184725p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180128/20180128184725.png" title="f:id:s51517765:20180128184725p:plain"/></span></p><p>この結果から内部プルアップ抵抗をR0として、たとえばGPIO7では680Ωの抵抗の両端は0.04V、開放の時の出力が3.15Vであることから、<br/>
+680Ω＋内部抵抗R0で3.15Vとなり、680Ωで0.04Vなので<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180128185102p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180128/20180128185102.png" title="f:id:s51517765:20180128185102p:plain"/></span><br/>
+たすき掛け計算より、<br/>
+680*3.15=0.04*R+0.04*680<br/>
+R0=52,870（Ω）≒53.8k（Ω）と算出できる。<br/>
+同様にGPIO3,GPIO5は約1.7kΩ。</p><p>次に、プルダウン設定になっているピンについては、反対に3.3Vに引っ張り上げて測定すれば算出できる。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180129213710p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180129/20180129213710.png" title="f:id:s51517765:20180129213710p:plain"/></span></p><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180128185709p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180128/20180128185709.png" title="f:id:s51517765:20180128185709p:plain"/></span><br/>
+ここでも、測定電圧は同様に抵抗の両端の電圧である。</p><p>こちらは、GPIO8、GPIO15が０で、それ以外が約70.7kΩと算出できた。</p><p>しかし、プルアップとプルダウンで抵抗値がちがうのは不自然である。<br/>
+電圧の読み取り値が0.04Vと0.03Vなので、テスターの分解能＋誤差の問題と推定される。<br/>
+つまり、どちらの場合も本来は0.03～0.04V程度で±0.02V程度の誤差がある可能性がある。<br/>
+つまり0.02Vが真値であれば約106kΩとなり、0.06Vであれば約35.4kΩとなってしまう。</p><p>そこで、基準抵抗を19.9kΩにして再度測定してみると、基準抵抗両端の電圧が大きくなるのでより正確に測定できる。結果、約46.4kΩと算出された。</p><p></p><h3>まとめ</h3>プルアップ・ダウン抵抗値は、GPIO3、GPIO5が1.7kΩ、その他は約46kΩである。<br/>
+最初に引用したページでの推定結果ともほぼ一致している。<br/>
+また、測定結果が基準抵抗（最初に使った既知の680Ωのこと）と大きく離れていたら近いサイズのもので再測定するとより正確に算出できる。<p>ちなみにプルアップを使うべきかプルダウンを使うべきかでは、論理を反転すれば大抵はつかえるが、間違って配線や出力設定をしてしまったときの安全を考えると、電源に抵抗がついているプルアップのほうが安心である。</p>
+</div>

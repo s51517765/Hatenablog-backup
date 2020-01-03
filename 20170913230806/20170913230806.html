@@ -1,0 +1,34 @@
+<div class="entry-content">
+<p>ラズパイ上でプログラミングをしてみます。</p><p>まず、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a> PCから<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EA%A5%E2%A1%BC%A5%C8%A5%C7%A5%B9%A5%AF%A5%C8%A5%C3%A5%D7">リモートデスクトップ</a>接続でラズパイに接続します。</p><p>接続できたら画面左上の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%E9%A5%BA%A5%D9%A5%EA%A1%BC">ラズベリー</a>のアイコンから、プログラミング￥Python3(IDLE)を起動します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170913224939j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170913/20170913224939.jpg" title="f:id:s51517765:20170913224939j:plain"/></span><br/>
+簡単な<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>プログラミングをします。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>とは<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%B8%C0%B8%EC">C言語</a>や<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>のような<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D7%A5%ED%A5%B0%A5%E9%A5%DF%A5%F3%A5%B0%B8%C0%B8%EC">プログラミング言語</a>の一つで、今流行りの言語です。<br/>
+「パイソン」と読みます。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Linux">Linux</a>には標準でインストールされています。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>には２と３がありますが、３を使用します。<br/>
+これらには互換性がないので注意です。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">n=<span class="synConstant">0</span>
+<span class="synStatement">for</span> i <span class="synStatement">in</span> <span class="synIdentifier">range</span>(<span class="synConstant">10</span>):
+   n=n+i
+   <span class="synIdentifier">print</span>(n)
+</pre><p>上のような簡単なプログラムを作成し”test.py” としていったん保存します。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>では”インデント”が重要で、ここでは   n=<a class="keyword" href="http://d.hatena.ne.jp/keyword/n%2Bi">n+i</a>　と　print(n)をforからさげて、揃えます。</p><p>「ctlr + alt + t」でLX Terminalを起動します。</p>
+<pre class="code lang-c" data-lang="c" data-unlink="">$pwd
+</pre><p>で現在のフォルダを確認します。</p>
+<pre class="code" data-lang="" data-unlink="">/home/pi</pre><p>↑が、LX Terminalが示しているカレントフォルダで、”test.py”を保存した場所と同じようです。<br/>
+※$があるときは入力を示し、ないときは表示された内容を示します。（もしかしてこういうことか？）</p>
+<pre class="code lang-c" data-lang="c" data-unlink="">$python3 test.py
+</pre><p>と入力すると、Python3で<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%F3%A5%D1%A5%A4%A5%EB">コンパイル</a>され実行されます。<br/>
+↓のようにPrint結果が表示されます。</p>
+<pre class="code" data-lang="" data-unlink="">0
+1
+3
+6
+10
+15
+21
+28
+36
+45</pre><p>このプログラムは、for文でprintを繰り返す簡単なものです。<br/>
+しかし、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EA%A5%E2%A1%BC%A5%C8%A5%C7%A5%B9%A5%AF%A5%C8%A5%C3%A5%D7">リモートデスクトップ</a>接続上では、動作が遅いので、今後は<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>上でファイルを作成しラズパイに転送して実行する方法を検討します。</p>
+</div>

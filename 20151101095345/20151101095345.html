@@ -1,0 +1,123 @@
+<div class="entry-content">
+<p>今日はタクトスイッチを使ってみます。</p>
+<p> </p>
+<p>目的は、スイッチを押しているとき電源を供給し、なんらかの動作をする。</p>
+<p>もしくは、その状態を検知してなにか動作をすることです。</p>
+<p> </p>
+<p>タクトスイッチは何もしていないときは向かい合うpinがショートしていて、押している間はこれにプラスして、同じ面にあるPinがショートします。</p>
+<p> </p>
+<p>まずは、タクトスイッチが押されたことを検知するプログラムをつくります。</p>
+<p> </p>
+<p>回路は下のようになります。</p>
+<p><img alt="f:id:s51517765:20190105113714p:plain" class="hatena-fotolife" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190105/20190105113714.png" title="f:id:s51517765:20190105113714p:plain"/></p>
+<p><a class="detailOn" href="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111821.png" id="i13470894146"> </a></p>
+<p> </p>
+<p>これは、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>の回路を模式的にあらわすことができる<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D5%A5%EA%A1%BC%A5%BD%A5%D5%A5%C8">フリーソフト</a>です。</p>
+<p><a href="http://fritzing.org/home/" target="_blank">http://fritzing.org/home/</a></p>
+<p> </p>
+<p>回路設計をしたり、これを画像ファイルとしてこのように共有することができます。</p>
+<p>実物の写真よりも、分かりやすいのでおもにこちらを使っていこうと思います。</p>
+<p> </p>
+<p>プログラムはこのようになります。</p>
+<p><img alt="f:id:s51517765:20190105113739p:plain" class="hatena-fotolife" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190105/20190105113739.png" title="f:id:s51517765:20190105113739p:plain"/></p>
+<p> </p>
+<p>書き込みをしたら、右上の虫眼鏡をクリックします。</p>
+<p>シリアルモニタといって、</p>
+<p>「Serial.println」で書き込んだ内容が表示されます。</p>
+<p>ここでは、Digital7の状態を読んでいます。</p>
+<p>スイッチを押すと、0から1に表示が変化します。</p>
+<p> </p>
+<p>ちなみにプリントリン(PRINT"L"IN)です。プリントインではないようです。どういう意味でしょう？</p>
+<p> </p>
+<p>ここで、シリアルモニタが文字化けしているときは、シリアルモニタの右下で通信速度を変えてみます。</p>
+<p><img alt="f:id:s51517765:20190105113754p:plain" class="hatena-fotolife" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190105/20190105113754.png" title="f:id:s51517765:20190105113754p:plain"/></p>
+<p> </p>
+<p>このとき、タクトスイッチ(以下スイッチ)を動作させたときどのようになっているのか考えてみます。</p>
+<p>まず、スイッチを押していないとき。</p>
+<p>Digital7は抵抗をはさんで、GNDに繋がっています。</p>
+<p>このとき、Digital7はGNDと同電位、つまり0Vの電位となります。</p>
+<p> </p>
+<p>次に、スイッチを押すと5VとDigital7がスイッチをはさんで繋がります。</p>
+<p>なので、Digital7は5Vになります。</p>
+<p> </p>
+<p>この変化がDigital7が受け取る変化です。</p>
+<p>ためしに、5Vとスイッチの間に電圧計を挟んで確認してみます。</p>
+<p> </p>
+<p>スイッチを押してないときは0Vでスイッチを押すと5Vが見れることが確認できました。</p>
+<p> </p>
+<p>次に、このスイッチの状態に応じて、物理的な制御をします。</p>
+<p>LEDをコン<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%ED%A1%BC%A5%EB">トロール</a>することを考えます。</p>
+<p> </p>
+<p>スイッチがおされたことを検知して、LEDに電圧を供給します。</p>
+<p><img alt="f:id:s51517765:20190105113810p:plain" class="hatena-fotolife" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190105/20190105113810.png" title="f:id:s51517765:20190105113810p:plain"/></p>
+<p> </p>
+<p>回路図はこのようになります。</p>
+<p>GNDとDigital13に抵抗とLEDを接続します。</p>
+<p> </p>
+<p>スイッチの状態に応じて、13pinに電圧を出力して、LEDを制御します。</p>
+<p><img alt="f:id:s51517765:20190105113828p:plain" class="hatena-fotolife" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190105/20190105113828.png" title="f:id:s51517765:20190105113828p:plain"/></p>
+<p> </p>
+<p>先ほどのプログラムに、LEDを接続する13pinの定義とif文を加えました。</p>
+<p> </p>
+<p>===============</p>
+<p>if (state == 0) {</p>
+<p>digitalWrite(led, LOW); //LEDを消灯</p>
+<p>}</p>
+<p>else {</p>
+<p>digitalWrite(led, HIGH); //LEDを点灯</p>
+<p>}</p>
+<p> </p>
+<p>===============</p>
+<p> </p>
+<p>pin7の状態　= stateの状態に応じて、digitalWriteの電圧出力を変更します。</p>
+<p>ifとelseで構成され、 if (state == 0)</p>
+<p>が一致していれば、ifの動作、一致していなければelseの動作をします。</p>
+<p> </p>
+<p>digitalWrite(led, ｘｘｘ);</p>
+<p>でLEDを接続し端子の電圧を変更します。</p>
+<p> </p>
+<p>これで、LEDの状態がスイッチに対して、変化しなければ、プログラム(コード)がおかしいか、配線(回路)がおかしいかのどちらかを疑います。</p>
+<p>チェックボタンを押して、検証(<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%F3%A5%D1%A5%A4%A5%EB">コンパイル</a>)が成功しているなら、文法はOKなので、回路を確認します。</p>
+<p>LEDはプラスマイナスが反対だと点灯しません。</p>
+<p>これが一番間違いやすいのではないでしょうか？</p>
+<p> </p>
+<p>私も間違ってました。</p>
+<p> </p>
+<p>実物では足の長いほうが「アノード」といって、+側に接続します。</p>
+<p>fritzingでは足の曲がっているほうが+です。</p>
+<p> </p>
+<p>これで、if文が完成しました。</p>
+<p> </p>
+<p>なんか、制御ができそうな気がしてきます。</p>
+<p> </p>
+<p>ちなみに、これはスイッチを使って、直接LEDに入る電圧をON/OFFしているわけではありません。</p>
+<p>わかりますか？</p>
+<p>あくまで、スイッチの入力を受けて、13pinの制御をしています。</p>
+<p> </p>
+<p><a class="detailOn" href="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111838.jpg" id="i13470963296"><img alt="" border="0" height="146" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111838.jpg" width="220"/></a></p>
+<p> </p>
+<p> </p>
+<p><a class="detailOn" href="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111841.jpg" id="i13470963295"><img alt="" border="0" height="146" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111841.jpg" width="220"/></a></p>
+<p> </p>
+<p>LEDを点灯のところのelse文を</p>
+<p> </p>
+<p>==============</p>
+<p>else {</p>
+<p>digitalWrite(led, HIGH); //LEDを点灯</p>
+<p>delay(100);</p>
+<p>digitalWrite(led,LOW);</p>
+<p>}</p>
+<p>==============</p>
+<p> </p>
+<p>のように変えると、スイッチを押したとき、点滅するようになります。</p>
+<p>100msで変化するようにしてみましたが、点滅の速度はこのようになりませんでした。</p>
+<p>ためしに2000(ms)にしたときは時間道理になります。</p>
+<p>おそらく、LEDの反応（遷移）速度が遅れているのでしょう。</p>
+<p> </p>
+<p>■ソース</p>
+<p>==============</p>
+<p>int pin7 = 7; //デジタルデータ出力pinとして7番を使いpin7という変数を定義する　 （intは整数の宣言）<br/>int state = 0; //pinから取得したデータ格納<br/>int led = 13; //LEDをpin13に接続する</p>
+<p>void setup() {<br/> Serial.begin(9600); //シリアルモニタを使う(カッコ内は通信速度)<br/> pinMode(pin7, INPUT); //pin7を入力として使う(電圧を読む)<br/> pinMode(led, OUTPUT); //LEDを接続したpin13に電圧を<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B0%F5%B2%C4">印可</a>する宣言<br/>}<br/>void loop() {<br/> // put your main code here, to run repeatedly:<br/> state = digitalRead(pin7); //データとしてpin7のdigital値を読み込む<br/> Serial.println(state); //シリアルモニタにデータを出力</p>
+<p>if (state == 0) {<br/> digitalWrite(led, LOW); //LEDを消灯<br/> }<br/> else {<br/> digitalWrite(led, HIGH); //LEDを点灯<br/> delay(100);<br/> digitalWrite(led,LOW);<br/> }<br/> delay(1000);//更新間隔の設定<br/>}</p>
+<p>==============</p>
+</div>

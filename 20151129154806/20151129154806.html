@@ -1,0 +1,99 @@
+<div class="entry-content">
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>を使って、ポンプの動作を制御しようと思います。</p>
+<p> </p>
+<p>前回紹介したポンプは、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>のDigital or Analog出力では動作させることができませんでした。</p>
+<div class="freezed">
+<div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B00MCIPBO8/shirotoakb-22/"><img alt="DC 12V 水中ポンプ DC30A-1230 小型ポンプ ハイパワー 直流DC5V?DC12V 池ポンプ 揚程 3M　水族館給水・排水ポンプ　水槽水循環 潜水ポンプ 静音 水中の使用可能 静音 ブラシレスモーター 潜水インストール 濾過ポンプ 庭池 循環ポンプ　自作 ポンプ DIY ガーデニング 水中ポンプ" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/41S7Y2WcxwL._SL160_.jpg" title="DC 12V 水中ポンプ DC30A-1230 小型ポンプ ハイパワー 直流DC5V?DC12V 池ポンプ 揚程 3M　水族館給水・排水ポンプ　水槽水循環 潜水ポンプ 静音 水中の使用可能 静音 ブラシレスモーター 潜水インストール 濾過ポンプ 庭池 循環ポンプ　自作 ポンプ DIY ガーデニング 水中ポンプ"/></a>
+<div class="hatena-asin-detail-info">
+<p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B00MCIPBO8/shirotoakb-22/">DC 12V 水中ポンプ DC30A-1230 小型ポンプ ハイパワー 直流DC5V?DC12V 池ポンプ 揚程 3M　水族館給水・排水ポンプ　水槽水循環 潜水ポンプ 静音 水中の使用可能 静音 ブラシレスモーター 潜水インストール 濾過ポンプ 庭池 循環ポンプ　自作 ポンプ DIY ガーデニング 水中ポンプ</a></p>
+<ul>
+<li><span class="hatena-asin-detail-label">メディア:</span> おもちゃ＆ホビー</li>
+<li><a href="http://d.hatena.ne.jp/asin/B00MCIPBO8/shirotoakb-22" target="_blank">この商品を含むブログを見る</a></li>
+</ul>
+</div>
+<div class="hatena-asin-detail-foot"> </div>
+</div>
+</div>
+<p> </p>
+<p>これは、Aruduinoの出力電流が足りないためで、これを解決するためにリレー回路を作ります。</p>
+<p> </p>
+<p>リレー回路とは、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>を使うことで、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>からの信号を使って外部電源の制御をするものです。</p>
+<p>外部電源として、9V電池を使います。（電池も不十分で９VのACアダプターに最終的には変更しました。）</p>
+<p> </p>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>としては↓を使います。</p>
+<p><a href="http://akizukidenshi.com/catalog/g/gI-06001/" target="_blank">http://akizukidenshi.com/catalog/g/gI-06001/</a></p>
+<p> </p>
+<p>回路はこうなります。</p>
+<p><a class="detailOn" href="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111909.jpg" id="i13497497053"><img alt="" border="0" height="138" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111909.jpg" width="220"/></a></p>
+<p> </p>
+<p>電池は9V、モーターをポンプに読み替えてください。</p>
+<p>回路は簡単に言うと、電池のマイナスから見て（あえてマイナスから見ます)、エミッタ、コレクタ、ポンプ、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C0%A5%A4%A5%AA%A1%BC%A5%C9">ダイオード</a>、プラスと繋がっています。</p>
+<p>これに、ベースに信号が入ります。</p>
+<p> </p>
+<p>ここでは、動作テスト用の信号として、タクトスイッチを使っています。</p>
+<p>Pin7の状態のHigh or Lowを読んで、pin5を変化させ、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>を制御します。</p>
+<p> </p>
+<p>ここで使っている<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>はPNP型です。</p>
+<p>タクトスイッチ（Pn7）の信号を検知したら、Pin5を出力し、これを<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>のベースに入力します。</p>
+<p>ベース出力によって、エミッタからコレクタへの電流をON/OFFします。</p>
+<p> </p>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>の基本的な使い方は、この辺で。PNPとNPNの違いなども。</p>
+<p><a href="http://akizukidenshi.com/catalog/g/gI-06001/" target="_blank">http://www.picfun.com/parttrs.html</a></p>
+<p> </p>
+<p>PNP<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>では、ベース入力がOFF（Low)のとき外部電源ON、Base入力がON（High）のとき外部電源OFFとなります。</p>
+<p> </p>
+<p>直感的には<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>が可変抵抗のようになって、その抵抗を<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>でコン<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%ED%A1%BC%A5%EB">トロール</a>することで、ポンプ(モーター)の動作を制御します。</p>
+<p><a href="http://akizukidenshi.com/catalog/g/gI-06001/">http://akizukidenshi.com/catalog/g/gI-06001/</a><a class="detailOn" href="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111912.png" id="i13497522647"><img alt="" border="0" height="148" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111912.png" width="220"/></a></p>
+<p> </p>
+<p>先ほど、あえてマイナスから回路を見ましたが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>の回路記号での三角矢印はマイナスの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C5%C5%B2%D9">電荷</a>をもった<a class="keyword" href="http://d.hatena.ne.jp/keyword/%BC%AB%CD%B3%C5%C5%BB%D2">自由電子</a>の流れと見ることができます。</p>
+<p> </p>
+<p>回路が出来上がったところで、ポンプに電圧計をつけて<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>の動作を確認してみます。</p>
+<p>スイッチが押されていないとき、1.3Vぐらい、スイッチが押されると、7.3Vぐらいとなりました。</p>
+<p>どうやら上手く行ったようです。</p>
+<p>Base入力が255のときOFFのはずですが、1.3Vがどこかから流れ込んでいるようです。ポンプはこの電圧では動作しないのでとりあえず問題なし、とします。</p>
+<p>1のとき、9V電池の電圧がでています。</p>
+<p> </p>
+<p>ところが、電池単体の出力を確認すると5.7Vでした。</p>
+<p>やはり、ONのときもOFFのときも1.3～1.6Vぐらいがどこかから流れ込んでいるようです。</p>
+<p> </p>
+<p>ポンプのとなりに<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C0%A5%A4%A5%AA%A1%BC%A5%C9">ダイオード</a>を入れました。</p>
+<p>これは、電流の逆流を防ぐためのもので、回路やその他の部品を保護するものです。</p>
+<p>今回の場合は無くてもよいかもしれませんが、一応入れました。</p>
+<p> </p>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C0%A5%A4%A5%AA%A1%BC%A5%C9">ダイオード</a>はLEDもその一種ですが、一方向にしか電流を流しません。これで、何らかの影響で、逆流電圧が発生しても回路を保護できます。LEDが方向性をもっているのもこれと同じです。</p>
+<p>このような整流用<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C0%A5%A4%A5%AA%A1%BC%A5%C9">ダイオード</a>ではカソードバンドといわれる印がついています。</p>
+<p> </p>
+<p>下図では黒く塗られている方で、こちらを電池のマイナスの側につなぎます。</p>
+<p><a class="detailOn" href="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111915.jpg" id="i13497538815"><img alt="" border="0" height="165" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111915.jpg" width="220"/></a></p>
+<p><a href="http://akizukidenshi.com/catalog/g/gI-00941/">http://akizukidenshi.com/catalog/g/gI-00941/</a></p>
+<p> </p>
+<p>これで、外部電源をコン<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%ED%A1%BC%A5%EB">トロール</a>するリレー回路ができました。</p>
+<p> </p>
+<p>=====================================</p>
+<p> </p>
+<p>int pin7 = 7; //デジタルデータ出力pinとして7番を使いpin7という変数を定義する　 （intは整数の宣言）</p>
+<p>int state = 0; //pinから取得したデータ格納</p>
+<p>int pwm = 5; //pin5をanalog出力</p>
+<p> </p>
+<p>void setup() {</p>
+<p>Serial.begin(9600); //シリアルモニタを使う(カッコ内は通信速度)</p>
+<p>pinMode(pin7, INPUT); //pin7を入力として使う(電圧を読む)</p>
+<p>pinMode(pwm, OUTPUT); //電圧を<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B0%F5%B2%C4">印可</a>する宣言</p>
+<p> </p>
+<p>}</p>
+<p>void loop() {</p>
+<p>// put your main code here, to run repeatedly:</p>
+<p>state = digitalRead(pin7); //データとしてpin7のdigital値を読み込む</p>
+<p>Serial.println(state); //シリアルモニタにデータを出力</p>
+<p> </p>
+<p>if (state == 0) {</p>
+<p>analogWrite(pwm, 255); //外部電源OFF</p>
+<p>}</p>
+<p>else {</p>
+<p>analogWrite(pwm, 1); //外部電源ON</p>
+<p>}</p>
+<p>delay(500);//更新間隔の設定</p>
+<p>}</p>
+<p> </p>
+<p>=====================================</p>
+</div>

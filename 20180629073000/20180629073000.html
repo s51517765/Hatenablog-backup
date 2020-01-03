@@ -1,0 +1,103 @@
+<div class="entry-content">
+<p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180628210926j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180628/20180628210926.jpg" title="f:id:s51517765:20180628210926j:plain"/></span><br/>
+ひととおり、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>上では<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C7%A5%A3%A1%BC%A5%D7%A5%E9%A1%BC%A5%CB%A5%F3%A5%B0">ディープラーニング</a>を動かせるようになったので、これをラズパイで動かせるか、やってみたいと思いました。<br/>
+しかし、結構なイバラの道でした。<br/>
+<a href="https://px.a8.net/svt/ejp?a8mat=2ZTOIZ+893BN6+43SA+5ZU29" rel="nofollow" target="_blank"><br/>
+<img alt="" border="0" height="60" src="https://www29.a8.net/svt/bgt?aid=181103723499&amp;wid=001&amp;eno=01&amp;mid=s00000019153001007000&amp;mc=1" width="468"/></a><br/>
+<img alt="" border="0" height="1" src="https://www10.a8.net/0.gif?a8mat=2ZTOIZ+893BN6+43SA+5ZU29" width="1"/><br/>
+ここで、初めてKerasの環境を構築するのであれば仕方ないですが、PCなど他の環境で作った（ト<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EC%A1%BC%A5%CB%A5%F3">レーニン</a>グした）モデルを動かすために、ラズパイを使おうと思うときは、できるだけ同じVersion（<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a> / tensorflow / keras）をインストールするようにしないと同じコードが動かないようです。</p><p>ラズパイの環境はラズパイ3B（＋ではない）でOSはラズビアンストレッチです。</p><div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B06XCLXMG6/shirotoakb-22/"><img alt="ラズベリーパイ3 (Raspberry Pi 3B made in JAPAN) 技適対応 日本製 + 5.1V/2.5A ラズベリー財団公式アダプタ 【本体+アダプタ セット品】" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/31oOSkmFjPL._SL160_.jpg" title="ラズベリーパイ3 (Raspberry Pi 3B made in JAPAN) 技適対応 日本製 + 5.1V/2.5A ラズベリー財団公式アダプタ 【本体+アダプタ セット品】"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B06XCLXMG6/shirotoakb-22/">ラズベリーパイ3 (Raspberry Pi 3B made in JAPAN) 技適対応 日本製 + 5.1V/2.5A ラズベリー財団公式アダプタ 【本体+アダプタ セット品】</a></p><ul><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/Raspberry%20Pi">Raspberry Pi</a></li><li><span class="hatena-asin-detail-label">メディア:</span> エレクトロニクス</li><li><a href="http://d.hatena.ne.jp/asin/B06XCLXMG6/shirotoakb-22" target="_blank">この商品を含むブログを見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div><p>今から始めようという人は ”3B+" を選ぶことをお勧めします。</p><div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B07BZT67JM/shirotoakb-22/"><img alt="Raspberry Pi 3 Model B+　正規代理店品" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/41QSbraarcL._SL160_.jpg" title="Raspberry Pi 3 Model B+　正規代理店品"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B07BZT67JM/shirotoakb-22/">Raspberry Pi 3 Model B+　正規代理店品</a></p><ul><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> element14</li><li><span class="hatena-asin-detail-label">メディア:</span> エレクトロニクス</li><li><a href="http://d.hatena.ne.jp/asin/B07BZT67JM/shirotoakb-22" target="_blank">この商品を含むブログを見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div>
+<pre class="code" data-lang="" data-unlink="">No LSB modules are available.
+Distributor ID: Raspbian
+Description:    Raspbian GNU/Linux 9.4 (stretch)
+Release:        9.4
+Codename:       stretch</pre><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>は3.5.3です。</p>
+<pre class="code" data-lang="" data-unlink="">Python 3.5.3 (default, Jan 19 2017, 14:11:04)</pre><p>また、結構容量を食うようなので、最低でも16GB以上のSDカードが必要なようです。（8GBでは難しい）</p><p></p><h3>ラズパイ向けTensolfrowのダウンロード</h3>ラズパイへのTensolfrowのインストールはpipで一発でできた人がいたらとても幸運な人だと思いますが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>のVersionなどに合わせて選択する必要があります。<br/>
+ラズパイ用のTensolfrowは<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%B0%A4%B0%A4%EB">ぐぐる</a>と割と簡単に出てくる↓にありますが、これはpython3.4向けなので、<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fsamjabrahams%2Ftensorflow-on-raspberry-pi" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="samjabrahams/tensorflow-on-raspberry-pi"></iframe><cite class="hatena-citation"><a href="https://github.com/samjabrahams/tensorflow-on-raspberry-pi">github.com</a></cite><p>こちらにリンクが出ていた、ラズパイ用のpython3.5向けのtensolflowをダウンロードします。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fuepon.hatenadiary.com%2Fentry%2F2018%2F02%2F12%2F113432" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="RaspberryPiにOpenCV3.4+Tensorflow1.4＋keras2.1をインストールする - uepon日々の備忘録"></iframe><cite class="hatena-citation"><a href="http://uepon.hatenadiary.com/entry/2018/02/12/113432">uepon.hatenadiary.com</a></cite><br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Flhelontra%2Ftensorflow-on-arm%2Freleases" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="lhelontra/tensorflow-on-arm"></iframe><cite class="hatena-citation"><a href="https://github.com/lhelontra/tensorflow-on-arm/releases">github.com</a></cite></p><p>ラズパイ3用</p>
+<blockquote>
+<p>python3.5<br/>
+<a href="https://github.com/lhelontra/tensorflow-on-arm/releases/download/v1.4.1/tensorflow-1.4.1-cp35-none-linux_armv7l.whl">https://github.com/lhelontra/tensorflow-on-arm/releases/download/v1.4.1/tensorflow-1.4.1-cp35-none-linux_armv7l.whl</a></p>
+</blockquote>
+<p>ラズパイゼロ(Wも含む)用</p>
+<blockquote>
+<p>python3.5<br/>
+<a href="https://github.com/lhelontra/tensorflow-on-arm/releases/download/v1.8.0/tensorflow-1.8.0-cp35-none-linux_armv6l.whl">https://github.com/lhelontra/tensorflow-on-arm/releases/download/v1.8.0/tensorflow-1.8.0-cp35-none-linux_armv6l.whl</a></p>
+</blockquote>
+<p></p><h3>インストール</h3>まず、下ごしらえをして
+<pre class="code" data-lang="" data-unlink="">$sudo apt-get install python3-pip python3-dev</pre><p>上のlinkを<a class="keyword" href="http://d.hatena.ne.jp/keyword/wget">wget</a>でダウンロードし、</p>
+<pre class="code" data-lang="" data-unlink="">$wget https://github.com/samjabrahams ～～</pre><p>pipでインストールします。</p>
+<pre class="code" data-lang="" data-unlink="">$sudo pip3 install tensorflow-1.4.1-cp35-none-linux_armv7l.whl</pre><p>次にKerasをインストールします。</p>
+<pre class="code" data-lang="" data-unlink="">$pip3 install keras</pre><p>これでKeras + Tensorflow環境はできたはずですが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>で作った<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C7%A5%A3%A1%BC%A5%D7%A5%E9%A1%BC%A5%CB%A5%F3%A5%B0">ディープラーニング</a>のコードが動きません。<br/>
+試行錯誤した結果、KerasのVersionが違ったためのようだとわかりました。</p><p>↓のようにVersionを指定して<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>で使っていたものと同じものをインストールしたら動きました。</p>
+<pre class="code" data-lang="" data-unlink="">pip3 install Keras==2.0.5</pre><p>ここまできたら、今度は<a class="keyword" href="http://d.hatena.ne.jp/keyword/Open%20CV">Open CV</a>が動かない。</p><p>次のようなErrorがひとつづつ出てきたのを、下の$でひとつづつつぶしたが、まとめて書いておきます。</p>
+<pre class="code" data-lang="" data-unlink="">ImportError: libjasper.so.1: cannot open shared object file: No such file or directory
+ImportError: libQtGui.so.4: cannot open shared object file: No such file or directory
+ImportError: libQtTest.so.4: cannot open shared object file: No such file or directory</pre><pre class="code" data-lang="" data-unlink="">$sudo apt-get install libjasper-dev
+$sudo apt-get install libqtgui4
+$sudo apt install libqt4-test</pre><p>ラズパイの公式にもこの辺のことが少し書かれていて、ハマりどころらしい。<br/>
+<a href="https://www.raspberrypi.org/forums/viewtopic.php?t=211859">Cant Import cv2 (Pi 3 Mobel B) Python 3.5 - Raspberry Pi Forums</a></p><p></p><h3>完成！</h3>
+<pre class="code" data-lang="" data-unlink="">pi@raspberrypi:~ $ python3 akb48.py
+Using TensorFlow backend.
+res =  [[1.07348785e-02 1.03990303e-03 8.26359332e-01 2.78084166e-02
+  1.33473864e-02 2.04083481e-05 5.67168854e-02 1.89039292e-05
+  5.17631590e-04 2.70321723e-02 2.74600531e-03 2.41437554e-03
+  5.76681559e-05 5.62191708e-04 2.87890956e-02 1.26411626e-03
+  1.78397109e-04 8.96107031e-06 3.83390201e-04]]
+2
+Prediction is  Kashiwagi Yuki</pre><p></p><h3>余談</h3>最初、ラズパイゼロでやってみようとして上手くいかなかった。<br/>
+ハード的な問題なのかと思っていたが、よく考えると、RaspbianのVersionも違うことを思い出した。<br/>
+ゼロのほうはスターターキットにプリインストールされたものをそのまま使っていたのだが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/janome">janome</a>が動かないなど、他の問題もあった。<br/>
+そこで、試しにラズパイ3のSDカードをそのままラズパイゼロに入れてみた。<p>動くではないですか！</p><p>ということで、ラズパイゼロのRaspbianも最新のstretchに入れ替えた。<br/>
+こちらは<a class="keyword" href="http://d.hatena.ne.jp/keyword/janome">janome</a>が動くのでこれでOK。</p>
+<table>
+<tr>
+<td>ラズパイ３</td>
+</tr>
+<tr>
+<td>Distributor ID</td>
+<td> Raspbian</td>
+</tr>
+<tr>
+<td>Description</td>
+<td>    Raspbian <a class="keyword" href="http://d.hatena.ne.jp/keyword/GNU/Linux">GNU/Linux</a> 9.4 (stretch)</td>
+</tr>
+<tr>
+<td>Release</td>
+<td>       9.4</td>
+</tr>
+<tr>
+<td>Codename</td>
+<td>       stretch</td>
+</tr>
+</table>
+<table>
+<tr>
+<td>ラズパイゼロ</td>
+</tr>
+<tr>
+<td>Distributor ID:</td>
+<td> Raspbian</td>
+</tr>
+<tr>
+<td>Description</td>
+<td>    Raspbian <a class="keyword" href="http://d.hatena.ne.jp/keyword/GNU/Linux">GNU/Linux</a> 8.0 (jessie)</td>
+</tr>
+<tr>
+<td>Release</td>
+<td>       8.0</td>
+</tr>
+<tr>
+<td>Codename</td>
+<td>       jessie</td>
+</tr>
+</table><p>このような状態であったのをラズパイゼロを最新のストレッチをインストールした。</p><p>↓<a class="keyword" href="http://d.hatena.ne.jp/keyword/Janome">Janome</a>がインストールできなかった時の話<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2017%2F12%2F02%2F113434" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="janome(蛇の目)でマルコフ連鎖【正規表現の初歩】 - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2017/12/02/113434">s51517765.hatenadiary.jp</a></cite></p><p></p><h3>余談その2</h3>その辺の適当な（<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>で使っていた）SDカードをSD Card Formatter v 5.0.0でクイックフォーマットをしてインストールしたら、100%でとまった。<br/>
+（ただし、止まったと思っても100%まで行っているときは数分掛かることがあるらしい）<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fwww.sdcard.org%2Fjp%2Fdownloads%2Fformatter_4%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="SD/SDHC/SDXC用SDメモリカードフォーマッター 5.0"></iframe><cite class="hatena-citation"><a href="https://www.sdcard.org/jp/downloads/formatter_4/">www.sdcard.org</a></cite><p>上書きフォーマットのほうがいいらしい。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/windows">windows</a>など他のOSで使っていたものは、本気でまっさらにしないと問題が出るようだ。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180625132822j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180625/20180625132822.jpg" title="f:id:s51517765:20180625132822j:plain"/></span><br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180625133320j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180625/20180625133320.jpg" title="f:id:s51517765:20180625133320j:plain"/></span></p><p>もともとRaspbianが入っていた（動いていた）SDはクイックフォーマットで問題なかった。</p><p>また、一度ラズパイで使ったものを<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>で使うように戻す時も複数の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D1%A1%BC%A5%C6%A5%A3%A5%B7%A5%E7%A5%F3">パーティション</a>が切られているので、そのままでも使えなくはないですがSD Card Formatterで「上書フォーマット」をすると綺麗になります。</p><p></p><h3>関連</h3>ラズパイセットアップの基本<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2017%2F10%2F10%2F215836" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="Raspberry Pi 3を一からインストール - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2017/10/10/215836">s51517765.hatenadiary.jp</a></cite>
+</div>

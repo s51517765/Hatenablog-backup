@@ -1,0 +1,116 @@
+<div class="entry-content">
+<p>今日は土壌抵抗を判定して、通知するプログラムを作りました。</p>
+<p>(プロトタイプその1）</p>
+<p> </p>
+<p>前々回に書いた制御ロジックの一部を実装してみました。</p>
+<p>ポイントはif /if elseの使い方です。</p>
+<p>ここでは、RED　給水、YELLOW　もうすぐ給水、GREEN　十分に水分があるの3水準を設定しました。</p>
+<p> </p>
+<p>if/ else ifは1つ目の状態をifで定義、2つ目、3つ目…とelse ifで定義、どれにも当てはまらないときをelseで定義します。</p>
+<p>if/ else /if elseはその状態にあるとき、永遠に該当の｛｝を繰り返すということもポイントです。</p>
+<p> </p>
+<p>水遣りを実行したときはそのループを抜ける処理を考える必要がありますが、それはまた後ほど。</p>
+<p> </p>
+<p>ここで、1021より大きいときと100未満はエラーを返すようにしています。</p>
+<p>センサーの読み値は10bit = 2^10ですので、0～1024になりますが、抵抗の電圧を読むので、回路が断線したときや壊れてしまったとき、1024となります。</p>
+<p>このとき、土壌が乾いている→給水モードとなってしまうと永遠と給水をしてしまうので、値が大きすぎるときはエラーとする処理を入れます。</p>
+<p>断線もしくはショートしたときに異常な値を返してしまうことが起きうるので100未満も同様にエラーとします。</p>
+<p>そして、このエラーはelseで記述しているので、プログラミングのバグによってif /if elseの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%A4%A4%C5%A4%EC">いづれ</a>にも当てはまらないときもここに到達します。</p>
+<p> </p>
+<p>この次は抵抗の読み値を平均化（数回読んで、ノイズを弾く方法）することを考えようと思います。</p>
+<p> </p>
+<p>======================================</p>
+<p><span style="color: #0000ff;">//使う変数はなるべくここで定義します。これによってあとからパラメータを変更するときに簡単です。</span></p>
+<p>int regist = 900; //土壌抵抗　</p>
+<p>int power = 255; //モーターpwm</p>
+<p>int threshold = 600; //水遣り敷居値</p>
+<p>int GREEN = A1;　<span style="color: #0000ff;">//カラーLEDをつなぐpinを指定</span></p>
+<p>int YELLOW = A2;</p>
+<p>int RED = A3;</p>
+<p>int POMP = 5;　//ポンプを5pinに <span style="color: #0000ff;">//テスト用に今はLEDをつないでいます</span></p>
+<p>int LED = 150;</p>
+<p>int cycle = 1000; //水遣りチェック周期(ms)</p>
+<p> </p>
+<p>void setup() {</p>
+<p>Serial.begin(9600); //シリアルモニタを使う(カッコ内は通信速度)</p>
+<p> </p>
+<p>pinMode(A0, INPUT); //土壌抵抗Read</p>
+<p>pinMode(5, OUTPUT); //電圧を<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B0%F5%B2%C4">印可</a>する宣言</p>
+<p>pinMode(A1, OUTPUT); //GREEN</p>
+<p>pinMode(A2, OUTPUT); //YELLOW</p>
+<p>pinMode(A3, OUTPUT); //RED</p>
+<p>}</p>
+<p> </p>
+<p>void loop() {</p>
+<p> </p>
+<p>regist = analogRead(A0);</p>
+<p><span style="color: #0000ff;">//Serial.printは実動上は不要ですがデバックに便利です。</span></p>
+<p>Serial.print("A0 = regist = ");</p>
+<p>Serial.println(regist);</p>
+<p>Serial.print("threshold = ");</p>
+<p>Serial.println(threshold);</p>
+<p>Serial.print("cycle = ");</p>
+<p>Serial.println(cycle);</p>
+<p> </p>
+<p>if (regist &gt; 1021) //センサーエラー</p>
+<p><span style="color: #0000ff;">//センサー読み値が大きすぎるのはエラーとみなします</span></p>
+<p>{analogWrite(RED, LED);</p>
+<p>delay(100);　<span style="color: #0000ff;">//エラーアピールのため点滅します</span></p>
+<p>analogWrite(POMP, 0);</p>
+<p>analogWrite(GREEN, 0);</p>
+<p>analogWrite(YELLOW, 0);</p>
+<p>analogWrite(RED, 0);</p>
+<p>delay(100);</p>
+<p>}</p>
+<p>else if (regist &gt; threshold) { //給水 <span style="color: #0000ff;">//給水モード</span></p>
+<p>analogWrite(POMP, power); //ポンプON</p>
+<p>analogWrite(GREEN, 0);</p>
+<p>analogWrite(YELLOW, 0);</p>
+<p>analogWrite(RED, LED);</p>
+<p> </p>
+<p>}</p>
+<p>else if (regist &gt; threshold - 200)　 <span style="color: #0000ff;">//thresholdを基準に土壌抵抗を区切ります。</span></p>
+<p>{</p>
+<p>analogWrite(POMP, 0);</p>
+<p>analogWrite(GREEN, 0);</p>
+<p>analogWrite(YELLOW, LED);</p>
+<p>analogWrite(RED, 0);</p>
+<p> </p>
+<p>}</p>
+<p>else if (regist &gt; 100) { <span style="color: #0000ff;">//十分に水分があるとき</span></p>
+<p>analogWrite(POMP, 0);</p>
+<p>analogWrite(GREEN, LED);</p>
+<p>analogWrite(YELLOW, 0);</p>
+<p>analogWrite(RED, 0);</p>
+<p> </p>
+<p>}</p>
+<p>else {analogWrite(RED, LED);　<span style="color: #0000ff;">//100未満も異常とみなします</span></p>
+<p>delay(100);　<span style="color: #0000ff;">//エラーアピールのため点滅します</span></p>
+<p>analogWrite(POMP, 0);</p>
+<p>analogWrite(GREEN, 0);</p>
+<p>analogWrite(YELLOW, 0);</p>
+<p>analogWrite(RED, 0);</p>
+<p>delay(100);}</p>
+<p> </p>
+<p>delay(cycle);//更新間隔の設定<span style="color: #0000ff;">//土壌抵抗のチェック間隔</span></p>
+<p>}</p>
+<p> </p>
+<p>===========================================</p>
+<p> </p>
+<p>LEDは以下のものでカラーを取り揃えました。</p>
+<p>中国からの発送なので少し時間が掛かりますが、安いです。↓↓</p>
+<div class="freezed">
+<div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B00L317D5U/shirotoakb-22/"><img alt="SODIAL(R) 100 5mm赤い、緑、青い、黄色い、白いのLED電球" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/510lrLHROnL._SL160_.jpg" title="SODIAL(R) 100 5mm赤い、緑、青い、黄色い、白いのLED電球"/></a>
+<div class="hatena-asin-detail-info">
+<p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B00L317D5U/shirotoakb-22/">SODIAL(R) 100 5mm赤い、緑、青い、黄色い、白いのLED電球</a></p>
+<ul>
+<li><span class="hatena-asin-detail-label">出版社/メーカー:</span> SODIAL(R)</li>
+<li><span class="hatena-asin-detail-label">メディア:</span> Tools &amp; Hardware</li>
+<li><a href="http://d.hatena.ne.jp/asin/B00L317D5U/shirotoakb-22" target="_blank">この商品を含むブログを見る</a></li>
+</ul>
+</div>
+<div class="hatena-asin-detail-foot"> </div>
+</div>
+</div>
+<p> </p>
+</div>

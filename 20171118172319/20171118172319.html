@@ -1,0 +1,86 @@
+<div class="entry-content">
+<p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180103100052j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180103/20180103100052.jpg" title="f:id:s51517765:20180103100052j:plain"/></span><br/>
+【画像は趣味のイメージで内容とは特に関係ありません。】</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>で趣味の似た人を探すツールを作成しました。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>の”おすすめユーザー”もありますが。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20171118171437j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20171118/20171118171437.jpg" title="f:id:s51517765:20171118171437j:plain"/></span><br/>
+</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">def</span> <span class="synIdentifier">serch_new_friend</span>():
+　new_friend={}
+    keywordlist=[<span class="synConstant">'電子工作'</span>,<span class="synConstant">'ラズパイ'</span>,<span class="synConstant">'アルディーノ'</span>,<span class="synConstant">'プログラミング'</span>]
+    <span class="synStatement">for</span> keyword <span class="synStatement">in</span> keywordlist:
+        <span class="synIdentifier">print</span>(keyword)
+        <span class="synStatement">for</span> tweet <span class="synStatement">in</span> api.search(q=keyword, count=<span class="synConstant">200</span>):  <span class="synComment"># 検索</span>
+            <span class="synStatement">if</span> <span class="synStatement">not</span> tweet.user.screen_name <span class="synStatement">in</span> follower: <span class="synComment">#フォローのList</span>
+                <span class="synStatement">if</span> tweet.user.screen_name <span class="synStatement">in</span> new_friend:
+                    new_friend[tweet.user.screen_name] += <span class="synConstant">1</span>
+                <span class="synStatement">else</span>:
+                    new_friend[tweet.user.screen_name]=<span class="synConstant">1</span>
+    <span class="synStatement">for</span> k, v <span class="synStatement">in</span> <span class="synIdentifier">sorted</span>(new_friend.items(), key=<span class="synStatement">lambda</span> x: -x[<span class="synConstant">1</span>]): <span class="synComment">#降順ソート</span>
+        <span class="synStatement">if</span> v!=<span class="synConstant">1</span>:
+            <span class="synIdentifier">print</span>(<span class="synIdentifier">str</span>(k) + <span class="synConstant">": "</span> + <span class="synIdentifier">str</span>(v))
+</pre><p>keywordlistに自分の気になるキーワードを登録し、<a class="keyword" href="http://d.hatena.ne.jp/keyword/twitter">twitter</a>検索でヒットしたアカウントを辞書(dictiorary)にカウントしていきます。ここでは、キーワードのListは一部省略しています。自分で考えてください。<br/>
+すでにフォローしているひとは除外します。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/twitter">twitter</a>の検索はtweepyを利用しています。<br/>
+フォローのリストはあらかじめ作成しておきます。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2017%2F11%2F12%2F182806" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="pythonでフォロワーの一覧をListとして作成する - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="http://s51517765.hatenadiary.jp/entry/2017/11/12/182806">s51517765.hatenadiary.jp</a></cite></p><p>辞書はすでにキーがあればカウントを＋＝１し、なければキーを作成します。<br/>
+辞書のカウントでソートし、1度しかでてこないアカウントが大量に発生するので、カウントが1のものは除外してprintしました。<br/>
+ソートした後は、辞書型として使えなくなります。</p><p>↓抽出結果例</p>
+<pre class="code" data-lang="" data-unlink="">072_pro: 13
+l693g: 5
+A7075duralumin: 4
+I_HaL: 4
+negiiiiii_0xFFF: 4
+kentohmm265: 3
+neno_n0: 3
+Engineerism: 3
+mushroom080: 3
+rockin_keep: 3
+arigayas: 3
+progblues: 2
+fernyiges: 2
+okanao_robot: 2
+deluwater: 2
+dictators_circ1: 2
+arkanal1: 2
+kumokosi: 2
+PA_information: 2
+nomnom3939: 2
+miwakuna: 2
+hackshone: 2
+ieeeic: 2
+koron_bike: 2
+sm58s: 2
+chibaf: 2
+zeus3110: 2
+AGE43: 2
+mascii_k: 2
+Katase_sui: 2
+IngaSakimori: 2
+kazuki13gata: 2
+kick_the_blues: 2
+zarusoba44: 2
+0hukurou0: 2
+komegmi: 2
+0209KaGaChi: 2
+club_are: 2
+momotarou_625: 2
+ugokazarukoto11: 2
+jyomu__: 2
+SearEclair: 2
+ITpassport_bot5: 2
+G_Myake: 2
+hisshi_bot: 2
+soralis_nem: 2
+DaraUmisuke: 2
+omae_source_bot: 2
+r4tk: 2
+jeffi7: 2
+herpuretears: 2
+mUc3LS4p0JzNeae: 2
+funuu: 2
+solgrapher: 2
+NEWBOOKINFO: 2
+NekoAntarctica: 2
+Space_kid_Jr: 2
+jaialkdanel: 2</pre>
+</div>

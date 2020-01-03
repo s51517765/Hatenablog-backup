@@ -1,0 +1,28 @@
+<div class="entry-content">
+<p>こちらを参考にしました。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Ftadaken3%2Fitems%2F0998c18df11d4a1c7427" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="PythonからLINE NotifyでLINEにメッセージを送る - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/tadaken3/items/0998c18df11d4a1c7427">qiita.com</a></cite></p><p>こちらからアプリを登録します。<br/>
+事前に<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%DE%A5%DB">スマホ</a>でLINEを登録してある必要があります。<br/>
+登録されたアカウント（MAilアドレス）でLoginします。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fnotify-bot.line.me%2Fja%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="LINE Notify"></iframe><cite class="hatena-citation"><a href="https://notify-bot.line.me/ja/">notify-bot.line.me</a></cite></p><p>マイページからアクセス<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A1%BC%A5%AF">トーク</a>ンを発行します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20171007232439j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20171007/20171007232439.jpg" title="f:id:s51517765:20171007232439j:plain"/></span></p><p>通知先を選びます。<br/>
+自分のみに送信するだけであれば、１：１を選択します。<br/>
+ここでは妻と共有するグループを選びました。<br/>
+（グループ名は後で変更することもできますし、複数のアプリを登録することもできるようです。）<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20171007232448j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20171007/20171007232448.jpg" title="f:id:s51517765:20171007232448j:plain"/></span></p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%DE%A5%DB">スマホ</a>のLineアプリからLine Notifyをメンバーとして追加します。</p><p>グループの作成やメンバーの追加はこちらを参考にしました。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fappllio.com%2Fline-group-talk" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="実は2種類、LINEのグループの作り方とその違い【iPhone/Android/PC対応】"></iframe><cite class="hatena-citation"><a href="http://appllio.com/line-group-talk">appllio.com</a></cite><br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%DE%A5%DB">スマホ</a>でLineを受信したときにポップアップしない場合は、この辺を参考に、これでも通知が出ない場合は、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Android">Android</a>の設定から通知設定を確認してください。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fdekiru.net%2Farticle%2F14588%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="LINEのメッセージの通知で内容を非表示にする方法"></iframe><cite class="hatena-citation"><a href="https://dekiru.net/article/14588/">dekiru.net</a></cite></p><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20171008143127j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20171008/20171008143127.jpg" title="f:id:s51517765:20171008143127j:plain"/></span></p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>のDirect Messageはリロードしないと読み込まなかったり、（アプリの設定によるかもしれませんが）アプリを起動していないときは通知に即時性がないので、LINEのほうが早いですね。とくにアンチLINEでなければLINEが使いやすそうです。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">def</span> <span class="synIdentifier">send_line</span>():
+    url = <span class="synConstant">"https://notify-api.line.me/api/notify"</span>
+    LINE_Token=<span class="synConstant">"*************"</span>
+    headers = {<span class="synConstant">"Authorization"</span>: <span class="synConstant">"Bearer "</span> + LINE_Token}
+
+    tdatetime = dt.now()
+    message = <span class="synConstant">'Line_test_'</span>+tdatetime.strftime(<span class="synConstant">'%H%M%S'</span>)
+    payload = {<span class="synConstant">"message"</span>: message}
+    files = {<span class="synConstant">"imageFile"</span>: <span class="synIdentifier">open</span>(<span class="synConstant">"A.jpg"</span>, <span class="synConstant">"rb"</span>)}  
+       <span class="synComment">#バイナリで画像ファイルを開きます。対応している形式はPNG/JPEGです。</span>
+    r = requests.post(url, headers=headers, params=payload, files=files) 
+       <span class="synComment">#写真の添付が必要ないときは"files=files"を削除</span>
+</pre>
+</div>

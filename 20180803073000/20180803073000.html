@@ -1,0 +1,67 @@
+<div class="entry-content">
+<p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180802224836p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180802/20180802224836.png" title="f:id:s51517765:20180802224836p:plain"/></span><br/>
+石取りゲームとは、2人のプレーヤーが交互に決まった上限までの石を取っていって、最後の一個を取ったら勝ち（負け）というゲームです。</p><p>例えば、8個から始めて、一度に3個まで、最後の一個をと取ったほうが勝ちとすると、</p>
+<pre class="code" data-lang="" data-unlink="">先手３個
+〇〇〇\〇〇〇〇〇
+残り５個
+後手２個
+〇〇〇\〇〇\〇〇〇
+残り３個
+先手３個
+〇〇〇\〇〇\〇〇〇\
+残り０個</pre><p>で、先手の勝ちです。</p><p>最後の一個を取ったら「勝ち」なのか「負け」なのかは、ローカルルールとかあるかもしれませんが、「負け」のほうが一般的なようです。<br/>
+ここでは敢えて逆に最後の一個を取ったら「勝ち」として進めます。</p><p>この石取りゲームには必勝法があることは有名です。<br/>
+この必勝法は一度にとれる数によって異なります。<br/>
+一度にとれる数が３個であれば、のこりが４個になるように取れば必ず勝ちます。<br/>
+（４個にさせられた相手が、１～３個のどれを選んでもその次の自分の手番ですべて取れます。）<br/>
+残りが４個にするためには、その前の自分の手番で残りが８個になるようにします。<br/>
+（８個にさせられた相手が、１～３個のどれを選んでもその次の自分の手番で４個にできます。）<br/>
+残りが８個にするためには…（同様）</p><p>これを一般化すると、残りが４、８、１２、１６…となるようにします。<br/>
+自分の手番で残りがｎ個であったら、n-4m個取ります。（nは<a class="keyword" href="http://d.hatena.ne.jp/keyword/%BC%AB%C1%B3%BF%F4">自然数</a>で、mはn-4m&gt;0となる最大の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%BC%AB%C1%B3%BF%F4">自然数</a>）<br/>
+これは、４で割った「余り」を表します。<br/>
+これをプログラミング的に表すと、</p>
+<pre class="code" data-lang="" data-unlink="">toru=nokori%4</pre><p>一度にとれる数をmaxとして、一般化すると、</p>
+<pre class="code" data-lang="" data-unlink="">toru=nokori%(max+1)</pre><p>となります。</p><p>これをComputerとの対戦ゲームとしてプログラミングしました。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synComment"># -*- coding: utf-8 -*-</span>
+
+<span class="synStatement">def</span> <span class="synIdentifier">main</span>(nokori,teban):
+    <span class="synStatement">while</span> nokori&gt;<span class="synConstant">0</span>:
+        <span class="synStatement">if</span> teban ==<span class="synIdentifier">True</span>:
+            <span class="synIdentifier">print</span>(<span class="synConstant">"あなたの番"</span>)
+            toru=<span class="synConstant">120</span> <span class="synComment">#適当な初期値をいれて次のwhileをtrueにしている</span>
+            <span class="synStatement">while</span>(toru&gt;nokori <span class="synStatement">or</span> toru&gt;<span class="synIdentifier">max</span>): <span class="synComment">#プレイヤーの入力は、残りの石より多くてはダメ、一度にとれる最大よりも多くてはダメ</span>
+                toru = <span class="synIdentifier">int</span>(<span class="synIdentifier">input</span>())
+            nokori-=toru
+            teban=<span class="synIdentifier">False</span> <span class="synComment">#手番を反転</span>
+        <span class="synStatement">else</span>:
+            <span class="synIdentifier">print</span>(<span class="synConstant">"COMの手"</span>)
+            <span class="synStatement">if</span> nokori&lt;=<span class="synIdentifier">max</span>:
+                toru=nokori
+            <span class="synStatement">else</span>:
+                toru=nokori%(<span class="synIdentifier">max</span>+<span class="synConstant">1</span>)
+                <span class="synStatement">if</span> toru==<span class="synConstant">0</span>:
+                    toru=<span class="synIdentifier">max</span>
+            <span class="synIdentifier">print</span>(<span class="synIdentifier">str</span>(toru)+<span class="synConstant">"個とりました"</span>)
+            nokori-=toru
+            teban=<span class="synIdentifier">True</span> <span class="synComment">#手番を反転</span>
+        jugde(nokori,teban) <span class="synComment">#それぞれの手番ごとに局面を判定します</span>
+
+<span class="synStatement">def</span> <span class="synIdentifier">jugde</span>(nokori,teban):
+    <span class="synIdentifier">print</span>(<span class="synConstant">"残り"</span>+<span class="synIdentifier">str</span>(nokori)+<span class="synConstant">"個"</span>)
+    <span class="synStatement">if</span> nokori==<span class="synConstant">0</span>: <span class="synComment">#残りが０なら決着</span>
+        <span class="synStatement">if</span> teban==<span class="synIdentifier">True</span>:
+            <span class="synIdentifier">print</span>(<span class="synConstant">"あなたの負け！"</span>)
+        <span class="synStatement">else</span>:
+            <span class="synIdentifier">print</span>(<span class="synConstant">"あなたの勝ち"</span>)
+
+<span class="synStatement">if</span> __name__ == <span class="synConstant">'__main__'</span>:
+    <span class="synIdentifier">max</span>=<span class="synConstant">3</span> <span class="synComment">#一度に取れる最大数、ただし2以上でないとゲームにならない</span>
+    nokori=<span class="synConstant">12</span>
+    teban=<span class="synIdentifier">False</span> <span class="synComment">#Trueだと自分先手、Falseだと自分後手</span>
+    <span class="synIdentifier">print</span>(<span class="synConstant">"一度にとれるのは"</span>+<span class="synIdentifier">str</span>(<span class="synIdentifier">max</span>)+<span class="synConstant">"個まで。"</span>)
+    <span class="synIdentifier">print</span>(<span class="synConstant">"最後の1個を取ったら勝ち!"</span>)
+    <span class="synIdentifier">print</span>(<span class="synConstant">"残り"</span> + <span class="synIdentifier">str</span>(nokori) + <span class="synConstant">"個"</span>)
+    main(nokori,teban)
+</pre><p>必勝法を知っていると、先手は絶対負けません。<br/>
+maxとnokoriを自由に変化させるとバリエーションができます。</p>
+</div>

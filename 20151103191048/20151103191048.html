@@ -1,0 +1,67 @@
+<div class="entry-content">
+<p>今日は<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B5%A1%BC%A5%DC%A5%E2%A1%BC%A5%BF">サーボモータ</a>を使ってみます。</p>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B5%A1%BC%A5%DC%A5%E2%A1%BC%A5%BF">サーボモータ</a>ーとは、角度を指定して回転するモータです。</p>
+<p>0～180度(deg)の範囲で動きます。</p>
+<p> </p>
+<p>回路はこのようになります。</p>
+<p> </p>
+<p><a class="detailOn" href="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111844.jpg" id="i13473415732"><img alt="" border="0" height="225" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111844.jpg" width="220"/></a></p>
+<p> </p>
+<p>今回使った<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B5%A1%BC%A5%DC%A5%E2%A1%BC%A5%BF">サーボモータ</a>はＳＧ９２Ｒです。</p>
+<p> </p>
+<div class="freezed">
+<div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B00WQWZXKW/shirotoakb-22/"><img alt="マイクロサーボ SG92R (1個)" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/51vRAj9-KGL._SL160_.jpg" title="マイクロサーボ SG92R (1個)"/></a>
+<div class="hatena-asin-detail-info">
+<p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B00WQWZXKW/shirotoakb-22/">マイクロサーボ SG92R (1個)</a></p>
+<ul>
+<li><span class="hatena-asin-detail-label">出版社/メーカー:</span> 梅本<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B9%E7%C6%B1%B2%F1%BC%D2">合同会社</a></li>
+<li><span class="hatena-asin-detail-label">メディア:</span> おもちゃ＆ホビー</li>
+<li><a href="http://d.hatena.ne.jp/asin/B00WQWZXKW/shirotoakb-22" target="_blank">この商品を含むブログを見る</a></li>
+</ul>
+</div>
+<div class="hatena-asin-detail-foot"> </div>
+</div>
+</div>
+<p>  </p>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B5%A1%BC%A5%DC%A5%E2%A1%BC%A5%BF">サーボモータ</a>は電源を供給するためのVcc端子とGND、と制御線が出ています。</p>
+<p>Vccに+電圧を入力し、GNDは<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>のGNDにつなぎます。</p>
+<p>仕様はHP等で確認できます。</p>
+<p> </p>
+<p>今回もタクトスイッチをおすと<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B5%A1%BC%A5%DC%A5%E2%A1%BC%A5%BF">サーボモータ</a>が動作するようにしてみました。</p>
+<p> </p>
+<p><a class="detailOn" href="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111847.png" id="i13473448184"><img alt="" border="0" height="312" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111847.png" width="220"/></a></p>
+<p> </p>
+<p>これで、なんらかの信号を受けて<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B5%A1%BC%A5%DC%A5%E2%A1%BC%A5%BF">サーボモータ</a>を動作させるロジックは出来上がりました。</p>
+<p> </p>
+<p>ところで、プログラム的に停止しているときに<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B5%A1%BC%A5%DC%A5%E2%A1%BC%A5%BF">サーボモータ</a>から「ジジジ…」という音がしました。</p>
+<p>最小単位の動作量に満たないような、電圧がかかっているイメージです。</p>
+<p> </p>
+<p>ロジック的には間違ってないように見えるので悩みましたが、ぐぐってみると安物ではありうることのようです。</p>
+<p>常に、制御線からの信号で制御しているだけであって、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B5%A1%BC%A5%DC%A5%E2%A1%BC%A5%BF">サーボモータ</a>には5Vが常に入力されているので起きているのでしょうか？</p>
+<p> </p>
+<p>トルク：2.5kgf・cmというのが、どれくらいなのか想像がつかなかったのですが結構強力でした。</p>
+<p>軸から1cmの場所で2.5kgの力が出ます。</p>
+<p>ちょっとした工作には十分そうです。</p>
+<p> </p>
+<div class="freezed">
+<div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B00WQWZXKW/shirotoakb-22/"><img alt="マイクロサーボ SG92R (1個)" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/51vRAj9-KGL._SL160_.jpg" title="マイクロサーボ SG92R (1個)"/></a>
+<div class="hatena-asin-detail-info">
+<p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B00WQWZXKW/shirotoakb-22/">マイクロサーボ SG92R (1個)</a></p>
+<ul>
+<li><span class="hatena-asin-detail-label">出版社/メーカー:</span> 梅本<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B9%E7%C6%B1%B2%F1%BC%D2">合同会社</a></li>
+<li><span class="hatena-asin-detail-label">メディア:</span> おもちゃ＆ホビー</li>
+<li><a href="http://d.hatena.ne.jp/asin/B00WQWZXKW/shirotoakb-22" target="_blank">この商品を含むブログを見る</a></li>
+</ul>
+</div>
+<div class="hatena-asin-detail-foot"> </div>
+</div>
+</div>
+<p>  </p>
+<p>■ソース</p>
+<p>==================</p>
+<p>#include &lt;Servo.h&gt; //<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B5%A1%BC%A5%DC%A5%E2%A1%BC%A5%BF">サーボモータ</a>ー用<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>標準ライブラリを読み込む<br/>Servo myservo; //<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B5%A1%BC%A5%DC%A5%E2%A1%BC%A5%BF">サーボモータ</a>用のオブジェクトを作成<br/>int val; //サーボの角度を格納<br/>int state = 0; //pinから取得したデータ格納<br/>int pin7 = 7;</p>
+<p>void setup()<br/>{<br/> Serial.begin(9600); //シリアルモニタを使う(カッコ内は通信速度)<br/> myservo.attach(9); //デジタル9番ピンをサーボの角度命令出力ピンとして設定<br/> pinMode(pin7, INPUT); //pin7を入力として使う<br/>}<br/>void loop()<br/>{<br/> Serial.println(state); //シリアルモニタにデータを出力<br/> state = digitalRead(pin7); //データとしてpin7のdigital値を読み込む</p>
+<p>if (state == 0) {<br/> val = 0; //変数の初期化<br/> delay(300);<br/> myservo.write(val); //サーボを動かす(0度)<br/> delay(2000);<br/> val = 180;<br/> myservo.write(val); //サーボを動かす(180度)<br/> delay(500);<br/> }<br/> else {</p>
+<p>}<br/>}</p>
+<p>=================</p>
+</div>

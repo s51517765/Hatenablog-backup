@@ -1,0 +1,80 @@
+<div class="entry-content">
+<p>先日、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Visual%20Studio">Visual Studio</a>に<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>を導入したが、予測変換がいまいちだったり、反応が遅いのでAnaconda+Pycharmに変更しました。<br/>
+まだ、debugのショートカットが"F?"ではありますが、vsでVC#を使っているときぐらいの使い勝手だと思ってます。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>の<a class="keyword" href="http://d.hatena.ne.jp/keyword/IDE">IDE</a>も数種類あるようですし、anacondaのようなパッケージもいろいろあると思いますが、私は↓で紹介されていることもありanacondaを使いました。</p><div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/487311778X/shirotoakb-22/"><img alt="退屈なことはPythonにやらせよう ―ノンプログラマーにもできる自動化処理プログラミング" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/51hk%2B5bKNrL._SL160_.jpg" title="退屈なことはPythonにやらせよう ―ノンプログラマーにもできる自動化処理プログラミング"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/487311778X/shirotoakb-22/">退屈なことはPythonにやらせよう ―ノンプログラマーにもできる自動化処理プログラミング</a></p><ul><li><span class="hatena-asin-detail-label">作者:</span> Al Sweigart,相川愛三</li><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AA%A5%E9%A5%A4%A5%EA%A1%BC%A5%B8%A5%E3%A5%D1%A5%F3">オライリージャパン</a></li><li><span class="hatena-asin-detail-label">発売日:</span> 2017/06/03</li><li><span class="hatena-asin-detail-label">メディア:</span> 単行本（ソフトカバー）</li><li><a href="http://d.hatena.ne.jp/asin/487311778X/shirotoakb-22" target="_blank">この商品を含むブログ (5件) を見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div><p>じつは、先日まで使っていたwin 10 PCが故障したので、いつもとはちがう<a class="keyword" href="http://d.hatena.ne.jp/keyword/win7">win7</a>を使っています。<br/>
+修理はできそうなので、これはこれで修理が終わったら、ここで報告しようと思う。</p><p>まずはインストールですが、ここを参考にすると、問題なくインストールできました。ちなみに<a class="keyword" href="http://d.hatena.ne.jp/keyword/Win7">Win7</a>(pro 64bit)でも問題なくこれを参照してインストールできました。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fwww.procrasist.com%2Fentry%2F2016%2F10%2F04%2F200000" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="Windows10でpythonを使う環境を作る①：AnacondaとPycharm - プロクラシスト"></iframe><cite class="hatena-citation"><a href="http://www.procrasist.com/entry/2016/10/04/200000">www.procrasist.com</a></cite></p><p>次に<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>をつかうため、<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>用のライブラリ”tweepy”をインポートします。<br/>
+Anacondaのプロンプトを立ち上げ、</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">$pip install tweepy
+</pre><p>とします。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170924121255j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170924/20170924121255.jpg" title="f:id:s51517765:20170924121255j:plain"/></span></p><p>最後に、デバックをしようとすると、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A4%A5%F3%A5%BF%A5%D7%A5%EA%A5%BF">インタプリタ</a>がないといってくるので、右上の歯車のところから<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A4%A5%F3%A5%BF%A5%D7%A5%EA%A5%BF">インタプリタ</a>を設定します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170928230845j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170928/20170928230845.jpg" title="f:id:s51517765:20170928230845j:plain"/></span></p><p>これで、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>上でAnaconda+Pycharmによる<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>環境はできたことになります。</p><p>次に<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>のコードを作成したら、ラズパイに転送します。</p><p>まず、ラズパイにファイルを転送するために<a class="keyword" href="http://d.hatena.ne.jp/keyword/Teraterm">Teraterm</a>を導入します。<br/>
+↓を参照し、このとおりに進めれば問題ないです。<br/>
+<a href="http://s2jp.com/2014/01/raspberry-pi-ssh/">Raspberry PiをWindowsで操作する(SSH) | S2</a></p>
+<div class="section">
+<h3>ここで、標準インストールがおすすめ（適当にデフォルトのカスタムですすめたら接続できなかった）</h3>
+<p>あらかじめラズパイのIPは調べておきます。ポートは22に変更します。<br/>
+ユーザー名とログ<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A4%A5%F3%A5%D1%A5%B9">インパス</a>を入力すると、LT Tatminalが立ち上がり、LAN接続で操作できるようになります。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/SSH">SSH</a>(<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EA%A5%E2%A1%BC%A5%C8%A5%C7%A5%B9%A5%AF%A5%C8%A5%C3%A5%D7">リモートデスクトップ</a>や<a class="keyword" href="http://d.hatena.ne.jp/keyword/Teraterm">Teraterm</a>接続)を始めると、パスワードを変更しろといってきます。セキュリティのためです。<br/>
+そのままでも使えないことはないが</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">$sudo raspi-config
+</pre><p>からパスワードを変更しておきましょう。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Teraterm">Teraterm</a>のターミナル画面に.py ファイルをドロップすると転送できます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170924121815j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170924/20170924121815.jpg" title="f:id:s51517765:20170924121815j:plain"/></span><br/>
+すると、何かErrorらしいものがでました。</p><p>ラズパイにtweepyが入っていないためのようです。まずはtweepyをインストールします。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">$sudo pip3 instal tweepy
+</pre>
+</div>
+<div class="section">
+<h3>ここでも"sudo" (管理者権限で実行を示す)を入れないとErrorになる。</h3>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">$ls
+</pre><p>で転送した.pyが表示されればOK。</p>
+<pre class="code" data-lang="" data-unlink="">$python3 twitter.py</pre><p>で実行します。</p><p>検索してファイルに書き出す機能とテキストファイルから<a class="keyword" href="http://d.hatena.ne.jp/keyword/Bot">Bot</a>的に一定時間ごとにTweetする機能を作りました。</p><p>ちなみに、無限ループにしているので、停止は"Ctrl + c" です。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%CA%B8%BB%FA%A5%B3%A1%BC%A5%C9">文字コード</a>は<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>で<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>で使ったListを流用したかったので、"utf"を明示的に指定しています。<br/>
+なんか、標準だとshift-jisかなにかで文字化けたので。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synComment"># -*- coding: utf-8 -*-</span>
+<span class="synPreProc">import</span> random
+<span class="synPreProc">import</span> tweepy
+<span class="synPreProc">import</span> time
+<span class="synIdentifier">print</span>(<span class="synConstant">"start_python!"</span>)
+
+CONSUMER_KEY=<span class="synConstant">"**********"</span>
+CONSUMER_SECRET=<span class="synConstant">"**********"</span>
+ACCESS_TOKEN=<span class="synConstant">"**********"</span>
+ACCESS_SECRET=<span class="synConstant">"**********"</span>
+auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+auth.set_access_token(ACCESS_TOKEN, ACCESS_SECRET)
+api = tweepy.API(auth)
+
+<span class="synStatement">def</span> <span class="synIdentifier">serch</span>():  <span class="synComment">#関数定義</span>
+    keywords = [<span class="synConstant">u'電子工作'</span>,<span class="synConstant">u'秋葉原'</span>]
+    query = <span class="synConstant">'OR'</span>.join(keywords)
+    <span class="synIdentifier">file</span> = <span class="synIdentifier">open</span>(<span class="synConstant">'serch.txt'</span>, <span class="synConstant">'a'</span>, encoding=<span class="synConstant">'utf'</span>)  <span class="synComment"># 追記モードでオープン</span>
+    <span class="synStatement">for</span> tweet <span class="synStatement">in</span> api.search(q=query, count=<span class="synConstant">20</span>):
+        <span class="synIdentifier">file</span>.write(tweet.user.screen_name)
+        <span class="synIdentifier">file</span>.write(<span class="synConstant">"</span><span class="synSpecial">\r\n</span><span class="synConstant">"</span>)
+        <span class="synIdentifier">file</span>.write()
+        <span class="synIdentifier">print</span>(<span class="synConstant">""</span>)
+    <span class="synIdentifier">file</span>.close()
+
+<span class="synStatement">def</span> <span class="synIdentifier">Auto_tweet</span>(): <span class="synComment">#関数定義</span>
+    rand=random.randint(<span class="synConstant">1</span>,<span class="synConstant">109</span>)
+    n=<span class="synConstant">0</span>
+    <span class="synIdentifier">file</span>=<span class="synIdentifier">open</span>(<span class="synConstant">'List.txt'</span>, <span class="synConstant">'r'</span>, encoding=<span class="synConstant">'utf'</span>) <span class="synComment">#UTFを指定する</span>
+    tweet=<span class="synConstant">"1"</span>
+    <span class="synStatement">try</span>:
+        <span class="synStatement">while</span> tweet!=<span class="synConstant">""</span>:
+            tweet = <span class="synIdentifier">file</span>.readline()
+            n=n+<span class="synConstant">1</span>
+            <span class="synStatement">if</span> n == rand:
+                <span class="synStatement">break</span>
+        <span class="synIdentifier">print</span>(tweet)
+        api.update_status(tweet)     <span class="synComment">#tweet</span>
+    <span class="synStatement">except</span>:
+       Print(<span class="synConstant">"Tweet Error!"</span>)
+
+<span class="synStatement">while</span>(<span class="synIdentifier">True</span>):
+    serch()
+    Auto_tweet()
+    <span class="synIdentifier">print</span>(<span class="synConstant">"Sleep!"</span>)
+    time.sleep(<span class="synConstant">3600</span>)
+</pre>
+</div>
+</div>

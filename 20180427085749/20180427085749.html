@@ -1,0 +1,27 @@
+<div class="entry-content">
+<p>python3とTweepyでサクッと作成。<br/>
+keywordを指定して、自分の<a class="keyword" href="http://d.hatena.ne.jp/keyword/tweet">tweet</a>を抽出します。<br/>
+keywordがブランクだとすべての<a class="keyword" href="http://d.hatena.ne.jp/keyword/tweet">tweet</a>が抽出されてしまうので除去します。RTを含めるかどうかを指定し、含めない場合は<code>RT @</code>が含まれていたらスキップします。</p><p>この<code>destroy_status</code>を応用すれば、自分のすべての<a class="keyword" href="http://d.hatena.ne.jp/keyword/tweet">tweet</a>を削除、とかも出来るはずです。<br/>
+一度に読み込める<a class="keyword" href="http://d.hatena.ne.jp/keyword/tweet">tweet</a>は3190ですが、rate limitは無いようで、何度でも実行できます。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synPreProc">import</span> tweepy
+
+auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+auth.set_access_token(ACCESS_TOKEN, ACCESS_SECRET)
+api = tweepy.API(auth)
+
+<span class="synStatement">def</span> <span class="synIdentifier">my_tweet_delete</span>(RT,keyword):
+    <span class="synStatement">for</span> status <span class="synStatement">in</span> tweepy.Cursor(api.user_timeline).items():
+        <span class="synStatement">if</span> RT==<span class="synIdentifier">False</span> <span class="synStatement">and</span> <span class="synConstant">"RT @"</span> <span class="synStatement">in</span> status.text: <span class="synComment">#リツイートを含めるかどうか</span>
+            <span class="synStatement">pass</span>
+        <span class="synStatement">elif</span> keyword!=<span class="synConstant">""</span><span class="synStatement">and</span>  keyword <span class="synStatement">in</span> status.text: <span class="synComment">#キーワードが空白でない</span>
+            <span class="synIdentifier">print</span>(status.text)
+            <span class="synIdentifier">print</span>(<span class="synConstant">"Delete OK?"</span>)
+            <span class="synStatement">if</span> <span class="synIdentifier">input</span>()==<span class="synConstant">"y"</span><span class="synStatement">or</span> <span class="synConstant">"Y"</span>: <span class="synComment">#削除するかどうかの最後の確認</span>
+                api.destroy_status(status.<span class="synIdentifier">id</span>)
+
+<span class="synStatement">if</span> __name__ == <span class="synConstant">'__main__'</span>:
+    keyword=<span class="synConstant">'python'</span>
+    my_tweet(<span class="synIdentifier">True</span>,keyword) 
+<span class="synComment">#api制限で最大取得できるツイートが3190</span>
+</pre><p></p><div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/4800280893/shirotoakb-22/"><img alt="偉人たちにも黒歴史!? 世界史100人の履歴書" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/61D0hMRVRjL._SL160_.jpg" title="偉人たちにも黒歴史!? 世界史100人の履歴書"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/4800280893/shirotoakb-22/">偉人たちにも黒歴史!? 世界史100人の履歴書</a></p><ul><li><span class="hatena-asin-detail-label">作者:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/%CB%DC%C2%BC%CE%BF%C6%F3">本村凌二</a></li><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> 宝島社</li><li><span class="hatena-asin-detail-label">発売日:</span> 2018/02/15</li><li><span class="hatena-asin-detail-label">メディア:</span> 単行本</li><li><a href="http://d.hatena.ne.jp/asin/4800280893/shirotoakb-22" target="_blank">この商品を含むブログを見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div>
+</div>

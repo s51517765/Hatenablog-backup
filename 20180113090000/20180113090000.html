@@ -1,0 +1,33 @@
+<div class="entry-content">
+<p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180107184345j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180107/20180107184345.jpg" title="f:id:s51517765:20180107184345j:plain"/></span><br/>
+ラズパイで<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>の<a class="keyword" href="http://d.hatena.ne.jp/keyword/bot">bot</a>を運用していますが、稀に例外（exception）が発生しています。<br/>
+とりあえずは、↓のようにまるごとMainの中身にTry、exceptをつけて止まってしまうのを防止していました。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">if</span> __name__ == <span class="synConstant">'__main__'</span>:
+    <span class="synStatement">while</span>(<span class="synIdentifier">True</span>):
+        tdatetime = dt.now()
+        HH = <span class="synIdentifier">int</span>(tdatetime.strftime(<span class="synConstant">'%H'</span>))  <span class="synComment"># 時刻</span>
+        MM = <span class="synIdentifier">int</span>(tdatetime.strftime(<span class="synConstant">'%M'</span>))
+
+        <span class="synStatement">try</span>:
+　　    　<span class="synStatement">if</span> ○○○○○○
+           <span class="synComment">#時刻をもとにタイマー実行するメインの処理</span>
+
+        <span class="synStatement">except</span> :
+            <span class="synIdentifier">print</span>(<span class="synConstant">"----------------------------------"</span>)
+            <span class="synIdentifier">print</span>(<span class="synConstant">"Parent Error!"</span>,<span class="synIdentifier">str</span>(HH)+<span class="synConstant">":"</span>+<span class="synIdentifier">str</span>(MM))
+            <span class="synIdentifier">print</span>(<span class="synConstant">"----------------------------------"</span>)
+</pre><p>しかし、これだと何が起こって例外が起きているのかわかりません。<br/>
+そこで、例外の中身を表示するようにしました。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">        <span class="synStatement">except</span> <span class="synType">Exception</span> <span class="synStatement">as</span> e:
+            <span class="synIdentifier">print</span>(<span class="synConstant">"----------------------------------"</span>)
+            <span class="synIdentifier">print</span>(<span class="synConstant">"Parent Error!"</span>,<span class="synIdentifier">str</span>(HH)+<span class="synConstant">":"</span>+<span class="synIdentifier">str</span>(MM))
+            <span class="synIdentifier">print</span>(e)
+            <span class="synIdentifier">print</span>(<span class="synConstant">"----------------------------------"</span>)
+</pre><p>例外が発生したら、例外に<code>Exception as e</code>という名前を付けてprint()します。<br/>
+これで例外の原因がわかるはずです。</p><p>またラズパイでは、”nohup”を指定してプログラムを起動しておくと、<br/>
+nohup.outというテキストファイルが作成され、このなかにprint()の内容が記録されていきます。</p>
+<pre class="code" data-lang="" data-unlink="">$ nohup python3 xxx.py bg</pre><p>これであとからnohup.outを解析して、例外の原因を調べることができます。</p><p>これを仕込んで2週間。結果がわかりました。<br/>
+発生していた例外は↓のようなものでした。</p>
+<pre class="code" data-lang="" data-unlink="">local variable 'word3' referenced before assignment</pre><p><code>word3</code>は<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%DE%A5%EB%A5%B3%A5%D5%CF%A2%BA%BF">マルコフ連鎖</a>を作成するときに、連続して４つとった４番目の単語ですが、これが代入される前に参照されたというものです。<br/>
+一つ目に選択された文が4個未満の単語から生成されていると、<code>word3</code>は未代入になってしまうための例外でした。</p><p>とりあえず、短すぎるTweetは削除することで対応。</p>
+</div>

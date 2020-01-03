@@ -1,0 +1,53 @@
+<div class="entry-content">
+<p>フォロワーの一覧を作るのにちょっとListの使い方でハマったので、書いておく。<br/>
+結局はListのappendを使って加えていけばよい。<br/>
+tweepyのCursorを使って取得するが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>のRate limitに引っかからないように　1秒のwaitをいれながら読み込ませる。<br/>
+（IDを変更すれば他のアカウントのフォロー・フォロワーも取得できるのだが、これでも300でRate limitにかかってしまった。もっと、waitを広げる必要があるのだと思う。）<br/>
+※2017/11/16追記<br/>
+　＞Rate Limitは15分で300らしい。<br/>
+　＞ということは、1分あたり20で少なくとも3秒のwaitが必要ということか？<br/>
+　＞　→4秒のWaitをいれたら、300で引っかかることはなくなった。</p><p>最終的に完成したのは↓<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%E1%A5%F3%A5%C8%A5%A2%A5%A6%A5%C8">コメントアウト</a>のほうではフォローのリストも作成可能。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">def</span> <span class="synIdentifier">friend</span>():
+    follower1=[]
+    follow = tweepy.Cursor(api.followers, <span class="synIdentifier">id</span>=<span class="synConstant">"s51517765"</span>) <span class="synComment">#自分をフォローしているひと</span>
+    <span class="synComment">#follow = tweepy.Cursor(api.friend, id="s51517765")　#自分がフォーローしている人</span>
+    <span class="synIdentifier">print</span>(<span class="synConstant">"My follower!"</span>)
+    <span class="synStatement">for</span> friend <span class="synStatement">in</span> follow.items():
+        follower1.append(friend.screen_name)
+
+        time.sleep(<span class="synConstant">4</span>)　<span class="synComment">#apiのRate limitのため</span>
+    <span class="synIdentifier">print</span>(follower1)
+</pre><p>以下,失敗例とともにListの使い方を整理しておこうと思います。</p><p>読み込んだScreen_nameはstring型なので、そのままListに加えていこうと、</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">follower1=[]
+<span class="synStatement">for</span> friend <span class="synStatement">in</span> follow.items():
+    follower1 +=friend.screen_name
+&gt;&gt;&gt;error
+</pre><p>としてもErrorになった。(ListにListでないものを追加しようとしているため)</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">test=<span class="synConstant">'1111'</span>
+test+=<span class="synConstant">'2222'</span>
+<span class="synIdentifier">print</span>(test)
+&gt;&gt;&gt;<span class="synConstant">11112222</span>
+</pre><p>この場合は文字列の結合になる。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">test=[<span class="synConstant">'1111'</span>]
+test+=[<span class="synConstant">'2222'</span>]
+<span class="synIdentifier">print</span>(test)
+&gt;&gt;&gt;[<span class="synConstant">'1111'</span>,<span class="synConstant">'2222'</span>]
+</pre><p>という形に書くことができれば、希望通りなのだが、screen_nameをstring型で取得してもListじゃないからうまくいかない。</p><p>ここで、そういえばJoinという関数があったことを思い出す。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">test1=[<span class="synConstant">'1111'</span>,<span class="synConstant">'2222'</span>]
+test=<span class="synConstant">','</span>.join(test1)
+<span class="synIdentifier">print</span>(test)
+&gt;&gt;&gt;<span class="synConstant">1111</span>,<span class="synConstant">2222</span>
+</pre><p>joinはsplitの逆変換と覚えておけばよい。</p><p>#2017/11/23追記<br/>
+Listの足し算としてのappend関数</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">test=[<span class="synConstant">'1111'</span>]
+test.append([<span class="synConstant">'333'</span>,<span class="synConstant">'444'</span>])
+<span class="synIdentifier">print</span>(test)
+&gt;&gt;&gt;[<span class="synConstant">'1111'</span>, [<span class="synConstant">'333'</span>, <span class="synConstant">'444'</span>]]
+</pre><p>これでは”Listの要素にListが入る”のでここでは適切でない。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">test=[<span class="synConstant">'1111'</span>]
+test.extend([<span class="synConstant">'333'</span>,<span class="synConstant">'444'</span>])
+<span class="synIdentifier">print</span>(test)
+&gt;&gt;&gt;[<span class="synConstant">'1111'</span>, <span class="synConstant">'333'</span>, <span class="synConstant">'444'</span>]
+</pre><p>追加されるものがListである場合はextendを使う。</p>
+</div>

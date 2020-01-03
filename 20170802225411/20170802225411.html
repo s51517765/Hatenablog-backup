@@ -1,0 +1,10 @@
+<div class="entry-content">
+<p>paizaとは転職サイトであり、プログラミングのスキルチェックができるサイトです。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fpaiza.jp%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="ITプログラマ・エンジニア向け転職・就活・学習サービスのpaiza"></iframe><cite class="hatena-citation"><a href="https://paiza.jp/">paiza.jp</a></cite></p><p>ここでは好きな言語を選んでプログラムを書いて、与えられた課題をこなすスキルチェックがあります。<br/>
+スキルチェックでは正解するごとにランキングが発生したり、転職市場価値を算出したりできます。</p><p>問題を解いている中で、一般的な<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%F3%A5%D1%A5%A4%A5%EB">コンパイル</a>エラーは<a class="keyword" href="http://d.hatena.ne.jp/keyword/IDE">IDE</a>のようにエラーが出ます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170802224244j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170802/20170802224244.jpg" title="f:id:s51517765:20170802224244j:plain"/></span></p><p>しかし、いくつか問題を解いているうちに”Unhandled Exception”や ”ランタイムエラー”という、原因がはっきりしないエラーが発生することがありました。</p><p>ぐぐってもそのようなことが説明されている例がなかったのですが、その原因のひとつが分かったのでここに記します。<br/>
+スキルチェックの内容を公開するのは問題があるので、オンライン実行環境でその内容を要点に絞って再現しました。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170802224622j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170802/20170802224622.jpg" title="f:id:s51517765:20170802224622j:plain"/></span></p><p>この例では、「要<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C1%C7%BF%F4">素数</a>3つの配列」を宣言して、「4つ目」の配列要素を使用しようとしたものです。<br/>
+Errorメッセージをよく見ると、「インデックスが配列の中に無いよ。」ということが書かれていますね。</p><p>ただしく、「3つ目」の要素を使用するとエラーが消えます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170802225248j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170802/20170802225248.jpg" title="f:id:s51517765:20170802225248j:plain"/></span></p>
+</div>

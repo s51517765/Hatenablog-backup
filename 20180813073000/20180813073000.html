@@ -1,0 +1,137 @@
+<div class="entry-content">
+<p><a href="https://px.a8.net/svt/ejp?a8mat=2ZTMYI+8RJREA+0K+11K0U9" rel="nofollow" target="_blank"><br/>
+<img alt="" border="0" height="60" src="https://www23.a8.net/svt/bgt?aid=181101690530&amp;wid=001&amp;eno=01&amp;mid=s00000000002006308000&amp;mc=1" width="234"/></a><br/>
+<img alt="" border="0" height="1" src="https://www18.a8.net/0.gif?a8mat=2ZTMYI+8RJREA+0K+11K0U9" width="1"/></p><p></p><h3>序論</h3>KerasでRNN(LSTM)を試してみました。<p>以下の記事を参考にしました。（タイトルまでそのまんまじゃないか…）<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Fsasayabaku%2Fitems%2Fb7872a3b8acc7d6261bf" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="KerasでRNN(LSTM)を試してみる - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/sasayabaku/items/b7872a3b8acc7d6261bf">qiita.com</a></cite></p><p>LSTMとは簡単に言うと時系列データを扱える<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C7%A5%A3%A1%BC%A5%D7%A5%E9%A1%BC%A5%CB%A5%F3%A5%B0">ディープラーニング</a>の仕組みで、RNNの一種です。</p>
+<pre class="code" data-lang="" data-unlink="">LSTM：Long-short Term Memory</pre><p>従来のRNNでは短期的な時系列相関しか扱えなかったのに対して（比較的）長期的相関を扱えることが特徴です。<br/>
+応用例としては、為替・株価予測や文章生成、動画の連続的な加工などがあります。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Ft_Signull%2Fitems%2F21b82be280b46f467d1b" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="わかるLSTM ～ 最近の動向と共に - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/t_Signull/items/21b82be280b46f467d1b">qiita.com</a></cite><br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180812180224p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180812/20180812180224.png" title="f:id:s51517765:20180812180224p:plain"/></span><br/>
+</p><h3>基礎編</h3>まずは簡単なところとして、連続する数値データから次の値を予測する、というものに挑戦してみます。<br/>
+ここでは例えば、25個の連続する数値データの入力を得て、26個めの数値を予測するというものをやってみます。<p>引用元では、正弦波の予測を行っていますが正弦波は簡単そうなのでもう少し難しくしてみたいと思います。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">def</span> <span class="synIdentifier">sin</span>(x, T=<span class="synConstant">100</span>):
+    <span class="synStatement">return</span> np.sin(<span class="synConstant">5</span> * np.pi * x / T)+np.sin(<span class="synConstant">7</span> * np.pi * x / T)+np.sin(<span class="synConstant">3</span> * np.pi * x / T)*<span class="synConstant">1.5</span>
+</pre><p>これをそのまま学習させた結果が↓<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180812122014p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180812/20180812122014.png" title="f:id:s51517765:20180812122014p:plain"/></span><br/>
+やはり、難易度が上がったようですね。</p><p>以前の<a class="keyword" href="http://d.hatena.ne.jp/keyword/FFT">FFT</a>の記事で触れていますが、正弦波でも周期の違うものを2つ足しあわせただけでも目視では周期を見つけるのは困難になります。<br/>
+こういったものこそAIの出番ですね（<a class="keyword" href="http://d.hatena.ne.jp/keyword/FFT">FFT</a>すれば簡単に解析できるけど…）<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2018%2F03%2F18%2F142918" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="FFT（高速フーリエ変換）とは - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2018/03/18/142918">s51517765.hatenadiary.jp</a></cite></p><p>それと、そもそも波形が難しくなったので目視では振幅以外は合っているのか判断しずらいので、正解波形をプロットするようにします。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">f2 =toy_problem(T=<span class="synConstant">500</span>)
+plt.plot(<span class="synIdentifier">range</span>(<span class="synConstant">0</span>, <span class="synIdentifier">len</span>(f2)), f2, color=<span class="synConstant">"k"</span>, label=<span class="synConstant">"row_data_2"</span>) <span class="synComment">#range(start,end,関数名,)</span>
+</pre><p>また、inputデータの長さ<code>maxlen</code>など、プロジェクトの中で変更しやすいように、引数に設定し整形しました。</p><p>学習の<code>epochs</code>は長めに設定しておいて、EarlyStopingで終了させます。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synComment"># 学習</span>
+early_stopping = EarlyStopping(monitor=<span class="synConstant">'val_loss'</span>, mode=<span class="synConstant">'min'</span>, patience=<span class="synConstant">20</span>)
+model.fit(g, h, batch_size=<span class="synConstant">300</span>, epochs=<span class="synConstant">300</span>, validation_split=<span class="synConstant">0.1</span>, callbacks=[early_stopping]) <span class="synComment">#epochsはEarlyStopingによって短縮される</span>
+</pre><p>まずは<code>隠れ層</code>や<code>batch_size</code>を小さめにして軽くチューニングすると、短時間でそこそこの出来栄えに持っていけます。これらを大きくすると学習の収束に大変時間がかかるのので、始めにこの辺から手を付けるといいのではないかと思いました。</p><p>そんな感じで試行錯誤の結果。</p><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180812172813p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180812/20180812172813.png" title="f:id:s51517765:20180812172813p:plain"/></span><br/>
+</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synComment"># encoding: utf-8</span>
+
+<span class="synComment"># https://qiita.com/sasayabaku/items/b7872a3b8acc7d6261bf</span>
+
+<span class="synPreProc">from</span> keras.models <span class="synPreProc">import</span> Sequential
+<span class="synPreProc">from</span> keras.layers.core <span class="synPreProc">import</span> Dense, Activation
+<span class="synPreProc">from</span> keras.layers.recurrent <span class="synPreProc">import</span> LSTM
+<span class="synPreProc">from</span> keras.optimizers <span class="synPreProc">import</span> Adam
+<span class="synPreProc">from</span> keras.callbacks <span class="synPreProc">import</span> EarlyStopping
+<span class="synPreProc">import</span> numpy <span class="synStatement">as</span> np
+<span class="synPreProc">import</span> matplotlib.pyplot <span class="synStatement">as</span> plt
+
+
+<span class="synStatement">def</span> <span class="synIdentifier">sin</span>(x, T):
+    <span class="synStatement">return</span> np.sin(<span class="synConstant">5</span> * np.pi * x / T)+np.sin(<span class="synConstant">7</span> * np.pi * x / T)+np.sin(<span class="synConstant">3</span> * np.pi * x / T)*<span class="synConstant">1.5</span>
+    <span class="synComment">#return np.sin(5 * np.pi * x / T)</span>
+
+
+<span class="synStatement">def</span> <span class="synIdentifier">toy_problem</span>(T, ampl=<span class="synConstant">0.05</span>):
+    x = np.arange(<span class="synConstant">0</span>, <span class="synConstant">2</span> * T + <span class="synConstant">1</span>) <span class="synComment">#等差数列のnumpy配列</span>
+    noise = ampl * np.random.uniform(low=-<span class="synConstant">1.0</span>, high=<span class="synConstant">1.0</span>, size=<span class="synIdentifier">len</span>(x))
+    <span class="synStatement">return</span> sin(x,<span class="synConstant">100</span>) + noise <span class="synComment">#&lt;class 'numpy.ndarray'&gt;</span>
+
+
+<span class="synStatement">def</span> <span class="synIdentifier">make_dataset</span>(low_data, maxlen): <span class="synComment">#maxlenを変更するとグラフがずれるので</span>
+    data, target = [], []
+    <span class="synStatement">for</span> i <span class="synStatement">in</span> <span class="synIdentifier">range</span>(<span class="synIdentifier">len</span>(low_data)-maxlen):
+        data.append(low_data[i:i + maxlen])
+        target.append(low_data[i + maxlen])
+
+    re_data = np.array(data).reshape(<span class="synIdentifier">len</span>(data), maxlen, <span class="synConstant">1</span>)
+    re_target = np.array(target).reshape(<span class="synIdentifier">len</span>(data), <span class="synConstant">1</span>)
+
+    <span class="synStatement">return</span> re_data, re_target
+
+
+<span class="synStatement">if</span> __name__ == <span class="synConstant">"__main__"</span>:
+    inputLength = <span class="synConstant">50</span>
+    TrainingTerm=<span class="synConstant">150</span>
+    f = toy_problem(T=TrainingTerm)
+    g, h = make_dataset(f, inputLength)
+    future_test = g[<span class="synConstant">170</span>].T
+
+    <span class="synComment"># 1つの学習データの時間の長さ</span>
+    time_length = future_test.shape[<span class="synConstant">1</span>]
+    <span class="synComment"># 未来の予測データを保存していく変数</span>
+    future_result = np.empty((<span class="synConstant">0</span>))
+
+    length_of_sequence = g.shape[<span class="synConstant">1</span>]
+    in_out_neurons = <span class="synConstant">1</span> <span class="synComment">#時刻にたいして出力が１つなので</span>
+    n_hidden = <span class="synConstant">500</span>
+
+    <span class="synComment"># モデル構築</span>
+    model = Sequential()
+    model.add(LSTM(n_hidden, batch_input_shape=(<span class="synIdentifier">None</span>, length_of_sequence, in_out_neurons), return_sequences=<span class="synIdentifier">False</span>))
+    model.add(Dense(in_out_neurons))
+    model.add(Activation(<span class="synConstant">"linear"</span>))
+    optimizer = Adam(lr=<span class="synConstant">0.001</span>) <span class="synComment">#勾配手法</span>
+    model.<span class="synIdentifier">compile</span>(loss=<span class="synConstant">"mean_squared_error"</span>, optimizer=optimizer)
+
+    <span class="synComment"># 学習</span>
+    early_stopping = EarlyStopping(monitor=<span class="synConstant">'val_loss'</span>, mode=<span class="synConstant">'min'</span>, patience=<span class="synConstant">20</span>)
+    model.fit(g, h, batch_size=<span class="synConstant">200</span>, epochs=<span class="synConstant">300</span>, validation_split=<span class="synConstant">0.1</span>, callbacks=[early_stopping])
+    <span class="synComment">#epochsはEarlyStopingによって短縮される</span>
+    <span class="synComment">#batch_size 勾配の更新周期</span>
+
+    <span class="synComment"># 予測</span>
+    predicted = model.predict(g)
+
+    f2 =toy_problem(T=<span class="synConstant">400</span>)
+
+    <span class="synComment"># 未来予想</span>
+    <span class="synStatement">for</span> step2 <span class="synStatement">in</span> <span class="synIdentifier">range</span>(<span class="synConstant">500</span>):
+        test_data = np.reshape(future_test, (<span class="synConstant">1</span>, time_length, <span class="synConstant">1</span>))
+        batch_predict = model.predict(test_data)
+        future_test = np.delete(future_test, <span class="synConstant">0</span>)
+        future_test = np.append(future_test, batch_predict)
+        future_result = np.append(future_result, batch_predict)
+
+    <span class="synComment"># sin波をプロット</span>
+    plt.figure()
+    plt.plot(<span class="synIdentifier">range</span>(inputLength,<span class="synIdentifier">len</span>(predicted)+inputLength),predicted, color=<span class="synConstant">"r"</span>, label=<span class="synConstant">"predict"</span>) <span class="synComment">#maxlenのぶんオフセットしたところから</span>
+    plt.plot(<span class="synIdentifier">range</span>(<span class="synConstant">0</span>, <span class="synIdentifier">len</span>(f2)), f2, color=<span class="synConstant">"k"</span>, label=<span class="synConstant">"row_data_2"</span>) <span class="synComment">#range(start,end,関数名,)</span>
+    plt.plot(<span class="synIdentifier">range</span>(<span class="synConstant">0</span>+<span class="synIdentifier">len</span>(f), <span class="synIdentifier">len</span>(future_result)+<span class="synIdentifier">len</span>(f)), future_result, color=<span class="synConstant">"g"</span>, label=<span class="synConstant">"future"</span>)
+    plt.legend()
+    plt.show()
+</pre><p></p><h3>応用編</h3>株価や為替のデータは<a class="keyword" href="http://d.hatena.ne.jp/keyword/csv">csv</a>などで提供されているようなので、このようなデータを取り込む練習です。<br/>
+基本は正弦波ですがこれに大きめのノイズを足してみました。<br/>
+これを先ほどのLSTMモデルに学習させます。
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">def</span> <span class="synIdentifier">import_text_to_np</span>():
+    <span class="synIdentifier">file</span> = <span class="synIdentifier">open</span>(<span class="synConstant">'test.txt'</span>, <span class="synConstant">'r'</span>, encoding=<span class="synConstant">'utf-8'</span>)
+    line = <span class="synConstant">1</span>
+    <span class="synIdentifier">list</span> =[]
+    lineall = <span class="synConstant">""</span>
+    <span class="synStatement">while</span> line != <span class="synConstant">""</span>:
+        r=random.random()
+        line = <span class="synIdentifier">file</span>.readline()
+        line = line.replace(<span class="synConstant">"</span><span class="synSpecial">\n</span><span class="synConstant">"</span>, <span class="synConstant">""</span>)
+        <span class="synComment"># line=line.replace(("\ufeff",""))</span>
+        <span class="synStatement">try</span>:
+            line = <span class="synIdentifier">float</span>(line) *<span class="synConstant">0.8</span>+r*<span class="synConstant">2</span>
+            <span class="synIdentifier">list</span>.append(line)
+        <span class="synStatement">except</span>:
+            <span class="synIdentifier">print</span>(line)
+    <span class="synIdentifier">print</span>(<span class="synIdentifier">type</span>(<span class="synIdentifier">list</span>))
+    <span class="synIdentifier">print</span>(<span class="synIdentifier">list</span>)
+    <span class="synIdentifier">list</span>=np.array(<span class="synIdentifier">list</span>) <span class="synComment">#listをnumpyのlistに変換   https://note.nkmk.me/python-numpy-list/</span>
+    <span class="synIdentifier">print</span>(<span class="synIdentifier">type</span>(<span class="synIdentifier">list</span>))
+    <span class="synIdentifier">print</span>(<span class="synIdentifier">list</span>)
+</pre><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180812175830p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180812/20180812175830.png" title="f:id:s51517765:20180812175830p:plain"/></span></p>
+</div>

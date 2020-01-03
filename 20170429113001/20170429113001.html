@@ -1,0 +1,106 @@
+<div class="entry-content">
+<p>要素の中身を最近使ったものから順番に並べ替える。</p><p>private void Form1_Load　でファイルのなかみを読み込み、ComboBoxにInput。<br/>
+CombBoxとはTextBoxに複数の要素をDropDownListから選べるもの。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170429112231j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170429/20170429112231.jpg" title="f:id:s51517765:20170429112231j:plain"/></span></p><p>Listの中身はStreamReaderでよみこむ。<br/>
+StreamReaderは必ず、srKeyword.Close()　で開放しておく。<br/>
+そうしないと、今度書き込むときにErrorがでる。</p><p>private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)　でアイテムが選択されたときに実行される。<br/>
+要素の配列をひとつづつずらす。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">            <span class="synStatement">for</span> (<span class="synType">int</span> n = <span class="synConstant">7</span> - <span class="synConstant">1</span>; n &gt;<span class="synConstant">0</span> ; n--)
+            {
+                array_ex[n + <span class="synConstant">1</span>] = array_ex[n];　<span class="synComment">//ひとつづつ配列のようそをずらして最新のものを[1]に入れる</span>
+              }
+</pre><p>最後にファイルに書き込み記録。<br/>
+ここでは、追記をfalseにして上書きする。<br/>
+trueでは追記になって、実行されるたびに無駄に要素がふえてしまう。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">StreamWriter sw = <span class="synStatement">new</span> StreamWriter(<span class="synConstant">"list.txt"</span>&lt;span style=<span class="synConstant">"color: #d32f2f"</span>&gt;,<span class="synConstant">false</span>&lt;/span&gt;, System.Text.Encoding.GetEncoding(<span class="synConstant">"shift_jis"</span>))
+</pre><p>本当は、重複要素のCheckとかしたい。<br/>
+<br/>
+<br/>
+</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synStatement">using</span> System;
+<span class="synStatement">using</span> System.Collections.Generic;
+<span class="synStatement">using</span> System.ComponentModel;
+<span class="synStatement">using</span> System.Data;
+<span class="synStatement">using</span> System.Drawing;
+<span class="synStatement">using</span> System.Linq;
+<span class="synStatement">using</span> System.Text;
+<span class="synStatement">using</span> System.Threading.Tasks;
+<span class="synStatement">using</span> System.Windows.Forms;
+<span class="synStatement">using</span> System.IO;    <span class="synComment">//ファイルIO</span>
+
+
+<span class="synType">namespace</span> narabekae
+{
+    <span class="synType">public</span> <span class="synStatement">partial</span> <span class="synType">class</span> Form1 : Form
+    {
+        <span class="synType">public</span> Form1()
+        {
+            InitializeComponent();
+         }
+
+        <span class="synType">string</span>[] array_ex = <span class="synStatement">new</span> <span class="synType">string</span>[<span class="synConstant">12</span>];
+        <span class="synType">string</span>[] array_temp = <span class="synStatement">new</span> <span class="synType">string</span>[<span class="synConstant">12</span>]; 
+
+        <span class="synType">private</span> <span class="synType">void</span> Form1_Load(<span class="synType">object</span> sender, EventArgs e)
+        {　　　　　<span class="synComment">//アプリ起動時に実行される</span>
+            <span class="synType">int</span> n = <span class="synConstant">1</span>;
+            var listKeyword = <span class="synConstant">""</span>;
+            comboBox1.Items.Clear();　　<span class="synComment">//コンボボックスの初期化</span>
+            StreamReader srKeyword = <span class="synStatement">new</span> StreamReader(<span class="synConstant">"list.txt"</span>);
+            <span class="synStatement">while</span> ((listKeyword = srKeyword.ReadLine()) != <span class="synConstant">null</span>)
+            {                                   
+                <span class="synStatement">if</span> (listKeyword == <span class="synConstant">null</span> || listKeyword == <span class="synConstant">""</span>)　　<span class="synComment">//要素の空欄はskip</span>
+                { }
+                <span class="synStatement">else</span> { 
+                    array_ex[n] = listKeyword;
+                    comboBox1.Items.Add(listKeyword);
+                    n++;
+                }
+              }
+            srKeyword.Close(); <span class="synComment">//streamを閉じる</span>
+        }
+
+        <span class="synType">private</span> <span class="synType">void</span> button1_Click(<span class="synType">object</span> sender, EventArgs e)
+        {
+               <span class="synComment">//要素を６つまで表示、必須ではない</span>
+                label1.Text = array_ex[<span class="synConstant">1</span>].ToString();
+                label2.Text = array_ex[<span class="synConstant">2</span>].ToString();
+                label3.Text = array_ex[<span class="synConstant">3</span>].ToString();
+                label4.Text = array_ex[<span class="synConstant">4</span>].ToString();
+                label5.Text = array_ex[<span class="synConstant">5</span>].ToString();
+                label6.Text = array_ex[<span class="synConstant">6</span>].ToString();
+            
+        }
+
+        <span class="synType">private</span> <span class="synType">void</span> comboBox1_SelectedIndexChanged(<span class="synType">object</span> sender, EventArgs e)
+        {            <span class="synComment">//コンボボックスからItemが選択されたとき</span>
+            <span class="synComment">//値を取得</span>
+           <span class="synType">string</span> getItem = comboBox1.SelectedItem.ToString();
+            label7.Text = getItem.ToString();
+    
+            <span class="synStatement">for</span> (<span class="synType">int</span> n = <span class="synConstant">7</span> - <span class="synConstant">1</span>; n &gt;<span class="synConstant">0</span> ; n--)
+            {
+                array_ex[n + <span class="synConstant">1</span>] = array_ex[n];　<span class="synComment">//ひとつづつ配列のようそをずらして最新のものを[1]に入れる</span>
+              }
+
+            array_ex[<span class="synConstant">1</span>] = getItem;
+            label1.Text = array_ex[<span class="synConstant">1</span>].ToString();
+            label2.Text = array_ex[<span class="synConstant">2</span>].ToString();
+            label3.Text = array_ex[<span class="synConstant">3</span>].ToString();
+            label4.Text = array_ex[<span class="synConstant">4</span>].ToString();
+            label5.Text = array_ex[<span class="synConstant">5</span>].ToString();
+            label6.Text = array_ex[<span class="synConstant">6</span>].ToString();
+
+            StreamWriter sw = <span class="synStatement">new</span> StreamWriter(<span class="synConstant">"list.txt"</span>,<span class="synConstant">false</span>, System.Text.Encoding.GetEncoding(<span class="synConstant">"shift_jis"</span>));
+            <span class="synStatement">foreach</span> (<span class="synType">string</span> eee <span class="synStatement">in</span> array_ex )
+            {　　<span class="synComment">//ファイルを更新</span>
+          
+                sw.Write(eee + System.Environment.NewLine);
+            }
+            
+            sw.Close();　<span class="synComment">//streamを閉じる</span>
+        }
+     }
+}
+</pre>
+</div>

@@ -1,0 +1,63 @@
+<div class="entry-content">
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>の使い方を調べていくと、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>のようにライブラリ（CoreTweetやtweepyなど）が用意されているものはそれをインストールして使うことができますが、かならずしもライブラリがすべてあるとは限りません。一方で"<a class="keyword" href="http://d.hatena.ne.jp/keyword/JSON">JSON</a>"という共通の方式で提供されているものがたくさん見つけられます。</p><p>これも、<a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>の一種？といっていいとおもいますが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/JSON">JSON</a>の扱い方がわかると応用も効きそうなので調べてみました。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/JSON">JSON</a>は"辞書オブジェクト"でDataが提供されています。</p><p>辞書オブジェクトは↓のような形式です。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">score = {<span class="synConstant">"math"</span>:<span class="synConstant">75</span>, <span class="synConstant">"science"</span>:<span class="synConstant">82</span>,<span class="synConstant">"english"</span>:<span class="synConstant">"98"</span>}
+</pre><pre class="code" data-lang="" data-unlink="">print(score)</pre><p>とすると、</p>
+<pre class="code" data-lang="" data-unlink="">{"math":75, "science":82,"english":"98"}</pre><p>と表示され、</p>
+<pre class="code" data-lang="" data-unlink="">print(score["math"])</pre><p>とすると、</p>
+<pre class="code" data-lang="" data-unlink="">75</pre><p>と表示されます。</p><p>実際の<a class="keyword" href="http://d.hatena.ne.jp/keyword/JSON">JSON</a>形式を見てみると、データを取得する基本形が↓です。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synPreProc">import</span> urllib
+<span class="synPreProc">import</span> json
+
+url = <span class="synConstant">'http://weather.livedoor.com/forecast/webservice/json/v1?city=130010'</span>
+html = urllib.request.urlopen(url)
+jsonfile = json.loads(html.read().decode(<span class="synConstant">'utf-8'</span>))
+</pre><p>これで、辞書形式で jsonfile にデータが取り込まれました。</p><p>ここでは<a class="keyword" href="http://d.hatena.ne.jp/keyword/Livedoor">Livedoor</a>のお天気情報を例にとりました。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fweather.livedoor.com%2Fweather_hacks%2Fwebservice" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="お天気Webサービス仕様 - Weather Hacks - livedoor 天気情報"></iframe><cite class="hatena-citation"><a href="http://weather.livedoor.com/weather_hacks/webservice">weather.livedoor.com</a></cite></p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>のリク<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A8%A5%B9">エス</a>ト例を参考にここでは東京を指定しました。</p>
+<pre class="code" data-lang="" data-unlink="">（例）「福岡県・久留米の天気」を取得する場合
+下記URLにアクセスしてJSONデータを取得します。
+基本URL + 久留米のID（400040）
+http://weather.livedoor.com/forecast/webservice/json/v1?city=400040</pre><p>実際に<a class="keyword" href="http://d.hatena.ne.jp/keyword/JSON">JSON</a>を取得すると↓のようになります。形式が分かるように中身一部省略。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">{<span class="synConstant">'pinpointLocations'</span>: [<span class="synConstant">'＊＊省略＊＊'</span>],
+<span class="synConstant">'description'</span>:
+ {<span class="synConstant">'text'</span>: <span class="synConstant">' ※※tex省略※※'</span>, <span class="synConstant">'publicTime'</span>: <span class="synConstant">'2017-10-29T10:49:00+0900'</span>}
+}
+</pre><p>辞書が<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C6%FE%A4%EC%BB%D2">入れ子</a>になっているようです。<br/>
+ここでほしいのは、<a class="keyword" href="http://d.hatena.ne.jp/keyword/JSON">JSON</a>の中の、descriptionキーの中のtextになります。</p><p>これは下のように記述します。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">text =jsonfile[<span class="synConstant">'description'</span>][<span class="synConstant">'text'</span>]
+</pre><p>これで、下のように取得できます。</p>
+<pre class="code" data-lang="" data-unlink=""> 前線が日本の南にあって、ゆっくり北上しています。また、台風第22号
+が四国の南にあって北東へ進んでいます。
+
+【関東甲信地方】
+ 関東甲信地方は雨となっており、伊豆諸島では雷を伴い激しく降っている
+所があります。
+ 
+ 29日は、前線や台風の接近により雨で、伊豆諸島や関東地方南部では雷
+を伴い非常に激しく降る所があるでしょう。
+
+ 30日は、冬型の気圧配置となるため、おおむね晴れますが、長野県や関
+東地方北部の山沿いは、曇りで雨や雷雨となる所があり、標高の高い所では
+次第に雪に変わる見込みです。
+
+ 関東近海では、30日にかけてうねりを伴い大しけとなるでしょう。船舶
+は高波に警戒してください。
+
+【東京地方】
+ 29日は、雨で、夜は雷を伴い激しく降る所があるでしょう。
+ 30日は、晴れる見込みです。</pre><p>台風が来ていますね。(2017/10/29 11時現在)<br/>
+これではすこし長いので、「東京地方」から後ろだけを取得します。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">def</span> <span class="synIdentifier">weather</span>():
+    tdatetime = dt.now()
+    url = <span class="synConstant">'http://weather.livedoor.com/forecast/webservice/json/v1?city=130010'</span>
+    html = urllib.request.urlopen(url)
+    jsonfile = json.loads(html.read().decode(<span class="synConstant">'utf-8'</span>))
+    weather_txt = jsonfile[<span class="synConstant">'description'</span>][<span class="synConstant">'text'</span>]
+    <span class="synStatement">try</span>:
+        index = weather_txt.find(<span class="synConstant">"【東京地方】"</span>)
+        weather_txt = (weather_txt)[index:]
+        weather_txt = <span class="synConstant">'◆ラズパイ天気予報 '</span> + weather_txt
+        api.update_status(weather_txt)  <span class="synComment"># tweet</span>
+    <span class="synStatement">except</span>:
+        <span class="synStatement">pass</span>
+</pre><p></p><blockquote class="twitter-tweet" data-lang="ja"><p dir="ltr" lang="ja">◆ラズパイ天気予報 【東京地方】<br/> 29日は、雨で、夜は雷を伴い激しく降る所があるでしょう。<br/> 30日は、晴れる見込みです。</p>— プログラミング素人 (@s51517765) <a href="https://twitter.com/s51517765/status/924460261267795968?ref_src=twsrc%5Etfw">2017年10月29日</a></blockquote><script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script>
+</div>

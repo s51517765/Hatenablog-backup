@@ -1,0 +1,166 @@
+<div class="entry-content">
+<p>ちょっと大きめにでたタイトルではあるかもしれませんが。</p>
+<p><script type="text/javascript">rakuten_affiliateId="0ea62065.34400275.0ea62066.204f04c0";rakuten_items="ranking";rakuten_genreId="558873";rakuten_recommend="on";rakuten_design="slide";rakuten_size="300x160";rakuten_target="_blank";rakuten_border="on";rakuten_auto_mode="on";rakuten_adNetworkId="a8Net";rakuten_adNetworkUrl="https%3A%2F%2Frpx.a8.net%2Fsvt%2Fejp%3Fa8mat%3D2ZTMYI%2B8S5702%2B2HOM%2BBS629%26rakuten%3Dy%26a8ejpredirect%3D";rakuten_pointbackId="a18110135300_2ZTMYI_8S5702_2HOM_BS629";rakuten_mediaId="20011816";</script><script src="//xml.affiliate.rakuten.co.jp/widget/js/rakuten_widget.js" type="text/javascript"></script></p><p><img alt="" border="0" height="1" src="https://www10.a8.net/0.gif?a8mat=2ZTMYI+8S5702+2HOM+BS629" width="1"/></p><p></p><h3>課題定義</h3>平均値とは電卓でも<a class="keyword" href="http://d.hatena.ne.jp/keyword/Excel">Excel</a>でも<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>でも…、簡単に計算できるものではありますが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%CB%A5%E5%A1%BC%A5%E9%A5%EB%A5%CD%A5%C3%A5%C8%A5%EF%A1%BC%A5%AF">ニューラルネットワーク</a>の判断根拠というのは、こういったものとはちょっと違うと思います。<p>要するに、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%CB%A5%E5%A1%BC%A5%E9%A5%EB%A5%CD%A5%C3%A5%C8%A5%EF%A1%BC%A5%AF">ニューラルネットワーク</a>は数字が与えらて「平均を求めろ！」と指示されたれたからといって、かならずしも足し算や割り算をして平均を求めるというわけではないのだと理解しています。</p><p>そこで、ここでは10個の数字の組み合わせを入力として与え、その平均を”答え”として与えることで、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%CB%A5%E5%A1%BC%A5%E9%A5%EB%A5%CD%A5%C3%A5%C8%A5%EF%A1%BC%A5%AF">ニューラルネットワーク</a>が平均値を”理解”できるか試してみました。</p><p>そうは言っても、分類問題でしかないのでできて当たり前ではあります。</p><p></p><h3>設計方針</h3>以前作ったMnistのプログラムを改良します。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2018%2F06%2F04%2F070000" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="TensorFlowとKerasでMnistをやってみた - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2018/06/04/070000">s51517765.hatenadiary.jp</a></cite><p>入力<br/>
+0～99までの整数のなかからランダムに10個</p><p>出力<br/>
+0～99までの整数をOne hot encoding</p><p>ただし、ここでは100分割にしましたが実際の正解は少数があるので、正解ラベルはintにCastし±0.5未満であればOKとみなします。</p><p></p><h3>プログラムの作成</h3>Trainデータは3～max_numまでの乱数を10個入力します。<br/>
+乱数の最大値を99に固定してしまうと、”答え”が偏ってしまうのではないかと思いこのようにしてみました。<br/>
+numpyのListを<code>x_train = np.array([])</code>のように初期化し、<code>np.append</code>で追加していきます。<code>y_train = np.append(y_train, np.average(x_tmp))</code>で平均が算出できます。<code>y_train = y_train.astype(np.int32)  </code>で整数にします。
+<pre class="code lang-python" data-lang="python" data-unlink="">    x_train = np.array([])
+    y_train = np.array([])
+
+    <span class="synComment"># Trainデータ作成</span>
+    <span class="synStatement">for</span> j <span class="synStatement">in</span> <span class="synIdentifier">range</span>(train_size):
+        x_tmp = np.zeros((list_size))
+        <span class="synIdentifier">max</span> = random.randint(<span class="synConstant">3</span>, max_num - <span class="synConstant">1</span>)
+        <span class="synStatement">for</span> i <span class="synStatement">in</span> <span class="synIdentifier">range</span>(list_size):
+            x_tmp[i] = random.randint(<span class="synConstant">0</span>, <span class="synIdentifier">max</span> - <span class="synConstant">1</span>)
+        y_train = np.append(y_train, np.average(x_tmp))
+        x_train = np.append(x_train, x_tmp)
+        y_train = y_train.astype(np.int32)  <span class="synComment"># 正解ラベルを整数に</span>
+    x_train = x_train.reshape(train_size, list_size)
+    <span class="synIdentifier">print</span>(x_train)
+    <span class="synIdentifier">print</span>(y_train)
+</pre><p>モデルと学習結果を読み込む関数を作ってモデルビルドを行うことで、判定の関数からも共通して読み込むことができます。<br/>
+また、学習結果を読み込むようにすることで、一旦学習を終了しても、追加学習をさせることができます。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">def</span> <span class="synIdentifier">model_read</span>():
+    <span class="synComment"># モデルを読み込む</span>
+    model = Sequential()
+    model.add(Dense(<span class="synConstant">32</span>, activation=<span class="synConstant">'relu'</span>, input_dim=list_size))
+    model.add(Dense(<span class="synConstant">32</span>, activation=<span class="synConstant">'relu'</span>, input_dim=<span class="synConstant">32</span>))
+    model.add(Dense(max_num, activation=<span class="synConstant">'softmax'</span>)) <span class="synComment">#softmax</span>
+    model.<span class="synIdentifier">compile</span>(optimizer=<span class="synConstant">'rmsprop'</span>, loss=<span class="synConstant">'categorical_crossentropy'</span>, metrics=[<span class="synConstant">'accuracy'</span>])
+    <span class="synComment"># 学習済みモデルの重みのデータを読み込み</span>
+    <span class="synStatement">if</span> os.path.exists(model_weight):
+        model.load_weights(model_weight)  <span class="synComment"># 最初は重みデータファイルがないとErrorになる</span>
+    <span class="synStatement">return</span> model
+</pre><p>学習結果を評価する関数ですが、<code>x_test = np.append(x_test, x_tmp/max_num) </code>入力のところで正規化することに気づかず、学習結果は90%以上行っているのに、この評価関数では全く！？という状態になって悩みました。</p><p>同じような失敗をしている例がありまして、気づくことができました。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fteratail.com%2Fquestions%2F149156" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Kerasで学習したモデルを用いて画像判定｜teratail"></iframe><cite class="hatena-citation"><a href="https://teratail.com/questions/149156">teratail.com</a></cite><br/>
+</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">def</span> <span class="synIdentifier">check</span>():
+    model = model_read()
+    x_test = np.array([])
+    <span class="synIdentifier">max</span> = random.randint(<span class="synConstant">3</span>, max_num - <span class="synConstant">1</span>)
+    <span class="synStatement">for</span> i <span class="synStatement">in</span> <span class="synIdentifier">range</span>(list_size):
+        x_tmp= random.randint(<span class="synConstant">0</span>, <span class="synIdentifier">max</span> - <span class="synConstant">1</span>)
+        x_test = np.append(x_test, x_tmp/max_num) <span class="synComment">#正規化して評価</span>
+    <span class="synIdentifier">print</span>(x_test)
+    x_test = x_test.reshape(<span class="synConstant">1</span>, list_size)  <span class="synComment"># 1次元化</span>
+    <span class="synComment"># 判定</span>
+    res = model.predict([x_test])
+    <span class="synIdentifier">print</span>(<span class="synConstant">"res = "</span>, res)
+    y = res.argmax()  <span class="synComment"># 値の中で最も値が大きいものが答え</span>
+    <span class="synIdentifier">print</span>(<span class="synConstant">"Prediction is "</span>, y)
+    ave = np.average(x_test)*<span class="synConstant">100</span> <span class="synComment">#正規化された計算結果をもとの表示にもどす</span>
+    <span class="synIdentifier">print</span>(<span class="synConstant">"Anser is  "</span>, <span class="synIdentifier">int</span>(ave))
+    <span class="synStatement">if</span> <span class="synIdentifier">abs</span>(ave -  y) &lt; <span class="synConstant">0.5</span>:
+        <span class="synIdentifier">print</span>(<span class="synConstant">"〇"</span>)
+        <span class="synStatement">return</span> <span class="synConstant">1</span><span class="synComment">#正解数のカウント</span>
+    <span class="synStatement">else</span>:
+        <span class="synIdentifier">print</span>(<span class="synConstant">"×"</span>)
+</pre><p><br/>
+</p><h3>コード全体</h3>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synPreProc">from</span> keras.utils.np_utils <span class="synPreProc">import</span> to_categorical
+<span class="synPreProc">from</span> keras.models <span class="synPreProc">import</span> Sequential
+<span class="synPreProc">from</span> keras.layers <span class="synPreProc">import</span> Dense
+<span class="synPreProc">import</span> random
+<span class="synPreProc">import</span> numpy <span class="synStatement">as</span> np
+<span class="synPreProc">import</span> os
+
+train_size = <span class="synConstant">20000</span>
+test_size = <span class="synConstant">100</span>
+list_size = <span class="synConstant">10</span>
+max_num = <span class="synConstant">100</span>  <span class="synComment"># 0-99</span>
+
+model_weight = <span class="synConstant">'cnn_ave.hdf5'</span> <span class="synComment">#モデルを保存する名前</span>
+
+x_tmp = np.zeros((list_size))
+<span class="synComment"># x_train=np.zeros((test_size,list_size)) #行, 列</span>
+np.set_printoptions(precision=<span class="synConstant">1</span>, suppress=<span class="synIdentifier">True</span>)  <span class="synComment"># 指数表示禁止、少数表示</span>
+np.set_printoptions(threshold=<span class="synConstant">300000</span>)  <span class="synComment"># 要素の省略禁止</span>
+
+<span class="synStatement">def</span> <span class="synIdentifier">model_build</span>():
+    x_train = np.array([])
+    x_test = np.array([])
+    y_train = np.array([])
+    y_test = np.array([])
+
+    <span class="synComment"># Trainデータ作成</span>
+    <span class="synStatement">for</span> j <span class="synStatement">in</span> <span class="synIdentifier">range</span>(train_size):
+        x_tmp = np.zeros((list_size))
+        <span class="synIdentifier">max</span> = random.randint(<span class="synConstant">3</span>, max_num - <span class="synConstant">1</span>)
+        <span class="synStatement">for</span> i <span class="synStatement">in</span> <span class="synIdentifier">range</span>(list_size):
+            x_tmp[i] = random.randint(<span class="synConstant">0</span>, <span class="synIdentifier">max</span> - <span class="synConstant">1</span>)
+        y_train = np.append(y_train, np.average(x_tmp))
+        x_train = np.append(x_train, x_tmp)
+        y_train = y_train.astype(np.int32)  <span class="synComment"># 正解ラベルを整数に</span>
+    x_train = x_train.reshape(train_size, list_size)
+
+    <span class="synComment"># Testデータ作成</span>
+    <span class="synStatement">for</span> j <span class="synStatement">in</span> <span class="synIdentifier">range</span>(test_size):
+        <span class="synIdentifier">max</span> = random.randint(<span class="synConstant">2</span>, max_num - <span class="synConstant">1</span>)
+        <span class="synIdentifier">max</span> = <span class="synConstant">30</span>
+        <span class="synStatement">for</span> i <span class="synStatement">in</span> <span class="synIdentifier">range</span>(list_size):
+            x_tmp[i] = random.randint(<span class="synConstant">0</span>, <span class="synIdentifier">max</span> - <span class="synConstant">1</span>)
+        y_test = np.append(y_test, np.average(x_tmp))
+        x_test = np.append(x_test, x_tmp)
+        y_test = y_test.astype(np.int32)  <span class="synComment"># 正解ラベルを整数に</span>
+    x_test = x_test.reshape(test_size, list_size)
+
+    <span class="synComment"># 0~1の範囲に変換(正規化)</span>
+    x_train = x_train.astype(<span class="synConstant">'float32'</span>) / max_num
+    x_test = x_test.astype(<span class="synConstant">'float32'</span>) / max_num
+
+    <span class="synComment"># 正解ラベルをone-hot-encoding</span>
+    y_train = to_categorical(y_train, max_num)
+    y_test = to_categorical(y_test, max_num)
+
+    model = model_read()
+    model.<span class="synIdentifier">compile</span>(optimizer=<span class="synConstant">'rmsprop'</span>, loss=<span class="synConstant">'categorical_crossentropy'</span>, metrics=[<span class="synConstant">'accuracy'</span>])
+    model.fit(x_train, y_train, batch_size=<span class="synConstant">32</span>, epochs=<span class="synConstant">300</span>, verbose=<span class="synConstant">1</span>)  <span class="synComment"># データを学習</span>
+    model.save_weights(model_weight)  <span class="synComment"># 学習結果を保存</span>
+    score = model.evaluate(x_test, y_test)
+
+<span class="synStatement">def</span> <span class="synIdentifier">model_read</span>():
+    <span class="synComment"># モデルを読み込む</span>
+    model = Sequential()
+    model.add(Dense(<span class="synConstant">32</span>, activation=<span class="synConstant">'relu'</span>, input_dim=list_size))
+    model.add(Dense(<span class="synConstant">32</span>, activation=<span class="synConstant">'relu'</span>, input_dim=<span class="synConstant">32</span>))
+    model.add(Dense(max_num, activation=<span class="synConstant">'softmax'</span>)) <span class="synComment">#softmax</span>
+    model.<span class="synIdentifier">compile</span>(optimizer=<span class="synConstant">'rmsprop'</span>, loss=<span class="synConstant">'categorical_crossentropy'</span>, metrics=[<span class="synConstant">'accuracy'</span>])
+    <span class="synComment"># 学習済みモデルの重みのデータを読み込み</span>
+    <span class="synStatement">if</span> os.path.exists(model_weight):
+        model.load_weights(model_weight)  <span class="synComment"># 最初は重みデータファイルがないとErrorになる</span>
+    <span class="synStatement">return</span> model
+
+<span class="synStatement">def</span> <span class="synIdentifier">check</span>():
+    model = model_read()
+    x_test = np.array([])
+    <span class="synIdentifier">max</span> = random.randint(<span class="synConstant">3</span>, max_num - <span class="synConstant">1</span>)
+    <span class="synStatement">for</span> i <span class="synStatement">in</span> <span class="synIdentifier">range</span>(list_size):
+        x_tmp= random.randint(<span class="synConstant">0</span>, <span class="synIdentifier">max</span> - <span class="synConstant">1</span>)
+        x_test = np.append(x_test, x_tmp/max_num) <span class="synComment">#正規化して評価</span>
+    <span class="synIdentifier">print</span>(x_test)
+    x_test = x_test.reshape(<span class="synConstant">1</span>, list_size)  <span class="synComment"># 1次元化</span>
+    <span class="synComment"># 判定</span>
+    res = model.predict([x_test])
+    <span class="synIdentifier">print</span>(<span class="synConstant">"res = "</span>, res)
+    y = res.argmax()  <span class="synComment"># 値の中で最も値が大きいものが答え</span>
+    <span class="synIdentifier">print</span>(<span class="synConstant">"Prediction is "</span>, y)
+    ave = np.average(x_test)*<span class="synConstant">100</span> <span class="synComment">#正規化された計算結果をもとの表示にもどす</span>
+    <span class="synIdentifier">print</span>(<span class="synConstant">"Anser is  "</span>, <span class="synIdentifier">int</span>(ave))
+    <span class="synStatement">if</span> <span class="synIdentifier">abs</span>(ave -  y) &lt; <span class="synConstant">0.5</span>:
+        <span class="synIdentifier">print</span>(<span class="synConstant">"〇"</span>)
+        <span class="synStatement">return</span> <span class="synConstant">1</span>
+    <span class="synStatement">else</span>:
+        <span class="synIdentifier">print</span>(<span class="synConstant">"×"</span>)
+
+<span class="synStatement">if</span> __name__ == <span class="synConstant">"__main__"</span>:
+    model_build()
+    correct_answer_rate = <span class="synConstant">0</span>
+    <span class="synStatement">for</span> i <span class="synStatement">in</span> <span class="synIdentifier">range</span>(<span class="synConstant">30</span>):
+        <span class="synStatement">if</span> check() == <span class="synConstant">1</span>:  <span class="synComment"># テスト実行</span>
+            correct_answer_rate += <span class="synConstant">1</span>
+    <span class="synIdentifier">print</span>(<span class="synConstant">"correct_answer_rate= "</span>, <span class="synIdentifier">int</span>(correct_answer_rate/<span class="synConstant">30</span>*<span class="synConstant">100</span>),<span class="synConstant">"%"</span>)
+</pre>
+</div>

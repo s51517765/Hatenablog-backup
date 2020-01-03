@@ -1,0 +1,141 @@
+<div class="entry-content">
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%DE%A5%EB%A5%B3%A5%D5%CF%A2%BA%BF">マルコフ連鎖</a>を使って文の生成をします。<br/>
+自分のtimelineの<a class="keyword" href="http://d.hatena.ne.jp/keyword/tweet">tweet</a>を参考に、電子工作やプログラミングっぽい<a class="keyword" href="http://d.hatena.ne.jp/keyword/tweet">tweet</a>を生成するのが目標です。</p><p>↓参考<br/>
+こちらには、urlやmenshonを<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C0%B5%B5%AC%C9%BD%B8%BD">正規表現</a>でdeleteする方法も記載されています。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Fhitsumabushi845%2Fitems%2F647f8bbe8d399f76825c" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="マルコフ連鎖を使って自分らしい文章をツイートする - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/hitsumabushi845/items/647f8bbe8d399f76825c">qiita.com</a></cite></p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%DE%A5%EB%A5%B3%A5%D5%CF%A2%BA%BF">マルコフ連鎖</a>については↓を参考に。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2FS346%2Fitems%2F24e875e3c5ac58f55810" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="【エヴァンゲリオン】アスカっぽいセリフをDeepLearningで自動生成してみる - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/S346/items/24e875e3c5ac58f55810">qiita.com</a></cite></p><p>まずは、自分のタイムラインを取得します。<br/>
+ここで、URL、返信、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%CF%A5%C3%A5%B7%A5%E5%A5%BF%A5%B0">ハッシュタグ</a>を<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C0%B5%B5%AC%C9%BD%B8%BD">正規表現</a>で抽出し削除します。<br/>
+これが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%DE%A5%EB%A5%B3%A5%D5%CF%A2%BA%BF">マルコフ連鎖</a>のソースになります。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">def</span> <span class="synIdentifier">login</span>(acount):
+    <span class="synStatement">if</span> acount==<span class="synConstant">"s"</span>:  <span class="synComment">#アカウントの切り替え用</span>
+        CONSUMER_KEY = <span class="synConstant">"####"</span>
+        CONSUMER_SECRET = <span class="synConstant">"####"</span>
+        ACCESS_TOKEN = <span class="synConstant">"####"</span>
+        ACCESS_SECRET = <span class="synConstant">"####"</span>
+    <span class="synStatement">else</span>:
+        exit()
+
+    auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+    auth.set_access_token(ACCESS_TOKEN, ACCESS_SECRET)
+    api = tweepy.API(auth)
+    <span class="synStatement">return</span> api
+
+<span class="synStatement">def</span> <span class="synIdentifier">my_tweet</span>(acount):
+    <span class="synIdentifier">file</span> = <span class="synIdentifier">open</span>(<span class="synConstant">'markov_sorce.txt'</span>, <span class="synConstant">'w'</span>, encoding=<span class="synConstant">'utf'</span>)  <span class="synComment"># 書き込みモードでオープン</span>
+    count=<span class="synConstant">0</span>
+    api =login(acount)
+    <span class="synStatement">for</span> tweet <span class="synStatement">in</span> api.home_timeline(count=<span class="synConstant">100</span>): <span class="synComment">#タイムライン</span>
+        <span class="synStatement">if</span> count&gt;<span class="synConstant">100</span>: <span class="synComment">#タイムラインを100tweet取得</span>
+            <span class="synStatement">break</span>
+        text = tweet.text
+        text = tweet.text.replace(<span class="synConstant">'</span><span class="synSpecial">\r</span><span class="synConstant">'</span>, <span class="synConstant">' '</span>)  <span class="synComment"># 改行コードを削除</span>
+        text = text.replace(<span class="synConstant">'</span><span class="synSpecial">\n</span><span class="synConstant">'</span>, <span class="synConstant">' '</span>)  <span class="synComment"># 改行コードを削除</span>
+        replypattern = <span class="synConstant">'@[\w]+'</span>
+        urlpattern = <span class="synConstant">'https?://[\w/:%#\$&amp;\?\(\)~\.=\+\-]+'</span>
+        hashpattern = <span class="synConstant">r'[#＃]([\w一-龠ぁ-んァ-ヴーａ-ｚ]+)'</span>
+        text = re.sub(replypattern, <span class="synConstant">''</span>, text)
+        text = re.sub(urlpattern, <span class="synConstant">''</span>, text)
+        text = re.sub(hashpattern, <span class="synConstant">''</span>, text)
+        text = text.replace(<span class="synConstant">'RT : '</span>, <span class="synConstant">''</span>)
+        <span class="synComment">#print(text)</span>
+        <span class="synIdentifier">file</span>.write(text)
+        <span class="synIdentifier">file</span>.write(<span class="synConstant">"</span><span class="synSpecial">\n</span><span class="synConstant">"</span>)
+        count+=<span class="synConstant">1</span>
+        time.sleep(<span class="synConstant">0.2</span>)
+</pre><p>次に<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%DE%A5%EB%A5%B3%A5%D5%CF%A2%BA%BF">マルコフ連鎖</a>の中身になります。<br/>
+元記事を参考に、もうすこし簡単なLogicにしました。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/tweet">tweet</a>ごとに単語に区切りlistに格納し、<a class="keyword" href="http://d.hatena.ne.jp/keyword/tweet">tweet</a>の終わりには’EOS’という文字列を識別子として入れて、これを見つけたら文の終わりという意味がわかるようにしました。<br/>
+また、参考元の記事では、単語の連続数を３にしてますが、より自然になるように４にしました。<br/>
+自然になりすぎても面白くないので、ここら辺は感性です。<br/>
+ランダムでlistにアクセスし、文（<a class="keyword" href="http://d.hatena.ne.jp/keyword/tweet">tweet</a>）の先頭（'EOS'の次の単語）をさがし、４つ続けて単語を取得。<br/>
+4つめと同じ単語を次の単語列の先頭として探します。<br/>
+取得した単語列の中に’EOS’がみつかればそれで終了です。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synComment"># -*- coding: utf-8 -*-</span>
+<span class="synPreProc">from</span> janome.tokenizer <span class="synPreProc">import</span> Tokenizer
+<span class="synPreProc">import</span> random
+<span class="synPreProc">import</span> re <span class="synComment">#正規表現</span>
+
+<span class="synStatement">def</span> <span class="synIdentifier">markov</span>():
+    text=<span class="synConstant">"1"</span>　<span class="synComment">#適当に初期化</span>
+    sentence=[]
+    <span class="synIdentifier">file</span> = <span class="synIdentifier">open</span>(<span class="synConstant">'markov_sorce.txt'</span>, <span class="synConstant">'r'</span>, encoding=<span class="synConstant">'utf'</span>)  <span class="synComment"># UTFを指定する</span>
+
+    <span class="synStatement">while</span> text != <span class="synConstant">""</span>:
+        text = <span class="synIdentifier">file</span>.readline()
+        <span class="synStatement">for</span> token <span class="synStatement">in</span> t.tokenize(text):
+            sentence.append(<span class="synIdentifier">str</span>(token.surface))    <span class="synComment"># 単語、表示形</span>
+        sentence.append(<span class="synConstant">'EOS'</span>)　<span class="synComment">#　１つのtweetごとに区切りを入れる</span>
+
+    tweet=<span class="synConstant">''</span>
+    rand=random.randint(<span class="synConstant">1</span>,<span class="synIdentifier">len</span>(sentence)-<span class="synConstant">4</span>) <span class="synComment">#乱数を生成し、listから単語を選択</span>
+    <span class="synStatement">while</span> sentence[rand]!=<span class="synConstant">'EOS'</span>: <span class="synComment">#'EOS'を探し</span>
+        rand+=<span class="synConstant">1</span>
+    rand+=<span class="synConstant">1</span>　<span class="synComment">#'EOS'の次の単語をスタートとする</span>
+        word3=sentence[rand+<span class="synConstant">3</span>]　<span class="synComment">#選択した最後の単語を記憶</span>
+    tweet=sentence[rand]+sentence[rand+<span class="synConstant">1</span>]+sentence[rand+<span class="synConstant">2</span>]+sentence[rand+<span class="synConstant">3</span>]
+    rand = random.randint(<span class="synConstant">1</span>,<span class="synIdentifier">len</span>(sentence)-<span class="synConstant">4</span>)
+    <span class="synStatement">while</span> sentence[rand+<span class="synConstant">3</span>]!=<span class="synConstant">'EOS'</span> <span class="synStatement">and</span> sentence[rand+<span class="synConstant">2</span>]!=<span class="synConstant">'EOS'</span> <span class="synStatement">and</span> sentence[rand+<span class="synConstant">1</span>]!=<span class="synConstant">'EOS'</span>: <span class="synComment">#'EOS'が出現するまで</span>
+        rand = random.randint(<span class="synConstant">1</span>, <span class="synIdentifier">len</span>(sentence)-<span class="synConstant">4</span>)
+        <span class="synStatement">if</span> rand &gt; <span class="synIdentifier">len</span>(sentence)-<span class="synConstant">4</span>:　<span class="synComment">#listのサイズを超えたら０（listの先頭）に戻る</span>
+            rand = <span class="synConstant">0</span>
+        <span class="synStatement">while</span> sentence[rand]!=word3: <span class="synComment">#最後の単語と同じ単語を探す</span>
+            rand+=<span class="synConstant">1</span>
+            <span class="synStatement">if</span> rand&gt;<span class="synIdentifier">len</span>(sentence)-<span class="synConstant">4</span>:
+                rand=<span class="synConstant">0</span>
+        tweet=tweet+sentence[rand + <span class="synConstant">1</span>] + sentence[rand + <span class="synConstant">2</span>]+ sentence[rand + <span class="synConstant">3</span>]
+        word3 = sentence[rand + <span class="synConstant">3</span>]
+　　 <span class="synStatement">if</span> <span class="synIdentifier">len</span>(tweet) &gt; <span class="synConstant">180</span>:　<span class="synComment">#長すぎるときは中断してRetry</span>
+            <span class="synIdentifier">print</span>(<span class="synConstant">'Error! Too long sentence.'</span>)
+            markov()
+    fd=tweet.find(<span class="synConstant">'EOS'</span>)
+    tweet = tweet[:fd] <span class="synComment">#'EOS'より前をスライスで取得</span>
+    <span class="synStatement">if</span> <span class="synIdentifier">len</span>(tweet)&lt;<span class="synConstant">23</span>: <span class="synComment">#tweetが短いときはRetry</span>
+        <span class="synIdentifier">print</span>(<span class="synConstant">'Error! Too short sentence.'</span>)
+        markov()
+    <span class="synIdentifier">print</span>(tweet)
+
+<span class="synStatement">if</span> __name__ == <span class="synConstant">'__main__'</span>:
+    razpiTweet.my_tweet(<span class="synConstant">'s'</span>)
+    markov()
+</pre><p>このようにして、5回生成したのが↓。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/twitter">twitter</a>の仕様が変わって280文字まで<a class="keyword" href="http://d.hatena.ne.jp/keyword/Tweet">Tweet</a>できるはずだが、180文字で切ってもOverすることがある。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/twitter">twitter</a>の文字カウントの仕様がよくわからないと最適化できないなぁ。</p>
+<pre class="code" data-lang="" data-unlink="">【ITIL】 　 マック・ケンタ・回転寿司のスマホ代「3千円」を節約する方法まとめ』 格安SIMでドコモアドレスを維持しながら手軽に毎月の話、世の中の親御さんを必殺技に使ってるんだろう Elm 先日発表に使うかよくわからんの転職成功者忘年会！
+
+ArduinoをVisual Studio Code ローカライズ え、もしかしてサンタさんに現れたゴミUIImageView
+
+【定期ツイート】 HTMLのは私です。再配布や改変の偉くね
+
+静電容量方式タッチパネルとは、世界を理解しているものである。  &amp;gt;もしもいまのようなくらいブレブレ。そうだ、今回はそれを上回る53量子ビットの品 ゲーミングノートPC 外でもゲームをやりたい方や、それを公に発言します。 [電子ボルト]
+
+（）は、当フロアでのニュースをついて「サンタより」を節約する考えは、同時にバイファムが、今回は電流の単位アンペアから組み立てられた組立単位であり、代理行為」は立派な「代理といえそうなおっさんがなかった時代に作られ、タッチして欲しいという定義は必ずしも成り立たない。1989年に使うかよくある話。 お味はお土産として及第点だけどラスクとしてはもう少し。</pre><p></p><blockquote class="twitter-tweet" data-lang="ja"><p dir="ltr" lang="ja">SeekGeeksに新規ユーザーが登録されました！  今月も皆様の政党支持者が死んではNATや<a class="keyword" href="http://d.hatena.ne.jp/keyword/CSS">CSS</a>が分からなくてもまた無駄にプログラムを作ることができる言語処理系関係ないと一致するっぽい。 [電位]【Markov chain genarate.】</p>— プログラミング素人 (@s51517765) <a href="https://twitter.com/s51517765/status/936816447602311169?ref_src=twsrc%5Etfw">2017年12月2日</a></blockquote><script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script><br/>
+<p>次にラズパイにマルコフ環境をセットアップします。<br/>
+ラズパイに<a class="keyword" href="http://d.hatena.ne.jp/keyword/janome">janome</a>をインストールしようとしたら、ラズパイゼロではできなかった。</p>
+<pre class="code" data-lang="" data-unlink="">$pip install janome</pre><p><s>＊だれかたすけて下さい。　（pip3も試しました）</s></p>
+<pre class="code" data-lang="" data-unlink="">Command /usr/bin/python -c "import setuptools, tokenize;__file__='/tmp/pip-build-4ppLvZ/janome/setup.py';exec(compile(getattr(tokenize, 'open', open)(__file__).read().replace('\r\n', '\n'), __file__, 'exec'))" install --record /tmp/pip-eQlIyU-record/install-record.txt --single-version-externally-managed --compile failed with error code 1 in /tmp/pip-build-4ppLvZ/janome
+Storing debug log for failure in /home/pi/.pip/pip.log</pre><p>→Raspbianをstretchにupdateしたらpip3でインストールできるようになりました。 2018/06/25</p><p>あきらめてラズパイ３でインストールしたら、インストールは成功したのにパスが通らないという状況に陥った。<br/>
+そんなライブラリ無いよ的な感じで、プログラムを走らせようとしても、Errorで止まってしまいます。</p><p>pip showというコマンドでインストールが確認できる。</p>
+<pre class="code" data-lang="" data-unlink="">$ pip show janome
+Name: Janome
+Version: 0.3.5
+Summary: Japanese morphological analysis engine.
+Home-page: http://mocobeta.github.io/janome/
+Author: Tomoko Uchida
+Author-email: tomoko.uchida.1111@gmail.com
+License: AL2
+Location: /home/pi/.local/lib/python2.7/site-packages
+Requires:</pre><p>python2のフォルダ名だが？？？<br/>
+と思って、もしや！！</p>
+<pre class="code" data-lang="" data-unlink="">$pip3 install janome</pre><p>でインストールしなおしたら動いた。<br/>
+明示的にpip3にしなきゃダメなんですね～。</p>
+<pre class="code" data-lang="" data-unlink="">$ pip3 show janome
+Name: Janome
+Version: 0.3.5
+Summary: Japanese morphological analysis engine.
+Home-page: http://mocobeta.github.io/janome/
+Author: Tomoko Uchida
+Author-email: tomoko.uchida.1111@gmail.com
+License: AL2
+Location: /home/pi/.local/lib/python3.5/site-packages
+Requires:</pre>
+</div>

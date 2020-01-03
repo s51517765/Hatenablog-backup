@@ -1,0 +1,56 @@
+<div class="entry-content">
+<p><br/>今回はNPN<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>でリレー回路を組みます。</p>
+<p>以前、PNP<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>でもリレーを組みましたが、使い勝手の問題からNPNを検討します。</p>
+<p> </p>
+<p>ポンプを動作させることも成功していますが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>の仕組みを見るために、今日はLEDを点灯させます。</p>
+<p> </p>
+<p>使用したのはこちら</p>
+<p> </p>
+<p><a class="detailOn" href="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111921.jpg" id="i13509904261"><img alt="" border="0" height="161" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111921.jpg" width="220"/></a></p>
+<p> </p>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Amazon">Amazon</a>でも購入できます。↓</p>
+<div class="freezed">
+<div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B00DTHJM32/shirotoakb-22/"><img alt="シリコントランジスター　2SC1815-GR　10個" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/41bsswzl%2BUL._SL160_.jpg" title="シリコントランジスター　2SC1815-GR　10個"/></a>
+<div class="hatena-asin-detail-info">
+<p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B00DTHJM32/shirotoakb-22/">シリコントランジスター　2SC1815-GR　10個</a></p>
+<ul>
+<li><span class="hatena-asin-detail-label">出版社/メーカー:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/%C5%EC%BC%C7">東芝</a></li>
+<li><span class="hatena-asin-detail-label">メディア:</span></li>
+<li><a href="http://d.hatena.ne.jp/asin/B00DTHJM32/shirotoakb-22" target="_blank">この商品を含むブログを見る</a></li>
+</ul>
+</div>
+<div class="hatena-asin-detail-foot"> </div>
+</div>
+</div>
+<p> </p>
+<p>回路はこちら。</p>
+<p> </p>
+<p><img alt="f:id:s51517765:20190105114053j:plain" class="hatena-fotolife" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190105/20190105114053.jpg" title="f:id:s51517765:20190105114053j:plain"/></p>
+<p> </p>
+<p>Fritzingの使い方としてはちょっと間違っていますが、出来成りの実態配線にあわせたため、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>の端子は左右逆になっています。</p>
+<p> </p>
+<p>ベースには抵抗（200Ω)をはさみAnalog Outputを接続。（<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>を保護するためにベースには抵抗をはさんだほうがよいそうです。）</p>
+<p>エミッタをGNDに。</p>
+<p>コレクタにLEDを接続し、電源のプラスに。</p>
+<p> </p>
+<p>タクトスイッチの回路は以前から何度か使っているものと同じで、スイッチを押すとanalog出力がOnになります。</p>
+<p>これだけの回路でもリレーは動作しますが、負荷(モーターやポンプなど)には並列に<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C0%A5%A4%A5%AA%A1%BC%A5%C9">ダイオード</a>を逆流防止に入れます。</p>
+<p> </p>
+<p>負荷として、LEDではなくポンプを使ったときは "ほぼ" 思い道理に動作しました。</p>
+<p>（タクトスイッチに応じて、ポンプの動作がON/OFFしました）</p>
+<p>しかし、リレー回路をもう少し詳しく見てみようと、このようなLEDの回路を作ってみると、少し変であることに気づきました。</p>
+<p> </p>
+<p>スイッチを押していない(ベースに電圧が<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B0%F5%B2%C4">印可</a>していない）ときでも、LEDが点灯しているのです。</p>
+<p> </p>
+<p>実際LEDの両端の電圧を測定してみると、OFFのはずのときでも1.0Vぐらいが出力されていました。ONのとき2.2Vぐらいになるようにベースの入力を設定しています。</p>
+<p> </p>
+<p>どうやら調べてみると、ベースをGNDに抵抗をはさんで逃がしてやる必要があるということが分かりました。</p>
+<p> </p>
+<p>参考↓</p>
+<p><a href="http://doku.bimyo.jp/bipoler/" target="_blank">http://doku.bimyo.jp/bipoler/</a></p>
+<p> </p>
+<p>いくつか手持ちの抵抗を変えてみながらLEDの両端の電圧を測定してみると、5ｋΩを使うと、LEDの電圧が0.15Vぐらいと一番小さくなりました。</p>
+<p>完全に0にするには、この抵抗を計算で最適化する必要がありそうですが、ちょっとまだ難しくてよくわかりません。</p>
+<p> </p>
+<p>これでも、LEDは完全にはOFFになりませんが、コレクタ側でLEDに抵抗を直列接続するなどすれば、OFF電圧を調整できるようです。</p>
+</div>

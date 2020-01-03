@@ -1,0 +1,70 @@
+<div class="entry-content">
+<p><a href="https://px.a8.net/svt/ejp?a8mat=2ZTOIZ+893BN6+43SA+5ZU29" rel="nofollow" target="_blank"><br/>
+<img alt="" border="0" height="60" src="https://www21.a8.net/svt/bgt?aid=181103723499&amp;wid=001&amp;eno=01&amp;mid=s00000019153001007000&amp;mc=1" width="468"/></a><br/>
+<img alt="" border="0" height="1" src="https://www17.a8.net/0.gif?a8mat=2ZTOIZ+893BN6+43SA+5ZU29" width="1"/><br/>
+通勤電車でよく見かけるのが<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C6%FC%C7%BD%B8%A6">日能研</a>の額面広告ですが、これは、中学校入試の問題またはその改題が出ています。<br/>
+大体の問題（特に数学・算数）はこのブログの記事を理解できるぐらいの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D7%A5%ED%A5%B0%A5%E9%A5%DE">プログラマ</a>の方々なら暗算でも解けると思います。</p><p>しかし、ここではあえて<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D7%A5%ED%A5%B0%A5%E9%A5%DE">プログラマ</a>として線形探索で解いてみます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20181126222230p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20181126/20181126222230.png" title="f:id:s51517765:20181126222230p:plain"/></span></p><p>読み取れる問題のポイントは、<br/>
+①１～６の重複しない整数で生成された整数である<br/>
+②上から2桁を見たとき2の倍数で、上から３桁をみたとき３の倍数で、上から4桁が4の倍数で、上から5桁が5の倍数で、上から6桁が6の倍数である</p><p>これに加えて、<br/>
+③最小値は123456<br/>
+④最大値は654321<br/>
+という条件が分かります。</p><p>プログラミングするということはforでloopを回しながら、123456から654321の数で、①と②を満たす組を見つければよいことになります。</p><p>やろうとしていることは簡単に見えますが、実は関数が用意されてない（見つけられなかっただけかもしれませんが）やっかいな<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A2%A5%EB%A5%B4%A5%EA%A5%BA%A5%E0">アルゴリズム</a>でした。</p><p></p><h3>任意の整数から1桁ずつに分解する</h3>割り算の商を使う方法や、文字列としてスライスしていく方法があるようですが、ここでは上の桁から数字を増やしていって対象と比較する方法をとりました。
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synIdentifier">max</span> = <span class="synConstant">654321</span>
+<span class="synIdentifier">min</span> = <span class="synConstant">123456</span>
+d1, d2, d3, d4, d5, d6 = <span class="synConstant">0</span>, <span class="synConstant">0</span>, <span class="synConstant">0</span>, <span class="synConstant">0</span>, <span class="synConstant">0</span>, <span class="synConstant">0</span>
+
+<span class="synStatement">for</span> i <span class="synStatement">in</span> <span class="synIdentifier">range</span>(<span class="synIdentifier">min</span>, <span class="synIdentifier">max</span>+<span class="synConstant">1</span>):
+    <span class="synStatement">for</span> j <span class="synStatement">in</span> <span class="synIdentifier">range</span>(<span class="synConstant">1</span>,<span class="synConstant">7</span>):
+        <span class="synStatement">if</span> i &lt; j * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">5</span>):
+            <span class="synStatement">break</span>
+        d1 = j
+
+    <span class="synStatement">for</span> j <span class="synStatement">in</span> <span class="synIdentifier">range</span>(<span class="synConstant">1</span>,<span class="synConstant">7</span>):
+        <span class="synStatement">if</span> i - d1 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">5</span>) &lt; j * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">4</span>):
+            <span class="synStatement">break</span>
+        d2 = j
+
+    <span class="synStatement">for</span> j <span class="synStatement">in</span> <span class="synIdentifier">range</span>(<span class="synConstant">1</span>,<span class="synConstant">7</span>):
+        <span class="synStatement">if</span> i - d1 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">5</span>) - d2 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">4</span>) &lt; j * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">3</span>):
+            <span class="synStatement">break</span>
+        d3 = j
+
+    <span class="synStatement">for</span> j <span class="synStatement">in</span> <span class="synIdentifier">range</span>(<span class="synConstant">1</span>,<span class="synConstant">7</span>):
+        <span class="synStatement">if</span> i - d1 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">5</span>) - d2 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">4</span>) - d3 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">3</span>) &lt; j * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">2</span>):
+            <span class="synStatement">break</span>
+        d4 = j
+
+    <span class="synStatement">for</span> j <span class="synStatement">in</span> <span class="synIdentifier">range</span>(<span class="synConstant">1</span>,<span class="synConstant">7</span>):
+        <span class="synStatement">if</span> i - d1 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">5</span>) - d2 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">4</span>) - d3 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">3</span>) - d4 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">2</span>) &lt; j * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">1</span>):
+            <span class="synStatement">break</span>
+        d5 = j
+
+    <span class="synStatement">for</span> j <span class="synStatement">in</span> <span class="synIdentifier">range</span>(<span class="synConstant">1</span>,<span class="synConstant">7</span>):
+        <span class="synStatement">if</span> i - d1 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">5</span>) - d2 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">4</span>) - d3 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">3</span>) - d4 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">2</span>) - d5 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">1</span>) &lt; j * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">0</span>):
+            <span class="synStatement">break</span>
+        d6 = j
+</pre><p></p><h3>この数字が重複なく構成できるかどうか判断</h3>数字をリストに追加していき、重複がないことを確認
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synIdentifier">list</span> = [] <span class="synComment">#リストの初期化</span>
+<span class="synIdentifier">list</span>.append(d1)
+    <span class="synStatement">if</span> d2 <span class="synStatement">not</span> <span class="synStatement">in</span> <span class="synIdentifier">list</span>: <span class="synComment">#d2がリストになければ</span>
+        <span class="synIdentifier">list</span>.append(d2)
+        <span class="synStatement">if</span> d3 <span class="synStatement">not</span> <span class="synStatement">in</span> <span class="synIdentifier">list</span>: <span class="synComment">#d3がリストになければ（以下同）</span>
+            <span class="synIdentifier">list</span>.append(d3)
+            <span class="synStatement">if</span> d4 <span class="synStatement">not</span> <span class="synStatement">in</span> <span class="synIdentifier">list</span>:
+                <span class="synIdentifier">list</span>.append(d4)
+                <span class="synStatement">if</span> d5 <span class="synStatement">not</span> <span class="synStatement">in</span> <span class="synIdentifier">list</span>:
+                    <span class="synIdentifier">list</span>.append(d5)
+                    <span class="synStatement">if</span> d6 <span class="synStatement">not</span> <span class="synStatement">in</span> <span class="synIdentifier">list</span>:
+                        <span class="synIdentifier">list</span>.append(d6)
+</pre><p></p><h3>この数字の上から●桁が倍数の規定に合うかどうか判断</h3>
+<pre class="code lang-python" data-lang="python" data-unlink=""> <span class="synStatement">if</span> (d1 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">1</span>) + d2 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">0</span>)) % <span class="synConstant">2</span> == <span class="synConstant">0</span>: <span class="synComment">#最初の2桁が2の倍数（以下同）</span>
+     <span class="synStatement">if</span> (d1 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">2</span>) + d2 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">1</span>) + d3 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">0</span>)) % <span class="synConstant">3</span> == <span class="synConstant">0</span>: 
+          <span class="synStatement">if</span> (d1 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">3</span>) + d2 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">2</span>) + d3 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">1</span>) + d4 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">0</span>)) % <span class="synConstant">4</span> == <span class="synConstant">0</span>:
+              <span class="synStatement">if</span> (d1 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">4</span>) + d2 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">3</span>) + d3 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">2</span>) + d4 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">1</span>) + d5 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">0</span>)) % <span class="synConstant">5</span> == <span class="synConstant">0</span>:
+                  <span class="synStatement">if</span> (d1 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">5</span>) + d2 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">4</span>) + d3 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">3</span>) + d4 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">2</span>) + d5 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">1</span>) + d6 * <span class="synIdentifier">pow</span>(<span class="synConstant">10</span>, <span class="synConstant">0</span>)) % <span class="synConstant">6</span> == <span class="synConstant">0</span>:
+                       <span class="synIdentifier">print</span>(i)
+</pre><p></p><h3>答え</h3>
+<pre class="code" data-lang="" data-unlink="">123654
+321654</pre><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fsn348%2FNichinoken11%2Fblob%2Fmaster%2Fnichino11.py" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="sn348/Nichinoken11"></iframe><cite class="hatena-citation"><a href="https://github.com/sn348/Nichinoken11/blob/master/nichino11.py">github.com</a></cite></p>
+</div>

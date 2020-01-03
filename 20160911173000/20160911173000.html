@@ -1,0 +1,86 @@
+<div class="entry-content">
+<p>昨日の応用で、リモコン解析をします。</p><p>タクトスイッチでHIGH or LOW を作っていたところに、赤外線センサを取り付けます。<br/>
+いくつかあらかじめ入手しておいた赤外線センサを使いますが、今日は昨日紹介したものがどこかにまぎれて見つからなかったので、ＳＰＳ－４４２－１（３８ｋＨ）を使いました。</p><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="//hatenablog-parts.com/embed?url=http%3A%2F%2Fakizukidenshi.com%2Fcatalog%2Fg%2FgI-00573%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="赤外線リモコン受信モジュール　ＳＰＳ−４４２−１（３８ｋＨｚ）: センサ一般 秋月電子通商 電子部品 ネット通販"></iframe><cite class="hatena-citation"><a href="http://akizukidenshi.com/catalog/g/gI-00573/">akizukidenshi.com</a></cite></p><p>昨日のタクトスイッチのdigitalReadにセンサの　Vout を接続し、GNDとVCCを接続します。</p><p>Vout　とはセンサ出力がでる端子、またはその出力のことをいい、VCCは動作電源です。</p><p>VCCは<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a> の5Vに接続します。</p><p>このセンサは足が5本出ていますが、どの足がどの端子であるかはDataSheetをみれば分かります。購入したときについている場合もありますが、ついていなければ型番で<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%B0%A4%B0%A4%EB">ぐぐる</a>とすぐに見つかります。<br/>
+ためしに動作させようとすると、何も受信していないのに波形が出てきました。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20160919122219p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919122219.png" title="f:id:s51517765:20160919122219p:plain"/></span><br/>
+<br/>
+よく分からないですが、一定の周期のHIGH / LOWです。</p><p>この後リモコン信号を受信させてみると、とくに問題なく受信できていそうなので、とりあえず良しとします。わからないけど。18000μsぐらいの周期でした。</p><p>良しとした根拠としては、リモコンを受信させてみると↓のように波形が取れていると判断したからです。<br/>
+ちなみに<a class="keyword" href="http://d.hatena.ne.jp/keyword/Panasonic">Panasonic</a>の<a class="keyword" href="http://d.hatena.ne.jp/keyword/VIERA">VIERA</a>です。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20160919122247p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919122247.png" title="f:id:s51517765:20160919122247p:plain"/></span><br/>
+<br/>
+いくつかのボタンを試してみると、とても似通った波形が出てきます。<br/>
+これは間違いなく違うパターンであるがその差はとても小さいように見えます。<br/>
+ちょっと、プログラムを改良する必要がありそうです。<br/>
+<br/>
+まず、信号を見ると、長いHIGHがあったあと、HIGH /　LOWのパターンがあります。これをボタンが押されている間繰り返すようです。<br/>
+おそらく、この長いHIGHがスタートでしょう。</p><p>この部分はだいたい75,000～81,000μsぐらいあるので、すこし余裕をとって70,000μs以上HIGHであれば記録開始するようにして、だいたい2回分が拾えるように17stepでstopするようにします。</p><p> <span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20160919122327p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919122327.png" title="f:id:s51517765:20160919122327p:plain"/></span></p><p>できたようなできてないような。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synType">unsigned</span> <span class="synType">long</span> time_m = <span class="synConstant">0</span>;
+<span class="synType">unsigned</span> <span class="synType">long</span> time_n = <span class="synConstant">0</span>;
+<span class="synType">unsigned</span> <span class="synType">long</span> time_nagasa = <span class="synConstant">0</span>;
+<span class="synType">unsigned</span> <span class="synType">long</span> time_total = <span class="synConstant">0</span>;
+<span class="synType">unsigned</span> <span class="synType">long</span> time_start = <span class="synConstant">0</span>;
+<span class="synType">unsigned</span> <span class="synType">long</span> time_start_section = <span class="synConstant">0</span>;
+<span class="synType">int</span> i = <span class="synConstant">0</span>;
+
+<span class="synType">void</span> setup() {
+
+  pinMode(<span class="synConstant">4</span>, INPUT);
+  Serial.begin(<span class="synConstant">57600</span>);
+}
+
+<span class="synType">void</span> loop() {
+  <span class="synStatement">while</span> (digitalRead(<span class="synConstant">4</span>) == HIGH) { <span class="synComment">//HIGHであったら</span>
+    time_start = micros(); <span class="synComment">//start時刻を記憶し</span>
+    <span class="synStatement">while</span> (digitalRead(<span class="synConstant">4</span>) == HIGH) {
+      time_start_section = micros() - time_start; <span class="synComment">//start区間の長さを測る</span>
+    }
+  }
+
+  <span class="synStatement">if</span> (time_start_section &gt; <span class="synConstant">70000</span>) {
+    Serial.print(<span class="synConstant">"START  = "</span>);
+    Serial.println(<span class="synConstant">"0,0,1"</span>);
+    time_total = time_total - time_start;
+    <span class="synStatement">for</span> (i = <span class="synConstant">1</span>; i &lt; <span class="synConstant">14</span>; i++) { <span class="synComment">//繰り返し範囲設定　無限繰り返し</span>
+      <span class="synStatement">while</span> (digitalRead(<span class="synConstant">4</span>) == HIGH) {}
+      time_m = micros();
+      time_nagasa = time_m - time_n; <span class="synComment">//スイッチが押下されていない時間を算出</span>
+      time_total = time_total + time_nagasa;
+
+      Serial.print(<span class="synConstant">"---  = "</span>);
+      Serial.print(<span class="synConstant">"  "</span>);
+      Serial.print(<span class="synConstant">"--- "</span>);
+      Serial.print(<span class="synConstant">","</span>);
+      Serial.print(time_total);
+      Serial.println(<span class="synConstant">",1"</span>);
+      Serial.print(<span class="synConstant">"LOW  = "</span>);
+      Serial.print(time_nagasa);
+      Serial.print(<span class="synConstant">","</span>);
+      Serial.print(time_total);
+      Serial.println(<span class="synConstant">",0"</span>);
+      delayMicroseconds(<span class="synConstant">20</span>);
+      <span class="synStatement">while</span> (digitalRead(<span class="synConstant">4</span>) == LOW) {}
+      time_n = micros();
+      delayMicroseconds(<span class="synConstant">20</span>);
+      time_nagasa = time_n - time_m; <span class="synComment">//スイッチが押下されて離された時間を算出</span>
+      time_total = time_total + time_nagasa;
+      Serial.print(<span class="synConstant">"---  = "</span>);
+      Serial.print(<span class="synConstant">"  "</span>);
+      Serial.print(<span class="synConstant">"--- "</span>);
+      Serial.print(<span class="synConstant">","</span>);
+      Serial.print(time_total);
+      Serial.println(<span class="synConstant">",0"</span>);
+      Serial.print(<span class="synConstant">"HIGH = "</span>);
+      Serial.print(time_nagasa);
+      Serial.print(<span class="synConstant">","</span>);
+      Serial.print(time_total);
+      Serial.print(<span class="synConstant">","</span>);
+      Serial.println(<span class="synConstant">"1"</span>);
+    }
+  } <span class="synComment">//end if</span>
+  <span class="synStatement">while</span> (Serial.available() == <span class="synConstant">0</span>) {
+    Serial.println(<span class="synConstant">"Hit any key to start...     "</span>);
+    delay(<span class="synConstant">100</span>);
+  }
+} <span class="synComment">//end loop</span>
+</pre>
+</div>

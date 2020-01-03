@@ -1,0 +1,144 @@
+<div class="entry-content">
+<p>しばらく、水遣りとは違うことをやってみます。</p>
+<p>前回、Loggingをやるといいましたが、なかなか複雑なので逃避します。</p>
+<p></p>
+<p>ゲーム的なものを作ってみます。</p>
+<p></p>
+<p><a class="detailOn" href="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111932.jpg" id="i13548119844"><img alt="" border="0" height="391" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111932.jpg" width="220"/></a></p>
+<p></p>
+<p>スイッチを押すと、だんだんゆっくりになりランダムな場所に止まります。</p>
+<p>6つのLEDをさいころの1～6に見立てて、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B5%BC%BB%F7%CD%F0%BF%F4">擬似乱数</a>によりいづれかの数字にとまります。</p>
+<p>だんだんゆっくりになるところや、1～6にすばやく切り替わるところはこのように動くとそれっぽく見えるので入れてみました。</p>
+<p></p>
+<p>==================================</p>
+<p>void setup() {</p>
+<p>  randomSeed(analogRead(0));</p>
+<p>void loop() {</p>
+<p>  randNumber = random(6, 12); // 10から12の乱数を生成</p>
+<p></p>
+<p>==================================</p>
+<p></p>
+<p>setupのなかにrandomSeedとloopのなかにrandNumberを記述し、乱数を生成します。</p>
+<p>ここでは6～11のpinにLEDを接続しているので、6～11の乱数が発生するようにします。</p>
+<p>random関数では、<font color="#0000FF">6以上から12未満</font>と記述します。</p>
+<p></p>
+<p>  randNumber = random(6, 12); </p>
+<p></p>
+<p>LEDを順番に点灯するには、forを利用して、LEDの接続しているPin Noを順番に変更していきます。これが、ゲームスタートの動きです。</p>
+<p></p>
+<p>=================================</p>
+<p>  for (i = 6; i &lt; 12; i++) {</p>
+<p>     digitalWrite(i, HIGH);</p>
+<p>     delay(wait);</p>
+<p>     digitalWrite(i, LOW);</p>
+<p>     Serial.println("k");</p>
+<p>    } //for</p>
+<p>==================================</p>
+<p></p>
+<p>Digital/AnalogのピンNo.にも、for　による変数を利用できるのですね。</p>
+<p></p>
+<p>この応用が、Setupの中で、OUTPUTの宣言にも使用できます。</p>
+<p></p>
+<p>==================================</p>
+<p>oid setup() {</p>
+<p>  Serial.begin(9600);</p>
+<p>  for (i = 6; i &lt; 12; i++) {</p>
+<p>    pinMode(i, OUTPUT);</p>
+<p>==================================</p>
+<p></p>
+<p>これで、</p>
+<p>pinMode(6,OUTPUT);</p>
+<p>pinMode(7,OUTPUT);</p>
+<p>pinMode(8,OUTPUT);</p>
+<p>…</p>
+<p>と同じ意味になります。</p>
+<p></p>
+<p>6つぐらいでしたら、すべて記載してもたいしたことは無いですが、コードの読みやすさを考えてこのような方法を使うほうがよいらしいです。</p>
+<p></p>
+<p>ちなみに、loopのなかでは<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>の電源が入っていて、その構文に戻ってくる限り永遠にこの宣言がやり直されますが、Setupの中では電源ONの最初に一回が実施されるだけです。</p>
+<p>ですが、もちろんpinModeの宣言は一度でよいので、これでよいのです。</p>
+<p></p>
+<p>==============================================</p>
+<p>  if (sw1 == 1) {</p>
+<p>    state = 1;</p>
+<p>  }</p>
+<p>  else if (state == 1) {</p>
+<p>==============================================</p>
+<p></p>
+<p>ifでタクトスイッチを検出し、stateという変数によりスイッチが押されたことを検出し、状態を変更します。 </p>
+<p>state = 1;</p>
+<p></p>
+<p>そして、続けて </p>
+<p>  else if (state == 1) {</p>
+<p>に入ります。</p>
+<p></p>
+<p>実験段階で、二つ目のタクトスイッチを使っていましたが、最終的にはなくしました。</p>
+<p></p>
+<p><iframe allowfullscreen="" frameborder="0" height="315" src="https://www.youtube.com/embed/EGD4de33uVA" width="560"></iframe></p>
+<p></p>
+<p>==============================================</p>
+<p></p>
+<p>//ルーレット</p>
+<p></p>
+<p>int i = 6;</p>
+<p>int sw1 = 0;</p>
+<p>int sw2 = 0;</p>
+<p>int state = 0;</p>
+<p>int wait = 30;</p>
+<p>int k = 0;</p>
+<p>int randNumber;</p>
+<p></p>
+<p>void setup() {</p>
+<p>  Serial.begin(9600);</p>
+<p>  for (i = 6; i &lt; 12; i++) {</p>
+<p>    pinMode(i, OUTPUT);</p>
+<p>  }</p>
+<p>  pinMode(A1, INPUT);</p>
+<p>  pinMode(2, INPUT);</p>
+<p></p>
+<p>  randomSeed(analogRead(0));</p>
+<p></p>
+<p>}</p>
+<p></p>
+<p>void loop() {</p>
+<p>  randNumber = random(6, 12); // 10から12の乱数を生成</p>
+<p>  sw1 =  digitalRead(A1) ;</p>
+<p></p>
+<p>  if (sw1 == 1) {</p>
+<p>    state = 1;</p>
+<p>  }</p>
+<p>  else if (state == 1) {</p>
+<p>    wait = wait + 10;</p>
+<p>    Serial.println("state");</p>
+<p>    Serial.print(sw1);</p>
+<p>    Serial.print(',');</p>
+<p>    Serial.println(sw2);</p>
+<p>    if (sw2 == 1) {</p>
+<p>      state = 0;</p>
+<p>    }</p>
+<p>    for (i = 6; i &lt; 12; i++) {</p>
+<p>      if (i == randNumber  &amp;&amp; wait &gt; 80) {</p>
+<p>        digitalWrite(i, HIGH);</p>
+<p>        delay(2500);</p>
+<p>        wait = 30;</p>
+<p>        state = 0;</p>
+<p>      } </p>
+<p>      else {</p>
+<p>        digitalWrite(i, HIGH);</p>
+<p>        delay(wait);</p>
+<p>        digitalWrite(i, LOW);</p>
+<p>      }</p>
+<p>    } //for</p>
+<p>  }</p>
+<p></p>
+<p>  else {</p>
+<p>   for (i = 6; i &lt; 12; i++) {</p>
+<p>     digitalWrite(i, HIGH);</p>
+<p>     delay(wait);</p>
+<p>     digitalWrite(i, LOW);</p>
+<p>     Serial.println("k");</p>
+<p>    } //for</p>
+<p>  }</p>
+<p></p>
+<p>}</p>
+</div>

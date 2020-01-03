@@ -1,0 +1,35 @@
+<div class="entry-content">
+<p>3x3x3　の3次元のLED Cubeができました。</p>
+<p><img alt="f:id:s51517765:20190105114907j:plain" class="hatena-fotolife" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190105/20190105114907.jpg" title="f:id:s51517765:20190105114907j:plain"/><br/><br/>ハード構成としては、3ｘ3のときと同じ様なものをさらに2段作ります。<br/>ただし、LEDのカソードは一段目と共通にすることを注意しながら組み立てます。</p>
+<p><img alt="f:id:s51517765:20190105114919j:plain" class="hatena-fotolife" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190105/20190105114919.jpg" title="f:id:s51517765:20190105114919j:plain"/></p>
+<p><br/>アノード側は1段目と同じですが、カソードは一段目に接続するために足を折り曲げずに置いておきます。<br/>これをはんだつけによって、立体的に積み上げていきます。<br/>赤いリード線(カソード側)がついているほうにこの伸ばしたままにした足をつけます。<br/><br/>写りこんでいるピンセットは、逆作動ピンセットと言って手を緩めたとき閉じるようになっています。 </p>
+<div class="freezed">
+<div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B002SSSR0C/shirotoakb-22/"><img alt="アネックス(ANEX) ステンレスピンセット 逆作動(小) No.134" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/31rKbOBp2qL._SL160_.jpg" title="アネックス(ANEX) ステンレスピンセット 逆作動(小) No.134"/></a>
+<div class="hatena-asin-detail-info">
+<p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B002SSSR0C/shirotoakb-22/">アネックス(ANEX) ステンレスピンセット 逆作動(小) No.134</a></p>
+<ul>
+<li><span class="hatena-asin-detail-label">出版社/メーカー:</span> 兼古製作所</li>
+<li><span class="hatena-asin-detail-label">メディア:</span> Tools &amp; Hardware</li>
+<li><a href="http://d.hatena.ne.jp/asin/B002SSSR0C/shirotoakb-22" target="_blank">この商品を含むブログを見る</a></li>
+</ul>
+</div>
+<div class="hatena-asin-detail-foot"> </div>
+</div>
+</div>
+<p> </p>
+<p><img alt="f:id:s51517765:20190105114931j:plain" class="hatena-fotolife" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190105/20190105114931.jpg" title="f:id:s51517765:20190105114931j:plain"/><br/><br/>なにかと活用できます。<br/><br/>さて、プログラミングですが、LEDを一つずつ制御する関数はつくりましたが、これをさらに発展させて、因数を持たせてLEDを制御するようにします。<br/>↓のような因数をもつ関数をつくり、</p>
+<pre style="background: #0c1021; color: #f8f8f8;"> <span style="color: #fbde2d;">int</span> <span style="color: #ff6400;">LED</span>(int);  <span style="color: #aeaeae;">//プロトタイプ宣言</span></pre>
+<p>そのなかで、Noに応じてLEDを変化させるために <br/>ifで条件分けします。<br/><br/>また、LEDが27個に増えているのでアノード(マイナス側)は9本に増えています。<br/>また、この関数では計算結果を数値として返すことはしないので "int"で定義しても "void"で定義してもいいようです。<br/>ここではintのままにしておきます。<br/>また、delay（LEDを点灯したままにしておく）が毎回必要そうなので、これもあらかじめ関数に組み込んでおきます。<br/><br/></p>
+<pre style="background: #0c1021; color: #f8f8f8;"><span style="color: #aeaeae;">/*↓LEDを一つずつONするための関数*/</span><br/><span style="color: #fbde2d;">int</span> <span style="color: #ff6400;">LED</span>(int no) {<br/>  if (no == 1) {<br/>    //1<br/>    digitalWrite(2, HIGH); //+ 消したいとき<br/>    digitalWrite(3, LOW); //+<br/>    digitalWrite(4, LOW); //+<br/>    digitalWrite(5, LOW); //-<br/>    digitalWrite(6, HIGH); //-<br/>    digitalWrite(8, HIGH); //-<br/>    digitalWrite(9, HIGH); //-<br/>    digitalWrite(10, HIGH); //-<br/>    digitalWrite(11, HIGH); //-<br/>    digitalWrite(A0, HIGH); //-<br/>    digitalWrite(A1, HIGH); //-<br/>    digitalWrite(A2, HIGH); //-<br/>    delay(wait);<br/>    return 0;<br/>  }<br/>  else if (no == 2) {<br/>    //2<br/>    digitalWrite(2, LOW); //+<br/>    digitalWrite(3, HIGH); //+<br/>    digitalWrite(4, LOW); //+<br/>    digitalWrite(5, LOW); //-<br/>    digitalWrite(6, HIGH); //-<br/>    digitalWrite(8, HIGH); //-<br/>    digitalWrite(9, HIGH); //-<br/>    digitalWrite(10, HIGH); //-<br/>    digitalWrite(11, HIGH); //-<br/>    digitalWrite(A0, HIGH); //-<br/>    digitalWrite(A1, HIGH); //-<br/>    digitalWrite(A2, HIGH); //-<br/>    delay(wait);<br/>    return 0;<br/>  }</pre>
+<p> </p>
+<pre style="background: #0c1021; color: #f8f8f8;"><span style="color: #fbde2d;">for</span>(j=<span style="color: #d8fa3c;">1</span>;j&lt; times/<span style="color: #d8fa3c;">2</span>;j++){<br/>  LED1();<br/>  delay(wait);<br/>  LED0();<br/>  delay(wait);<br/>  LED2();<br/>  delay(wait);</pre>
+<p>↑のように書いていたものが↓になります。</p>
+<pre style="background: #0c1021; color: #f8f8f8;"><span style="color: #fbde2d;">for</span>(j=<span style="color: #d8fa3c;">1</span>;j&lt; times/<span style="color: #d8fa3c;">2</span>;j++){<br/>  LED(1);<br/>  LED(2);<br/>  </pre>
+<p><br/>ひとつずつ順番に点けているだけならこれでもよいですが、27個となるとそれも結構大変なので、Noだけを入力すればいいようにします。</p>
+<pre style="background: #0c1021; color: #f8f8f8;"><span style="color: #aeaeae;">/*LED 5連続Pattern*/</span><br/><span style="color: #fbde2d;">void</span> <span style="color: #ff6400;">ptn8</span>(int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8) {<br/>  LED(p1);<br/>  LED(p2);<br/>  LED(p3);<br/>  LED(p4);<br/>  LED(p5);<br/>  LED(p6);<br/>  LED(p7);<br/>  LED(p8);<br/>}</pre>
+<p>LED No.を引数として、関数に引数を渡す関数を作成します。<br/>関数 in 関数ですね。こんなこともできます。<br/><br/>8連続パターン、9連続パターン、5連続パターンの3種類を作りました。<br/>もっとこまかく、2～27とかも作ってもいいですが、たとえば、4なら2回同じことを書けば8で使えるので、これは、どのようにすれば一番労力を節約できるか？というだけのことです。<br/><br/>ここでは、関数を"int"ではなく"Void"で作成しましたので、</p>
+<pre style="background: #0c1021; color: #f8f8f8;"><span style="color: #fbde2d;">return</span> <span style="color: #d8fa3c;">0</span>; </pre>
+<p>は要らなくなります。<br/><br/>あとは、↓のようなLEDの配置をイメージしながらパターンを作っていきます。<br/><a class="detailOn" href="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919112045.jpg" id="i13705450186"><img alt="" border="0" height="305" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919112045.jpg" width="220"/></a><br/><br/>長くなったので、動画とソース全文は次の記事。</p>
+<p><iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2016%2F07%2F24%2F164836" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="LED Cube 3x3x3　(ソース) - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2016/07/24/164836">s51517765.hatenadiary.jp</a></cite></p>
+<p> </p>
+</div>

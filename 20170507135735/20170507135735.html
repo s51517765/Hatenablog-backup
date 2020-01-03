@@ -1,0 +1,49 @@
+<div class="entry-content">
+<p>このページを参考に<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>から<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>につぶやいてみたいと思います。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="http://blog.clock-up.jp/embed/2016/12/03/csharp-twitter-bot" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="C# による Twitter 簡易ボット - clock-up-blog"></iframe><cite class="hatena-citation"><a href="http://blog.clock-up.jp/entry/2016/12/03/csharp-twitter-bot">blog.clock-up.jp</a></cite></p><p>パッケージマネージャーコンソールから、ライブラリを導入します。<br/>
+パッケージマネージャーコンソールは下の図のように開きます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170507134201j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170507/20170507134201.jpg" title="f:id:s51517765:20170507134201j:plain"/></span><br/>
+すると、↓のようなコンソールが開くので、<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170507134301j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170507/20170507134301.jpg" title="f:id:s51517765:20170507134301j:plain"/></span><br/>
+</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">Install-Package CoreTweet
+</pre><p>と入力します。</p><p>次に<a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>キーを入手します。<br/>
+twiiterアカウントに電話番号の登録が必要になります。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="//hatenablog-parts.com/embed?url=https%3A%2F%2Fapps.twitter.com%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Twitter Application Management"></iframe><cite class="hatena-citation"><a href="https://apps.twitter.com/">apps.twitter.com</a></cite></p><p>ライブラリの登録をして、</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synStatement">using</span> CoreTweet;
+<span class="synStatement">using</span> System.Diagnostics;
+</pre><p>ボタンクリックイベントを作ります。<br/>
+最終的にはPincode入力用のFormを作りますが、今は簡易的にMessageBoxを出して、<br/>
+その間に、Twiiterの認証画面を通過して、直接プログラムを書き換えてPincodeを通しています。<br/>
+なんか、あらかじめブラウザでTwiiterにLogInしていないと、通らない？？？</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""> <span class="synType">private</span> <span class="synType">void</span> button1_Click(<span class="synType">object</span> sender, EventArgs e)
+        {
+            var session = OAuth.Authorize(<span class="synConstant">"*********"</span>, <span class="synConstant">"*********"</span>);
+                          <span class="synComment">//("入手した api_key", "入手した api_secret");</span>
+            Process.Start(session.AuthorizeUri.AbsoluteUri);
+
+            MessageBoxShow(<span class="synConstant">"Get Pincode."</span>);  <span class="synComment">//ここでPincodeの入力待ち</span>
+
+            var pincode<span class="synConstant">"123234545676"</span>;　　　<span class="synComment">//ここを書き換える</span>
+
+            <span class="synComment">//トークン取得</span>
+            var tokens = OAuth.GetTokens(session, pincode);
+
+            <span class="synStatement">try</span>
+            {
+                tokens.Statuses.Update(status =&gt; <span class="synConstant">"hogehoge"</span>);
+            }
+            <span class="synStatement">catch</span> 
+            {
+                MessageBox.Show(<span class="synConstant">"Error"</span>);
+            }
+
+        }
+</pre><p>で、<a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>は通ったようでプログラムはErrorがないのにタイムラインにつぶやきが更新されないのはなぜ？？？</p><p>＜5/9更新＞<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>の<a class="keyword" href="http://d.hatena.ne.jp/keyword/Access">Access</a> LevelがReadになっていて、Write権限がなかったため、書き込みができなかったらしい。<br/>
+Read and writeに設定したはずだが、画面上ではRead and writeと出ていても、Read Onlyになっていることがあるようだ。<br/>
+一度 Read, Write and <a class="keyword" href="http://d.hatena.ne.jp/keyword/Access">Access</a> direct messagesに変更して保存し、Read and writeに戻したら有効になった。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170509213451j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170509/20170509213451.jpg" title="f:id:s51517765:20170509213451j:plain"/></span><br/>
+＜5/25更新＞<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>が通っても一度しかTweetが成功しないことが続いた。数時間経過後に再びTweetができるのだが、どうやら同じ内容を連続してTweetしようとすると、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>側から弾かれるらしい。</p>
+</div>

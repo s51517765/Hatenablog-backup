@@ -1,0 +1,78 @@
+<div class="entry-content">
+<p>すでに<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>に投稿するアプリは作成済みですが、<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2017%2F06%2F22%2F225304" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="Twitterへの自動投稿 - プログラミング素人のArduino"></iframe><cite class="hatena-citation"><a href="http://s51517765.hatenadiary.jp/entry/2017/06/22/225304">s51517765.hatenadiary.jp</a></cite><br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2017%2F05%2F07%2F135735" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="C#でTwitterにつぶやく - プログラミング素人のArduino"></iframe><cite class="hatena-citation"><a href="http://s51517765.hatenadiary.jp/entry/2017/05/07/135735">s51517765.hatenadiary.jp</a></cite></p><p>検索機能を実装しました。</p><p>ここからはCoretweetによる<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>接続ができている前提です。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a> <a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>については、<br/>
+<a href="https://dev.twitter.com/rest/reference/get/search/tweets">GET search/tweets — Twitter Developers</a><br/>
+この辺に書かれているらしいですが、実際のところよく解りません。<br/>
+私の英語力の問題なのか？そもそもの基本的な技術力のためか？</p><p>前回同様に、こちらを参考にさせていただきました。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fblog.ch3cooh.jp%2Fentry%2F20150119%2F1421631000" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="C#とCoreTweetを使って特定のキーワードを含むツイートを検索する - 酢ろぐ！"></iframe><cite class="hatena-citation"><a href="http://blog.ch3cooh.jp/entry/20150119/1421631000">blog.ch3cooh.jp</a></cite></p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>上でのグローバル検索。<br/>
+tokensが有効な状態で、<br/>
+var result = tokens.Search.Tweets(count =&gt; 100, q =&gt; keyword); <br/>
+で検索結果を取得。<br/>
+検索結果を取得すると変数"result"に値が入りますが、これは配列のようになっていて、Tweet内容のほかに、ユーザー名、言語情報（日本語か英語かなど）、時刻、ロケーション（<a class="keyword" href="http://d.hatena.ne.jp/keyword/GPS">GPS</a>情報）などが含まれています。<br/>
+このなかから必要な情報を使用します。</p><p>VSのDebugモードで一時停止すると、変数"result"の中身を確認できます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170819192657p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170819/20170819192657.png" title="f:id:s51517765:20170819192657p:plain"/></span><br/>
+このなかの「結果ビュー」を開きます。<br/>
+配列のように、Tweetが並んでいてこれが↓のコードのvalueと推測できます。<br/>
+さらにこの中からUserという項目があります。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170819192711p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170819/20170819192711.png" title="f:id:s51517765:20170819192711p:plain"/></span><br/>
+これがUser情報と推測できます。<br/>
+さらにこのUserを開くと"Name"と"ScreenName"がほしい変数であるとわかることができます。</p><p>foreachでvalue（個別tweet）に総当たりし、<br/>
+tring scrName = value.User.ScreenName<br/>
+のように取得します。<br/>
+（フォルダ構造もしくはClassのようにピリオド区切りですね）<br/>
+これで、ユーザーID、ユーザー名、Tweetが取得できました。<br/>
+↓「電子工作」の検索結果。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170819192719j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170819/20170819192719.jpg" title="f:id:s51517765:20170819192719j:plain"/></span></p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>での検索は、複数文節のKeywordを指定すると単語ごとに分割されるようです。<br/>
+例えば「今日の電子工作」は「今日」and「電子工作」のような扱いになります。orかもしれないし、厳密には不明。<br/>
+ただし、この<a class="keyword" href="http://d.hatena.ne.jp/keyword/%CF%C0%CD%FD%C0%D1">論理積</a>も厳密ではなく複数を指定しても一つしか含まれていなくても検索結果として帰ってくることがあります。<br/>
+厳密に行いたいときは、<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>上でTextをクローリングしマッチするかどうか判断する必要があります。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">      <span class="synType">private</span> <span class="synType">void</span> TweetSearch()
+        {
+            <span class="synComment">//グローバル検索</span>
+            <span class="synType">string</span> keyword = <span class="synConstant">"電子工作"</span>;
+            var tokens = Tokens.Create(API_Key, API_Secret, A_Token, A_TokenSecret);
+            var result = tokens.Search.Tweets(count =&gt; <span class="synConstant">100</span>, q =&gt; keyword); 
+                <span class="synComment">//countは読み込み数。指定しなければDefoultの数値が入る。</span>
+            <span class="synStatement">foreach</span> (var <span class="synStatement">value</span> <span class="synStatement">in</span> result)
+            {
+                <span class="synType">string</span> scrName = <span class="synStatement">value</span>.User.ScreenName; <span class="synComment">//@User_ID</span>
+                <span class="synType">string</span> name = <span class="synStatement">value</span>.User.Name; <span class="synComment">//ユーザー名</span>
+                <span class="synType">string</span> text = <span class="synStatement">value</span>.Text; <span class="synComment">//Tweet</span>
+                textBoxStatus.AppendText(<span class="synConstant">"@"</span> + scrName.ToString() + <span class="synConstant">" / "</span> + name + System.Environment.NewLine + text + System.Environment.NewLine);
+            }
+        }
+</pre><p>タイムラインの取得</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""> <span class="synType">private</span> <span class="synType">void</span> getTimeLine()
+        {            
+            var tokens = Tokens.Create(API_Key, API_Secret, A_Token, A_TokenSecret);
+            var home = tokens.Statuses.HomeTimeline();
+            <span class="synStatement">foreach</span> (var tweet <span class="synStatement">in</span> home)
+            {
+              textBoxStatus.AppendText(tweet.Text.ToString() + System.Environment.NewLine);
+            }
+         }
+</pre><p>ユーザー検索</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">        <span class="synType">private</span> <span class="synType">void</span> UserSearch()
+        {
+            var tokens = Tokens.Create(API_Key, API_Secret, A_Token, A_TokenSecret);
+             IEnumerable&lt;User&gt; matchedUsers = tokens.Users.Search(q =&gt; keyword);
+            <span class="synStatement">foreach</span> (var <span class="synStatement">value</span> <span class="synStatement">in</span> matchedUsers)
+            {
+                <span class="synType">string</span> description = <span class="synStatement">value</span>.Description; <span class="synComment">//自己紹介</span>
+                <span class="synType">string</span> scrName = <span class="synStatement">value</span>.ScreenName; <span class="synComment">//@User_ID</span>
+                textBoxStatus.AppendText(<span class="synConstant">"@"</span> + scrName.ToString() + System.Environment.NewLine + description + System.Environment.NewLine);
+            }
+        }
+</pre><p>自分のTweetの取得</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">        <span class="synType">private</span> <span class="synType">void</span> MyTimeLine()
+        {            
+            var tokens = Tokens.Create(API_Key, API_Secret, A_Token, A_TokenSecret);
+                var home = tokens.Statuses.UserTimeline(count =&gt; <span class="synConstant">10</span>);
+                <span class="synStatement">foreach</span> (Status status <span class="synStatement">in</span> home) 
+                {
+                    textBoxStatus.AppendText(status.User.ScreenName +<span class="synConstant">" / "</span> + status.Text+ System.Environment.NewLine);
+                }                     
+        }
+</pre>
+</div>

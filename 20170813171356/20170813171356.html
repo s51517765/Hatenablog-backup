@@ -1,0 +1,359 @@
+<div class="entry-content">
+<p>3目並べとはこのようなものですが、<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170813170441p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170813/20170813170441.png" title="f:id:s51517765:20170813170441p:plain"/></span><br/>
+<a href="https://ja.wikipedia.org/wiki/%E4%B8%89%E7%9B%AE%E4%B8%A6%E3%81%B9">三目並べ - Wikipedia</a></p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%BF%CD%B9%A9%C3%CE%C7%BD">人工知能</a>ならぬ「<a class="keyword" href="http://d.hatena.ne.jp/keyword/%BF%CD%B9%A9%CC%B5%C7%BD">人工無能</a>」で<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>で作成しました。<br/>
+無能な所以は、Computerは乱数で指すだけだから。</p><p>このゲームは今、AI界隈で流行りの「将棋」や「<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B0%CF%B8%EB">囲碁</a>」と比べて、すこぶる単純で、勝敗判定も総当たりで実現できます。</p><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170813171000j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170813/20170813171000.jpg" title="f:id:s51517765:20170813171000j:plain"/></span></p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%B0%A4%B0%A4%EB">ぐぐる</a>と、プログラミングしている例はあると思いますが、今回はこんなですが完全自力です。<br/>
+素人なので、効率的な<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A2%A5%EB%A5%B4%A5%EA%A5%BA%A5%E0">アルゴリズム</a>ではないかもしれませんし、一つどうしても修正できない部分もあります。<br/>
+//ここだけ強引<br/>
+と書いてあるところ。<br/>
+いずれ考えなおして修正します。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synStatement">using</span> System;
+<span class="synStatement">using</span> System.Windows.Forms;
+
+<span class="synType">namespace</span> _3x3
+{
+    <span class="synType">public</span> <span class="synStatement">partial</span> <span class="synType">class</span> Form1 : Form
+    {
+        <span class="synType">public</span> Form1()
+        {
+            InitializeComponent();
+        }
+        <span class="synType">bool</span> teban = <span class="synConstant">true</span>;
+        <span class="synType">int</span> shouhai = <span class="synConstant">0</span>;
+        <span class="synType">int</span> count = <span class="synConstant">0</span>;
+        <span class="synType">int</span>[,] Array = <span class="synStatement">new</span> <span class="synType">int</span>[,] { { <span class="synConstant">0</span>, <span class="synConstant">0</span>, <span class="synConstant">0</span> }, { <span class="synConstant">0</span>, <span class="synConstant">0</span>, <span class="synConstant">0</span> }, { <span class="synConstant">0</span>, <span class="synConstant">0</span>, <span class="synConstant">0</span> } };
+
+        <span class="synType">private</span> <span class="synType">void</span> Form1_Load(<span class="synType">object</span> sender, EventArgs e)
+        {                      
+        }
+        
+        <span class="synType">private</span> <span class="synType">void</span> hantei()
+        {
+            <span class="synStatement">if</span> (Array[<span class="synConstant">0</span>, <span class="synConstant">0</span>] == <span class="synConstant">1</span>)
+            {
+                button00.Text = <span class="synConstant">"〇"</span>;
+            }
+            <span class="synStatement">else</span> <span class="synStatement">if</span>(Array[<span class="synConstant">0</span>,<span class="synConstant">0</span>]==-<span class="synConstant">1</span>)
+            {
+                button00.Text = <span class="synConstant">"●"</span>;
+            }
+            <span class="synStatement">if</span> (Array[<span class="synConstant">0</span>, <span class="synConstant">1</span>] == <span class="synConstant">1</span>)
+            {
+                button01.Text = <span class="synConstant">"〇"</span>;
+            }
+            <span class="synStatement">else</span> <span class="synStatement">if</span> (Array[<span class="synConstant">0</span>, <span class="synConstant">1</span>] == -<span class="synConstant">1</span>)
+            {
+                button01.Text = <span class="synConstant">"●"</span>;
+            }
+            <span class="synStatement">if</span> (Array[<span class="synConstant">0</span>, <span class="synConstant">2</span>] == <span class="synConstant">1</span>)
+            {
+                button02.Text = <span class="synConstant">"〇"</span>;
+            }
+            <span class="synStatement">else</span> <span class="synStatement">if</span> (Array[<span class="synConstant">0</span>, <span class="synConstant">2</span>] == -<span class="synConstant">1</span>)
+            {
+                button02.Text = <span class="synConstant">"●"</span>;
+            }
+            <span class="synStatement">if</span> (Array[<span class="synConstant">1</span>, <span class="synConstant">0</span>] == <span class="synConstant">1</span>)
+            {
+                button10.Text = <span class="synConstant">"〇"</span>;
+            }
+            <span class="synStatement">else</span> <span class="synStatement">if</span> (Array[<span class="synConstant">1</span>, <span class="synConstant">0</span>] == -<span class="synConstant">1</span>)
+            {
+                button10.Text = <span class="synConstant">"●"</span>;
+            }
+            <span class="synStatement">if</span> (Array[<span class="synConstant">1</span>, <span class="synConstant">1</span>] == <span class="synConstant">1</span>)
+            {
+                button11.Text = <span class="synConstant">"〇"</span>;
+            }
+            <span class="synStatement">else</span> <span class="synStatement">if</span> (Array[<span class="synConstant">1</span>, <span class="synConstant">1</span>] == -<span class="synConstant">1</span>)
+            {
+                button11.Text = <span class="synConstant">"●"</span>;
+            }
+            <span class="synStatement">if</span> (Array[<span class="synConstant">1</span>, <span class="synConstant">2</span>] == <span class="synConstant">1</span>)
+            {
+                button12.Text = <span class="synConstant">"〇"</span>;
+            }
+            <span class="synStatement">else</span> <span class="synStatement">if</span> (Array[<span class="synConstant">1</span>, <span class="synConstant">2</span>] == -<span class="synConstant">1</span>)
+            {
+                button12.Text = <span class="synConstant">"●"</span>;
+            }
+            <span class="synStatement">if</span> (Array[<span class="synConstant">2</span>, <span class="synConstant">0</span>] == <span class="synConstant">1</span>)
+            {
+                button20.Text = <span class="synConstant">"〇"</span>;
+            }
+            <span class="synStatement">else</span> <span class="synStatement">if</span> (Array[<span class="synConstant">2</span>, <span class="synConstant">0</span>] == -<span class="synConstant">1</span>)
+            {
+                button20.Text = <span class="synConstant">"●"</span>;
+            }
+            <span class="synStatement">if</span> (Array[<span class="synConstant">2</span>, <span class="synConstant">1</span>] == <span class="synConstant">1</span>)
+            {
+                button21.Text = <span class="synConstant">"〇"</span>;
+            }
+            <span class="synStatement">else</span> <span class="synStatement">if</span> (Array[<span class="synConstant">2</span>, <span class="synConstant">1</span>] == -<span class="synConstant">1</span>)
+            {
+                button21.Text = <span class="synConstant">"●"</span>;
+            }
+            <span class="synStatement">if</span> (Array[<span class="synConstant">2</span>, <span class="synConstant">2</span>] == <span class="synConstant">1</span>)
+            {
+                button22.Text = <span class="synConstant">"〇"</span>;
+            }
+            <span class="synStatement">else</span> <span class="synStatement">if</span> (Array[<span class="synConstant">2</span>, <span class="synConstant">2</span>] == -<span class="synConstant">1</span>)
+            {
+                button22.Text = <span class="synConstant">"●"</span>;
+            }
+
+            <span class="synType">int</span> sum = <span class="synConstant">0</span>;
+            <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; <span class="synConstant">3</span>; i++)
+            {
+                <span class="synStatement">for</span> (<span class="synType">int</span> j = <span class="synConstant">0</span>; j &lt; <span class="synConstant">3</span>; j++)
+                {
+                    sum += Array[i, j];
+
+                }
+                <span class="synStatement">if</span> (sum == <span class="synConstant">3</span>)
+                {
+                   shouhai = <span class="synConstant">1</span>;
+                }
+                <span class="synStatement">else</span> <span class="synStatement">if</span>(sum ==-<span class="synConstant">3</span>)
+                {
+                       shouhai = -<span class="synConstant">1</span>;
+                }
+                sum = <span class="synConstant">0</span>;
+            }
+            <span class="synStatement">for</span> (<span class="synType">int</span> j = <span class="synConstant">0</span>; j &lt; <span class="synConstant">3</span>; j++)
+            {
+                <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; <span class="synConstant">3</span>; i++)
+                {
+                    sum += Array[i, j];
+
+                }
+                <span class="synStatement">if</span> (sum == <span class="synConstant">3</span>)
+                {
+                    shouhai = <span class="synConstant">1</span>;
+                }
+                <span class="synStatement">else</span> <span class="synStatement">if</span> (sum == -<span class="synConstant">3</span>)
+                {
+                    shouhai = -<span class="synConstant">1</span>;
+                }
+                sum = <span class="synConstant">0</span>;
+            }
+            <span class="synStatement">if</span> (Array[<span class="synConstant">0</span>, <span class="synConstant">0</span>] + Array[<span class="synConstant">1</span>, <span class="synConstant">1</span>] + Array[<span class="synConstant">2</span>, <span class="synConstant">2</span>] == <span class="synConstant">3</span>) <span class="synComment">//斜め</span>
+            {
+                shouhai = <span class="synConstant">1</span>;
+            }
+            <span class="synStatement">else</span> <span class="synStatement">if</span> (Array[<span class="synConstant">0</span>, <span class="synConstant">0</span>] + Array[<span class="synConstant">1</span>, <span class="synConstant">1</span>] + Array[<span class="synConstant">2</span>, <span class="synConstant">2</span>] == -<span class="synConstant">3</span>)
+            {
+                shouhai = -<span class="synConstant">1</span>;
+            }
+            <span class="synStatement">if</span> (Array[<span class="synConstant">2</span>, <span class="synConstant">0</span>] + Array[<span class="synConstant">1</span>, <span class="synConstant">1</span>] + Array[<span class="synConstant">0</span>, <span class="synConstant">2</span>] == <span class="synConstant">3</span>)  <span class="synComment">//斜め</span>
+            {
+                shouhai = <span class="synConstant">1</span>;
+            }
+            <span class="synStatement">else</span> <span class="synStatement">if</span> (Array[<span class="synConstant">2</span>, <span class="synConstant">0</span>] + Array[<span class="synConstant">1</span>, <span class="synConstant">1</span>] + Array[<span class="synConstant">0</span>, <span class="synConstant">2</span>] == -<span class="synConstant">3</span>)
+            {
+                 shouhai = -<span class="synConstant">1</span>;
+            }
+
+
+
+            <span class="synStatement">if</span> (teban == <span class="synConstant">true</span>)
+            {
+                count++;
+            }
+            <span class="synStatement">else</span> <span class="synStatement">if</span> (shouhai == <span class="synConstant">0</span>)
+            {
+
+                DateTime now = DateTime.Now;
+                <span class="synType">int</span> set;
+                set = now.Second + <span class="synConstant">2</span>;
+                <span class="synStatement">if</span> (set &gt; <span class="synConstant">59</span>)
+                {
+                    set = set - <span class="synConstant">60</span>;
+                }
+                <span class="synStatement">while</span> (DateTime.Now.Second - set != <span class="synConstant">0</span>) { }
+
+                Random r = <span class="synStatement">new</span> Random();
+                <span class="synType">int</span> randX = r.Next(<span class="synConstant">0</span>, <span class="synConstant">3</span>);
+                <span class="synType">int</span> randY = r.Next(<span class="synConstant">0</span>, <span class="synConstant">3</span>);
+                <span class="synStatement">while</span> (Array[randX, randY] != <span class="synConstant">0</span> &amp;&amp; shouhai == <span class="synConstant">0</span>)
+                {
+                    randX = r.Next(<span class="synConstant">0</span>, <span class="synConstant">3</span>);
+                    randY = r.Next(<span class="synConstant">0</span>, <span class="synConstant">3</span>);
+                }
+                Array[randX, randY] = -<span class="synConstant">1</span>;
+                teban = !teban;
+                hantei();
+                count++;              
+            }
+
+            <span class="synStatement">if</span> (shouhai == <span class="synConstant">1</span>)
+            {
+                MessageBox.Show(<span class="synConstant">"You Win!"</span>);
+            }
+            <span class="synStatement">else</span> <span class="synStatement">if</span> (shouhai == -<span class="synConstant">1</span>)
+            {
+                MessageBox.Show(<span class="synConstant">"You Lose!"</span>);
+                shouhai = <span class="synConstant">2</span>;
+                count = <span class="synConstant">10</span>;   <span class="synComment">//ここだけ強引</span>
+            }
+            <span class="synStatement">else</span> <span class="synStatement">if</span> (count == <span class="synConstant">9</span>)
+            {
+                MessageBox.Show(<span class="synConstant">"Draw!"</span>);
+                shouhai = <span class="synConstant">2</span>;
+            }
+        }
+
+        <span class="synType">private</span> <span class="synType">void</span> button00_Click(<span class="synType">object</span> sender, EventArgs e)
+        {
+            <span class="synStatement">if</span> (teban == <span class="synConstant">true</span>)
+            {              
+                Array[<span class="synConstant">0</span>, <span class="synConstant">0</span>] = <span class="synConstant">1</span>;
+            }
+            <span class="synStatement">else</span>
+            {               
+                Array[<span class="synConstant">0</span>, <span class="synConstant">0</span>] = -<span class="synConstant">1</span>;
+            }
+            teban = !teban;
+            hantei();
+         }
+
+        <span class="synType">private</span> <span class="synType">void</span> button01_Click(<span class="synType">object</span> sender, EventArgs e)
+        {
+            <span class="synStatement">if</span> (teban == <span class="synConstant">true</span>)
+            {
+                Array[<span class="synConstant">0</span>, <span class="synConstant">1</span>] = <span class="synConstant">1</span>;
+            }
+            <span class="synStatement">else</span>
+            {               
+                Array[<span class="synConstant">0</span>, <span class="synConstant">1</span>] = -<span class="synConstant">1</span>;
+            }
+            teban = !teban;
+            hantei();
+        }
+
+        <span class="synType">private</span> <span class="synType">void</span> button02_Click(<span class="synType">object</span> sender, EventArgs e)
+        {
+            <span class="synStatement">if</span> (teban == <span class="synConstant">true</span>)
+            {               
+                Array[<span class="synConstant">0</span>, <span class="synConstant">2</span>] = <span class="synConstant">1</span>;
+            }
+            <span class="synStatement">else</span>
+            {
+                Array[<span class="synConstant">0</span>, <span class="synConstant">2</span>] = -<span class="synConstant">1</span>;
+            }
+            teban = !teban;
+            hantei();
+        }
+
+        <span class="synType">private</span> <span class="synType">void</span> button10_Click(<span class="synType">object</span> sender, EventArgs e)
+        {
+            <span class="synStatement">if</span> (teban == <span class="synConstant">true</span>)
+            {
+                Array[<span class="synConstant">1</span>, <span class="synConstant">0</span>] = <span class="synConstant">1</span>;
+            }
+            <span class="synStatement">else</span>
+            {
+                Array[<span class="synConstant">1</span>, <span class="synConstant">0</span>] = -<span class="synConstant">1</span>;
+            }
+            teban = !teban;
+            hantei();
+        }
+
+        <span class="synType">private</span> <span class="synType">void</span> button11_Click(<span class="synType">object</span> sender, EventArgs e)
+        {
+            <span class="synStatement">if</span> (teban == <span class="synConstant">true</span>)
+            {
+                Array[<span class="synConstant">1</span>, <span class="synConstant">1</span>] = <span class="synConstant">1</span>;
+            }
+            <span class="synStatement">else</span>
+            {
+                Array[<span class="synConstant">1</span>, <span class="synConstant">1</span>] = -<span class="synConstant">1</span>;
+            }
+            teban = !teban;
+            hantei();
+        }
+
+        <span class="synType">private</span> <span class="synType">void</span> button12_Click(<span class="synType">object</span> sender, EventArgs e)
+        {
+            <span class="synStatement">if</span> (teban == <span class="synConstant">true</span>)
+            {
+                Array[<span class="synConstant">1</span>, <span class="synConstant">2</span>] = <span class="synConstant">1</span>;
+            }
+            <span class="synStatement">else</span>
+            {
+                Array[<span class="synConstant">1</span>, <span class="synConstant">2</span>] = -<span class="synConstant">1</span>;
+            }
+            teban = !teban;
+            hantei();
+        }
+
+        <span class="synType">private</span> <span class="synType">void</span> button20_Click(<span class="synType">object</span> sender, EventArgs e)
+        {
+            <span class="synStatement">if</span> (teban == <span class="synConstant">true</span>)
+            {
+                Array[<span class="synConstant">2</span>, <span class="synConstant">0</span>] = <span class="synConstant">1</span>;
+            }
+            <span class="synStatement">else</span>
+            {
+                Array[<span class="synConstant">2</span>, <span class="synConstant">0</span>] = -<span class="synConstant">1</span>;
+            }
+            teban = !teban;
+            hantei();
+        }
+
+        <span class="synType">private</span> <span class="synType">void</span> button21_Click(<span class="synType">object</span> sender, EventArgs e)
+        {
+            <span class="synStatement">if</span> (teban == <span class="synConstant">true</span>)
+            {
+                Array[<span class="synConstant">2</span>, <span class="synConstant">1</span>] = <span class="synConstant">1</span>;
+            }
+            <span class="synStatement">else</span>
+            {
+                Array[<span class="synConstant">2</span>, <span class="synConstant">1</span>] = -<span class="synConstant">1</span>;
+            }
+            teban = !teban;
+            hantei();
+        }
+
+        <span class="synType">private</span> <span class="synType">void</span> button22_Click(<span class="synType">object</span> sender, EventArgs e)
+        {
+            <span class="synStatement">if</span> (teban == <span class="synConstant">true</span>)
+            {
+                Array[<span class="synConstant">2</span>, <span class="synConstant">2</span>] = <span class="synConstant">1</span>;
+            }
+            <span class="synStatement">else</span>
+            {
+                Array[<span class="synConstant">2</span>, <span class="synConstant">2</span>] = -<span class="synConstant">1</span>;
+            }
+            teban = !teban;
+            hantei();
+        }
+
+        <span class="synType">private</span> <span class="synType">void</span> buttonRestart_Click(<span class="synType">object</span> sender, EventArgs e)
+        {
+            shouhai = <span class="synConstant">0</span>;
+            count = <span class="synConstant">0</span>;
+            teban = <span class="synConstant">true</span>;
+            button00.Text = <span class="synConstant">""</span>;
+            button01.Text = <span class="synConstant">""</span>;
+            button02.Text = <span class="synConstant">""</span>;
+            button10.Text = <span class="synConstant">""</span>;
+            button11.Text = <span class="synConstant">""</span>;
+            button12.Text = <span class="synConstant">""</span>;
+            button20.Text = <span class="synConstant">""</span>;
+            button21.Text = <span class="synConstant">""</span>;
+            button22.Text = <span class="synConstant">""</span>;
+
+            <span class="synStatement">for</span> (<span class="synType">int</span> j = <span class="synConstant">0</span>; j &lt; <span class="synConstant">3</span>; j++)
+            {
+                <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; <span class="synConstant">3</span>; i++)
+                {
+                    Array[j, i] = <span class="synConstant">0</span>;
+                }
+            }
+        }
+    }
+
+    }
+</pre>
+</div>

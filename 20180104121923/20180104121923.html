@@ -1,0 +1,77 @@
+<div class="entry-content">
+<p>ラズパイによる<a class="keyword" href="http://d.hatena.ne.jp/keyword/bot">bot</a>として<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%CF%A4%C6%A4%CA%A5%D6%A5%ED%A5%B0">はてなブログ</a>のエントリーをTweetする機能を作っています。</p><blockquote class="twitter-tweet" data-lang="ja"><p dir="ltr" lang="ja">【プログラミング素人の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%CF%A4%C6%A4%CA%A5%D6%A5%ED%A5%B0">はてなブログ</a>】<a class="keyword" href="http://d.hatena.ne.jp/keyword/JSON">JSON</a>形式からのData取得と辞書書式 <a href="https://t.co/bIuwdtqVLo">https://t.co/bIuwdtqVLo</a></p>— プログラミング素人 (@s51517765) <a href="https://twitter.com/s51517765/status/948456478427332608?ref_src=twsrc%5Etfw">2018年1月3日</a></blockquote><script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script><p>これまでは、Tweetの定型文を手動で入力していましたが、自分の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%CF%A4%C6%A4%CA%A5%D6%A5%ED%A5%B0">はてなブログ</a>のエントリー一覧から自動生成することを考えました。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%CF%A4%C6%A4%CA%A5%D6%A5%ED%A5%B0">はてなブログ</a>のエントリー一覧は↓のようなURLから取得できそうです。</p>
+<pre class="code" data-lang="" data-unlink="">http://s51517765.hatenadiary.jp/archive?page=2</pre><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fs51517765.hatenadiary.jp%2Farchive%3Fpage%3D2" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="記事一覧 2ページ目 - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="http://s51517765.hatenadiary.jp/archive?page=2">s51517765.hatenadiary.jp</a></cite><br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180105213336j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180105/20180105213336.jpg" title="f:id:s51517765:20180105213336j:plain"/></span></p><p>エントリー一覧のURLは末尾の数字を順番に増やして取得できると推測できます。<br/>
+以前に、<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>で作成した<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EC%A5%A4%A5%D4%A5%F3%A5%B0">スクレイピング</a>ツールもあり、こちらでも機能を拡張すれば可能です。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2017%2F05%2F12%2F201846" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="C#でウェブスクレイピング - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="http://s51517765.hatenadiary.jp/entry/2017/05/12/201846">s51517765.hatenadiary.jp</a></cite></p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>ではbeautifulsoupというモジュールが簡単ということなので、試してみました。<br/>
+↓を参考にしました。</p><div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/487311778X/shirotoakb-22/"><img alt="退屈なことはPythonにやらせよう ―ノンプログラマーにもできる自動化処理プログラミング" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/51hk%2B5bKNrL._SL160_.jpg" title="退屈なことはPythonにやらせよう ―ノンプログラマーにもできる自動化処理プログラミング"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/487311778X/shirotoakb-22/">退屈なことはPythonにやらせよう ―ノンプログラマーにもできる自動化処理プログラミング</a></p><ul><li><span class="hatena-asin-detail-label">作者:</span> Al Sweigart,相川愛三</li><li><span class="hatena-asin-detail-label">出版社/メーカー:</span> <a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AA%A5%E9%A5%A4%A5%EA%A1%BC%A5%B8%A5%E3%A5%D1%A5%F3">オライリージャパン</a></li><li><span class="hatena-asin-detail-label">発売日:</span> 2017/06/03</li><li><span class="hatena-asin-detail-label">メディア:</span> 単行本（ソフトカバー）</li><li><a href="http://d.hatena.ne.jp/asin/487311778X/shirotoakb-22" target="_blank">この商品を含むブログ (5件) を見る</a></li></ul></div><div class="hatena-asin-detail-foot"></div></div><p>beautifulsoupはurlを指定してhtmlを取得し、その中から指定したタグを抽出するということが容易にできるそうです。<br/>
+そこで、以下のようにプログラミングします。<br/>
+①Urlを指定しhtmlを取得<br/>
+②エントリーのタグを抽出し、この中から、エントリーのタイトルとurlを取得<br/>
+③次のページに移動<br/>
+④エントリーがなくなったら終了</p><p>”a”のタグはLinkを示していて、htmlの中から"a"を取得します。<br/>
+この取得した一覧はlist形式になっています。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">    html = requests.get(url)
+    soup = BeautifulSoup(html.text, <span class="synConstant">'lxml'</span>) <span class="synComment">##lxmlを指定するほうがよい</span>
+    alink = soup.select(<span class="synConstant">'a'</span>) <span class="synComment">#linkの一覧をListとして取得</span>
+</pre><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180104115111j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180104/20180104115111.jpg" title="f:id:s51517765:20180104115111j:plain"/></span></p><p>この中から、classが "entry-title-link" であるものを抽出します。<br/>
+htmlを知っていればわかると思いますが、classはhtmlの記法の一つで、ここで言えば ”entry-title-link” のクラスを指定していて、別途設定したスタイルを適用するようになっています。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">if</span> <span class="synConstant">'entry-title-link'</span> <span class="synStatement">in</span> alink[i].get(<span class="synConstant">'class'</span>):
+</pre><p>リンク要素から、リンクのテキストとurlを取得します。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synIdentifier">print</span>(<span class="synConstant">'【プログラミング素人のはてなブログ】'</span> +alink[i].getText()+<span class="synConstant">' '</span>+alink[i].get(<span class="synConstant">'href'</span>))
+</pre><p>リンクurlを予め宣言しておいた、list=[]に見つからなければ追加しながらprint()します。このようにして重複を防止します。<br/>
+これを、ページを遷移しながら繰り返し、エントリーがなくなるまで続けます。<br/>
+ここではページを遷移しても、新しいurlがでてこなくなれば手動でプログラムを停止します。</p><p>自動化するには「新しいページに新しいurlがない」とか「『記事はありません』という文言を見つけたら終わり」といった方法が考えられますが、これをコーディングするコストがメリットを超えるので手動停止という方法をとりました。<br/>
+これが、実行に数十分かかるとなるとPCの前を離れられないなどのコストがかかり、コーディングするべきとなりますが、ここでは数秒なので、目視で止めることで十分なのです。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">def</span> <span class="synIdentifier">soup_taikutsu</span>(url):
+    html = requests.get(url)
+    soup = BeautifulSoup(html.text, <span class="synConstant">'lxml'</span>) <span class="synComment">##lxmlを指定するほうがよい</span>
+
+    alink = soup.select(<span class="synConstant">'a'</span>) <span class="synComment">#linkの一覧をListとして取得</span>
+
+    <span class="synComment">#print(len(alink)) #Listの長さ</span>
+    <span class="synStatement">for</span> i <span class="synStatement">in</span> <span class="synIdentifier">range</span>(<span class="synIdentifier">len</span>(alink)):
+        <span class="synStatement">if</span> alink[i].get(<span class="synConstant">"class"</span>)!=<span class="synIdentifier">None</span>: <span class="synComment">#クラスが未設定でない</span>
+            <span class="synStatement">if</span> <span class="synConstant">'entry-title-link'</span> <span class="synStatement">in</span> alink[i].get(<span class="synConstant">'class'</span>): <span class="synComment">#エントリーのclassとして指定されているものの時</span>
+                <span class="synStatement">if</span> alink[i].get(<span class="synConstant">"href"</span>) <span class="synStatement">not</span> <span class="synStatement">in</span> <span class="synIdentifier">list</span>: <span class="synComment">#すでに抽出済みでなければ</span>
+                    <span class="synIdentifier">list</span>.append(alink[i].get(<span class="synConstant">"href"</span>))
+                    <span class="synIdentifier">print</span>(<span class="synConstant">'【プログラミング素人のはてなブログ】'</span> +alink[i].getText()+<span class="synConstant">' '</span>+alink[i].get(<span class="synConstant">'href'</span>))
+
+<span class="synStatement">if</span> __name__ == <span class="synConstant">'__main__'</span>:
+    <span class="synIdentifier">list</span>=[]
+    rootUrl=<span class="synConstant">'http://s51517765.hatenadiary.jp/archive?page='</span> <span class="synComment">#エントリー一覧の基本url</span>
+    n=<span class="synConstant">1</span>
+    <span class="synStatement">while</span>(<span class="synIdentifier">True</span>):
+        url=rootUrl+<span class="synIdentifier">str</span>(n)
+        soup_taikutsu(url)
+        n+=<span class="synConstant">1</span>
+</pre><p>このほかにfind_allという関数を使う方法もできました。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">alink = soup.find_all(<span class="synConstant">'a'</span>)
+</pre><p>取得できる結果は同じです。<br/>
+こちらではListではなく "for ~ in ~"でアクセスします。<br/>
+またlink urlに"s51517765.hatenadiary.jp/entry/"が見つかるかどうかで判断しました。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synPreProc">import</span> requests, os, bs4
+
+<span class="synPreProc">from</span> bs4 <span class="synPreProc">import</span> BeautifulSoup
+<span class="synIdentifier">print</span>(<span class="synConstant">"start!"</span>)
+
+<span class="synStatement">def</span> <span class="synIdentifier">soup</span>(url):
+    html = requests.get(url)
+    soup = BeautifulSoup(html.text, <span class="synConstant">'lxml'</span>)
+
+    alink = soup.find_all(<span class="synConstant">'a'</span>)
+
+    <span class="synStatement">for</span> a <span class="synStatement">in</span> alink:
+        
+            <span class="synStatement">if</span> a.string!=<span class="synIdentifier">None</span> <span class="synStatement">and</span> a.get(<span class="synConstant">"href"</span>)!=<span class="synIdentifier">None</span>:
+                <span class="synStatement">if</span> a.get(<span class="synConstant">"href"</span>).find(<span class="synConstant">"s51517765.hatenadiary.jp/entry/"</span>)!=-<span class="synConstant">1</span>: <span class="synComment">#自分のブログの外は除外</span>
+                    <span class="synComment">#print(a.string) #Linkのテキスト</span>
+                    <span class="synComment">#print(a.get("href")) #Linkのurl</span>
+                    <span class="synStatement">if</span> a.get(<span class="synConstant">"href"</span>) <span class="synStatement">not</span> <span class="synStatement">in</span> <span class="synIdentifier">list</span>:　<span class="synComment">#urlがリストに無ければ</span>
+                        <span class="synIdentifier">list</span>.append(a.get(<span class="synConstant">"href"</span>))
+                        <span class="synIdentifier">print</span>(<span class="synConstant">"【プログラミング素人のはてなブログ】"</span> + a.string + <span class="synConstant">" "</span> + a.get(<span class="synConstant">"href"</span>))
+
+<span class="synComment"># mainは同様</span>
+</pre><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20180104121909j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20180104/20180104121909.jpg" title="f:id:s51517765:20180104121909j:plain"/></span></p>
+</div>

@@ -1,0 +1,66 @@
+<div class="entry-content">
+<p><span style="font-size: 13pt;">先の記事ではとりあえずLEDを光らせてみましたが、電気回路には最大の電流値が決まっており、これを超えると回路が壊れたり、LEDなら焼けて、同じく壊れたり増します。</span></p>
+<p> </p>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>の場合は出力Pinあたり20mAだそうです。</p>
+<p>13 pinは5Vの電圧が出ています。</p>
+<p>また、LEDは<a class="keyword" href="http://d.hatena.ne.jp/keyword/VR">VR</a>といって、最大に印加していい電圧があります。</p>
+<p>LEDの<a class="keyword" href="http://d.hatena.ne.jp/keyword/VR">VR</a>はデータシートを確認します。</p>
+<p>赤色ならだいたい５V 、黄色や緑色では３V ぐらいです。</p>
+<p>データシートとは取説のようなもので、製品に同梱されているか、なければネットで調べます。</p>
+<p> </p>
+<p> 一方、Vfという発光電圧があります。LEDは<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C0%A5%A4%A5%AA%A1%BC%A5%C9">ダイオード</a>の一種なので、これ以下では電流が流れず、つまり発光しないということになります。</p>
+<p>Vf=2Vだそうです。</p>
+<p> 今回は製品と一緒に部品表がはいっており、これに書かれていました。</p>
+<p> </p>
+<p>ようするに、今回の場合は</p>
+<p>　<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>から5Vを出力する</p>
+<p>　一方、LEDには2Vを印加したい</p>
+<p>　また、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>は20ｍA以下で使う</p>
+<p> </p>
+<p>というようになります。</p>
+<p>つまり、抵抗を使って電圧を調整する必要があります。</p>
+<p>ではLEDの抵抗はいくつでしょう？</p>
+<p>と考えても答え<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%CF%A4%A8">はえ</a>られません。</p>
+<p>LEDの端子をテスターで測ろうとしても、抵抗は無限大になっています。</p>
+<p> </p>
+<p>これはLEDに流れる電流は<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C8%F3%C0%FE%B7%C1">非線形</a>といって、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AA%A1%BC%A5%E0%A4%CE%CB%A1%C2%A7">オームの法則</a>に従わないからです。</p>
+<p>簡単にいうと、LEDは大きな電圧が掛かったとき、より抵抗が小さくなるからです。</p>
+<p>テスターというのは、極小さな電圧を印加して抵抗を測っています。</p>
+<p>ですから、実際に使用するときと比べて、大きな抵抗が観測されているのです。</p>
+<p> </p>
+<p>LEDの抵抗については、話がむずかしくなるので、</p>
+<p>とりあえず、どれくらいの抵抗をはさめばいいかだけを調べます。</p>
+<p> </p>
+<p>「LED　計算　」などで<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%B0%A4%B0%A4%EB">ぐぐる</a>と必要な抵抗を計算するページが出てきますのでこれを使います。</p>
+<p> </p>
+<p> </p>
+<p>今回の場合は</p>
+<p>5Vを入力し、2Vで使い、20mA以下になるようにする。</p>
+<p><a class="detailOn" href="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111818.png" id="i13470308595"><img alt="" border="0" height="135" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919111818.png" width="220"/></a></p>
+<p> </p>
+<p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fdiy.tommy-bright.com%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="LEDの抵抗値計算"></iframe><cite class="hatena-citation"><a href="http://diy.tommy-bright.com/">diy.tommy-bright.com</a></cite></p>
+<p>150Ωと計算されます。</p>
+<p>手元にある抵抗は、200、3ｋ、100ｋなので200を使いました。</p>
+<p>抵抗が大きければ電流は小さくなるので、150Ω以上ならよいのです。</p>
+<p>ただし、抵抗が大きければ電流は小さくなるのでLEDは暗くなります。</p>
+<p>これで、明るさを調整することもできます。</p>
+<p> </p>
+<p>このように、LED(その他のICなどのパーツ)や<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>自体も過電流には注意が必要なのです。</p>
+<p>だから、電気製品の基盤の上にはたくさんの抵抗がついているんですね。</p>
+<p> </p>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Amazon">Amazon</a>には抵抗もあるんですね。↓↓</p>
+<div class="freezed">
+<div class="hatena-asin-detail"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B01N9H3A5M/shirotoakb-22/"><img alt="KKmoon 1Ω~10MΩ 1/4W 金属皮膜抵抗器 抵抗セット アソートメントキットセット 64種類 各20本入り 合計1280本" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/41-M78bUqBL._SL160_.jpg" title="KKmoon 1Ω~10MΩ 1/4W 金属皮膜抵抗器 抵抗セット アソートメントキットセット 64種類 各20本入り 合計1280本"/></a>
+<div class="hatena-asin-detail-info">
+<p class="hatena-asin-detail-title"><a href="http://www.amazon.co.jp/exec/obidos/ASIN/B01N9H3A5M/shirotoakb-22/">KKmoon 1Ω~10MΩ 1/4W 金属皮膜抵抗器 抵抗セット アソートメントキットセット 64種類 各20本入り 合計1280本</a></p>
+<ul>
+<li><span class="hatena-asin-detail-label">出版社/メーカー:</span> KKmoon</li>
+<li><span class="hatena-asin-detail-label">メディア:</span> その他</li>
+<li><a href="http://d.hatena.ne.jp/asin/B01N9H3A5M/shirotoakb-22" target="_blank">この商品を含むブログを見る</a></li>
+</ul>
+</div>
+<div class="hatena-asin-detail-foot"> </div>
+</div>
+</div>
+<p>  </p>
+</div>

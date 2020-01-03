@@ -1,0 +1,232 @@
+<div class="entry-content">
+<p><a href="https://px.a8.net/svt/ejp?a8mat=2ZTMYI+8SQMLU+50+2HPDPT" rel="nofollow" target="_blank"><br/>
+<img alt="" border="0" height="60" src="https://www20.a8.net/svt/bgt?aid=181101690532&amp;wid=001&amp;eno=01&amp;mid=s00000000018015067000&amp;mc=1" width="468"/></a><br/>
+<img alt="" border="0" height="1" src="https://www16.a8.net/0.gif?a8mat=2ZTMYI+8SQMLU+50+2HPDPT" width="1"/><br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/QR%A5%B3%A1%BC%A5%C9">QRコード</a>とは2次元バーコードの一種で、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%DE%A5%DB">スマホ</a>などで読み取ることで、文字列やURLなどを取得できるものです。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fwww.keyence.co.jp%2Fss%2Fproducts%2Fautoid%2Fcodereader%2Fbasic2d_qr.jsp" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="QRコードの構成 | バーコード講座 | キーエンス"></iframe><cite class="hatena-citation"><a href="https://www.keyence.co.jp/ss/products/autoid/codereader/basic2d_qr.jsp">www.keyence.co.jp</a></cite></p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/QR%A5%B3%A1%BC%A5%C9">QRコード</a>は無料でweb上などのサービスで、好きな内容を書き込んだものを作ることもできます。<br/>
+一方、その内容を読み取るのは専用のアプリ以外では簡単にはできません。<br/>
+そんな、簡単ではないことに挑戦しているのが↓<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fnlab.itmedia.co.jp%2Fnl%2Farticles%2F1801%2F31%2Fnews008.html" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="仕組みが分かれば、スマホなどいらぬ……ッ！　肉眼のみで解読するQRコード講座"></iframe><cite class="hatena-citation"><a href="http://nlab.itmedia.co.jp/nl/articles/1801/31/news008.html">nlab.itmedia.co.jp</a></cite></p><p>仕組みさえわかれば肉眼でもって…。</p><p>そこで肉眼ではなく、我々人類の強い味方、「<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%CB%A5%E5%A1%BC%A5%E9%A5%EB%A5%CD%A5%C3%A5%C8%A5%EF%A1%BC%A5%AF">ニューラルネットワーク</a>」で解読ができるか？ということに挑戦してみました。<br/>
+ここではweb用のURLを<a class="keyword" href="http://d.hatena.ne.jp/keyword/QR%A5%B3%A1%BC%A5%C9">QRコード</a>に書き込んで、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%CB%A5%E5%A1%BC%A5%E9%A5%EB%A5%CD%A5%C3%A5%C8%A5%EF%A1%BC%A5%AF">ニューラルネットワーク</a>で解読してみます。</p><p></p><h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%CB%A5%E5%A1%BC%A5%E9%A5%EB%A5%CD%A5%C3%A5%C8%A5%EF%A1%BC%A5%AF">ニューラルネットワーク</a>の構想</h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%CB%A5%E5%A1%BC%A5%E9%A5%EB%A5%CD%A5%C3%A5%C8%A5%EF%A1%BC%A5%AF">ニューラルネットワーク</a>としてはモノクロの画像に、URLの文字列のn番目、という情報を付加して分類問題として評価します。（もっとスマートな方法があったら教えてください。）<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20181111201051p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20181111/20181111201051.png" title="f:id:s51517765:20181111201051p:plain"/></span><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%CB%A5%E5%A1%BC%A5%E9%A5%EB%A5%CD%A5%C3%A5%C8%A5%EF%A1%BC%A5%AF">ニューラルネットワーク</a>に入力するデータはNumpyのListなので、<code>x_train</code>は</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">[[ <span class="synConstant">1.</span>  <span class="synConstant">1.</span>  <span class="synConstant">1.</span> ...  <span class="synConstant">1.</span>  <span class="synConstant">1.</span>  <span class="synConstant">0.</span>]
+ [ <span class="synConstant">1.</span>  <span class="synConstant">1.</span>  <span class="synConstant">1.</span> ...  <span class="synConstant">1.</span>  <span class="synConstant">1.</span>  <span class="synConstant">1.</span>]
+ [ <span class="synConstant">1.</span>  <span class="synConstant">1.</span>  <span class="synConstant">1.</span> ...  <span class="synConstant">1.</span>  <span class="synConstant">1.</span>  <span class="synConstant">2.</span>]
+ ...
+ [ <span class="synConstant">1.</span>  <span class="synConstant">1.</span>  <span class="synConstant">1.</span> ...  <span class="synConstant">1.</span>  <span class="synConstant">1.</span> <span class="synConstant">27.</span>]
+ [ <span class="synConstant">1.</span>  <span class="synConstant">1.</span>  <span class="synConstant">1.</span> ...  <span class="synConstant">1.</span>  <span class="synConstant">1.</span> <span class="synConstant">28.</span>]
+ [ <span class="synConstant">1.</span>  <span class="synConstant">1.</span>  <span class="synConstant">1.</span> ...  <span class="synConstant">1.</span>  <span class="synConstant">1.</span> <span class="synConstant">29.</span>]]
+</pre><p>のようなイメージになります。（最後の要素が文字列のIndex）<br/>
+<code>y_train</code>は</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">[<span class="synConstant">104.</span> <span class="synConstant">116.</span> <span class="synConstant">116.</span> <span class="synConstant">112.</span>  <span class="synConstant">58.</span>  <span class="synConstant">47.</span>  <span class="synConstant">47.</span> <span class="synConstant">115.</span>  <span class="synConstant">53.</span>  <span class="synConstant">49.</span>  <span class="synConstant">53.</span>  <span class="synConstant">49.</span>  <span class="synConstant">55.</span>  <span class="synConstant">55.</span>
+  <span class="synConstant">54.</span>  <span class="synConstant">53.</span>  <span class="synConstant">46.</span> <span class="synConstant">104.</span>  <span class="synConstant">97.</span> <span class="synConstant">116.</span> <span class="synConstant">101.</span> <span class="synConstant">110.</span>  <span class="synConstant">97.</span> <span class="synConstant">100.</span> <span class="synConstant">105.</span>  <span class="synConstant">97.</span> <span class="synConstant">114.</span> <span class="synConstant">121.</span>
+  <span class="synConstant">46.</span> <span class="synConstant">106.</span> <span class="synConstant">112.</span>  <span class="synConstant">47.</span>]
+</pre><p>↑本ブログのアドレスをバイナリに変換したもの</p><p>URLは最大で30文字とし、30文字未満のときはスペースをいれてpaddingします。</p><p></p><h3>ト<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EC%A1%BC%A5%CB%A5%F3">レーニン</a>グ、テストデータ作成</h3>これも<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>で作成します。<br/>
+最大30文字のURLっぽい文字列をランダムに文字列を出力して作成します。<br/>
+URLに使える文字は<code>list = "abcdefghijklmnopqrstuvwxyz0123456789:/.-http.www.//.co.jp//" </code>としてこのなかからランダムに選びます。よく使われる文字は2回登録し選択される確率を上げるようにしました。<br/>
+これを<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>の
+<pre class="code" data-lang="" data-unlink="">$ pip install qrcode</pre><p>で<a class="keyword" href="http://d.hatena.ne.jp/keyword/QR%A5%B3%A1%BC%A5%C9">QRコード</a>を作成します。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synPreProc">import</span> random
+<span class="synPreProc">import</span> random
+
+max_url_length = <span class="synConstant">30</span>
+min_url_length = <span class="synConstant">25</span>
+
+<span class="synStatement">def</span> <span class="synIdentifier">dec2chr</span>(num):
+    text = <span class="synConstant">""</span>
+    <span class="synStatement">for</span> i <span class="synStatement">in</span> num:
+        i = <span class="synIdentifier">int</span>(i)
+        <span class="synIdentifier">chr</span>(i)
+        text += <span class="synIdentifier">chr</span>(i)
+    <span class="synStatement">return</span> text
+
+<span class="synStatement">def</span> <span class="synIdentifier">makeQR</span>(url, cnt):
+    qr = qrcode.QRCode(version=<span class="synConstant">12</span>, error_correction=qrcode.constants.ERROR_CORRECT_H, box_size=<span class="synConstant">1</span>, border=<span class="synConstant">4</span>)
+    <span class="synIdentifier">print</span>(url)
+    qr.add_data(url)
+    qr.make()
+    img = qr.make_image(fill_color=<span class="synConstant">"black"</span>, back_color=<span class="synConstant">"white"</span>)
+    img.save(cnt + <span class="synConstant">'.jpg'</span>)
+
+<span class="synStatement">def</span> <span class="synIdentifier">make_dataset</span>(count):
+    os.chdir(folder + <span class="synConstant">"/data"</span>)
+    <span class="synStatement">for</span> cnt <span class="synStatement">in</span> <span class="synIdentifier">range</span>(count):
+        y_bin = np.zeros((max_url_length))
+        url_length = random.randint(min_url_length, max_url_length)
+        <span class="synStatement">try</span>:
+            <span class="synStatement">for</span> i <span class="synStatement">in</span> <span class="synIdentifier">range</span>(max_url_length):
+                <span class="synStatement">if</span> i &lt; url_length:
+                    rand = random.randint(<span class="synConstant">0</span>, <span class="synIdentifier">len</span>(<span class="synIdentifier">list</span>) - <span class="synConstant">1</span>)
+                    ii = <span class="synIdentifier">ord</span>(<span class="synIdentifier">list</span>[rand])  <span class="synComment"># chr2dec</span>
+                    y_bin[i] = ii  <span class="synComment"># 10進数バイナリ</span>
+                <span class="synStatement">elif</span> i == url_length:
+                    url = dec2chr(y_bin)
+                    y_bin[i] = <span class="synConstant">32</span>  <span class="synComment"># スペースで埋める</span>
+                <span class="synStatement">else</span>:
+                    y_bin[i] = <span class="synConstant">32</span>  <span class="synComment"># スペースで埋める</span>
+            cnt = cnt.zfill(<span class="synConstant">5</span>)  <span class="synComment"># zero padding</span>
+            makeQR(url, cnt)
+            <span class="synIdentifier">file</span> = <span class="synIdentifier">open</span>(<span class="synConstant">'list.txt'</span>, <span class="synConstant">'a'</span>, encoding=<span class="synConstant">'utf'</span>)  <span class="synComment"># 書き込みモードでオープン</span>
+            <span class="synIdentifier">file</span>.write(url + <span class="synConstant">"</span><span class="synSpecial">\n</span><span class="synConstant">"</span>)
+        <span class="synStatement">except</span>:
+            <span class="synIdentifier">print</span>(<span class="synConstant">"Error= "</span>, url)
+
+<span class="synStatement">if</span> __name__ == <span class="synConstant">"__main__"</span>:
+    make_dataset(<span class="synConstant">400</span>)
+</pre><p>ト<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EC%A1%BC%A5%CB%A5%F3">レーニン</a>グ用、テスト用として400個作成しました。<br/>
+URL（正解）はテキストファイルに同時に出力しておきます。</p><p>ここで、最初ハマってしまったのが、数字のファイル名の読み込み順（ソート順）です。<br/>
+数字の順番に読み込まれると思い込んでいましたが、たとえば…18、19、20…ではなく18、19、100となってしまいます。<br/>
+そこで、</p>
+<pre class="code" data-lang="" data-unlink=""> cnt = cnt.zfill(5)  # zero padding</pre><p>このようにゼロで埋めます。<br/>
+これで…00018、00019、00020…とすることができます。</p><p></p><h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%CB%A5%E5%A1%BC%A5%E9%A5%EB%A5%CD%A5%C3%A5%C8%A5%EF%A1%BC%A5%AF">ニューラルネットワーク</a>で学習</h3>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synPreProc">from</span> keras.utils.np_utils <span class="synPreProc">import</span> to_categorical
+<span class="synPreProc">from</span> keras.layers <span class="synPreProc">import</span> Dense
+<span class="synPreProc">from</span> keras.models <span class="synPreProc">import</span> Sequential
+<span class="synPreProc">import</span> numpy <span class="synStatement">as</span> np
+<span class="synPreProc">import</span> os
+<span class="synPreProc">import</span> glob
+<span class="synPreProc">from</span> PIL <span class="synPreProc">import</span> Image
+
+train_size = <span class="synConstant">360</span> 
+test_size = <span class="synConstant">40</span>
+list_size = <span class="synConstant">30</span>
+max_num = <span class="synConstant">122</span> + <span class="synConstant">1</span>  <span class="synComment"># 正解に使われる最大が122だから0～122で123分類？</span>
+size = <span class="synConstant">73</span>
+
+model_weight = <span class="synConstant">'cnn_qr.hdf5'</span>  <span class="synComment"># モデルを保存する名前</span>
+
+np.set_printoptions(precision=<span class="synConstant">2</span>, suppress=<span class="synIdentifier">True</span>)  <span class="synComment"># 指数表示禁止、少数表示</span>
+np.set_printoptions(threshold=<span class="synConstant">300000</span>)  <span class="synComment"># 要素の省略禁止</span>
+folder = <span class="synConstant">"C:/Users/***/Projects/QRcode"</span>
+
+<span class="synStatement">def</span> <span class="synIdentifier">np_chr2dec</span>(text): <span class="synComment">#文字列をnumpy配列に</span>
+    y = np.array([])
+    <span class="synStatement">for</span> j <span class="synStatement">in</span> text:
+        i = <span class="synIdentifier">ord</span>(j)
+        y = np.append(y, i)
+    <span class="synStatement">return</span> y
+
+<span class="synStatement">def</span> <span class="synIdentifier">model_build</span>():
+    x_train = []  <span class="synComment"># 普通のリスト</span>
+    x_test = []
+    y_train = []
+    y_test = []
+
+    <span class="synIdentifier">file</span> = <span class="synIdentifier">open</span>(<span class="synConstant">'list.txt'</span>, <span class="synConstant">'r'</span>, encoding=<span class="synConstant">'utf'</span>)  <span class="synComment"># ファイルオープン</span>
+    url_list = []
+    <span class="synStatement">while</span> (<span class="synIdentifier">True</span>):
+        Line = <span class="synIdentifier">file</span>.readline()
+        <span class="synStatement">if</span> Line == <span class="synConstant">""</span>:
+            <span class="synStatement">break</span>
+        <span class="synIdentifier">print</span>(Line)
+        Line = Line.replace(<span class="synConstant">"</span><span class="synSpecial">\n</span><span class="synConstant">"</span>, <span class="synConstant">""</span>)
+        url_list.append(np_chr2dec(Line))  <span class="synComment"># 10進数に変換して追加</span>
+
+    <span class="synComment"># Trainデータ作成</span>
+    image_count = <span class="synConstant">0</span>
+    os.chdir(folder + <span class="synConstant">"/data"</span>)
+    filelist = glob.glob(<span class="synConstant">"./*"</span>)
+    <span class="synIdentifier">print</span>(<span class="synIdentifier">type</span>(url_list))
+    <span class="synStatement">for</span> picture <span class="synStatement">in</span> filelist:
+        <span class="synStatement">if</span> <span class="synConstant">".jpg"</span> <span class="synStatement">in</span> picture:
+            <span class="synIdentifier">print</span>(<span class="synConstant">"picture = "</span> + picture)
+            image = np.array(Image.<span class="synIdentifier">open</span>(folder + <span class="synConstant">"/data/"</span> + picture).convert(<span class="synConstant">'L'</span>))  <span class="synComment"># モノクロ　'L'</span>
+            <span class="synComment"># reshapeを使って開かれた配列を1次元配列に変換する</span>
+            image_risize = image.reshape(image.size)
+            image_risize = image_risize.astype(<span class="synConstant">'float32'</span>) / <span class="synConstant">255</span>
+            <span class="synStatement">if</span> <span class="synIdentifier">len</span>(url_list[image_count]) == <span class="synConstant">0</span>:
+                <span class="synStatement">break</span>
+            <span class="synStatement">for</span> i <span class="synStatement">in</span> <span class="synIdentifier">range</span>(max_url_length):
+                image_risize_plus = np.append(image_risize, i)  <span class="synComment"># 画素 + 答えのインデックス</span>
+                <span class="synStatement">if</span> image_count &lt;= train_size:
+                    <span class="synComment"># バッチリストに追加していく</span>
+                    x_train.append(image_risize_plus)
+                    y_train.append(url_list[image_count][i])
+                <span class="synStatement">elif</span> image_count &lt;= train_size + test_size:
+                    x_test.append(image_risize_plus)
+                    y_test.append(url_list[image_count][i])
+                <span class="synStatement">elif</span> image_count &gt; train_size + test_size:
+                    <span class="synStatement">break</span>
+        image_count += <span class="synConstant">1</span>
+
+    <span class="synComment"># arrayに変換</span>
+    x_train = np.asarray(x_train)
+    x_test = np.asarray(x_test)
+    y_train = np.asarray(y_train)
+    y_test = np.asarray(y_test)
+
+    <span class="synComment"># 正解ラベルをone-hot-encoding</span>
+    y_train = to_categorical(y_train, max_num)
+    y_test = to_categorical(y_test, max_num)
+
+    model = model_read()
+    model.<span class="synIdentifier">compile</span>(optimizer=<span class="synConstant">'rmsprop'</span>, loss=<span class="synConstant">'categorical_crossentropy'</span>, metrics=[<span class="synConstant">'accuracy'</span>])
+    model.fit(x_train, y_train, batch_size=<span class="synConstant">1460</span>, epochs=<span class="synConstant">60</span>, verbose=<span class="synConstant">1</span>)  <span class="synComment"># データを学習</span>
+
+    model.save_weights(model_weight)  <span class="synComment"># 学習結果を保存</span>
+    model.evaluate(x_test, y_test)
+
+<span class="synStatement">def</span> <span class="synIdentifier">model_read</span>():
+    os.chdir(folder)
+
+    model = Sequential()
+    model.add(Dense(<span class="synConstant">64</span>, activation=<span class="synConstant">'relu'</span>, input_dim=size * size + <span class="synConstant">1</span>))
+    model.add(Dense(<span class="synConstant">64</span>, activation=<span class="synConstant">'relu'</span>, input_dim=<span class="synConstant">64</span>))
+    model.add(Dense(<span class="synConstant">64</span>, activation=<span class="synConstant">'relu'</span>, input_dim=<span class="synConstant">64</span>))
+    model.add(Dense(<span class="synConstant">64</span>, activation=<span class="synConstant">'relu'</span>, input_dim=<span class="synConstant">64</span>))
+    model.add(Dense(max_num, activation=<span class="synConstant">'softmax'</span>))  <span class="synComment"># softmax</span>
+    model.<span class="synIdentifier">compile</span>(optimizer=<span class="synConstant">'rmsprop'</span>, loss=<span class="synConstant">'categorical_crossentropy'</span>, metrics=[<span class="synConstant">'accuracy'</span>])
+    <span class="synIdentifier">print</span>(<span class="synConstant">""</span>) <span class="synComment">#改行が足りない</span>
+    <span class="synComment"># 学習済みモデルの重みのデータを読み込み</span>
+    <span class="synStatement">if</span> os.path.exists(model_weight):
+        model.load_weights(model_weight)  <span class="synComment"># 最初は重みデータファイルがないとErrorになる</span>
+    <span class="synStatement">else</span>:
+        <span class="synIdentifier">print</span>(<span class="synConstant">"Fail to read model weigth!"</span>)
+    <span class="synStatement">return</span> model
+
+<span class="synStatement">def</span> <span class="synIdentifier">check</span>():
+    check_folder = <span class="synConstant">"C:/Users/***/Projects/QRcode/check"</span>
+    model = model_read()
+    os.chdir(check_folder)
+    filelist = glob.glob(<span class="synConstant">"./*"</span>)
+
+    <span class="synStatement">for</span> picture <span class="synStatement">in</span> filelist:
+        <span class="synStatement">if</span> <span class="synConstant">".jpg"</span> <span class="synStatement">in</span> picture:
+            image = np.array(Image.<span class="synIdentifier">open</span>(check_folder + <span class="synConstant">"/"</span> + picture).convert(<span class="synConstant">'L'</span>))  <span class="synComment"># モノクロ　'L'</span>
+            <span class="synComment"># reshapeを使って開かれた配列を1次元配列に変換する</span>
+            image_risize = image.reshape(image.size)
+            image_risize = image_risize.astype(<span class="synConstant">'float32'</span>) / <span class="synConstant">255</span>
+            answer = <span class="synConstant">""</span>  <span class="synComment"># 復元されたURL</span>
+            <span class="synIdentifier">bin</span> = <span class="synConstant">""</span>
+            <span class="synStatement">for</span> i <span class="synStatement">in</span> <span class="synIdentifier">range</span>(max_url_length):
+                image_risize_plus = np.append(image_risize, i)  <span class="synComment"># 画素 + 答えのインデックス</span>
+                image_risize_plus = image_risize_plus.reshape(<span class="synConstant">1</span>, size * size + <span class="synConstant">1</span>)  <span class="synComment"># 1次元化</span>
+                <span class="synComment"># 判定</span>
+                res = model.predict([image_risize_plus])
+                y = res.argmax()  <span class="synComment"># 値の中で最も値が大きいものが答え</span>
+                <span class="synIdentifier">bin</span> += <span class="synIdentifier">str</span>(y)
+                answer += <span class="synIdentifier">chr</span>(y)
+            <span class="synIdentifier">print</span>(picture)
+            <span class="synIdentifier">print</span>(<span class="synIdentifier">bin</span>)
+            <span class="synIdentifier">print</span>(answer)
+
+<span class="synStatement">if</span> __name__ == <span class="synConstant">"__main__"</span>:
+    model_build()
+</pre><p></p><h3>結果</h3>いくつかの一流サイトのアドレスをテストとして投入してみます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20181111195212j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20181111/20181111195212.jpg" title="f:id:s51517765:20181111195212j:plain"/></span><br/>
+"<a href="https://www.google.co.jp/">https://www.google.co.jp/</a>"<br/>
+→ pppppooooooooooo         <br/>
+gooooooooooogleに近い！！<br/>
+<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20181111195225j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20181111/20181111195225.jpg" title="f:id:s51517765:20181111195225j:plain"/></span><br/>
+"<a href="https://www.yahoo.co.jp/">https://www.yahoo.co.jp/</a>"<br/>
+→ /////////////////////////     <br/>
+オールスラッシュ！？<p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20181111195236j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20181111/20181111195236.jpg" title="f:id:s51517765:20181111195236j:plain"/></span><br/>
+"<a href="https://keras.io/ja/">https://keras.io/ja/</a>"<br/>
+→ pppppppppppp..........oo      <br/>
+"オー"と”ドット”はあってるかも？</p><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20181111195246j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20181111/20181111195246.jpg" title="f:id:s51517765:20181111195246j:plain"/></span><br/>
+"<a href="https://s51517765.hatenadiary.jp/">https://s51517765.hatenadiary.jp/</a>"<br/>
+→ pppppooooooooooooo            <br/>
+pは<a class="keyword" href="http://d.hatena.ne.jp/keyword/https">https</a>のpか？？</p><p>これは、失敗といっていいでしょう。<br/>
+訓練を重ねても学習率も20%ぐらいまでしかいかないので、複雑すぎるのか？中間層をもっと複雑にすればいいのか？</p>
+</div>

@@ -1,0 +1,30 @@
+<div class="entry-content">
+<p>以下を参考にWin10PCから<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EA%A5%E2%A1%BC%A5%C8%A5%C7%A5%B9%A5%AF%A5%C8%A5%C3%A5%D7">リモートデスクトップ</a>接続します。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fqiita.com%2Ft114%2Fitems%2Fbfac508504b9a6b7570d" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Windowsパソコンからraspberrypi3にリモートデスクトップで接続する - Qiita"></iframe><cite class="hatena-citation"><a href="http://qiita.com/t114/items/bfac508504b9a6b7570d">qiita.com</a></cite></p><p>まず、画面左上にある<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%DE%A5%F3%A5%C9%A5%D7%A5%ED%A5%F3%A5%D7%A5%C8">コマンドプロンプト</a>のようなアイコン"LX Terminal"を開きます。<br/>
+（写真省略ｗ）<br/>
+もしくは「Ctlr+Alt+T」というショートカットがあります。</p><p>ここで、</p>
+<pre class="code lang-c" data-lang="c" data-unlink="">$ip -f inet addr
+</pre><p>または</p>
+<pre class="code lang-c" data-lang="c" data-unlink="">$ip route
+</pre><p>と入力しEnterします。<br/>
+$は<a class="keyword" href="http://d.hatena.ne.jp/keyword/Linux">Linux</a>のコマンドであるということを示していて、LX Terminalには始めから表示されていますので、入力は不要です。<br/>
+qiitaでも、人によって＄をつけていたりなかったりですね。</p><p>英語が読めなくてもなんとなく、xxx.xxx.xxx.xxxのようなものが見つかります。<br/>
+これが、ラズパイのIPです。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fqiita.com%2Fsharow%2Fitems%2F66d89136180884a2f7b7" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="自分のIPアドレスを知る方法 - Qiita"></iframe><cite class="hatena-citation"><a href="http://qiita.com/sharow/items/66d89136180884a2f7b7">qiita.com</a></cite></p><p>これをアクセス元のWin10で<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%DE%A5%F3%A5%C9%A5%D7%A5%ED%A5%F3%A5%D7%A5%C8">コマンドプロンプト</a>から</p>
+<pre class="code lang-c" data-lang="c" data-unlink="">ping xxx.xxx.xxx.xxx
+</pre><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/TTL">TTL</a>=64 とでればOKです。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170909172601j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170909/20170909172601.jpg" title="f:id:s51517765:20170909172601j:plain"/></span><br/>
+これで、Win PCからラズパイがネットワーク的に見えていることが確認できています。<br/>
+自宅など通常同じネットワークにあるPCであれば、最初の3桁x3の9桁は同じはずです。<br/>
+（だいたい近い番号にいるので下3桁を総当たりで<a class="keyword" href="http://d.hatena.ne.jp/keyword/ping">ping</a>をためしても探すことはできるそうです。）</p><p>で、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EA%A5%E2%A1%BC%A5%C8%A5%C7%A5%B9%A5%AF%A5%C8%A5%C3%A5%D7">リモートデスクトップ</a>を試みるが…<br/>
+接続できない。</p><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fqiita.com%2Fhiroyuki_jp%2Fitems%2Fa4b17fa451adfe66d6a9" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Raspberry Pi に RDP で接続できないときの対処 - Qiita"></iframe><cite class="hatena-citation"><a href="http://qiita.com/hiroyuki_jp/items/a4b17fa451adfe66d6a9">qiita.com</a></cite></p><p>こちらを参考にXRDPをアンインストールして、</p>
+<pre class="code lang-c" data-lang="c" data-unlink="">sudo apt remove xrdp
+</pre><p>tightvncserverをインストールし（2行は、1行ずつ計２つのコマンドを入れるということ）</p>
+<pre class="code lang-c" data-lang="c" data-unlink="">sudo apt update
+sudo apt install tightvncserver
+</pre><p>再度XRDPをインストールします。</p>
+<pre class="code lang-c" data-lang="c" data-unlink="">sudo apt install xrdp
+</pre><p>＄は省略したりしなかったりします（まだ自分の中で安定していない）</p><p>できた！！<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20170909175346j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20170909/20170909175346.jpg" title="f:id:s51517765:20170909175346j:plain"/></span><br/>
+画面は、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EA%A5%E2%A1%BC%A5%C8%A5%C7%A5%B9%A5%AF%A5%C8%A5%C3%A5%D7">リモートデスクトップ</a>接続したラズパイ上でLX terminalを立ち上げたところ。</p><p>記事は分割しましたが、ラズパイのセットアップからここまでは一気に終わらせていてだいたい3時間ぐらいかかりました。</p>
+</div>

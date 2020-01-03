@@ -1,0 +1,22 @@
+<div class="entry-content">
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>だと一発でできるみたいなのだが。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">a1 = [<span class="synConstant">'0'</span>, <span class="synConstant">'12.2'</span>,<span class="synConstant">'23'</span>]
+a1_list = [<span class="synIdentifier">float</span>(i) <span class="synStatement">for</span> i <span class="synStatement">in</span> a1]
+</pre><p><iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fhiroto1979.hatenablog.jp%2Fentry%2F2016%2F02%2F10%2F112352" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="Python3で文字列リストの変換をmapでしようとしたらハマった件について - どこかに向かうらしい話"></iframe><cite class="hatena-citation"><a href="http://hiroto1979.hatenablog.jp/entry/2016/02/10/112352">hiroto1979.hatenablog.jp</a></cite></p><br/>
+<p>なんか、簡単な方法がないものか？</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">public</span> <span class="synType">class</span> Hello
+{
+    <span class="synType">public</span> <span class="synType">static</span> <span class="synType">void</span> Main()
+    {
+        <span class="synType">string</span>[] strAry = <span class="synStatement">new</span> <span class="synType">string</span>[] { <span class="synConstant">"1"</span>, <span class="synConstant">"2"</span>, <span class="synConstant">"3"</span> }; 
+    <span class="synComment">//ここでは右辺の"new string[]"は省略できる。</span>
+        <span class="synType">int</span>[] array = <span class="synStatement">new</span> <span class="synType">int</span>[strAry.Length];
+        <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; strAry.Length; i++)
+        {
+            array[i] = <span class="synType">int</span>.Parse(strAry[i]);
+        }
+        System.Console.WriteLine(array[<span class="synConstant">0</span>] + array[<span class="synConstant">1</span>]+ array[<span class="synConstant">2</span>]);    
+    }
+}
+</pre>
+</div>

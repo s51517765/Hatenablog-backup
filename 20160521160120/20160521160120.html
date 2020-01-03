@@ -1,0 +1,41 @@
+<div class="entry-content">
+<p>いまだに、プログラムを0から書くと何が問題なのか分からないことがおきる。</p>
+<p></p>
+<p>今日も、新しく買ったUnoを動作確認しようとしたら、思い道理に動かない。</p>
+<p></p>
+<p>やりたかったのは、すべてのDigital出力ピンの動作確認、たったそれだけなのだが、</p>
+<p>なにが原因なのか？？？である。</p>
+<p>結局、webからにたようなプログラムをコピーしてきてそこから改良していくと動いた。</p>
+<p></p>
+<p>このなかで、<a class="keyword" href="http://d.hatena.ne.jp/keyword/IDE">IDE</a>の動作不良なんかも疑って、<a class="keyword" href="http://d.hatena.ne.jp/keyword/IDE">IDE</a>の再インストールを行った。</p>
+<p>新しいVer.　1.6.9が出ていて、なんか書き込みも早くなったようだ。</p>
+<p>まぁ、これはこれでよしとしよう。</p>
+<p></p>
+<p><img alt="" border="0" height="186" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20160919/20160919112002.jpg" width="220"/></p>
+<p></p>
+<p>↓あたらしい<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a> <a class="keyword" href="http://d.hatena.ne.jp/keyword/IDE">IDE</a> 1.6.9</p>
+<p><a href="https://www.arduino.cc/en/Main/Software" target="_blank">https://www.arduino.cc/en/Main/Software</a></p>
+<p></p>
+<p></p>
+<p></p>
+<p>＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝</p>
+<p>int i = 1;</p>
+<p></p>
+<p>void setup() {</p>
+<p>  for (i = 1; i++; i &lt; 14) {</p>
+<p>    pinMode(i, OUTPUT);</p>
+<p>  }</p>
+<p>}</p>
+<p>void loop() {</p>
+<p></p>
+<p>  for (i = 1; i &lt; 14; i++) {</p>
+<p>    digitalWrite(i, HIGH);</p>
+<p>  }</p>
+<p>  delay(1000);</p>
+<p>  for (i = 1; i &lt; 14; i++) {</p>
+<p>    digitalWrite(i, LOW);</p>
+<p>  }</p>
+<p>  delay(1000);</p>
+<p>}</p>
+<p>＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝<a>
+</a></p></div>

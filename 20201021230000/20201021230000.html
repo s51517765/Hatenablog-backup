@@ -1,0 +1,57 @@
+<div class="entry-content">
+<p>Listviewとは<a class="keyword" href="http://d.hatena.ne.jp/keyword/Excel">Excel</a>の表のようなオブジェクトです。<br/>
+表を作りたいときに使いたくなるオブジェクトですが、思うような形になかなかならないので、基本の手法をまとめました。</p><p></p><h3>ListViewオブジェクトの作成</h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C4%A1%BC%A5%EB%A5%DC%A5%C3%A5%AF%A5%B9">ツールボックス</a>からListViewを選択し、適当な大きさに広げて設置します。<br/>
+縦軸、横軸に項目を設定するには右上の▼を開きます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20201021210135p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20201021/20201021210135.png" title="f:id:s51517765:20201021210135p:plain"/></span><p>横軸は「列の編集」です。<br/>
+0番目はTextを空白にして、1番目のColumnHeader2のTextを「横1」、ColumnHeader3を「横2」…とします。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20201021215416p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20201021/20201021215416.png" title="f:id:s51517765:20201021215416p:plain"/></span><br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20201021215644p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20201021/20201021215644.png" title="f:id:s51517765:20201021215644p:plain"/></span></p><p>縦軸は▼から「項目の編集」を選択します。<br/>
+0番目はTextを「縦1」、1番目を「縦2」…とします。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20201021212843p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20201021/20201021212843.png" title="f:id:s51517765:20201021212843p:plain"/></span><br/>
+ここまでで、デザイナーは↓のようになっています。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20201021214838p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20201021/20201021214838.png" title="f:id:s51517765:20201021214838p:plain"/></span></p><p>ListViewのプロパティの「View」を<code>Detail</code>にします。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20201021215017p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20201021/20201021215017.png" title="f:id:s51517765:20201021215017p:plain"/></span></p><p>これでListViewが完成します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20201021215744p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20201021/20201021215744.png" title="f:id:s51517765:20201021215744p:plain"/></span></p><p></p><h3>ListViewに数値（文字）を格納</h3>各セルには縦（行）方向は<code>Items[i]</code>、横（列）方向は<code>SubItems[j]</code>でアクセスします。<br/>
+<code>Add</code>で値を格納します。
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">private</span> <span class="synType">void</span> Form1_Load(<span class="synType">object</span> sender, EventArgs e)
+{
+    listView1.Items[<span class="synConstant">0</span>].SubItems.Add(<span class="synConstant">"a"</span>);
+    listView1.Items[<span class="synConstant">0</span>].SubItems.Add(<span class="synConstant">"aa"</span>);
+    listView1.Items[<span class="synConstant">0</span>].SubItems.Add(<span class="synConstant">"aaa"</span>);
+    listView1.Items[<span class="synConstant">1</span>].SubItems.Add(<span class="synConstant">"b"</span>);
+    listView1.Items[<span class="synConstant">1</span>].SubItems.Add(<span class="synConstant">"bb"</span>);
+    listView1.Items[<span class="synConstant">1</span>].SubItems.Add(<span class="synConstant">"bbb"</span>);
+    listView1.Items[<span class="synConstant">2</span>].SubItems.Add(<span class="synConstant">"c"</span>);
+    listView1.Items[<span class="synConstant">2</span>].SubItems.Add(<span class="synConstant">"cc"</span>);
+    listView1.Items[<span class="synConstant">2</span>].SubItems.Add(<span class="synConstant">"ccc"</span>);
+        }
+</pre><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20201021220454p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20201021/20201021220454.png" title="f:id:s51517765:20201021220454p:plain"/></span></p><p>すでに値が入っているときは<code>.Text</code>を上書きします。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">private</span> <span class="synType">void</span> button1_Click(<span class="synType">object</span> sender, EventArgs e)
+{
+    <span class="synStatement">for</span> (<span class="synType">int</span> row = <span class="synConstant">0</span>; row &lt; listView1.Items.Count; row++)
+    {
+        <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">1</span>; i &lt;= <span class="synConstant">3</span>; i++)
+        {
+            listView1.Items[row].SubItems[i].Text = (i + row * <span class="synConstant">3</span>).ToString();
+        }
+    }
+}
+</pre><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20201021220710p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20201021/20201021220710.png" title="f:id:s51517765:20201021220710p:plain"/></span></p><p></p><h3>列幅の調整</h3>基本は<code>Width</code>プロパティを設定します。
+<pre class="code lang-cs" data-lang="cs" data-unlink="">listView1.Columns[<span class="synConstant">0</span>].Width = <span class="synConstant">120</span>;
+</pre><p>値を"-1"にすると、SubItemの文字列に応じて列幅が調整されます。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synStatement">foreach</span> (ColumnHeader ch <span class="synStatement">in</span> listView1.Columns)
+{
+  ch.Width = -<span class="synConstant">1</span>;
+}
+</pre><p>値を"-2"にすると、columnHeaderもふくめて最適化されます。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synStatement">foreach</span> (ColumnHeader ch <span class="synStatement">in</span> listView1.Columns)
+{
+  ch.Width = -<span class="synConstant">2</span>;
+}
+</pre><p></p><h3>まとめ</h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>のListViewの基本操作をまとめました。<br/>
+また、似たようなものとしてGridViewというものもあります。
+
+    
+
+  
+</div>

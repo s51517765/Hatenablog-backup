@@ -1,0 +1,74 @@
+<div class="entry-content">
+<p>一般的にネストは深くなりすぎないほうがいいといわれています。<br/>
+何段以上が「深い」とするかはコーディング規約に依存しますが、多数の条件を調べようとすると「深くせざるを得ない」と思っていました。</p><p>例えとして、複数の条件にマッチする<a class="keyword" href="http://d.hatena.ne.jp/keyword/Tweet">Tweet</a>を探したいときを例に示します。<br/>
+ここでは<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>の検索にはTweepyを使用しています。</p><p>条件<br/>
+・特定のアカウントでない<br/>
+・NG wordが含まれていない<br/>
+・RT数が30以上<br/>
+・お気に入れられが30以上<br/>
+・日本語<br/>
+まず思いつくコードは以下のようになると思います。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">keyword=<span class="synConstant">"電子工作"</span>
+NG_ScrName =[aaa,bbb,ccc,ddd]
+<span class="synStatement">for</span> tweet <span class="synStatement">in</span> api.search(q=keyword, count=<span class="synConstant">200</span>):  <span class="synComment"># 検索</span>
+    txt = tweet.text <span class="synComment">#テキスト本文</span>
+        <span class="synStatement">if</span> <span class="synStatement">not</span> tweet.user.screen_name <span class="synStatement">in</span> NG_ScrName :
+            <span class="synStatement">if</span> <span class="synStatement">not</span> has_NGWord_in(txt):
+                <span class="synStatement">if</span> tweet.retweet_count &gt;= <span class="synConstant">30</span>:
+                    <span class="synStatement">if</span> tweet.favorite_count &gt;= <span class="synConstant">30</span>: 
+                        <span class="synStatement">if</span> is_japanese(txt):
+                            <span class="synIdentifier">print</span>(txt)
+</pre><p>ネストを深くしてはいけない信者の方からすれば、典型的なNG例です。<br/>
+じゃあ、こうすればどうでしょう？</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">keyword=<span class="synConstant">"電子工作"</span>
+NG_ScrName =[aaa,bbb,ccc,ddd]
+<span class="synStatement">for</span> tweet <span class="synStatement">in</span> api.search(q=keyword, count=<span class="synConstant">200</span>):  <span class="synComment"># 検索</span>
+    txt = tweet.text <span class="synComment">#テキスト本文</span>
+        <span class="synStatement">if</span> <span class="synStatement">not</span> tweet.user.screen_name <span class="synStatement">in</span> NG_ScrName <span class="synStatement">and</span> <span class="synStatement">not</span> has_NGWord_in(txt) <span class="synStatement">and</span> tweet.retweet_count &gt;= <span class="synConstant">30</span> <span class="synStatement">and</span> tweet.favorite_count &gt;= <span class="synConstant">30</span> <span class="synStatement">and</span> is_japanese(txt):
+            <span class="synIdentifier">print</span>(txt)
+</pre><p>ネストは深くはないですが、わかりにくさでは同じです。<br/>
+また、1行の長さでもコーディング規約に引っかかる可能性があります。</p><p>1つの解決例が以下のような形ではないでしょうか？</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">keyword=<span class="synConstant">"電子工作"</span>
+NG_ScrName =[aaa,bbb,ccc,ddd]
+<span class="synStatement">for</span> tweet <span class="synStatement">in</span> api.search(q=keyword, count=<span class="synConstant">200</span>):  <span class="synComment"># 検索</span>
+    txt = tweet.text <span class="synComment">#テキスト本文</span>
+    <span class="synStatement">if</span> tweet.user.screen_name <span class="synStatement">in</span> NG_ScrName :
+        <span class="synStatement">continue</span>
+    <span class="synStatement">if</span> has_NGWord_in(txt):
+        <span class="synStatement">continue</span>
+    <span class="synStatement">if</span> tweet.retweet_count &lt; <span class="synConstant">30</span>:
+        <span class="synStatement">continue</span>
+    <span class="synStatement">if</span> tweet.favorite_count &lt; <span class="synConstant">30</span>:
+        <span class="synStatement">continue</span> 
+    <span class="synStatement">if</span> <span class="synStatement">not</span> is_japanese(txt):
+        <span class="synStatement">continue</span> 
+    <span class="synIdentifier">print</span>(txt) <span class="synComment">#上記のいずれのifにも当てはまらないとき</span>
+</pre><p>このとき、判断条件を裏返して非該当の場合にその検索結果は無視します。<br/>
+<code>continue</code>は<code>for</code>に対して、次のlistのオブジェクトへ進むという意味です。<br/>
+例えば、<code>if tweet.retweet_count &lt; 30:</code>に該当すれば、<code>    if tweet.favorite_count &lt; 30:</code>と<code>if not is_Japanese(txt):</code>は評価されません。<br/>
+アーリー・コンティニュー（early continue）というらしいです。<br/>
+ちなみに、<code>break</code>は該当すると、以降の<code>for</code>が評価されません。</p><p>NG wordが含まれているかどうかを判定する関数は以下のようなものを定義しました。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">def</span> <span class="synIdentifier">has_NGWord_in</span>(txt):
+    <span class="synStatement">for</span> word <span class="synStatement">in</span> NG_Word:
+        <span class="synStatement">if</span> txt.find(word) &gt; -<span class="synConstant">1</span>:
+            <span class="synStatement">return</span> <span class="synIdentifier">True</span>
+    <span class="synStatement">return</span> <span class="synIdentifier">False</span> <span class="synComment">#アーリー・リターンしなかったらFalse</span>
+</pre><p>引数に<a class="keyword" href="http://d.hatena.ne.jp/keyword/Tweet">Tweet</a>の本文を渡して、リストで定義された<code>NG_Word</code>のすべてについて、含まれていないとき<code>False</code>を返すbool型の関数です。<br/>
+対象のキーワード（ここでの引数）がリストに含まれているかどうか？であれば<code>if not in [List]</code>の形で処理できますが、リストの全てのキーワードがという、逆の形式なので、このような関数を作りました。（もしかしたらやり方あるのでしょうか？）<br/>
+forのループで、すべてのNG_Wordについて評価し、一つでも含まれていれば<code>True</code>になります。<br/>
+1つでも含まれていれば…なので、その時点で<code>return</code>し、関数を終了します。<br/>
+これをアーリー・リターン（early return）といいます。</p><p>また、<code>is_japanese(txt)</code>のように関数にまとめることによってネストを浅くする方法もあります。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">def</span> <span class="synIdentifier">is_japanese</span>(string):
+    <span class="synStatement">for</span> ch <span class="synStatement">in</span> string:
+        name = unicodedata.name(ch)
+        <span class="synStatement">if</span> <span class="synConstant">"HIRAGANA"</span> <span class="synStatement">in</span> name <span class="synStatement">or</span> <span class="synConstant">"KATAKANA"</span> <span class="synStatement">in</span> name:
+            <span class="synStatement">return</span> <span class="synIdentifier">True</span>
+    <span class="synStatement">return</span> <span class="synIdentifier">False</span>
+</pre><p>この日本語判定は↓で紹介したものです。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2020%2F01%2F06%2F073000" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="はてなブログの記事をPythonで自動投稿する - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2020/01/06/073000">s51517765.hatenadiary.jp</a></cite></p><p></p><h3>まとめ</h3>アーリー・コンティニュー（early continue）とアーリー・リターン（early return）の使い方を実例をもとにまとめました。アーリー・リターンは言葉としてはよく聞きますね。<br/>
+コードのわかりやすさのために使うもの、という認識はありました。<br/>
+しかし、どういったときに使えばいいのか？というのがよくわからないでいました。<br/>
+ifやforのネストが深いときには、こういった手法を使うと、読みやすくなります。<br/>
+ほかに計算量（ステップ数）の削減にも効果があるかとも思いましたが、なくはないですが一般的にはO(n)の次元で削減しても大した効果はないとされています。<h3>参考</h3><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Fnskydiving%2Fitems%2F1076c411b002b0a3aec9" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="深いネストを減らすには？ - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/nskydiving/items/1076c411b002b0a3aec9">qiita.com</a></cite><br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fteratail.com%2Fquestions%2F166954" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Pythonの計算量について｜teratail"></iframe><cite class="hatena-citation"><a href="https://teratail.com/questions/166954">teratail.com</a></cite>
+</div>

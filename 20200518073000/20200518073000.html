@@ -1,0 +1,92 @@
+<div class="entry-content">
+<p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20200515122847j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20200515/20200515122847.jpg" title="f:id:s51517765:20200515122847j:plain"/></span><br/>
+ほぼQiitaの記事そのままです…<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Fyukataoka%2Fitems%2F8f9046587c978e91f689" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Raspberry Pi で温湿度気圧センサを使う - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/yukataoka/items/8f9046587c978e91f689">qiita.com</a></cite></p><p>購入したのは<a class="keyword" href="http://d.hatena.ne.jp/keyword/Amazon">Amazon</a>にある、Hiletgoのものです。</p><div class="hatena-asin-detail"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/B01M98R905/shirotoakb-22/"><img alt="HiLetgo BME280 温度 センサー 湿度 センサー 気圧 センサー Arduino センサー 大気圧センサ 温湿度センサー ブレイクアウト Arduinoに対応 [並行輸入品]" class="hatena-asin-detail-image" src="https://m.media-amazon.com/images/I/41DWIpl2nSL._SL160_.jpg" title="HiLetgo BME280 温度 センサー 湿度 センサー 気圧 センサー Arduino センサー 大気圧センサ 温湿度センサー ブレイクアウト Arduinoに対応 [並行輸入品]"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/B01M98R905/shirotoakb-22/">HiLetgo BME280 温度 センサー 湿度 センサー 気圧 センサー Arduino センサー 大気圧センサ 温湿度センサー ブレイクアウト Arduinoに対応 [並行輸入品]</a></p><ul><li><span class="hatena-asin-detail-label">メディア:</span></li></ul></div><div class="hatena-asin-detail-foot"></div></div><p>Qiitaのものとは、チップは同じですが違うもので、Pin名が異なりますが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Amazon">Amazon</a>のレビューを参考に接続します。<br/>
+<a href="https://www.amazon.co.jp/gp/customer-reviews/RTXBVBQ4U37TW/ref=cm_cr_dp_d_rvw_ttl?ie=UTF8&amp;ASIN=B01M98R905">https://www.amazon.co.jp/gp/customer-reviews/RTXBVBQ4U37TW/ref=cm_cr_dp_d_rvw_ttl?ie=UTF8&amp;ASIN=B01M98R905</a><br/>
+</p>
+<table>
+<tr>
+<th>Sensor</th>
+<th>RaspberyPi</th>
+</tr>
+<tr>
+<td>VCC     </td>
+<td>3.3V</td>
+</tr>
+<tr>
+<td>GND    </td>
+<td>GND</td>
+</tr>
+<tr>
+<td>SCL    </td>
+<td>SCL(5)</td>
+</tr>
+<tr>
+<td>SDA  </td>
+<td>SDA(3)</td>
+</tr>
+<tr>
+<td>CSB  </td>
+<td>  -</td>
+</tr>
+<tr>
+<td>SDO  </td>
+<td>GND</td>
+</tr>
+</table><p>GND接続が2pinあるので、ジャンパーしてしまいます。これでラズパイとの接続が1本削減できます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20200520203236j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20200520/20200520203236.jpg" title="f:id:s51517765:20200520203236j:plain"/></span><br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%BD%A1%BC%A5%B9%A5%B3%A1%BC%A5%C9">ソースコード</a>はPython3の修正コードをもう少し修正し、繰り返し読み込むようにしました。<br/>
+<a href="https://qiita.com/yukataoka/items/8f9046587c978e91f689#python3-%E3%81%AE%E4%BF%AE%E6%AD%A3%E3%82%B3%E3%83%BC%E3%83%89">https://qiita.com/yukataoka/items/8f9046587c978e91f689#python3-%E3%81%AE%E4%BF%AE%E6%AD%A3%E3%82%B3%E3%83%BC%E3%83%89</a><br/>
+</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">if</span> __name__ == <span class="synConstant">'__main__'</span>:
+    <span class="synStatement">while</span>(<span class="synIdentifier">True</span>):
+        sensor = Bme280()
+        <span class="synStatement">try</span>:
+            <span class="synIdentifier">print</span>(<span class="synIdentifier">str</span>(sensor.getPressure())+<span class="synConstant">" hPa "</span>+<span class="synIdentifier">str</span>(sensor.getTemperature())+<span class="synConstant">" deg "</span>+<span class="synIdentifier">str</span>(sensor.getHumidity())+<span class="synConstant">" %"</span>)
+        <span class="synStatement">except</span> <span class="synType">KeyboardInterrupt</span>:
+            <span class="synStatement">pass</span>
+        time.sleep(<span class="synConstant">60</span>)
+</pre><p>取得結果</p>
+<pre class="code" data-lang="" data-unlink="">******@raspberrypi:~ $ python3 bme280.py
+955.0135879031483 hPa 25.753892778797308 deg 44.760704908585915 %
+954.960358087586 hPa 25.743899468105518 deg 44.67413244849125 %
+955.0135879031483 hPa 25.753892778797308 deg 45.01996691766583 %
+955.0135879031483 hPa 25.753892778797308 deg 44.766106401761206 %
+954.9337432104256 hPa 25.76388609065325 deg 44.67442721925948 %
+954.9337432104256 hPa 25.77887606061995 deg 44.75027445448091 %
+954.827283905924 hPa 25.82384598623612 deg 44.52403791358295 %
+954.8805135173468 hPa 25.828842646093108 deg 44.54031807756868 %
+954.827283905924 hPa 25.808856008411386 deg 44.46979645112665 %
+954.7740543761569 hPa 25.883805923728506 deg 44.3087553268015 %
+954.6675955615901 hPa 25.903792578872526 deg 44.49816821805059 %
+954.454678912326 hPa 25.98373924601474 deg 44.42364336635412 %
+954.454678912326 hPa 26.013719265401598 deg 44.68890865835807 %
+954.3748355056823 hPa 26.06368598766276 deg 44.9923274734485 %
+954.3216066699894 hPa 26.123646092793205 deg 44.69592556689618 %
+954.2417635695549 hPa 26.16361951949657 deg 44.83167157651899 %
+954.2151492435712 hPa 26.173612879082793 deg 44.8318207692804 %
+954.2417635695549 hPa 26.188602920644918 deg 44.69146922120123 %
+954.2417635695549 hPa 26.213586329069223 deg 44.91892694976671 %
+954.2417635695549 hPa 26.213586329069223 deg 45.17844312181015 %
+954.2417635695549 hPa 26.233573061047355 deg 45.20038291279806 %
+954.3482210776289 hPa 26.213586329069223 deg 45.31359996149482 %</pre><p></p><h3>まとめ</h3> <br/>
+出力結果をグラフにしてみます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20200513155456p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20200513/20200513155456.png" title="f:id:s51517765:20200513155456p:plain"/></span><br/>
+部屋の環境はそんなに変化していないようです。これで3σを算出すると
+
+<table>
+<tr>
+<th>気圧</th>
+<th>気温</th>
+<th>湿度</th>
+</tr>
+<tr>
+<td>0.950092349	</td>
+<td>	0.569930988	</td>
+<td>	0.78414242 </td>
+</tr>
+</table><p>精度としては、おおよそ1.0hPa / 0.6℃ / 0.8% ぐらいになりました。<br/>
+実用上の分解能 は1.0hPa / 0.5℃ / 0.5% ぐらいでしょうか。<br/>
+また、絶対値も一般用の温湿度計ともそんなにずれていないようです（感覚的ですが1℃ / 1%以内）。<br/>
+気圧は、わかりません。</p>
+</div>

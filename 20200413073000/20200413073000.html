@@ -1,0 +1,67 @@
+<div class="entry-content">
+<p>最近無料開放で話題の<a class="keyword" href="http://d.hatena.ne.jp/keyword/N%CD%BD%C8%F7%B9%BB">N予備校</a>のプログラミングコース「【2020年度】プログラミング入門 webアプリ」コースを始めました。</p><p>コースの詳細は他の方の記事を参照ください。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fnote.com%2Fkirimin_chan%2Fn%2Fn55ed2961b2b4" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="N予備校の「プログラミング入門 Webアプリ」コースを履修することで学べる知識まとめ｜きりみんちゃんノート｜note"></iframe><cite class="hatena-citation"><a href="https://note.com/kirimin_chan/n/n55ed2961b2b4">note.com</a></cite><br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fjun-networks.hatenablog.com%2Fentry%2F2020%2F04%2F02%2F040705" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="N予備校 「プログラミング入門 Webアプリ」を修了した. - JUNのブログ"></iframe><cite class="hatena-citation"><a href="https://jun-networks.hatenablog.com/entry/2020/04/02/040705">jun-networks.hatenablog.com</a></cite></p><p>このコースでは開発環境として<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>/<a class="keyword" href="http://d.hatena.ne.jp/keyword/Mac">Mac</a>上に仮想環境を構築し、その中の<a class="keyword" href="http://d.hatena.ne.jp/keyword/Ubuntu">Ubuntu</a>を使います。</p><p>個人的に、プログラミングはこれまで5年ほど独学でやってましたが<a class="keyword" href="http://d.hatena.ne.jp/keyword/Linux">Linux</a>にもっと触ってみたい、と思っていたのですが仮想環境については抵抗があって始められないでいました。<br/>
+このコースでは、その辺も含めて丁寧に説明されているので始めてみました。</p><p>ここでは、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>で仮想環境を作って<a class="keyword" href="http://d.hatena.ne.jp/keyword/Ubuntu">Ubuntu</a>にLogin出来るところまでを整理しておきます。</p><p></p><h3>仮想環境の作成</h3>事前にViartualBoxをインストールしている人の事例を調べてみると、開発を進めていくうちにその容量は20GB以上になるということで、大きめの<a class="keyword" href="http://d.hatena.ne.jp/keyword/MicroSD">MicroSD</a>を用意してその中で構築することにしました。Cドライブに構築したものを、後々移動するということもできるようですが、せっかくなので初めから<a class="keyword" href="http://d.hatena.ne.jp/keyword/MicroSD">MicroSD</a>に構築しました。<div class="hatena-asin-detail"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/B07YLTZ5PT/shirotoakb-22/"><img alt="サンディスク microSD 128GB UHS-I Class10 読取り最大100MB/s 【Nintendo Switch メーカー動作確認済】 SanDisk Ultra SDSQUAR-128G-EPK エコパッケージ" class="hatena-asin-detail-image" src="https://m.media-amazon.com/images/I/41AfSXGSS1L._SL160_.jpg" title="サンディスク microSD 128GB UHS-I Class10 読取り最大100MB/s 【Nintendo Switch メーカー動作確認済】 SanDisk Ultra SDSQUAR-128G-EPK エコパッケージ"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/B07YLTZ5PT/shirotoakb-22/">サンディスク microSD 128GB UHS-I Class10 読取り最大100MB/s 【Nintendo Switch メーカー動作確認済】 SanDisk Ultra SDSQUAR-128G-EPK エコパッケージ</a></p><ul><li><span class="hatena-asin-detail-label">発売日:</span> 2019/12/01</li><li><span class="hatena-asin-detail-label">メディア:</span> Personal Computers</li></ul></div><div class="hatena-asin-detail-foot"></div></div>最近の<a class="keyword" href="http://d.hatena.ne.jp/keyword/MicroSD">MicroSD</a>のヴォリュームゾーンは64~128GBぐらいですので、この辺の安いものを選択しました。<p>第２章「準備しよう」の2項 「<a class="keyword" href="http://d.hatena.ne.jp/keyword/Linux">Linux</a>というOS」の部分に書かれているものを基本としています。</p><p>Chocolateyをインストールします。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fchocolatey.org%2Finstall" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Installing Chocolatey"></iframe><cite class="hatena-citation"><a href="https://chocolatey.org/install">chocolatey.org</a></cite><br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20200411203920j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20200411/20200411203920.jpg" title="f:id:s51517765:20200411203920j:plain"/></span><br/>
+公式サイトからリンクを取得して<a class="keyword" href="http://d.hatena.ne.jp/keyword/PowerShell">PowerShell</a>でインストールします。<br/>
+すべて、<a class="keyword" href="http://d.hatena.ne.jp/keyword/PowerShell">PowerShell</a>は管理者権限で実行するのが望ましいらしいです。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20200411204150j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20200411/20200411204150.jpg" title="f:id:s51517765:20200411204150j:plain"/></span></p><p>ViartualBoxと<a class="keyword" href="http://d.hatena.ne.jp/keyword/Vagrant">Vagrant</a>をインストールします。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/N%CD%BD%C8%F7%B9%BB">N予備校</a>の講座では、<a class="keyword" href="http://d.hatena.ne.jp/keyword/PowerShell">PowerShell</a>からインストールするようになっていますが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A4%A5%F3%A5%B9%A5%C8%A1%BC%A5%E9">インストーラ</a>をダウンロードしても多分同じだと思います。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fkekaku.addisteria.com%2Fwp%2F20181228112237" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="windowsにvagrantとvirtualboxでWeb開発環境をつくろう。(その1)仮想マシン作成まで"></iframe><cite class="hatena-citation"><a href="https://kekaku.addisteria.com/wp/20181228112237">kekaku.addisteria.com</a></cite></p><p>一応、今回構築されたVersionを書いておきます。</p>
+<pre class="code" data-lang="" data-unlink="">Vagrant 2.2.7
+VirtualBox Version: 6.0</pre><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/VirtualBox">VirtualBox</a>が仮想環境を構築するフォルダを変更しておきます。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fmemories.zal.jp%2FWP%2Fblog%2F20160214_2707.html" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="WindowsでVagrant環境を作ろう！容量足りない場合は作業フォルダ変更で対応 | サイト構築日記"></iframe><cite class="hatena-citation"><a href="http://memories.zal.jp/WP/blog/20160214_2707.html">memories.zal.jp</a></cite></p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>を再起動します。</p><p></p><h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/Ubuntu">Ubuntu</a>をインストール</h3>ここでは<a class="keyword" href="http://d.hatena.ne.jp/keyword/MicroSD">MicroSD</a>（Dドライブ）に<code>vagrant\ubuntu64_18</code>というフォルダを作成し、その中に構築します。<br/>
+・仮想環境を構築したい場所に移動し、<br/>
+・<a class="keyword" href="http://d.hatena.ne.jp/keyword/Ubuntu">Ubuntu</a>をインストールし、<br/>
+・仮想環境の設定をし、<br/>
+・<a class="keyword" href="http://d.hatena.ne.jp/keyword/Ubuntu">Ubuntu</a>を起動します。
+<pre class="code" data-lang="" data-unlink="">$cd D:\vagrant\ubuntu64_18
+$vagrant box add ubuntu/bionic64 --box-version 20200130.1.0
+$vagrant init ubuntu/bionic64
+$vagrant up</pre><p>ここで、私のPC（HP Envy360）では仮想環境が無効化されていたため、Errorが発生しました。</p>
+<pre class="code" data-lang="" data-unlink="">Stderr: VBoxManage.exe: error: Not in a hypervisor partition (HVP=0) (VERR_NEM_NOT_AVAILABLE).
+VBoxManage.exe: error: AMD-V is disabled in the BIOS (or by the host OS) (VERR_SVM_DISABLED)
+VBoxManage.exe: error: Details: code E_FAIL (0x80004005), component ConsoleWrap, interface IConsole</pre><p>このようなときは<a class="keyword" href="http://d.hatena.ne.jp/keyword/BIOS">BIOS</a>から仮想化を有効にする必要があります。<br/>
+HPのPCでは起動時に<code>F10</code>を押して<a class="keyword" href="http://d.hatena.ne.jp/keyword/BIOS">BIOS</a>に入ります。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fsupport.hp.com%2Fjp-ja%2Fdocument%2Fc03657256" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="HP Z1 - BIOS で仮想化機能の設定を変更する方法 | HP®カスタマーサポート"></iframe><cite class="hatena-citation"><a href="https://support.hp.com/jp-ja/document/c03657256">support.hp.com</a></cite></p><p></p><h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/SSH">SSH</a>で<a class="keyword" href="http://d.hatena.ne.jp/keyword/Ubuntu">Ubuntu</a>に接続</h3>講座では<a class="keyword" href="http://d.hatena.ne.jp/keyword/SSH">SSH</a>ターミナルとして、RLoginを使うようになっていますが、私は使い慣れた<a class="keyword" href="http://d.hatena.ne.jp/keyword/Teraterm">Teraterm</a>を使うことにしました。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fkmiya-culti.github.io%2FRLogin%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="rlogin/telnet/ssh(クライアント)ターミナルソフト"></iframe><cite class="hatena-citation"><a href="https://kmiya-culti.github.io/RLogin/">kmiya-culti.github.io</a></cite><br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2017%2F09%2F24%2F130650" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="Anacondaでpythonプログラミング &amp; TeratermでRaspberry Piに転送 - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2017/09/24/130650">s51517765.hatenadiary.jp</a></cite><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/SSH">SSH</a>で接続するための情報を確認します。</p>
+<pre class="code" data-lang="" data-unlink="">$cd D:\vagrant\ubuntu64_18
+$vagrant ssh-config
+
+Host default
+  HostName 127.0.0.1
+  User vagrant
+  Port 2200  
+  UserKnownHostsFile /dev/null
+  StrictHostKeyChecking no
+  PasswordAuthentication no
+  IdentityFile D:/vagrant/ubuntu64_18/.vagrant/machines/default/virtualbox/private_key
+  IdentitiesOnly yes
+  LogLevel FATAL</pre><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Teraterm">Teraterm</a>で<a class="keyword" href="http://d.hatena.ne.jp/keyword/Vagrant">Vagrant</a>のIPに接続します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20200411210024j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20200411/20200411210024.jpg" title="f:id:s51517765:20200411210024j:plain"/></span><br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20200411210044j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20200411/20200411210044.jpg" title="f:id:s51517765:20200411210044j:plain"/></span><br/>
+ID：<a class="keyword" href="http://d.hatena.ne.jp/keyword/vagrant">vagrant</a><br/>
+Password：<a class="keyword" href="http://d.hatena.ne.jp/keyword/vagrant">vagrant</a><br/>
+です。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C8%EB%CC%A9%B8%B0">秘密鍵</a>は、</p>
+<pre class="code" data-lang="" data-unlink="">D:\vagrant\ubuntu64_18\.vagrant\machines\default\virtualbox\private_key</pre><p>を指定します。<br/>
+Portが2222だったり2200だったりしますので、都度合わせる必要があります。</p><p>これで<a class="keyword" href="http://d.hatena.ne.jp/keyword/Ubuntu">Ubuntu</a>に<a class="keyword" href="http://d.hatena.ne.jp/keyword/SSH">SSH</a> Loginできたはずです。<br/>
+早速<a class="keyword" href="http://d.hatena.ne.jp/keyword/Ubuntu">Ubuntu</a>を使ってみます。</p>
+<pre class="code" data-lang="" data-unlink="">$sudo apt update
+$sudo apt install bsdgames
+$tetris-bsd</pre><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20200411211011p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20200411/20200411211011.png" title="f:id:s51517765:20200411211011p:plain"/></span><br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Teraterm">Teraterm</a>上で<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C6%A5%C8%A5%EA%A5%B9">テトリス</a>が動きました。</p><p>仮想環境のフォルダを変更した場合はこの時点で、１GBぐらいの容量が出来てる場所が意図通りか確認しておきましょう。</p><p></p><h3>まとめ</h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/N%CD%BD%C8%F7%B9%BB">N予備校</a>のプログラミングコース「【2020年度】プログラミング入門 webアプリ」コースを始めました。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>上では<a class="keyword" href="http://d.hatena.ne.jp/keyword/PowerShell">PowerShell</a>を基本的に使用し、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Ubuntu">Ubuntu</a>は<a class="keyword" href="http://d.hatena.ne.jp/keyword/SSH">SSH</a>で<a class="keyword" href="http://d.hatena.ne.jp/keyword/Teraterm">Teraterm</a>を使って操作します。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/PowerShell">PowerShell</a>は管理者権限で起動します。<p>以下に仮想環境の開始・終了の仕方を書いておきます。<br/>
+仮想環境の開始<br/>
+$<a class="keyword" href="http://d.hatena.ne.jp/keyword/vagrant">vagrant</a> up</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Teraterm">Teraterm</a>で<a class="keyword" href="http://d.hatena.ne.jp/keyword/Ubuntu">Ubuntu</a>に接続<br/>
+id ：<a class="keyword" href="http://d.hatena.ne.jp/keyword/vagrant">vagrant</a><br/>
+pass ：<a class="keyword" href="http://d.hatena.ne.jp/keyword/vagrant">vagrant</a><br/>
+portは2222だったり2200だったりします。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C8%EB%CC%A9%B8%B0">秘密鍵</a>は <a class="keyword" href="http://d.hatena.ne.jp/keyword/virtualBox">virtualBox</a>のフォルダのprivate_keyを指定します。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Ubuntu">Ubuntu</a> の終了<br/>
+$exit</p><p>仮想環境の終了<br/>
+$<a class="keyword" href="http://d.hatena.ne.jp/keyword/vagrant">vagrant</a> halt</p>
+</div>

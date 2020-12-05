@@ -1,0 +1,57 @@
+<div class="entry-content">
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/N%CD%BD%C8%F7%B9%BB">N予備校</a>の3章 「サーバーサイドプログラミング入門」を終了しました。<br/>
+まだ4章「実践サーバーサイドプログラミング」は残っていますが、いったんここで主に3章までを終わっての感想などを記しておこうと思います。</p><p>コースの詳細については↓の参考記事を参照ください。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2020%2F04%2F13%2F073000" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="VirtualBoxとVagrantでUbuntuの仮想環境を作る - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2020/04/13/073000">s51517765.hatenadiary.jp</a></cite></p><p></p><h3>3章までの感想</h3>・難易度<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Javascript">Javascript</a>またはプログラミングが初めてであるとすると、3章はかなり難しいと思います。<br/>
+写経で進めていくことはできますが、細かい<a class="keyword" href="http://d.hatena.ne.jp/keyword/Javascript">Javascript</a>の文法についてはその意味を省略されている場合が多くあります。<br/>
+自分で調べながら進める必要があります。<br/>
+・<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B9%A9%BF%F4">工数</a><br/>
+3章までで5～6時間/週ぐらいで３か月弱かかりました。なので60時間ぐらいでしょうか？<br/>
+ただし、1章の簡単なところ（HTMLや<a class="keyword" href="http://d.hatena.ne.jp/keyword/Javascript">Javascript</a>の基礎）は飛ばしています。<blockquote class="twitter-tweet" data-conversation="none" data-lang="ja"><p dir="ltr" lang="ja">プログラミング入門webアプリコース始めて1週間弱 進捗23％ <a href="https://twitter.com/hashtag/N%E4%BA%88%E5%82%99%E6%A0%A1?src=hash&amp;ref_src=twsrc%5Etfw">#N予備校</a> <a href="https://t.co/EyCOcJcjMp">pic.twitter.com/EyCOcJcjMp</a></p>— プログラミング素人 (@s51517765) <a href="https://twitter.com/s51517765/status/1249327114106494978?ref_src=twsrc%5Etfw">2020年4月12日</a></blockquote> <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script> <blockquote class="twitter-tweet" data-conversation="none" data-lang="ja"><p dir="ltr" lang="ja">プログラミング入門webアプリコース始めて11週間 進捗73％ 第3章のサーバーサイドプログラミング入門終了 <a href="https://twitter.com/hashtag/N%E4%BA%88%E5%82%99%E6%A0%A1?src=hash&amp;ref_src=twsrc%5Etfw">#N予備校</a> <a href="https://t.co/IcZQWsn0aH">pic.twitter.com/IcZQWsn0aH</a></p>— プログラミング素人 (@s51517765) <a href="https://twitter.com/s51517765/status/1274701377814446080?ref_src=twsrc%5Etfw">2020年6月21日</a></blockquote> <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script> <br/>
+・扱われている内容<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/VirtualBox">VirtualBox</a>上の<a class="keyword" href="http://d.hatena.ne.jp/keyword/Ubuntu">Ubuntu</a>で構築します。<br/>
+体系的に<a class="keyword" href="http://d.hatena.ne.jp/keyword/Javascript">Javascript</a>によるサーバーサイドを学べるのはとても良いと思います。<br/>
+しかも、<a class="keyword" href="http://d.hatena.ne.jp/keyword/N%CD%BD%C8%F7%B9%BB">N予備校</a>以外のツールは無料で使えるもの（Slack <a class="keyword" href="http://d.hatena.ne.jp/keyword/Bot">Bot</a>やHeroku、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Github">Github</a>など）しか使いません。<br/>
+3章では最終的にLogin認証付きの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B7%C7%BC%A8">掲示</a>板をHerokuでデプロイします。<br/>
+「一般的なWeb企業においてアルバイトや<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A4%A5%F3%A5%BF%A1%BC%A5%F3">インターン</a>できるだけの実力が身につく」とされていますが、たしかにこの内容をすべて理解できればそれぐらいになると思います。<br/>
+ただし、繰り返しになりますが、詳細を省略されている部分は自分で補うことが必要です。<br/>
+・ここまででつかったディスク容量<br/>
+14GBぐらいでした。<p></p><h3>詰まったところ</h3>私がここまで（3章まで）進めてみて何度となく調べなおしたところや、外部サイトで調べたところをここで紹介しておきます。<br/>
+今後、同じところで躓いた人がぐぐってたどり着いてくれれば幸いです。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>特有の問題も含みます。<p><b>・<code>$yarn install</code>で失敗する(<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a> での<a class="keyword" href="http://d.hatena.ne.jp/keyword/vagrant">vagrant</a>固有らしい)。</b><br/>
+→<code>--no-bin-links</code>オプションを付加します。</p>
+<pre class="code" data-lang="" data-unlink="">$yarn install --no-bin-links
+$yarn add **** --no-bin-links</pre><p>初出には書いてあるけど、忘れがちです。</p><p><b>・Errorメッセージ : Cannot find module 'http-auth'</b></p>
+<pre class="code" data-lang="" data-unlink="">vagrant@ubuntu-bionic:~/workspace/secret-board-3028$ node index.js
+internal/modules/cjs/loader.js:583
+    throw err;
+    ^
+
+Error: Cannot find module 'http-auth'</pre><p>→yarn installがされていない</p><p><b>・Cloneしたコードがテキストと異なる。<code>.pug</code>が<code>.jade</code>になっている。</b><br/>
+→ 作業ブランチが間違ってる。master-2020をチェックアウトします。</p><p><b>・webの内容とcloneした内容が違う。</b><br/>
+→同上</p><p><b>・テキストを見ながら写経しているけど、バグっている。どこが間違っているかわからない。</b><br/>
+→単元の最後に課題用の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EA%A5%DD%A5%B8%A5%C8%A5%EA">リポジトリ</a>があって、その課題の完成形になっているので、これをCloneしてdiffしてみよう。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/VS%20Code">VS Code</a>での<a class="keyword" href="http://d.hatena.ne.jp/keyword/Javascript">Javascript</a>は文法の<a class="keyword" href="http://d.hatena.ne.jp/keyword/Typo">Typo</a>も必ず拾ってくれるわけではないみたい。<br/>
+なんかadd-inで対応できるかな？</p><p><b>・Errorメッセージ Server Error { Error: listen EADDRINUSE: address already in use :::8000</b></p>
+<pre class="code" data-lang="" data-unlink="">vagrant@ubuntu-bionic:~/workspace/secret-board-3028$ node index.js
+Server Error { Error: listen EADDRINUSE: address already in use :::8000</pre><p>→nodeのプロセスが残ってしまっているところにnodeを起動しようとしている。。<br/>
+→ps aux | <a class="keyword" href="http://d.hatena.ne.jp/keyword/grep">grep</a> node （<a class="keyword" href="http://d.hatena.ne.jp/keyword/Linux">Linux</a>において、"node"を含むプロセスを表示する）<br/>
+→kill -9 xxxx でkillしてから再度。（そのプロセスをプロセスIDを指定して殺す）</p><p><b>・3章29.<a class="keyword" href="http://d.hatena.ne.jp/keyword/XSS%C0%C8%BC%E5%C0%AD">XSS脆弱性</a>の対策で<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C0%C8%BC%E5%C0%AD">脆弱性</a>を体験するサンプルコード</b></p>
+<pre class="code lang-javascript" data-lang="javascript" data-unlink="">こんにちは、クラスの人達だけの匿名掲示板、盛り上がるといいですね?(??????)?
+&lt;script&gt;
+  <span class="synStatement">window</span>.onload = <span class="synIdentifier">function</span>() <span class="synIdentifier">{</span>
+    <span class="synStatement">document</span>.getElementsByTagName(<span class="synConstant">'h2'</span>)<span class="synIdentifier">[</span>0<span class="synIdentifier">]</span>.innerHTML =
+      <span class="synConstant">'新規投稿&lt;small&gt;(本名を入力した箇所は自動的に可愛い絵文字に変換されます??)&lt;/small&gt;'</span>;
+  <span class="synIdentifier">}</span>;
+&lt;/script&gt;
+</pre><p>→ 改行とスペースを削除して入力しないと<a class="keyword" href="http://d.hatena.ne.jp/keyword/XSS">XSS</a>が実行されない。</p>
+<pre class="code lang-javascript" data-lang="javascript" data-unlink="">こんにちは、クラスの人達だけの匿名掲示板、盛り上がるといいですね?(??????)?
+&lt;script&gt;<span class="synStatement">window</span>.onload=<span class="synIdentifier">function</span>()<span class="synIdentifier">{</span><span class="synStatement">document</span>.getElementsByTagName(<span class="synConstant">'h2'</span>)<span class="synIdentifier">[</span>0<span class="synIdentifier">]</span>.innerHTML=<span class="synConstant">'新規投稿&lt;small&gt;(本名を入力した箇所は自動的に可愛い絵文字に変換されます??)&lt;/small&gt;'</span>;<span class="synIdentifier">}</span>;&lt;/script&gt;
+</pre><p><b>・Errorメッセージ</b><br/>
+ console.log(`Password is "${line}"`);  → `と'の違いを見落としやすい（バッククォートとシングルクォート）</p><p><b>・intro-curriculum-3024のテキストのコードが間違っている</b><br/>
+25．削除機能の実装のコード<br/>
+誤植（他の単元にもあった気がする）</p>
+<pre class="code lang-javascript" data-lang="javascript" data-unlink="">×  Post.findByPk(id).then((post) =&gt; <span class="synIdentifier">{</span>
+〇 Post.findById(id).then((post) =&gt; <span class="synIdentifier">{</span>
+</pre>
+</div>

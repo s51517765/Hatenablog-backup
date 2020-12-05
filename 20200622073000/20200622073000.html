@@ -1,0 +1,143 @@
+<div class="entry-content">
+<p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20200621165205j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20200621/20200621165205.jpg" title="f:id:s51517765:20200621165205j:plain"/></span><br/>
+電子工作において、電圧を可変できる電源があると便利です。</p><p>安い可変電源も<a class="keyword" href="http://d.hatena.ne.jp/keyword/Amazon">Amazon</a>にはあるのですが、簡単なものを作ってみようと思いました。</p><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20200621163401p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20200621/20200621163401.png" title="f:id:s51517765:20200621163401p:plain"/></span></p><p>ネット上の情報をもとに最も簡単な回路を設計しました。<br/>
+入力はスイッチング電源をDCジャックから入力し、出力もDCジャックと、並列にピンヘッダを出そうと思います。<br/>
+スイッチは、スライドスイッチとタクトスイッチを設置します。<br/>
+タクトスイッチは短い時間だけ出力させるためで、出力先の回路に不安があるときに活用できると思っています。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D1%A5%A4%A5%ED">パイロ</a>ットランプとして赤色LEDを載せています。<br/>
+電流は入力が12V以上で発光するように選択しています。</p><p>部品は、このために入手したのは3端子レギュレータと手で回せるタイプの可変抵抗ぐらいで、あとは在庫品を使っています。</p><p></p><h3>出力調整用の可変抵抗</h3>基準抵抗となる、320Ωと可変抵抗（5kΩ）の比によって3端子レギュレータのADJへの入力電圧が決まります。<br/>
+これによって、出力の電圧が決まります。<p>出力電圧の分解能が不足しそうなら可変抵抗を二つ使うことも考えましたが、ブレッドボードで試してみたところ、低出力（5V以下）側で0.5V程度、高出力（5V以上）で1V程度の分解能で調整が出来そうなので、上記回路図のような形にしました。</p><p>下記のような方法を考えていましたが不要でした。</p>
+<blockquote>
+<p>理論的には5kΩの可変抵抗が一つあればいいのですが、調整範囲が広くなれば分解能が不足します。<br/>
+なので、出力の低い部分での設定分解能を得るために二つ使います。<br/>
+つまり、出力が低い領域（10V程度以下）では小さいVR2（0～1kΩ）を使い、出力が高い領域では、大きいVR1（０～5kΩ）とVR2を併用します。<br/>
+これは、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%BD%A9%B7%EE%C5%C5%BB%D2">秋月電子</a>のキットの製作マニュアルに記載の抵抗を切り替える手法に発想した応用です。</p>
+</blockquote>
+<p></p><h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%F3%A5%C7%A5%F3%A5%B5">コンデンサ</a>の役割</h3>出力側のC2、C3 + C4は容量とタイプ（<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C5%C5%B2%F2%A5%B3%A5%F3%A5%C7%A5%F3%A5%B5">電解コンデンサ</a>とセラミック<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%F3%A5%C7%A5%F3%A5%B5">コンデンサ</a>）の異なる<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%F3%A5%C7%A5%F3%A5%B5">コンデンサ</a>を並列に使います。<br/>
+これは、容量が違うことでノイズ（電源変動）の周波数に対して広く性能を得ることが出来るとされています。<br/>
+入力側も同様ですが、入力はDC市販の電源を使うので、そこまで不安定にはならないと思い１つにしました。
+
+    <blockquote>
+<p>電源電圧の変動の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C4%E3%BC%FE%C7%C8">低周波</a>成分では<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A2%A5%EB%A5%DF%C5%C5%B2%F2%A5%B3%A5%F3%A5%C7%A5%F3%A5%B5">アルミ電解コンデンサ</a>が主要な役割を果たし、高周波成分ではセラミック<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%F3%A5%C7%A5%F3%A5%B5">コンデンサ</a>が主要な役割を果たすようになり、広い周波数帯域に渡って電源電圧の変動を防ぐことができる</p>
+</blockquote>
+<p><a href="https://ja.wikipedia.org/wiki/%E3%83%90%E3%82%A4%E3%83%91%E3%82%B9%E3%82%B3%E3%83%B3%E3%83%87%E3%83%B3%E3%82%B5">バイパスコンデンサ - Wikipedia</a></p><p>ここでは、出力側に付けるセラミック<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%F3%A5%C7%A5%F3%A5%B5">コンデンサ</a>が手持ちで耐圧が小さいものしかなかったので、直列にしています。<br/>
+これで、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%F3%A5%C7%A5%F3%A5%B5">コンデンサ</a>にかかる電圧は”理論上”半分になります。<br/>
+本当は抵抗を並列に入れたほうがいいらしいのですが、壊れたら改良しよう、ということで今回は無しにしました。<br/>
+<a href="http://www.elna.co.jp/capacitor/alumi/attention/detail.html">アルミニウム電解コンデンサ - 詳細 | エルナー株式会社</a></p><p></p><h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C0%A5%A4%A5%AA%A1%BC%A5%C9">ダイオード</a>の役割</h3>一言でいえば逆電圧がかかったときに素子を守るためですが、ノイズ対策の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%F3%A5%C7%A5%F3%A5%B5">コンデンサ</a>から電圧変動時に逆電流が流れることで、ここでは3端子レギュレータを壊すことを防止するためです。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%F3%A5%C7%A5%F3%A5%B5">コンデンサ</a>は通電後には充電され、電源と同じ意味を持ちます。<br/>
+これを<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C0%A5%A4%A5%AA%A1%BC%A5%C9">ダイオード</a>によって電流を誘導し安全に放電させるということだと思います。<p></p><h3>実装</h3>本来ならCADで配置を設計するのでしょうが、実物を置きながら場所を決めました。<br/>
+同時に配線もなるべく交差しないように考慮します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20200621165606j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20200621/20200621165606.jpg" title="f:id:s51517765:20200621165606j:plain"/></span><p></p><h3>完成</h3>完成状態を反対側から見たの図<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20200621165842j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20200621/20200621165842.jpg" title="f:id:s51517765:20200621165842j:plain"/></span><br/>
+3端子レギュレータが高さがあったので、足を切ってさらに斜めに配置しました。<br/>
+何かのおまけの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D2%A1%BC%A5%C8%A5%B7%A5%F3%A5%AF">ヒートシンク</a>があったのでちょうどよい大きさだったのでつけておきました。<br/>
+スライドスイッチとDCジャックはユニバーサル基板に刺さらないタイプだったので、オスのピンヘッダを利用しています。<p>3端子レギュレータとDC出力ジャックは力がかかりかねないので、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%DB%A5%C3%A5%C8%A5%DC%A5%F3%A5%C9">ホットボンド</a>で補強してあります。<br/>
+（3端子レギュレータが発熱したら<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%DB%A5%C3%A5%C8%A5%DC%A5%F3%A5%C9">ホットボンド</a>が溶けるかもしれないが、いまのところ思ったより発熱しない。…なら<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D2%A1%BC%A5%C8%A5%B7%A5%F3%A5%AF">ヒートシンク</a>いらないんじゃ？）<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20200621170207j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20200621/20200621170207.jpg" title="f:id:s51517765:20200621170207j:plain"/></span></p><p></p><h3>まとめ</h3>回路さえ考えれば楽勝、と思って始めましたが基板を作るのは奥が深いですね。<br/>
+しかもありあわせの部品を使おうとすると、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%F3%A5%C7%A5%F3%A5%B5">コンデンサ</a>の耐圧が足りなかったり、参考資料と出力範囲や可変抵抗の性能が違ったり、いろいろありました。<p>ブレッドボードで3端子レギュレータを試したときの動画<br/>
+<iframe allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" frameborder="0" height="270" src="https://www.youtube.com/embed/KyZp3Bak1DE?feature=oembed" width="480"></iframe><cite class="hatena-citation"><a href="https://youtu.be/KyZp3Bak1DE">youtu.be</a></cite><br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D1%A5%B9%A5%B3%A5%F3">パスコン</a>の効果を確認した動画<br/>
+<iframe allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" frameborder="0" height="270" src="https://www.youtube.com/embed/hjWh-YWI_Hc?feature=oembed" width="480"></iframe><cite class="hatena-citation"><a href="https://www.youtube.com/watch?v=hjWh-YWI_Hc">www.youtube.com</a></cite><br/>
+</p>
+<table>
+<tr>
+<td>種類</td>
+<td>仕様</td>
+<td>数量</td>
+<td>単価（円）</td>
+</tr>
+<tr>
+<td>3端子レギュレータ</td>
+<td>LM350T/出力33V</td>
+<td>1</td>
+<td>130</td>
+</tr>
+<tr>
+<td>スライドスイッチ</td>
+<td></td>
+<td>1</td>
+<td>20</td>
+</tr>
+<tr>
+<td>タクトスイッチ</td>
+<td></td>
+<td>1</td>
+<td>3</td>
+</tr>
+<tr>
+<td>可変抵抗</td>
+<td>5kΩ</td>
+<td>1</td>
+<td>50</td>
+</tr>
+<tr>
+<td>抵抗</td>
+<td>2kΩ</td>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr>
+<td>抵抗</td>
+<td>320Ω</td>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr>
+<td>LED</td>
+<td>赤</td>
+<td>1</td>
+<td>6</td>
+</tr>
+<tr>
+<td><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C0%A5%A4%A5%AA%A1%BC%A5%C9">ダイオード</a></td>
+<td>1N4148 /100V/200mA</td>
+<td>2</td>
+<td>2</td>
+</tr>
+<tr>
+<td><a class="keyword" href="http://d.hatena.ne.jp/keyword/%C5%C5%B2%F2%A5%B3%A5%F3%A5%C7%A5%F3%A5%B5">電解コンデンサ</a></td>
+<td>100μF/25V</td>
+<td>2</td>
+<td>2</td>
+</tr>
+<tr>
+<td>セラミック<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%F3%A5%C7%A5%F3%A5%B5">コンデンサ</a></td>
+<td>0.1μF/16V</td>
+<td>2</td>
+<td>20</td>
+</tr>
+<tr>
+<td>DCジャック</td>
+<td>オス</td>
+<td>1</td>
+<td>30</td>
+</tr>
+<tr>
+<td>DCジャック</td>
+<td>メス</td>
+<td>1</td>
+<td>50</td>
+</tr>
+<tr>
+<td>ピンヘッダ</td>
+<td>4ピン</td>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr>
+<td>ABS樹脂ケース</td>
+<td></td>
+<td>1</td>
+<td>130</td>
+</tr>
+<tr>
+<td>合計</td>
+<td></td>
+<td></td>
+<td>473</td>
+</tr>
+</table><p>※3端子レギュレータ、可変抵抗、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C0%A5%A4%A5%AA%A1%BC%A5%C9">ダイオード</a>、セラミック<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%F3%A5%C7%A5%F3%A5%B5">コンデンサ</a>、ケースは<a class="keyword" href="http://d.hatena.ne.jp/keyword/%BD%A9%B7%EE%C5%C5%BB%D2">秋月電子</a>で購入。それ以外は<a class="keyword" href="http://d.hatena.ne.jp/keyword/Amazon">Amazon</a>の中華部品。</p><p></p><h3>参考</h3><a href="http://akizukidenshi.com/download/ds/akizuki/ae-lm338_ae-lm350.pdf">http://akizukidenshi.com/download/ds/akizuki/ae-lm338_ae-lm350.pdf</a><br/>
+<a href="https://www.marutsu.co.jp/contents/shop/marutsu/datasheet/368777.pdf">https://www.marutsu.co.jp/contents/shop/marutsu/datasheet/368777.pdf</a><br/>
+<a href="https://jp.rs-online.com/web/p/linear-voltage-regulators/6710299/">https://jp.rs-online.com/web/p/linear-voltage-regulators/6710299/</a><br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20200621173113p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20200621/20200621173113.png" title="f:id:s51517765:20200621173113p:plain"/></span><p></p><div class="hatena-asin-detail"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/B07KN1PBYY/shirotoakb-22/"><img alt="10ピース LM350T TO220 LM350-220 新・オリジナル IC" class="hatena-asin-detail-image" src="https://m.media-amazon.com/images/I/41BEHdBETqL._SL160_.jpg" title="10ピース LM350T TO220 LM350-220 新・オリジナル IC"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/B07KN1PBYY/shirotoakb-22/">10ピース LM350T TO220 LM350-220 新・オリジナル IC</a></p><ul><li><span class="hatena-asin-detail-label">メディア:</span></li></ul></div><div class="hatena-asin-detail-foot"></div></div><div class="hatena-asin-detail"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/B07MZWJG8C/shirotoakb-22/"><img alt="waves 金属皮膜抵抗器 抵抗セット 10Ω~1MΩ 30種類 各20本入り 合計600本" class="hatena-asin-detail-image" src="https://m.media-amazon.com/images/I/51ZPZ2X0s6L._SL160_.jpg" title="waves 金属皮膜抵抗器 抵抗セット 10Ω~1MΩ 30種類 各20本入り 合計600本"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/B07MZWJG8C/shirotoakb-22/">waves 金属皮膜抵抗器 抵抗セット 10Ω~1MΩ 30種類 各20本入り 合計600本</a></p><ul><li><span class="hatena-asin-detail-label">メディア:</span></li></ul></div><div class="hatena-asin-detail-foot"></div></div><div class="hatena-asin-detail"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/B01LYVYQNO/shirotoakb-22/"><img alt="HiLetgo® 20個セットSS12D00G5 スライド スイッチ トグルスイッチ SPDT 1P2T 2 位置 3 ピン シャフト 5 MM ピッチ 2.5 MM [並行輸入品]" class="hatena-asin-detail-image" src="https://m.media-amazon.com/images/I/41uDHMWQbzL._SL160_.jpg" title="HiLetgo® 20個セットSS12D00G5 スライド スイッチ トグルスイッチ SPDT 1P2T 2 位置 3 ピン シャフト 5 MM ピッチ 2.5 MM [並行輸入品]"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/B01LYVYQNO/shirotoakb-22/">HiLetgo® 20個セットSS12D00G5 スライド スイッチ トグルスイッチ SPDT 1P2T 2 位置 3 ピン シャフト 5 MM ピッチ 2.5 MM [並行輸入品]</a></p><ul><li><span class="hatena-asin-detail-label">メディア:</span></li></ul></div><div class="hatena-asin-detail-foot"></div></div><div class="hatena-asin-detail"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/B01DP5JR1Y/shirotoakb-22/"><img alt="uxcell タクトスイッチ プラスチック 金属 ブラック 10個入り 防水 押しボタン" class="hatena-asin-detail-image" src="https://m.media-amazon.com/images/I/41vYgZ2CPAL._SL160_.jpg" title="uxcell タクトスイッチ プラスチック 金属 ブラック 10個入り 防水 押しボタン"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/B01DP5JR1Y/shirotoakb-22/">uxcell タクトスイッチ プラスチック 金属 ブラック 10個入り 防水 押しボタン</a></p><ul><li><span class="hatena-asin-detail-label">メディア:</span> その他</li></ul></div><div class="hatena-asin-detail-foot"></div></div><div class="hatena-asin-detail"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/B0776SRNBF/shirotoakb-22/"><img alt="Longruner 電解コンデンサ 24種類 0.1uF - 1000uf 10V/16V/25V/50V 電解コンデンサキット (LP13)" class="hatena-asin-detail-image" src="https://m.media-amazon.com/images/I/51dx0c1SdAL._SL160_.jpg" title="Longruner 電解コンデンサ 24種類 0.1uF - 1000uf 10V/16V/25V/50V 電解コンデンサキット (LP13)"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/B0776SRNBF/shirotoakb-22/">Longruner 電解コンデンサ 24種類 0.1uF - 1000uf 10V/16V/25V/50V 電解コンデンサキット (LP13)</a></p><ul><li><span class="hatena-asin-detail-label">メディア:</span></li></ul></div><div class="hatena-asin-detail-foot"></div></div><div class="hatena-asin-detail"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/4774187070/shirotoakb-22/"><img alt="電子工作の職人技" class="hatena-asin-detail-image" src="https://m.media-amazon.com/images/I/51jah4mRryL._SL160_.jpg" title="電子工作の職人技"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/4774187070/shirotoakb-22/">電子工作の職人技</a></p><ul><li><span class="hatena-asin-detail-label">作者:</span><a class="keyword" href="http://d.hatena.ne.jp/keyword/%B9%E2%C0%A5%20%CF%C2%C2%A7">高瀬 和則</a></li><li><span class="hatena-asin-detail-label">発売日:</span> 2017/02/15</li><li><span class="hatena-asin-detail-label">メディア:</span> 単行本（ソフトカバー）</li></ul></div><div class="hatena-asin-detail-foot"></div></div>
+</div>

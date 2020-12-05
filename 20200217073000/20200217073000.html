@@ -1,0 +1,102 @@
+<div class="entry-content">
+<p>こちらの記事に質問をいただきました。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2016%2F09%2F04%2F140000" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="Arduinoで時間を計る - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2016/09/04/140000">s51517765.hatenadiary.jp</a></cite><br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20200215171113p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20200215/20200215171113.png" title="f:id:s51517765:20200215171113p:plain"/></span></p><p>コメントで方針はお答えしましたが、実際にやってみました。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20200215171203j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20200215/20200215171203.jpg" title="f:id:s51517765:20200215171203j:plain"/></span><br/>
+ただし、振り子のハードウェアがないので、フォトセンサ（<a class="keyword" href="http://d.hatena.ne.jp/keyword/CDS">CDS</a>）を指で隠すという形で<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D5%A5%A3%A1%BC%A5%B8%A5%D3%A5%EA%A5%C6%A5%A3">フィージビリティ</a>的に実施しました。<br/>
+実際の振り子の周期としては、真ん中で観測すれば2回遮られるごとに周期になります。<br/>
+左右のどちらかであれば遮られるごとに周期になります。<br/>
+今回は左右のどちらか、に相当する方法で実装しました。</p><p></p><h3>実装の考え方</h3>フォトセンサ（<a class="keyword" href="http://d.hatena.ne.jp/keyword/CDS">CDS</a>）は今回使用したものは、光が遮られる（振り子が通過すると）と抵抗が高くなり出力がLOWになり、光が戻ると抵抗が小さくなり出力はHIGHになります。<br/>
+ただし、回路の組み方によってはHIGH/LOWは反対にもなります。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20200215172432p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20200215/20200215172432.png" title="f:id:s51517765:20200215172432p:plain"/></span><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/CDS">CDS</a>は明るさによって抵抗が変わります。５Vを基準抵抗（ここでは10kΩ）と分圧することで明るさを検知します。基準抵抗は<a class="keyword" href="http://d.hatena.ne.jp/keyword/CDS">CDS</a>によって、感度が一番よくなる抵抗を選びます。<br/>
+明るいときと暗いときでのAnalog出力の差がなるべく大きくなる抵抗値を選びます。<br/>
+下のようなコードを書いて、<a class="keyword" href="http://d.hatena.ne.jp/keyword/CDS">CDS</a>の出力感度を確認しました。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synType">void</span> setup() {
+  <span class="synComment">// put your setup code here, to run once:</span>
+  pinMode(A3, INPUT);
+  Serial.begin(<span class="synConstant">9600</span>);
+}
+
+<span class="synType">void</span> loop() {
+  <span class="synType">int</span> read;
+  read = analogRead(A3);
+  Serial.println(read);
+  delay(<span class="synConstant">300</span>);
+}
+</pre><pre class="code" data-lang="" data-unlink="">//結果  10kΩ
+306
+306
+301
+473
+733
+823
+831
+304
+299
+564
+822
+821
+826 //遮られている
+826
+600
+298 //遮られていない
+297
+297
+291
+304</pre><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20200215175413j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20200215/20200215175413.jpg" title="f:id:s51517765:20200215175413j:plain"/></span><br/>
+</p><h3>実装のポイント</h3>では実際に時間を図るコードです。<br/>
+光が遮られていない状態から、光が遮られている状態に変化した時刻を記録します。時刻を記録する配列を<code>unsigned long time_[10];</code>で10個分で用意します。<br/>
+LOW→HIGHの状態を10回記録します。
+<pre class="code lang-c" data-lang="c" data-unlink="">  <span class="synStatement">while</span> (<span class="synConstant">true</span>) {
+    read = digitalRead(A3);
+    <span class="synStatement">if</span> (read == <span class="synConstant">1</span> &amp;&amp; readPre == <span class="synConstant">0</span>) { <span class="synComment">//1つ前で遮られていなく、今回遮られている</span>
+      time_[count] = micros();
+      count++;
+    }
+    <span class="synComment">//  Serial.println(String(count) + " " + String(readPre) + " " + String(read));</span>
+    readPre = read; <span class="synComment">//今の状態を前の状態として保持します</span>
+    delay(<span class="synConstant">1</span>);
+    <span class="synStatement">if</span> (count == <span class="synConstant">10</span>) <span class="synStatement">break</span>; <span class="synComment">//10回で終了</span>
+  }
+</pre><p>次に、結果出力部です。<br/>
+隣り合った時刻の差分をとれば、一周期です。<br/>
+さらに、この平均をとります。平均は<code>ave=0</code>にに対してして、平均したいものを<code>ave += period;</code>のように加算し、最後に<code>ave /= 9;</code>のように回数で割ります。<br/>
+ついでにばらつき（最大ー最小）/2も算出してみました。<br/>
+最大・最小は、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>の関数Max/Minで求めてもよいです。<br/>
+測定はMicro Secondですが、結果出力は1000倍してMilli Secondに丸めています。</p>
+<pre class="code lang-c" data-lang="c" data-unlink="">  Serial.println(<span class="synConstant">"Calculation!"</span>);
+  Serial.println(<span class="synConstant">"Raw result."</span>);
+  <span class="synType">unsigned</span> <span class="synType">long</span> max = <span class="synConstant">0</span>;
+  <span class="synType">unsigned</span> <span class="synType">long</span> min = <span class="synConstant">32767</span>;
+  <span class="synType">unsigned</span> <span class="synType">long</span> period;
+  <span class="synType">unsigned</span> <span class="synType">long</span>  ave = <span class="synConstant">0</span>;
+
+  <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">1</span>; i &lt; <span class="synConstant">10</span>; i++) { <span class="synComment">//2つ目 - 1つ目が最初</span>
+    <span class="synComment">//  Serial.println(time_[i]);</span>
+    period = (time_[i] - time_[i - <span class="synConstant">1</span>]) / <span class="synConstant">1000</span>;
+    Serial.println(period) ;
+    ave += period;
+
+    <span class="synStatement">if</span> (period &lt; min)min = period;
+    <span class="synStatement">if</span> (period &gt; max)max = period;
+  }
+  ave /= <span class="synConstant">9</span>;
+  <span class="synComment">//結果</span>
+  Serial.println(<span class="synConstant">"Ave= "</span> + String(ave));
+  Serial.println(<span class="synConstant">"delta= "</span> + String((max - min) / <span class="synConstant">2</span>));
+</pre><pre class="code" data-lang="" data-unlink="">//結果出力
+Waiting Start!
+Calculation!
+Raw result.
+219
+315
+226
+239
+241
+241
+225
+210
+209
+Ave= 236
+delta= 53</pre><p></p><h3>まとめ</h3>久しぶりに<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>で遊ぶ、いいお題になりました。<div class="hatena-asin-detail"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/B01F3673TQ/shirotoakb-22/"><img alt="抵抗器，SODIAL(R)30個のフォトレジスタLDRフォトライト依存抵抗性5ミリメートル" class="hatena-asin-detail-image" src="https://images-fe.ssl-images-amazon.com/images/I/41xFNJ5C6FL._SL160_.jpg" title="抵抗器，SODIAL(R)30個のフォトレジスタLDRフォトライト依存抵抗性5ミリメートル"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/B01F3673TQ/shirotoakb-22/">抵抗器，SODIAL(R)30個のフォトレジスタLDRフォトライト依存抵抗性5ミリメートル</a></p><ul><li><span class="hatena-asin-detail-label">メディア:</span> その他</li></ul></div><div class="hatena-asin-detail-foot"></div></div><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fs51517765%2F-Measure-pendulum-cycle-with-Arduino" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="s51517765/-Measure-pendulum-cycle-with-Arduino"></iframe><cite class="hatena-citation"><a href="https://github.com/s51517765/-Measure-pendulum-cycle-with-Arduino">github.com</a></cite>
+</div>

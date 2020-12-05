@@ -1,0 +1,62 @@
+<div class="entry-content">
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/N%CD%BD%C8%F7%B9%BB">N予備校</a>の ”【2020年度】プログラミング入門 Webアプリ” コース を終了しました。</p><p>第3章を終えたところまでは、以下の記事で紹介済みです。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2020%2F06%2F29%2F073000" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="N予備校の3章 「サーバーサイドプログラミング入門」を終了 - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2020/06/29/073000">s51517765.hatenadiary.jp</a></cite></p><p>毎週日曜日（忘れていて翌日になったことや跳ばした週もありますが）に<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>で進捗を<a class="keyword" href="http://d.hatena.ne.jp/keyword/Tweet">Tweet</a>するようにしていました。<br/>
+このようにすることで、土曜日に「あれ、今週なにも進めてない。」というときもちょっと頑張ろう、となります。<br/>
+アウトプット駆動学習というものですね。</p><blockquote class="twitter-tweet" data-conversation="none" data-lang="ja"><p dir="ltr" lang="ja">プログラミング入門webアプリコース始めて25週間 第4章終了しました❗と思ったら付録が残ってる。 進捗93％ <a href="https://twitter.com/hashtag/N%E4%BA%88%E5%82%99%E6%A0%A1?src=hash&amp;ref_src=twsrc%5Etfw">#N予備校</a> <a href="https://t.co/RTYOQmpwJf">pic.twitter.com/RTYOQmpwJf</a></p>— とりてん(プログラミング素人) (@s51517765) <a href="https://twitter.com/s51517765/status/1310208638150213632?ref_src=twsrc%5Etfw">2020年9月27日</a></blockquote> <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script> <p>第3章は素の<a class="keyword" href="http://d.hatena.ne.jp/keyword/Javascript">Javascript</a>でサーバープログラミングをする、というものでしたが第4章はJavascriotに加えてExpressや<a class="keyword" href="http://d.hatena.ne.jp/keyword/AJAX">AJAX</a>という<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D5%A5%EC%A1%BC%A5%E0%A5%EF%A1%BC%A5%AF">フレームワーク</a>を用いた、より高度なものになります。<br/>
+このほかに、Bootstrap、<a class="keyword" href="http://d.hatena.ne.jp/keyword/JQuery">JQuery</a>、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Github">Github</a>認証の導入などが出てきます。</p><p></p><h3>4章の感想</h3>・難易度<br/>
+3章よりより複雑です、言うまでもないですね。<br/>
+3章で<a class="keyword" href="http://d.hatena.ne.jp/keyword/Javascript">Javascript</a>を丁寧に学習していれば問題はないでしょう。<br/>
+・<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B9%A9%BF%F4">工数</a><br/>
+3章が終わったのが6/21なのでここから3か月かかっています。<br/>
+このコース全体では半年かかったことになります。<br/>
+・最終的には<a class="keyword" href="http://d.hatena.ne.jp/keyword/GitHub">GitHub</a>認証を用いてHerokuにwebアプリとして「予定調性くん」をデプロイします。<p></p><h3>詰まったところ</h3><b><a class="keyword" href="http://d.hatena.ne.jp/keyword/chrome">chrome</a>の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C7%A5%D9%A5%ED%A5%C3%A5%D1">デベロッパ</a>ーツールで確認するときは、キャッシュが残っていることが多いので、強制再読み込みをする。</b>
+<pre class="code" data-lang="" data-unlink="">DEBUG=express-api:* PORT=8000 yarn start
+以上のコマンドで起動させ、 Chrome で http://localhost:8000/ にアクセスします。 デベロッパーツールの Network タブを開き、さらに再読み込みをして localhost へのアクセスのリクエストヘッダを確認してみましょう。
+レスポンスヘッダの中に、X-Powered-By:Express がなければ対応は成功です。</pre><p><b>4章19節 「p 作成者」のところが間違っている</b></p>
+<pre class="code" data-lang="" data-unlink="">extends layout
+
+block content
+  h4 #{schedule.scheduleName}
+  p(style="white-space:pre;") #{schedule.memo}
+-  p 作成者: #{schedule.user.username}               → 間違い
++  p 作成者: #{user.username}
+  h3 出欠表
+  table
+    tr
+      th 予定
+      each user in users
+        th #{user.username}
+    each candidate in candidates
+      tr
+        th #{candidate.candidateName}
+        each user in users
+          td
+            button 欠席
+</pre><p><b><code>npx webpack</code> でErrorが出る。</b></p>
+<pre class="code" data-lang="" data-unlink="">もしこのコードを実行してエラーが出たときは、代わりに
+node node_modules/webpack/bin/webpack.js 
+を実行してみてください。</pre><p>と書かれているが、基本的にこちらを使えばよさそう。<br/>
+かなり時間を使ったうえ最後にErrorがでてやり直すことになる。</p>
+<pre class="code" data-lang="" data-unlink="">2/4] Fetching packages...
+info fsevents@2.1.3: The platform "linux" is incompatible with this module.
+info "fsevents@2.1.3" is an optional dependency and failed compatibility check. Excluding it from installation.
+info fsevents@1.2.13: The platform "linux" is incompatible with this module.
+info "fsevents@1.2.13" is an optional dependency and failed compatibility check. Excluding it from installation.
+[3/4] Linking dependencies...
+error An unexpected error occurred: "EPROTO: protocol error, symlink '../../../../browserslist/cli.js' -&gt; '/home/vagrant/workspace/schedule-arranger-4021/node_modules/@babel/compat-data/node_modules/.bin/browserslist'".
+info If you think this is a bug, please open a bug report with the information provided in "/home/vagrant/workspace/schedule-arranger-4021/yarn-error.log".
+info Visit https://yarnpkg.com/en/docs/cli/add for documentation about this command.
+undefin</pre><p></p><h3>小技</h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/vagrant">vagrant</a>の起動はpower shell から以下のコマンドで呼び出しますが、これをPower Shell scriptにしておきます。
+<pre class="code" data-lang="" data-unlink="">cd D:\vagrant\ubuntu64_19
+vagrant up</pre><p>メモ帳などで上記の内容を記述し、ファイル名を<code>ubt.ps1</code>とします。<br/>
+実行はPower Shellを管理者権限で起動して</p>
+<pre class="code" data-lang="" data-unlink="">.\ubt.ps1</pre><p>とします。</p><p></p><h3>まとめ</h3>（実際には付録が残っていますが）<a class="keyword" href="http://d.hatena.ne.jp/keyword/N%CD%BD%C8%F7%B9%BB">N予備校</a>の”【2020年度】プログラミング入門 Webアプリ” コース を終了しました。<br/>
+サーバーサイドのプログラミングはなかなか良い教材がなく、ア<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%DE%A5%C1%A5%E5%A5%A2">マチュア</a>が書ているネット上の記事が少ないことが原因ではないか？と思いますが、専門的に学んだか仕事として関わっていないとなかなか触れることが難しい分野となっていると思います。<br/>
+そんなサーバーサイドのプログラミングに体系的に触れられるこの教材はとても優れていると思います。<br/>
+また、付録についてはサーバーサイドに限らず、GutHub Pagesにより詳しく触れていたり、NodeによるTwiiter <a class="keyword" href="http://d.hatena.ne.jp/keyword/Bot">Bot</a>、ライセンスの種類（<a class="keyword" href="http://d.hatena.ne.jp/keyword/GNU">GNU</a><br/>
+やMITといった）などにも触れられています。
+
+    
+
+  
+</div>

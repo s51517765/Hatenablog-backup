@@ -1,0 +1,328 @@
+<div class="entry-content">
+<p><iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fupura.hatenablog.com%2Fentry%2F2020%2F04%2F14%2F024948" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="「言語処理100本ノック 2020」をPythonで解く - u++の備忘録"></iframe><cite class="hatena-citation"><a href="https://upura.hatenablog.com/entry/2020/04/14/024948">upura.hatenablog.com</a></cite><br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fnlp100.github.io%2Fja%2Fch01.html" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="第1章: 準備運動"></iframe><cite class="hatena-citation"><a href="https://nlp100.github.io/ja/ch01.html">nlp100.github.io</a></cite></p><p>U++さんのところで見つけたので挑戦してみました。(最初の10本だけ)<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%2B%2B">C++</a>の文字列処理が苦手なのでやってみました。<a class="keyword" href="http://d.hatena.ne.jp/keyword/Atcoder">Atcoder</a>などでも文字列の処理は重要なので、ちょうどよい題材です。</p><p>01、02は日本語が含まれていますが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%2B%2B">C++</a>の日本語は闇が深いので、問題の意図を変更しない範囲でアルファベットや数字に置き換えました。<br/>
+また、<code>#include</code>は省略しますが、以下のようなものを使っています。</p>
+<pre class="code lang-cpp" data-lang="cpp" data-unlink=""><span class="synPreProc">#include </span><span class="synConstant">&lt;iostream&gt;</span>
+<span class="synPreProc">#include </span><span class="synConstant">&lt;algorithm&gt;</span>
+<span class="synPreProc">#include </span><span class="synConstant">&lt;vector&gt;</span>
+<span class="synPreProc">#include </span><span class="synConstant">&lt;numeric&gt;</span>
+<span class="synPreProc">#include </span><span class="synConstant">&lt;map&gt;</span>
+<span class="synPreProc">#include </span><span class="synConstant">&lt;random&gt;</span>
+
+<span class="synStatement">using</span> <span class="synType">namespace</span> std;
+</pre><p></p><h3>やってみた</h3>
+<blockquote>
+<p>00. 文字列の逆順<br/>
+文字列”stressed”の文字を逆に（末尾から先頭に向かって）並べた文字列を得よ．</p>
+</blockquote>
+<pre class="code lang-cpp" data-lang="cpp" data-unlink=""><span class="synType">int</span> main()
+{
+  string a = <span class="synConstant">"stressed"</span>;
+  <span class="synStatement">for</span> (<span class="synType">int</span> i = a.size() - <span class="synConstant">1</span>; i &gt;= <span class="synConstant">0</span>; i--)
+  {
+    cout &lt;&lt; a[i];
+  }
+}
+</pre>
+<blockquote>
+<p>01. 「パタトクカシーー」<br/>
+「パタトクカシーー」という文字列の1,3,5,7文字目を取り出して連結した文字列を得よ．</p>
+</blockquote>
+<pre class="code lang-cpp" data-lang="cpp" data-unlink=""><span class="synType">int</span> main()
+{
+  string a = <span class="synConstant">"abababab"</span>;
+  <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; a.size(); i += <span class="synConstant">2</span>)
+  {
+    cout &lt;&lt; a[i];
+  }
+}
+</pre>
+<blockquote>
+<p>02. 「パトカー」＋「タクシー」＝「パタトクカシーー」<br/>
+「パトカー」＋「タクシー」の文字を先頭から交互に連結して文字列「パタトクカシーー」を得よ．</p>
+</blockquote>
+<pre class="code lang-cpp" data-lang="cpp" data-unlink=""><span class="synType">int</span> main()
+{
+  string a = <span class="synConstant">"abcd"</span>;
+
+  string b = <span class="synConstant">"0123"</span>;
+  <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; a.size(); i++)
+  {
+    cout &lt;&lt; a[i] &lt;&lt; b[i];
+  }
+}
+</pre>
+<blockquote>
+<p>03. 円周率<br/>
+“Now I need a drink, alcoholic of course, after the heavy lectures involving quantum mechanics.”という文を単語に分解し，各単語の（アルファベットの）文字数を先頭から出現順に並べたリストを作成せよ．</p>
+</blockquote>
+<pre class="code lang-cpp" data-lang="cpp" data-unlink=""><span class="synType">int</span> main()
+{
+  string a = <span class="synConstant">"Now I need a drink, alcoholic of course, after the heavy lectures involving quantum mechanics."</span>;
+
+  <span class="synType">int</span> count = <span class="synConstant">0</span>;
+  <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; a.size(); i++)
+  {
+    <span class="synStatement">if</span> (a[i] == <span class="synConstant">' '</span> || a[i] == <span class="synConstant">','</span> || a[i] == <span class="synConstant">'.'</span>)
+    {
+      <span class="synStatement">if</span> (count != <span class="synConstant">0</span>)
+        cout &lt;&lt; count;
+      count = <span class="synConstant">0</span>;
+    }
+    <span class="synStatement">else</span>
+    {
+      count += <span class="synConstant">1</span>;
+    }
+  }
+}
+</pre>
+<blockquote>
+<p>04. <a class="keyword" href="http://d.hatena.ne.jp/keyword/%B8%B5%C1%C7%B5%AD%B9%E6">元素記号</a><br/>
+“Hi He Lied Because Boron Could Not Oxidize Fluorine. New Nations Might Also <a class="keyword" href="http://d.hatena.ne.jp/keyword/Sign">Sign</a> Peace Security Clause. Arthur King Can.”という文を単語に分解し，1, 5, 6, 7, 8, 9, 15, 16, 19番目の単語は先頭の1文字，それ以外の単語は先頭に2文字を取り出し，取り出した文字列から単語の位置（先頭から何番目の単語か）への<a class="keyword" href="http://d.hatena.ne.jp/keyword/%CF%A2%C1%DB%C7%DB%CE%F3">連想配列</a>（辞書型もしくはマップ型）を作成せよ．</p>
+</blockquote>
+<pre class="code lang-cpp" data-lang="cpp" data-unlink=""><span class="synType">int</span> count_;
+<span class="synType">int</span> single_[] = {<span class="synConstant">1</span>, <span class="synConstant">5</span>, <span class="synConstant">6</span>, <span class="synConstant">7</span>, <span class="synConstant">8</span>, <span class="synConstant">9</span>, <span class="synConstant">15</span>, <span class="synConstant">16</span>, <span class="synConstant">19</span>};
+
+<span class="synComment">// マグネシウムの元素記号Mg？</span>
+
+<span class="synType">bool</span> isSingle()
+{
+  <span class="synStatement">for</span> (<span class="synType">int</span> j = <span class="synConstant">0</span>; j &lt; <span class="synStatement">sizeof</span>(single_) / <span class="synStatement">sizeof</span>(single_[<span class="synConstant">0</span>]); j++)
+  {
+    <span class="synStatement">if</span> (single_[j] == count_)
+      <span class="synStatement">return</span> <span class="synConstant">true</span>;
+  }
+  <span class="synStatement">return</span> <span class="synConstant">false</span>;
+}
+
+<span class="synType">int</span> main()
+{
+  string a = <span class="synConstant">"Hi He Lied Because Boron Could Not Oxidize Fluorine. New Nations Might Also Sign Peace Security Clause. Arthur King Can."</span>;
+  string tmp;
+  map&lt;string, <span class="synType">int</span>&gt; mp;
+  count_ = <span class="synConstant">0</span>;
+  <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; a.size(); i++)
+  {
+    count_ += <span class="synConstant">1</span>;
+    tmp = a[i];
+
+    <span class="synStatement">if</span> (!isSingle()) <span class="synComment">//1文字指定でなければ</span>
+    {
+      tmp += a[i + <span class="synConstant">1</span>];
+    }
+
+    mp[tmp] = count_;
+    cout &lt;&lt; tmp &lt;&lt; endl;
+    <span class="synStatement">while</span> (a[i] != <span class="synConstant">' '</span> &amp;&amp; i &lt; a.size())
+    {
+      i += <span class="synConstant">1</span>;
+    }
+  }
+}
+</pre>
+<blockquote>
+<p>05. n-gramPermalink<br/>
+与えられたシーケンス（文字列やリストなど）から<a class="keyword" href="http://d.hatena.ne.jp/keyword/n-gram">n-gram</a>を作る関数を作成せよ．この関数を用い，”I am an NLPer”という文から単語bi-gram，文字bi-gramを得よ．</p>
+</blockquote>
+<pre class="code lang-cpp" data-lang="cpp" data-unlink=""><span class="synComment">// What is n-gran?</span>
+<span class="synComment">// https://qiita.com/kazmaw/items/4df328cba6429ec210fb</span>
+
+<span class="synType">int</span> moji()
+{
+  string a = <span class="synConstant">"I am an NLPer"</span>;
+  string tmp;
+  vector&lt;string&gt; ans;
+  <span class="synType">int</span> count_ = <span class="synConstant">0</span>;
+  <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; a.size() - <span class="synConstant">1</span>; i++)
+  {
+    tmp = a[i];
+    tmp += a[i + <span class="synConstant">1</span>];
+    ans.push_back(tmp);
+  }
+  <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; ans.size(); i++)
+  {
+    cout &lt;&lt; ans[i] &lt;&lt; endl;
+  }
+  <span class="synStatement">return</span> <span class="synConstant">0</span>;
+}
+
+<span class="synType">int</span> tango()
+{
+  string a = <span class="synConstant">"I am an NLPer"</span>;
+  string tmp = <span class="synConstant">""</span>;
+  vector&lt;string&gt; tango;
+  vector&lt;string&gt; ans;
+  <span class="synType">int</span> count_ = <span class="synConstant">0</span>;
+  <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; a.size(); i++)
+  {
+    <span class="synStatement">if</span> (a[i] != <span class="synConstant">' '</span>)
+    {
+      tmp += a[i];
+    }
+    <span class="synStatement">else</span>
+    {
+      tango.push_back(tmp);
+      tmp = <span class="synConstant">""</span>;
+    }
+  }
+  tango.push_back(tmp);
+  <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; tango.size() - <span class="synConstant">1</span>; i++)
+  {
+    cout &lt;&lt; tango[i] + <span class="synConstant">" "</span> + tango[i + <span class="synConstant">1</span>] &lt;&lt; endl;
+  }
+  <span class="synStatement">return</span> <span class="synConstant">0</span>;
+}
+
+<span class="synType">int</span> main()
+{
+  moji();
+  tango();
+}
+</pre>
+<blockquote>
+<p>06. 集合<br/>
+“<a class="keyword" href="http://d.hatena.ne.jp/keyword/paraparaparadise">paraparaparadise</a>”と”paragraph”に含まれる文字bi-gramの集合を，それぞれ, XとYとして求め，XとYの和集合，積集合，差集合を求めよ．さらに，’se’というbi-gramがXおよびYに含まれるかどうかを調べよ．</p>
+</blockquote>
+<pre class="code lang-cpp" data-lang="cpp" data-unlink=""><span class="synType">int</span> main()
+{
+  string a = <span class="synConstant">"paraparaparadise"</span>;
+  string b = <span class="synConstant">"paragraph"</span>;
+  string tmp;
+  vector&lt;string&gt; x;
+  vector&lt;string&gt; y;
+  <span class="synType">int</span> count_ = <span class="synConstant">0</span>;
+  <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; a.size() - <span class="synConstant">1</span>; i++)
+  {
+    tmp = a[i];
+    tmp += a[i + <span class="synConstant">1</span>];
+    <span class="synType">auto</span> itr = find(x.begin(), x.end(), tmp); <span class="synComment">//xのなかにも重複があるのでこれを除く</span>
+    <span class="synStatement">if</span> (itr == x.end())
+      x.push_back(tmp);
+  }
+  <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; b.size() - <span class="synConstant">1</span>; i++)
+  {
+    tmp = b[i];
+    tmp += b[i + <span class="synConstant">1</span>];
+    <span class="synType">auto</span> itr = find(y.begin(), y.end(), tmp); <span class="synComment">//yのなかにも重複があるのでこれを除く</span>
+    <span class="synStatement">if</span> (itr == y.end())
+      y.push_back(tmp);
+  }
+
+  <span class="synComment">//和</span>
+  vector&lt;string&gt; wa;
+  wa = x;
+  <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; y.size(); i++)
+  {
+    <span class="synType">auto</span> itr = find(x.begin(), x.end(), y[i]);
+    <span class="synStatement">if</span> (itr == x.end())
+    {
+      wa.push_back(y[i]);
+    }
+  }
+  cout &lt;&lt; <span class="synConstant">"***wa***"</span> &lt;&lt; endl;
+  <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; wa.size(); i++)
+  {
+    cout &lt;&lt; wa[i] &lt;&lt; endl;
+  }
+  <span class="synComment">//積</span>
+  vector&lt;string&gt; seki;
+  <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; y.size(); i++)
+  {
+    <span class="synType">auto</span> itr = find(x.begin(), x.end(), y[i]);
+    <span class="synStatement">if</span> (itr != x.end())
+    {
+      seki.push_back(y[i]);
+    }
+  }
+  cout &lt;&lt; <span class="synConstant">"***seki***"</span> &lt;&lt; endl;
+  <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; seki.size(); i++)
+  {
+    cout &lt;&lt; seki[i] &lt;&lt; endl;
+  }
+  <span class="synComment">//差</span>
+  vector&lt;string&gt; sa;
+  <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; x.size(); i++)
+  {
+    <span class="synType">auto</span> itr = find(y.begin(), y.end(), x[i]);
+    <span class="synStatement">if</span> (itr == y.end())
+    {
+      sa.push_back(x[i]);
+    }
+  }
+  cout &lt;&lt; <span class="synConstant">"***sa***"</span> &lt;&lt; endl;
+  <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; sa.size(); i++)
+  {
+    cout &lt;&lt; sa[i] &lt;&lt; endl;
+  }
+
+  cout &lt;&lt; <span class="synConstant">"***</span><span class="synSpecial">\"</span><span class="synConstant">se</span><span class="synSpecial">\"</span><span class="synConstant"> in X and Y***"</span> &lt;&lt; endl;
+  <span class="synStatement">if</span> (find(x.begin(), x.end(), <span class="synConstant">"se"</span>) != x.end() &amp;&amp; find(y.begin(), y.end(), <span class="synConstant">"se"</span>) != y.end())
+    cout &lt;&lt; <span class="synConstant">"True"</span> &lt;&lt; endl;
+  <span class="synStatement">else</span>
+    cout &lt;&lt; <span class="synConstant">"False"</span> &lt;&lt; endl;
+}
+</pre>
+<blockquote>
+<p>07. テンプレートによる文生成<br/>
+引数x, y, zを受け取り「x時のyはz」という文字列を返す関数を実装せよ．さらに，x=12, y=”気温”, z=22.4として，実行結果を確認せよ．</p>
+</blockquote>
+<pre class="code lang-cpp" data-lang="cpp" data-unlink=""><span class="synType">int</span> main()
+{
+  string x, y, z;
+  cin &gt;&gt; x &gt;&gt; y &gt;&gt; z;
+  cout &lt;&lt; x &lt;&lt; <span class="synConstant">" ji no "</span> &lt;&lt; y &lt;&lt; <span class="synConstant">" ha "</span> &lt;&lt; z &lt;&lt; endl;
+}
+</pre>
+<blockquote>
+<p>08. 暗号文<a class="keyword" href="http://d.hatena.ne.jp/keyword/Permalink">Permalink</a><br/>
+与えられた文字列の各文字を，以下の仕様で変換する関数cipherを実装せよ．<br/>
+英小文字ならば(219 - <a class="keyword" href="http://d.hatena.ne.jp/keyword/%CA%B8%BB%FA%A5%B3%A1%BC%A5%C9">文字コード</a>)の文字に置換<br/>
+その他の文字はそのまま出力<br/>
+この関数を用い，英語のメッセージを暗号化・復号化せよ</p>
+</blockquote>
+<pre class="code lang-cpp" data-lang="cpp" data-unlink=""><span class="synComment">//わかりません。</span>
+</pre>
+<blockquote>
+<p>09. TypoglycemiaPermalink<br/>
+スペースで区切られた単語列に対して，各単語の先頭と末尾の文字は残し，それ以外の文字の順序をランダムに並び替えるプログラムを作成せよ．ただし，長さが４以下の単語は並び替えないこととする．適当な英語の文（例えば”I couldn’t believe that I could actually understand what I was reading : the phenomenal power of the human mind .”）を与え，その実行結果を確認せよ．</p>
+</blockquote>
+<pre class="code lang-cpp" data-lang="cpp" data-unlink=""><span class="synType">int</span> main()
+{
+  string x = <span class="synConstant">"I couldn</span><span class="synSpecial">\'</span><span class="synConstant">t believe that I could actually understand what I was reading : the phenomenal power of the human mind ."</span>;
+
+  vector&lt;string&gt; v;
+  string tmp;
+  <span class="synType">int</span> count = <span class="synConstant">0</span>;
+  <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; x.size(); i++)
+  {
+    <span class="synStatement">if</span> (x[i] != <span class="synConstant">' '</span>)
+    {
+      tmp += x[i];
+    }
+    <span class="synStatement">else</span>
+    {
+      v.push_back(tmp);
+      tmp = <span class="synConstant">""</span>;
+      count += <span class="synConstant">1</span>;
+    }
+  }
+  v.push_back(tmp);
+
+  <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; v.size(); i++)
+  {
+    <span class="synStatement">if</span> (v[i].size() &gt; <span class="synConstant">4</span>)
+    {
+      <span class="synComment">// シャッフル</span>
+      std::random_device seed_gen;
+      std::mt19937 engine(seed_gen());
+      std::shuffle(v[i].begin() + <span class="synConstant">1</span>, v[i].end() - <span class="synConstant">1</span>, engine);
+    }
+  }
+  <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; v.size(); i++)
+  {
+    cout &lt;&lt; v[i] &lt;&lt; <span class="synConstant">" "</span>;
+  }
+}
+</pre>
+</div>

@@ -1,0 +1,272 @@
+<div class="entry-content">
+<p>ブログ用の簡単な画像処理ができるアプリを作りました。</p><blockquote class="twitter-tweet" data-lang="ja"><p dir="ltr" lang="ja"><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a> で画像処理アプリを作りました。<br/><br/>・<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AF%A5%EA%A5%C3%A5%D7%A5%DC%A1%BC%A5%C9">クリップボード</a>から画像を取り込む<br/>・画像ファイルから画像を読み込む<br/>・適切な大きさに縮小する<br/>・周囲を囲む<br/>・四角く塗りつぶす<br/>・トリミングする<br/>・保存するときに自動的に名前を付ける<br/>・ひとつの工程分だけ戻す<br/><br/>といったことが出来ます。 <a href="https://t.co/V8X4goCV5A">pic.twitter.com/V8X4goCV5A</a></p>— プログラミング素人 (@s51517765) <a href="https://twitter.com/s51517765/status/1231802377180569600?ref_src=twsrc%5Etfw">2020年2月24日</a></blockquote><script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script><p>欲しい機能としては以下でした。<br/>
+・<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AF%A5%EA%A5%C3%A5%D7%A5%DC%A1%BC%A5%C9">クリップボード</a>から画像を取り込む<br/>
+・画像ファイルから画像を読み込む（File open dialog or DragDrop）<br/>
+・適切な大きさに縮小する<br/>
+・周囲を囲む<br/>
+・四角く塗りつぶす<br/>
+・トリミングする<br/>
+・保存するときに自動的に名前を付ける<br/>
+・ひとつの工程分だけ戻すことが出来る（Undo）</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>標準のペイントや、ペイント3D、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D5%A5%EA%A1%BC%A5%BD%A5%D5%A5%C8">フリーソフト</a>の<a class="keyword" href="http://d.hatena.ne.jp/keyword/GIMP">GIMP</a>などはありますが、そこまで高度でなくていいし、もっと限定的な用途に特化して作業効率アップが目的です。</p><p>ここで使った<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>のコードの一部を紹介します。<br/>
+Dobon.netのサンプルを大量に参考にしています。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fdobon.net%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="DOBON.NET"></iframe><cite class="hatena-citation"><a href="https://dobon.net/">dobon.net</a></cite></p><p></p><h3>ファイルオープン</h3>フォルダアイコンをクリックしたとき。
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">private</span> <span class="synType">void</span> buttonFileOpen_Click(<span class="synType">object</span> sender, EventArgs e)
+{
+    <span class="synComment">//OpenFileDialogクラスのインスタンスを作成</span>
+    OpenFileDialog ofd = <span class="synStatement">new</span> OpenFileDialog();
+    <span class="synComment">//ダイアログを表示する</span>
+    <span class="synStatement">if</span> (ofd.ShowDialog() == DialogResult.OK)
+    {
+        <span class="synComment">//OKボタンがクリックされたとき、選択されたファイル名を表示する</span>
+        textBoxFileName.Text = ofd.FileName;
+        PreviewDrowPicture();
+    }
+}
+</pre><p>ファイルをドラッグドロップしたとき。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">private</span> <span class="synType">void</span> Form1_DragDrop(<span class="synType">object</span> sender, DragEventArgs e)
+{
+    <span class="synComment">//コントロール内にドロップされたとき実行される</span>
+    <span class="synComment">//ドロップされたすべてのファイル名を取得する</span>
+    <span class="synType">string</span>[] fileName = (<span class="synType">string</span>[])e.Data.GetData(DataFormats.FileDrop, <span class="synConstant">false</span>);
+    <span class="synComment">//textBoxに追加する</span>
+    textBoxFileName.Text = fileName[<span class="synConstant">0</span>];
+     PreviewDrowPicture();
+}
+
+<span class="synType">private</span> <span class="synType">void</span> Form1_DragEnter(<span class="synType">object</span> sender, DragEventArgs e)
+{
+    <span class="synComment">//コントロール内にドラッグされたとき実行される</span>
+    <span class="synStatement">if</span> (e.Data.GetDataPresent(DataFormats.FileDrop))
+        <span class="synComment">//ドラッグされたデータ形式を調べ、ファイルのときはコピーとする</span>
+        e.Effect = DragDropEffects.Copy;
+     <span class="synStatement">else</span>
+        <span class="synComment">//ファイル以外は受け付けない</span>
+       e.Effect = DragDropEffects.None;
+}
+</pre><p>どちらも、TextBoxにファイル名（フルパス）をいったん取得し、<code>  PreviewDrowPicture();</code>を呼び出し画像描画します。</p><p></p><h3>プレビュー</h3>画像の出力先となる、<code>Bitmap</code>、<code>Graphics</code>オブジェクトを作成し、imageを読み込みます。<br/>
+出力サイズ<code> FinalPictureHeight</code>、<code>FinalPictureWidth</code>以下になるように、<code>reSizeRate</code>を算出して縮小します。 <br/>
+<code>labelStartMsg(xx)</code>は最初に表示しているガイドです。<br/>
+処理を開始したら不要ですので見えなくします。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AF%A5%EA%A5%C3%A5%D7%A5%DC%A1%BC%A5%C9">クリップボード</a>から画像を取得したときは、引数にその画像が入ります。<br/>
+それ以外のときは、<code>textBoxFileName</code>のファイルを取得します。
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synComment">//描画先とするImageオブジェクトを作成する</span>
+Bitmap canvas = <span class="synStatement">new</span> Bitmap(pictureBoxWidth, pictureBoxHeight);
+
+<span class="synType">private</span> <span class="synType">void</span> PreviewDrowPicture(Image defImg = <span class="synConstant">null</span>)
+{
+        <span class="synComment">//ImageオブジェクトのGraphicsオブジェクトを作成する</span>
+        Graphics g = Graphics.FromImage(canvas);
+
+        <span class="synComment">//画像ファイルを読み込んで、Imageオブジェクトとして取得する</span>
+        Image img;
+        <span class="synStatement">if</span> (defImg == <span class="synConstant">null</span>)
+        {
+            img = Image.FromFile(textBoxFileName.Text);
+        }
+        <span class="synStatement">else</span>
+        {
+            img = defImg;
+        }
+        <span class="synComment">//リサイズ率が小さいほう</span>
+        reSizeRate = ((<span class="synType">float</span>)pictureBox1.Width / (<span class="synType">float</span>)img.Width) &lt; ((<span class="synType">float</span>)pictureBox1.Height / (<span class="synType">float</span>)img.Height) ? (<span class="synType">float</span>)pictureBox1.Width / (<span class="synType">float</span>)img.Width : (<span class="synType">float</span>)pictureBox1.Height / (<span class="synType">float</span>)img.Height;
+
+        <span class="synStatement">if</span> (reSizeRate &gt; <span class="synConstant">1</span>) reSizeRate = <span class="synConstant">1</span>; <span class="synComment">//小さい画像は拡大しない</span>
+        <span class="synComment">//画像をcanvasの座標(0, 0)の位置に描画する</span>
+        <span class="synType">float</span> w = (<span class="synType">float</span>)img.Width;
+        <span class="synType">float</span> h = (<span class="synType">float</span>)img.Height;
+        FinalPictureHeight = (<span class="synType">int</span>)(h * reSizeRate);
+        FinalPictureWidth = (<span class="synType">int</span>)(w * reSizeRate);
+        g.DrawImage(img, <span class="synConstant">0</span>, <span class="synConstant">0</span>, (<span class="synType">int</span>)(w * reSizeRate), (<span class="synType">int</span>)(h * reSizeRate));
+        <span class="synComment">//Imageオブジェクトのリソースを解放する</span>
+        img.Dispose();
+
+        <span class="synComment">//Graphicsオブジェクトのリソースを解放する</span>
+        g.Dispose();
+
+        labelStartMsg1.Visible = <span class="synConstant">false</span>;
+        labelStartMsg2.Visible = <span class="synConstant">false</span>;
+        labelStartMsg3.Visible = <span class="synConstant">false</span>;
+        labelStartMsg4.Visible = <span class="synConstant">false</span>;
+}
+
+<span class="synType">private</span> <span class="synType">void</span> buttonGetClipbord_Click(<span class="synType">object</span> sender, EventArgs e)
+{
+    <span class="synStatement">if</span> (Clipboard.ContainsImage())
+    {
+        Image img = Clipboard.GetImage();
+        PreviewDrowPicture(img);
+    }
+}
+</pre><p></p><h3>Undoできるようにする</h3>意外とUndoは使います。<br/>
+そのため、現在の画像を保存しておくことで、一つだけ工程を戻すことが出来るようにします。<br/>
+何か処理を行うときには、先にこの関数を呼び出すようにしておくことで、状態を保存しておくことが出来ます。
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synStatement">using</span> System.Drawing;
+<span class="synType">const</span> <span class="synType">int</span> pictureBoxWidth = <span class="synConstant">1000</span>;
+<span class="synType">const</span> <span class="synType">int</span> pictureBoxHeight = <span class="synConstant">750</span>;
+Color[,] pic = <span class="synStatement">new</span> Color[pictureBoxWidth, pictureBoxHeight];
+
+<span class="synType">private</span> <span class="synType">void</span> storeCurrentImage()
+{
+    Image img = pictureBox1.Image;
+    Bitmap bitmap = <span class="synStatement">new</span> Bitmap(img);
+
+    <span class="synStatement">for</span> (<span class="synType">int</span> x = <span class="synConstant">0</span>; x &lt; FinalPictureWidth; x++)
+    {
+        <span class="synStatement">for</span> (<span class="synType">int</span> y = <span class="synConstant">0</span>; y &lt; FinalPictureHeight; y++)
+        {
+            pic[x, y] = bitmap.GetPixel(x, y);
+        }
+    }
+}
+</pre><p></p><h3>周囲を線で囲む</h3>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">private</span> <span class="synType">void</span> buttonDrowEdgeLine_Click(<span class="synType">object</span> sender, EventArgs e)
+{
+    storeCurrentImage();
+
+    Color color;
+    <span class="synStatement">if</span> (radioButtonDrowEdge_Red.Checked) color = Color.FromArgb(<span class="synConstant">255</span>, <span class="synConstant">0</span>, <span class="synConstant">0</span>);
+    <span class="synStatement">else</span> <span class="synStatement">if</span> (radioButtonDrowEdge_Yellow.Checked) color = Color.FromArgb(<span class="synConstant">255</span>, <span class="synConstant">255</span>, <span class="synConstant">0</span>);
+    <span class="synStatement">else</span> <span class="synStatement">if</span> (radioButtonDrowEdge_Green.Checked) color = Color.FromArgb(<span class="synConstant">0</span>, <span class="synConstant">255</span>, <span class="synConstant">0</span>);
+    <span class="synStatement">else</span> <span class="synStatement">if</span> (radioButtonDrowEdge_Blue.Checked) color = Color.FromArgb(<span class="synConstant">0</span>, <span class="synConstant">0</span>, <span class="synConstant">255</span>);
+    <span class="synStatement">else</span> color = Color.FromArgb(<span class="synConstant">0</span>, <span class="synConstant">0</span>, <span class="synConstant">0</span>);
+
+    <span class="synStatement">for</span> (<span class="synType">int</span> x = <span class="synConstant">0</span>; x &lt; FinalPictureWidth; x++)
+    {
+        canvas.SetPixel(x, <span class="synConstant">0</span>, color);
+    }
+    <span class="synStatement">for</span> (<span class="synType">int</span> y = <span class="synConstant">0</span>; y &lt; FinalPictureHeight; y++)
+    {
+        canvas.SetPixel(<span class="synConstant">0</span>, y, color);
+    }
+    <span class="synStatement">for</span> (<span class="synType">int</span> x = <span class="synConstant">0</span>; x &lt; FinalPictureWidth; x++)
+    {
+        canvas.SetPixel(x, FinalPictureHeight - <span class="synConstant">1</span>, color);
+    }
+    <span class="synStatement">for</span> (<span class="synType">int</span> y = <span class="synConstant">0</span>; y &lt; FinalPictureHeight; y++)
+    {
+        canvas.SetPixel(FinalPictureWidth - <span class="synConstant">1</span>, y, color);
+    }
+    pictureBox1.Image = canvas;
+}
+</pre><p></p><h3>四角く囲む</h3>マウスクリックイベントで2回クリックされたら、始点と終点として四角形の対角線として、四角を作成します。<br/>
+1回目であるか2回目であるかはFlagを立てて区別します。<br/>
+塗りつぶす場合も同様です。
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">private</span> <span class="synType">void</span> pictureBox1_MouseClick(<span class="synType">object</span> sender, MouseEventArgs e)
+{
+    <span class="synStatement">if</span> (FlagMask == <span class="synConstant">1</span>)
+    {
+        Mask_address[<span class="synConstant">0</span>] = e.Location.X;<span class="synComment">//配列の0番にクリックした座標を入れる</span>
+        Mask_address[<span class="synConstant">1</span>] = e.Location.Y;<span class="synComment">//配列の1番にクリックした座標を入れる</span>
+        FlagMask = <span class="synConstant">2</span>;
+
+        <span class="synComment">//ImageオブジェクトのGraphicsオブジェクトを作成する</span>
+        Graphics g = Graphics.FromImage(canvas);
+
+        <span class="synComment">//Penオブジェクトの作成(幅1の黒色)</span>
+        Pen p = <span class="synStatement">new</span> Pen(brush, <span class="synConstant">1</span>);
+        g.DrawRectangle(p, Mask_address[<span class="synConstant">0</span>], Mask_address[<span class="synConstant">1</span>], <span class="synConstant">1</span>, <span class="synConstant">1</span>);
+        g.Dispose();
+    }
+    <span class="synStatement">else</span> <span class="synStatement">if</span> (FlagMask == <span class="synConstant">2</span>)
+    {
+        Mask_address[<span class="synConstant">2</span>] = e.Location.X;<span class="synComment">//配列の2番に現在の座標を入れる</span>
+        Mask_address[<span class="synConstant">3</span>] = e.Location.Y;<span class="synComment">//配列の3番に現在の座標を入れる</span>
+
+        <span class="synStatement">if</span> (Mask_address[<span class="synConstant">0</span>] &gt; Mask_address[<span class="synConstant">2</span>]) swap_address(<span class="synStatement">ref</span> Mask_address[<span class="synConstant">0</span>], <span class="synStatement">ref</span> Mask_address[<span class="synConstant">2</span>]);
+        <span class="synStatement">if</span> (Mask_address[<span class="synConstant">1</span>] &gt; Mask_address[<span class="synConstant">3</span>]) swap_address(<span class="synStatement">ref</span> Mask_address[<span class="synConstant">1</span>], <span class="synStatement">ref</span> Mask_address[<span class="synConstant">3</span>]);
+
+        <span class="synComment">//ImageオブジェクトのGraphicsオブジェクトを作成する</span>
+        Graphics g = Graphics.FromImage(canvas);
+
+        <span class="synComment">//Penオブジェクトの作成(幅1の黒色)</span>
+        Pen p = <span class="synStatement">new</span> Pen(Color.Black, <span class="synConstant">1</span>);
+        <span class="synComment">//長方形を描く</span>
+        <span class="synType">int</span> size_x = Mask_address[<span class="synConstant">2</span>] - Mask_address[<span class="synConstant">0</span>];
+        <span class="synType">int</span> size_y = Mask_address[<span class="synConstant">3</span>] - Mask_address[<span class="synConstant">1</span>];
+        <span class="synStatement">if</span> (size_x &gt; <span class="synConstant">0</span> &amp;&amp; size_y &gt; <span class="synConstant">0</span>)
+        {
+            g.FillRectangle(brush, Mask_address[<span class="synConstant">0</span>], Mask_address[<span class="synConstant">1</span>], size_x, size_y);
+        }
+        <span class="synStatement">else</span> <span class="synStatement">if</span> (size_x &lt; <span class="synConstant">0</span> &amp;&amp; size_y &lt; <span class="synConstant">0</span>)
+        {
+            g.FillRectangle(brush, Mask_address[<span class="synConstant">2</span>], Mask_address[<span class="synConstant">3</span>], -size_x, -size_y);
+        }
+        <span class="synComment">//リソースを解放する</span>
+        p.Dispose();
+        g.Dispose();
+
+        buttonDrowMask.Enabled = <span class="synConstant">true</span>;
+        FlagMask = <span class="synConstant">0</span>;
+
+    }
+}
+
+&lt;h3&gt;トリミングする&lt;/h3&gt;
+トリミングはnumericUpDownでpixel数を指定し、切り取り後の範囲を指定して再描画します。
+&gt;|cs|
+<span class="synType">private</span> <span class="synType">void</span> buttonTrimming_Click(<span class="synType">object</span> sender, EventArgs e)
+{
+    storeCurrentImage();
+    Image img = pictureBox1.Image;
+    <span class="synComment">//ImageオブジェクトのGraphicsオブジェクトを作成する</span>
+    Graphics g = Graphics.FromImage(canvas);
+
+    <span class="synComment">//切り取る部分の範囲を決定する。</span>
+    <span class="synType">int</span> up = (<span class="synType">int</span>)numericUpDownTrimUp.Value;
+    <span class="synType">int</span> down = (<span class="synType">int</span>)numericUpDownTrimDown.Value;
+    <span class="synType">int</span> right = (<span class="synType">int</span>)numericUpDownTrimRight.Value;
+    <span class="synType">int</span> left = (<span class="synType">int</span>)numericUpDownTrimLeft.Value;
+    FinalPictureWidth -= (right + left);
+    FinalPictureHeight -= (up + down);
+
+    Rectangle srcRect = <span class="synStatement">new</span> Rectangle(left, up, FinalPictureWidth, FinalPictureHeight);
+    <span class="synComment">//描画する部分の範囲。位置(0,0)、大きさX*Yで描画する</span>
+    Rectangle desRect = <span class="synStatement">new</span> Rectangle(<span class="synConstant">0</span>, <span class="synConstant">0</span>, FinalPictureWidth, FinalPictureHeight);
+    <span class="synComment">//画像の一部を描画する</span>
+    g.DrawImage(img, desRect, srcRect, GraphicsUnit.Pixel);
+
+    <span class="synComment">//Graphicsオブジェクトのリソースを解放する</span>
+    g.Dispose();
+}
+</pre><p></p><h3>名前を付けて保存</h3>ここでの「トリミング」は<a class="keyword" href="http://d.hatena.ne.jp/keyword/Canvas">Canvas</a>より画像が小さい場合もあるため、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Canvas">Canvas</a>の範囲を指定しています。
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">private</span> <span class="synType">void</span> buttonSave_Click(<span class="synType">object</span> sender, EventArgs e)
+{
+    <span class="synStatement">if</span> (pictureBox1.Image != <span class="synConstant">null</span>)
+    {
+        <span class="synType">int</span> kakuchoshi = textBoxFileName.Text.IndexOf(<span class="synConstant">"."</span>);
+        <span class="synType">string</span> FileName;
+        <span class="synStatement">if</span> (kakuchoshi == -<span class="synConstant">1</span>)
+        {
+            <span class="synComment">// https://dobon.net/vb/dotnet/file/getfolderpath.html</span>
+            FileName = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + <span class="synConstant">"</span><span class="synSpecial">\\</span><span class="synConstant">EasyRetouch.jpg"</span>;
+            textBoxFileName.Text = FileName;
+        }
+        <span class="synStatement">else</span>
+        {
+            FileName = textBoxFileName.Text.Substring(<span class="synConstant">0</span>, kakuchoshi);
+        }
+
+        <span class="synComment">//描画先とするImageオブジェクトを作成する</span>
+        Bitmap canvas = <span class="synStatement">new</span> Bitmap(FinalPictureWidth, FinalPictureHeight);
+        <span class="synComment">//ImageオブジェクトのGraphicsオブジェクトを作成する</span>
+        Graphics g = Graphics.FromImage(canvas);
+
+        <span class="synComment">//トリミング</span>
+        Rectangle srcRect = <span class="synStatement">new</span> Rectangle(<span class="synConstant">0</span>, <span class="synConstant">0</span>, FinalPictureWidth, FinalPictureHeight);
+        <span class="synComment">//描画する部分の範囲。位置(0,0)、大きさX * Yで描画する</span>
+        Rectangle desRect = <span class="synStatement">new</span> Rectangle(<span class="synConstant">0</span>, <span class="synConstant">0</span>, FinalPictureWidth, FinalPictureHeight);
+
+        <span class="synComment">//画像の一部を描画する</span>
+        g.DrawImage(pictureBox1.Image, desRect, srcRect, GraphicsUnit.Pixel);
+        <span class="synType">string</span> suffix = textBoxSuffix.Text;
+
+        <span class="synType">int</span> suffix_no = <span class="synConstant">0</span>;
+        <span class="synStatement">while</span> (System.IO.File.Exists(FileName + suffix + (suffix_no == <span class="synConstant">0</span> ? <span class="synConstant">""</span> : suffix_no.ToString()) + <span class="synConstant">".jpg"</span>))
+        {
+            suffix_no += <span class="synConstant">1</span>;
+        }
+        canvas.Save(FileName + suffix + (suffix_no == <span class="synConstant">0</span> ? <span class="synConstant">""</span> : suffix_no.ToString()) + <span class="synConstant">".jpg"</span>);
+    }
+}
+</pre><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fs51517765%2FEasyRetouch" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="s51517765/EasyRetouch"></iframe><cite class="hatena-citation"><a href="https://github.com/s51517765/EasyRetouch">github.com</a></cite></p>
+</div>

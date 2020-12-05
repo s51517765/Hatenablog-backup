@@ -1,0 +1,135 @@
+<div class="entry-content">
+<p>ラズパイで測定した室内環境をwebでみれたら便利だな、と思ってラズパイからFirebaseにpushできるかやってみました。<br/>
+データベースとしてはRealtime Databaseでも可能ですが、ここではFirestoreを使ってみました。</p><p></p><h3>目的</h3>ラズパイで測定した室内環境をwebで見れるようにしたい<p></p><h3>tl;dr</h3>・ラズパイで温湿度・気圧を測定<br/>
+・FirebaseのCloud Firestoreに<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>でpush<br/>
+・<a class="keyword" href="http://d.hatena.ne.jp/keyword/Javascript">Javascript</a>でhtmlに表示<p></p><h3>温湿度・気圧の測定</h3>ラズパイでの温湿度・気圧の測定は過去記事参照です。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2020%2F05%2F25%2F073000" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="エアコンをSlackでスマートリモコン化の効果を温湿度センサで測定する【2020年版】 - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2020/05/25/073000">s51517765.hatenadiary.jp</a></cite><br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2020%2F05%2F18%2F073000" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="Raspberry Pi で温湿度気圧センサBME280を使う - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2020/05/18/073000">s51517765.hatenadiary.jp</a></cite><p></p><h3>FirebaseのCloud Firestoreを使う</h3>Firebaseのプロジェクトは作成済みとします。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20200813101149j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20200813/20200813101149.jpg" title="f:id:s51517765:20200813101149j:plain"/></span><br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>からpushするので、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C8%EB%CC%A9%B8%B0">秘密鍵</a>を作成します。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C8%EB%CC%A9%B8%B0">秘密鍵</a>は<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">スクリプト</a>と同じフォルダに置いておくものとし、ファイル名は<code>serviceAccountKey.json</code>とします。<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%DE%A5%F3%A5%C9%A5%E9%A5%A4%A5%F3">コマンドライン</a>(ターミナル)でFirebase Admin <a class="keyword" href="http://d.hatena.ne.jp/keyword/SDK">SDK</a>という<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>のクライアントライブラリをインストールします。</p>
+<pre class="code" data-lang="" data-unlink="">$pip3 install --upgrade firebase-admin</pre><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>でもラズパイ（Raspbian）でもpip3一発ですが、ラズパイの場合は、アップデート・アップグレードをしておくほうがよさそうです。</p>
+<pre class="code" data-lang="" data-unlink="">$sudo apt-get update
+$sudo apt-get upgrade
+$pip3 install pip</pre><p>ちなみにラズパイZeroではfirebase-adminのインストールがどうやってもうまくいきません。<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B0%A5%B0%A4%EB">ググる</a>と解決済みのようですが…（ラズパイ3ではOKでどちらもOSとしては【Raspbian <a class="keyword" href="http://d.hatena.ne.jp/keyword/GNU/Linux">GNU/Linux</a> 9.13 (stretch)】）</p>
+<pre class="code" data-lang="" data-unlink="">** ここで止まる **
+Building wheels for collected packages: grpcio
+  Running setup.py bdist_wheel for grpcio ... \</pre><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fgrpc%2Fgrpc%2Fissues%2F17829" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title='[Python install] "Failed building wheel for grpcio" when installing on Raspberry Pi Zero W · Issue #17829 · grpc/grpc'></iframe><cite class="hatena-citation"><a href="https://github.com/grpc/grpc/issues/17829">github.com</a></cite><br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fchinoppy.hatenablog.com%2Fentry%2F2019%2F01%2F06%2F190530" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="Google Cloud IoT Coreの環境構築ではまったところ（デバイス側） - ChinoDuino（Chino × Arduino）"></iframe><cite class="hatena-citation"><a href="http://chinoppy.hatenablog.com/entry/2019/01/06/190530">chinoppy.hatenablog.com</a></cite><br/>
+バイナリリンクも無くなってる（泣</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">スクリプト</a>はサンプルを参考に↓のように作成しました。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synPreProc">import</span> datetime
+<span class="synPreProc">import</span> firebase_admin
+<span class="synPreProc">from</span> firebase_admin <span class="synPreProc">import</span> credentials
+<span class="synPreProc">from</span> firebase_admin <span class="synPreProc">import</span> firestore
+
+<span class="synComment"># Use a service account</span>
+cred = credentials.Certificate(<span class="synConstant">'serviceAccountKey.json'</span>)
+firebase_admin.initialize_app(cred)
+db = firestore.client()
+
+<span class="synStatement">def</span> <span class="synIdentifier">setTemp</span>(Temp=<span class="synConstant">25</span>, Hum=<span class="synConstant">55</span>, Pres=<span class="synConstant">1000</span>):
+    Date = datetime.datetime.now()
+    <span class="synComment"># キーを日付時刻で作成</span>
+    ref = db.collection(<span class="synConstant">'Database'</span>).document(<span class="synIdentifier">str</span>(Date))
+    ref.set({
+        <span class="synConstant">u'Pres'</span>: Pres,
+        <span class="synConstant">u'Hum'</span>: Hum,
+        <span class="synConstant">u'Temp'</span>: Temp,
+    })
+
+maxLength = <span class="synConstant">20</span>
+
+<span class="synStatement">def</span> <span class="synIdentifier">resizeDatabase</span>():
+    ref = db.collection(<span class="synConstant">'Database'</span>)
+    docs = ref.stream()
+    dataSize = <span class="synConstant">0</span>
+    <span class="synStatement">for</span> doc <span class="synStatement">in</span> docs:
+        <span class="synIdentifier">print</span>(doc.id, doc._data)
+        dataSize += <span class="synConstant">1</span>
+        <span class="synStatement">if</span> dataSize == <span class="synConstant">1</span>:
+            firstDateId = doc.id
+
+    <span class="synStatement">if</span> dataSize &gt; maxLength:
+        deleteDoc(firstDateId)
+
+<span class="synStatement">def</span> <span class="synIdentifier">deleteDoc</span>(<span class="synIdentifier">id</span>):
+    db.collection(<span class="synConstant">'Database'</span>).document(<span class="synIdentifier">id</span>).delete()
+
+<span class="synStatement">if</span> __name__ == <span class="synConstant">'__main__'</span>:
+    setTemp()
+    resizeDatabase()
+</pre><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Ffirebase.google.com%2Fdocs%2Ffirestore%2Fquickstart%3Fhl%3Dja%23python" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Cloud Firestore を使ってみる  |  Firebase"></iframe><cite class="hatena-citation"><a href="https://firebase.google.com/docs/firestore/quickstart?hl=ja#python">firebase.google.com</a></cite><br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Ffirebase.google.com%2Fdocs%2Ffirestore%2Fmanage-data%2Fdelete-data%3Fhl%3Dja" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Cloud Firestore からデータを削除する  |  Firebase"></iframe><cite class="hatena-citation"><a href="https://firebase.google.com/docs/firestore/manage-data/delete-data?hl=ja">firebase.google.com</a></cite></p><p><code>setTemp()</code>では実際にはセンサーから取得した環境値を受け取ります（ここでは省略）。<code>resizeDatabase()</code>はデータが増えすぎても仕方がないので、一定数を超えたら古いものを削除するようにしました。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20200813103456j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20200813/20200813103456.jpg" title="f:id:s51517765:20200813103456j:plain"/></span><br/>
+コレクション名は”Database”とし、日付時刻をid(key)にデータを作成します。<br/>
+コンソールからデータの削除はドキュメントを選択し、メニューを開くことでも可能です。</p><p></p><h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/Javascript">Javascript</a>でFirestoreのデータを呼び出す</h3>このようにして格納したFirestoreのデータをwebページに表示します。<br/>
+初期化はRealtime Databaseのときと同様で、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A4%A5%F3%A5%B9%A5%BF%A5%F3%A5%B9">インスタンス</a>を<code>var db = firebase.firestore();</code>のように呼び出します。<br/>
+データを取得するところもサンプルコードを参考にですが、データidは<code>doc.id</code>ですが、dataは<code>doc.data().Temp</code> のように取得します。<br/>
+このあたりがちょっとマニュアル見てもよくわからず試行錯誤しました。<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A4%A5%F3%A5%B9%A5%BF%A5%F3%A5%B9">インスタンス</a>の生成や初期化のところもだいぶ違うように思うのですが…。
+<pre class="code lang-html" data-lang="html" data-unlink=""><span class="synComment">&lt;!DOCTYPE html&gt;</span>
+<span class="synIdentifier">&lt;</span><span class="synStatement">html</span><span class="synIdentifier">&gt;</span>
+
+<span class="synIdentifier">&lt;</span><span class="synStatement">head</span><span class="synIdentifier">&gt;</span>
+<span class="synPreProc">  </span><span class="synIdentifier">&lt;</span><span class="synStatement">title</span><span class="synIdentifier">&gt;</span>室温推移<span class="synIdentifier">&lt;/</span><span class="synStatement">title</span><span class="synIdentifier">&gt;</span>
+<span class="synPreProc">  </span><span class="synIdentifier">&lt;</span><span class="synStatement">meta</span><span class="synIdentifier"> </span><span class="synType">http-equiv</span><span class="synIdentifier">=</span><span class="synConstant">"content-type"</span><span class="synIdentifier"> </span><span class="synType">charset</span><span class="synIdentifier">=</span><span class="synConstant">"utf-8"</span><span class="synIdentifier">&gt;</span>
+<span class="synPreProc">  </span><span class="synIdentifier">&lt;</span><span class="synStatement">meta</span><span class="synIdentifier"> </span><span class="synType">name</span><span class="synIdentifier">=</span><span class="synConstant">"viewport"</span><span class="synIdentifier"> </span><span class="synType">content</span><span class="synIdentifier">=</span><span class="synConstant">"width=device-width,initial-scale=1"</span><span class="synIdentifier">&gt;</span><span class="synComment">&lt;!-- スマホ用の表示拡大 --&gt;</span>
+<span class="synPreProc">  </span><span class="synIdentifier">&lt;</span><span class="synStatement">meta</span><span class="synIdentifier"> </span><span class="synType">name</span><span class="synIdentifier">=</span><span class="synConstant">"robots"</span><span class="synIdentifier"> </span><span class="synType">content</span><span class="synIdentifier">=</span><span class="synConstant">"noindex"</span><span class="synIdentifier"> /&gt;</span>
+
+<span class="synPreProc">  </span><span class="synIdentifier">&lt;</span><span class="synStatement">link</span><span class="synIdentifier"> </span><span class="synType">rel</span><span class="synIdentifier">=</span><span class="synConstant">"stylesheet"</span><span class="synIdentifier"> </span><span class="synType">type</span><span class="synIdentifier">=</span><span class="synConstant">"text/css"</span><span class="synIdentifier"> </span><span class="synType">href</span><span class="synIdentifier">=</span><span class="synConstant">"css.css"</span><span class="synIdentifier">&gt;</span>
+
+<span class="synPreProc">  </span><span class="synComment">&lt;!-- The core Firebase JS SDK is always required and must be listed first --&gt;</span>
+<span class="synPreProc">  </span><span class="synIdentifier">&lt;</span><span class="synStatement">script</span><span class="synIdentifier"> </span><span class="synType">src</span><span class="synIdentifier">=</span><span class="synConstant">"https://www.gstatic.com/firebasejs/5.8.6/firebase.js"</span><span class="synIdentifier">&gt;&lt;/</span><span class="synStatement">script</span><span class="synIdentifier">&gt;</span>
+<span class="synPreProc">  </span><span class="synIdentifier">&lt;</span><span class="synStatement">script</span><span class="synIdentifier"> </span><span class="synType">src</span><span class="synIdentifier">=</span><span class="synConstant">"https://www.gstatic.com/firebasejs/7.2.3/firebase-app.js"</span><span class="synIdentifier">&gt;&lt;/</span><span class="synStatement">script</span><span class="synIdentifier">&gt;</span>
+<span class="synPreProc">  </span><span class="synIdentifier">&lt;</span><span class="synStatement">script</span><span class="synIdentifier"> </span><span class="synType">src</span><span class="synIdentifier">=</span><span class="synConstant">"https://www.gstatic.com/firebasejs/7.2.3/firebase-firestore.js"</span><span class="synIdentifier">&gt;&lt;/</span><span class="synStatement">script</span><span class="synIdentifier">&gt;</span>
+
+<span class="synPreProc">  </span><span class="synIdentifier">&lt;</span><span class="synStatement">script</span><span class="synIdentifier">&gt;</span>
+<span class="synSpecial">    </span><span class="synComment">// Your web app's Firebase configuration</span>
+<span class="synSpecial">    </span><span class="synIdentifier">var</span><span class="synSpecial"> firebaseConfig = </span><span class="synIdentifier">{</span>
+<span class="synSpecial">      apiKey: </span><span class="synConstant">"******"</span><span class="synSpecial">,</span>
+<span class="synSpecial">      authDomain: </span><span class="synConstant">"*****.firebaseapp.com"</span><span class="synSpecial">,</span>
+<span class="synSpecial">      databaseURL: </span><span class="synConstant">"https://*****.firebaseio.com"</span><span class="synSpecial">,</span>
+<span class="synSpecial">      projectId: </span><span class="synConstant">"*****"</span><span class="synSpecial">,</span>
+<span class="synSpecial">      storageBucket: </span><span class="synConstant">"*****.appspot.com"</span><span class="synSpecial">,</span>
+<span class="synSpecial">      messagingSenderId: </span><span class="synConstant">"****"</span><span class="synSpecial">,</span>
+<span class="synSpecial">      appId: </span><span class="synConstant">"*****"</span>
+<span class="synSpecial">    </span><span class="synIdentifier">}</span><span class="synSpecial">;</span>
+<span class="synSpecial">    </span><span class="synComment">// Initialize Firebase</span>
+<span class="synSpecial">    firebase.initializeApp</span>(<span class="synSpecial">firebaseConfig</span>)<span class="synSpecial">;</span>
+
+<span class="synSpecial">    </span><span class="synIdentifier">var</span><span class="synSpecial"> db = firebase.firestore</span>()<span class="synSpecial">;</span>
+<span class="synSpecial">    </span><span class="synIdentifier">function</span><span class="synSpecial"> ListLoad</span>()
+<span class="synSpecial">    </span><span class="synIdentifier">{</span>
+<span class="synSpecial">      </span><span class="synIdentifier">var</span><span class="synSpecial"> List1 = </span><span class="synStatement">document</span><span class="synSpecial">.getElementById</span>(<span class="synConstant">"List1"</span>)<span class="synSpecial">;</span>
+
+<span class="synSpecial">      </span><span class="synComment">//データを取得</span>
+<span class="synSpecial">      db.collection</span>(<span class="synConstant">"Database"</span>)<span class="synSpecial">.get</span>()<span class="synSpecial">.then</span>((<span class="synSpecial">querySnapshot</span>)<span class="synSpecial"> =&gt;</span>
+<span class="synSpecial">      </span><span class="synIdentifier">{</span>
+<span class="synSpecial">        querySnapshot.forEach</span>((<span class="synSpecial">doc</span>)<span class="synSpecial"> =&gt;</span>
+<span class="synSpecial">        </span><span class="synIdentifier">{</span>
+<span class="synSpecial">          console.log</span>(<span class="synSpecial">`$</span><span class="synIdentifier">{</span><span class="synSpecial">doc.id</span><span class="synIdentifier">}</span><span class="synSpecial"> : $</span><span class="synIdentifier">{</span><span class="synSpecial">doc.data</span>()<span class="synSpecial">.Temp</span><span class="synIdentifier">}</span><span class="synSpecial"> ℃, $</span><span class="synIdentifier">{</span><span class="synSpecial">doc.data</span>()<span class="synSpecial">.Hum</span><span class="synIdentifier">}</span><span class="synSpecial"> %RH, $</span><span class="synIdentifier">{</span><span class="synSpecial">doc.data</span>()<span class="synSpecial">.Pres</span><span class="synIdentifier">}</span><span class="synSpecial"> hPa`</span>)<span class="synSpecial">;</span>
+<span class="synSpecial">          </span><span class="synIdentifier">var</span><span class="synSpecial"> element = </span><span class="synStatement">document</span><span class="synSpecial">.createElement</span>(<span class="synConstant">"li"</span>)<span class="synSpecial">;</span>
+<span class="synSpecial">          element.innerHTML = doc.id + </span><span class="synConstant">" : "</span><span class="synSpecial"> + doc.data</span>()<span class="synSpecial">.Temp + </span><span class="synConstant">"℃, "</span><span class="synSpecial"> + doc.data</span>()<span class="synSpecial">.Hum + </span><span class="synConstant">"%RH, "</span><span class="synSpecial"> + doc.data</span>()<span class="synSpecial">.Pres + </span><span class="synConstant">"hPa"</span><span class="synSpecial">;</span>
+
+<span class="synSpecial">          List1.append</span>(<span class="synSpecial">element</span>)<span class="synSpecial">;</span>
+<span class="synSpecial">        </span><span class="synIdentifier">}</span>)<span class="synSpecial">;</span>
+<span class="synSpecial">      </span><span class="synIdentifier">}</span>)<span class="synSpecial">;</span>
+<span class="synSpecial">    </span><span class="synIdentifier">}</span>
+<span class="synSpecial">    </span><span class="synStatement">window</span><span class="synSpecial">.onload = </span><span class="synIdentifier">function</span><span class="synSpecial"> </span>()
+<span class="synSpecial">    </span><span class="synIdentifier">{</span>
+<span class="synSpecial">      ListLoad</span>()<span class="synSpecial">;</span>
+
+<span class="synSpecial">    </span><span class="synIdentifier">}</span><span class="synSpecial">;</span>
+<span class="synSpecial">  </span><span class="synIdentifier">&lt;/</span><span class="synStatement">script</span><span class="synIdentifier">&gt;</span>
+<span class="synIdentifier">&lt;/</span><span class="synStatement">head</span><span class="synIdentifier">&gt;</span>
+
+<span class="synIdentifier">&lt;</span><span class="synStatement">body</span><span class="synIdentifier">&gt;</span>
+  <span class="synIdentifier">&lt;</span><span class="synStatement">h1</span><span class="synIdentifier">&gt;</span>室温推移<span class="synIdentifier">&lt;/</span><span class="synStatement">h1</span><span class="synIdentifier">&gt;</span>
+  <span class="synIdentifier">&lt;</span><span class="synStatement">form</span><span class="synIdentifier"> </span><span class="synType">id</span><span class="synIdentifier">=</span><span class="synConstant">"form1"</span><span class="synIdentifier">&gt;</span>
+    <span class="synIdentifier">&lt;</span><span class="synStatement">ul</span><span class="synIdentifier"> </span><span class="synType">id</span><span class="synIdentifier">=</span><span class="synConstant">"List1"</span><span class="synIdentifier">&gt;&lt;/</span><span class="synStatement">ul</span><span class="synIdentifier">&gt;</span>
+  <span class="synIdentifier">&lt;/</span><span class="synStatement">form</span><span class="synIdentifier">&gt;</span>
+
+<span class="synIdentifier">&lt;/</span><span class="synStatement">body</span><span class="synIdentifier">&gt;</span>
+
+<span class="synIdentifier">&lt;/</span><span class="synStatement">html</span><span class="synIdentifier">&gt;</span>
+</pre><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Ffirebase.google.com%2Fdocs%2Ffirestore%2Fquickstart%3Fhl%3Dja%23%25E3%2582%25A6%25E3%2582%25A7%25E3%2583%2596" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Cloud Firestore を使ってみる  |  Firebase"></iframe><cite class="hatena-citation"><a href="https://firebase.google.com/docs/firestore/quickstart?hl=ja#%E3%82%A6%E3%82%A7%E3%83%96">firebase.google.com</a></cite></p><p></p><h3>完成</h3><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20200813104935j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20200813/20200813104935.jpg" title="f:id:s51517765:20200813104935j:plain"/></span><p>あとは、グラフを表示するようにしたい。ラズパイゼロでもなんとか動くようにしたい。</p>
+</div>

@@ -39,5 +39,14 @@ list2=[<span class="synIdentifier">str</span>(s) <span class="synStatement">for<
 <span class="synIdentifier">print</span>(<span class="synConstant">" "</span>.join(list2))
 もしくは
 <span class="synIdentifier">print</span>(<span class="synConstant">" "</span>.join( [<span class="synIdentifier">str</span>(s) <span class="synStatement">for</span> s <span class="synStatement">in</span> listl] ))
+</pre><p>リストのアンパックという方法をコメントで教えていただきました。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synIdentifier">list</span>=[<span class="synConstant">6</span>, <span class="synConstant">5</span>, <span class="synConstant">6</span>, <span class="synConstant">8</span>]
+<span class="synIdentifier">print</span>(*<span class="synIdentifier">list</span>,sep=<span class="synConstant">" "</span>)
+<span class="synComment">#もしくはprint(*list) #セパレータをスペースにするときは省略可能</span>
+<span class="synComment"># 6 5 6 8</span>
+</pre><p>セパレータが不要のときは以下のようになります。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synIdentifier">list</span>=[<span class="synConstant">6</span>, <span class="synConstant">5</span>, <span class="synConstant">6</span>, <span class="synConstant">8</span>]
+<span class="synIdentifier">print</span>(*<span class="synIdentifier">list</span> ,sep=<span class="synConstant">""</span>)
+<span class="synComment"># 6568</span>
 </pre>
 </div>

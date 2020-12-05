@@ -1,0 +1,134 @@
+<div class="entry-content">
+<p>Firebaseで運用している買い物リストですが、似たような商品がいろいろある中でわかりにくい、という問題がありました。<br/>
+そこで、リストに写真を追加できるようにしました。</p><blockquote class="twitter-tweet" data-lang="ja"><p dir="ltr" lang="ja">夫婦で共有できる買い物リストを作りました。<br/><br/>FirebaseのリアルタイムデータベースとStorageを利用しています。<br/>・欲しいものを追加する<br/>・欲しいものに写真を添付する<br/>・入手済みリストを保持する<br/>・<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%DE%A5%DB">スマホ</a>（<a class="keyword" href="http://d.hatena.ne.jp/keyword/Android">Android</a> / <a class="keyword" href="http://d.hatena.ne.jp/keyword/iOS">iOS</a>）から利用可能 <a href="https://t.co/uPXvyGiu9f">pic.twitter.com/uPXvyGiu9f</a></p>— プログラミング素人 (@s51517765) <a href="https://twitter.com/s51517765/status/1256426281232510976?ref_src=twsrc%5Etfw">2020年5月2日</a></blockquote> <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script> <p></p><h3>TL;DR</h3>・データの構造を変更<br/>
+・画像の保存先はFirestorageを使用<br/>
+・画像があるときはアップロードした時刻よりファイル名を作成しFirestorageにアップロードする。同時にデータ構造にイメージファイル名をPush。<br/>
+・リストの読み込み時は、イメージファイル名があるときは、イメージのリンクを作成。<p>以下、技術的な解説をします。<br/>
+↓の記事で作ったFirebaseプロジェクトがベースです。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2019%2F07%2F14%2F180001" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="サーバーレス(Firebase)で夫婦で共有できる買い物リストを作った - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2019/07/14/180001">s51517765.hatenadiary.jp</a></cite></p><p></p><h3>画像のプレビュー</h3><code>btnFileUpload</code>に、ボタンクリックイベントを登録します。<br/>
+<code>window.onload</code>でページ読み込み時に登録されます。
+<pre class="code lang-javascript" data-lang="javascript" data-unlink=""><span class="synStatement">window</span>.onload = <span class="synIdentifier">function</span> ()
+<span class="synIdentifier">{</span>
+    <span class="synStatement">document</span>.getElementById(<span class="synConstant">'btnFileUpload'</span>).addEventListener(<span class="synConstant">'change'</span>, handleFileSelect, <span class="synConstant">false</span>);
+<span class="synIdentifier">}</span>
+</pre><p>ボタンクリックで画像表示領域<code>imgPreviewArea</code>を<code>formUpload</code>に作成します。</p>
+<pre class="code lang-javascript" data-lang="javascript" data-unlink=""><span class="synIdentifier">var</span> element = <span class="synStatement">document</span>.createElement(<span class="synConstant">"div"</span>);
+element.id = <span class="synConstant">"imgPreviewArea"</span>;
+formUpload.append(element);
+</pre><p>画像の大きさは<a class="keyword" href="http://d.hatena.ne.jp/keyword/CSS">CSS</a>で設定しています。</p><p>画像表示部コードの全体</p>
+<pre class="code lang-javascript" data-lang="javascript" data-unlink="">&lt;!DOCTYPE html&gt;
+&lt;html lang=<span class="synConstant">"en"</span>&gt;
+
+&lt;head&gt;
+    &lt;meta charset=<span class="synConstant">"UTF-8"</span>&gt;
+    &lt;meta name=<span class="synConstant">"viewport"</span> content=<span class="synConstant">"width=device-width, initial-scale=1.0"</span>&gt;
+    &lt;link rel=<span class="synConstant">"stylesheet"</span> type=<span class="synConstant">"text/css"</span> href=<span class="synConstant">"css.css"</span>&gt;
+    &lt;title&gt;Document&lt;/title&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+    &lt;div&gt;
+        &lt;form name=<span class="synConstant">"formUpload"</span>&gt;
+            &lt;input type=<span class="synConstant">"file"</span> id=<span class="synConstant">"btnFileUpload"</span> name=<span class="synConstant">"files[]"</span>&gt;
+            &lt;output id=<span class="synConstant">"list"</span>&gt;&lt;/output&gt;
+        &lt;/form&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;script&gt;
+    <span class="synIdentifier">function</span> handleFileSelect(evt)
+    <span class="synIdentifier">{</span>
+        <span class="synIdentifier">var</span> element = <span class="synStatement">document</span>.createElement(<span class="synConstant">"div"</span>);
+        element.id = <span class="synConstant">"imgPreviewArea"</span>;
+        formUpload.append(element);
+
+        <span class="synComment">//https://www.html5rocks.com/ja/tutorials/file/dndfiles/</span>
+        imgFile = evt.target.files<span class="synIdentifier">[</span>0<span class="synIdentifier">]</span>; <span class="synComment">// File object</span>
+
+        <span class="synStatement">if</span> (!imgFile.type.match(<span class="synConstant">'image.*'</span>)) <span class="synStatement">return</span>;
+        <span class="synIdentifier">var</span> reader = <span class="synStatement">new</span> FileReader();
+        <span class="synComment">// Closure to capture the file information.</span>
+        reader.onload = (<span class="synIdentifier">function</span> (theFile)
+        <span class="synIdentifier">{</span>
+            <span class="synStatement">return</span> <span class="synIdentifier">function</span> (e)
+            <span class="synIdentifier">{</span>
+                <span class="synComment">// Render thumbnail.  </span>
+                imgPreviewArea.innerHTML = <span class="synIdentifier">[</span><span class="synConstant">'&lt;img class="thumb" src="'</span>, e.target.result, <span class="synConstant">'" title="'</span>, <span class="synStatement">escape</span>(theFile.name), <span class="synConstant">'"/&gt;'</span><span class="synIdentifier">]</span>.join(<span class="synConstant">''</span>);
+            <span class="synIdentifier">}</span>;
+        <span class="synIdentifier">}</span>)(imgFile);
+
+        <span class="synComment">// Read in the image file as a data URL.</span>
+        reader.readAsDataURL(imgFile);
+    <span class="synIdentifier">}</span>
+    <span class="synStatement">window</span>.onload = <span class="synIdentifier">function</span> ()
+    <span class="synIdentifier">{</span>
+        <span class="synStatement">document</span>.getElementById(<span class="synConstant">'btnFileUpload'</span>).addEventListener(<span class="synConstant">'change'</span>, handleFileSelect, <span class="synConstant">false</span>);
+    <span class="synIdentifier">}</span>;
+&lt;/script&gt;
+
+&lt;/html&gt;
+</pre><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fwww.html5rocks.com%2Fja%2Ftutorials%2Ffile%2Fdndfiles%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="JavaScript で File API を使用してファイルを読み取る - HTML5 Rocks"></iframe><cite class="hatena-citation"><a href="https://www.html5rocks.com/ja/tutorials/file/dndfiles/">www.html5rocks.com</a></cite></p><p></p><h3>ボタンクリックで画像をアップロード</h3>画像が読み込まれていたら、アップロードする画像があると判断して、<code>imgUpload()</code>を呼び出します。
+<pre class="code lang-javascript" data-lang="javascript" data-unlink=""><span class="synIdentifier">function</span> addData()
+<span class="synIdentifier">{</span>
+     <span class="synStatement">if</span> (imgID != <span class="synConstant">"NoImage"</span>) imgUpload();
+<span class="synIdentifier">}</span>
+
+<span class="synComment">//ストレージのルートのリファレンスを取得</span>
+<span class="synIdentifier">var</span> storageRef = firebase.storage().ref();
+
+<span class="synIdentifier">var</span> imgUpload = <span class="synIdentifier">function</span> (ev)
+<span class="synIdentifier">{</span>
+    <span class="synComment">//ストレージへアップロードするファイルのパスを生成する</span>
+    <span class="synIdentifier">var</span> uploadRef = storageRef.child(imgID);
+    uploadRef.put(imgFile);
+<span class="synIdentifier">}</span>;
+</pre><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Ft_furu%2Fitems%2Fef99e9d48b9c3c9af7f1" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Firebase入門 - ファイル保存&amp;管理機能を利用する - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/t_furu/items/ef99e9d48b9c3c9af7f1">qiita.com</a></cite></p><p></p><h3>リストの読み込み時に画像も読み込む</h3>データベースのキーを拡張して、<code>imgID</code>が存在すれば画像を読み込みます。<br/>
+従来のデータベースにはイメージのキーが無かったので、その辺も考慮して破壊的変更にならないようにしています。<br/>
+これを入れないと、従来のデータが読み込めなくなります。
+<pre class="code lang-javascript" data-lang="javascript" data-unlink=""><span class="synStatement">if</span> (childData.imgID != <span class="synStatement">undefined</span> &amp;&amp; childData.imgID != <span class="synConstant">""</span> &amp;&amp; childData.imgID != <span class="synConstant">"NoImage"</span>)
+<span class="synIdentifier">{</span>
+   ImgURL(childData.imgID, element, childData.message, cb);
+<span class="synIdentifier">}</span>
+</pre><p>リストを読み込むときに画像も読み込みます。<br/>
+画像はリストからIDを取り出し、ストレージ中の画像を指すURLを取得します。</p>
+<pre class="code lang-javascript" data-lang="javascript" data-unlink=""><span class="synIdentifier">function</span> ListLoad()
+<span class="synIdentifier">{</span>
+	<span class="synIdentifier">var</span> childData = childSnapshot.val();
+	<span class="synIdentifier">var</span> element = <span class="synStatement">document</span>.createElement(<span class="synConstant">"li"</span>);
+
+	subject.push(childData.message);  <span class="synComment">//リストの中身を配列に追加し保持、重複確認のため</span>
+
+	<span class="synComment">//チェックボックスの追加</span>
+	<span class="synIdentifier">var</span> cb = <span class="synStatement">document</span>.createElement(<span class="synConstant">"input"</span>);<span class="synComment">//チェックを作成</span>
+	cb.type = <span class="synConstant">"checkbox"</span>;
+	cb.name = <span class="synConstant">"cb"</span>
+	cb.value = childData.message;
+	<span class="synStatement">if</span> (childData.imgID != <span class="synStatement">undefined</span> &amp;&amp; childData.imgID != <span class="synConstant">""</span> &amp;&amp; childData.imgID != <span class="synConstant">"NoImage"</span>)
+	<span class="synIdentifier">{</span>
+	    ImgURL(childData.imgID, element, childData.message, cb);
+	<span class="synIdentifier">}</span>
+	<span class="synStatement">else</span>
+	<span class="synIdentifier">{</span>
+	    element.innerHTML = childData.message;
+	    element.appendChild(cb);
+	<span class="synIdentifier">}</span>
+	list1.append(element);
+<span class="synIdentifier">}</span>
+
+<span class="synIdentifier">function</span> ImgURL(imgID, element, message, cb)
+<span class="synIdentifier">{</span>
+    <span class="synStatement">if</span> (imgID == <span class="synConstant">"NoImage"</span>) <span class="synStatement">return</span>;
+
+    imgSample = storageRef.child(imgID);
+    <span class="synComment">//thenで戻り値がfunctionの引数に入る</span>
+    imgSample.getDownloadURL().then(<span class="synIdentifier">function</span> (url)
+    <span class="synIdentifier">{</span>
+        console.log(url);
+        element.innerHTML = message + <span class="synConstant">" &lt;a href ="</span> + url + <span class="synConstant">"&gt;image&lt;/a&gt;"</span>;
+        element.appendChild(cb);
+    <span class="synIdentifier">}</span>);
+<span class="synIdentifier">}</span>
+</pre><p></p><h3>まとめ</h3>買い物リストに画像を添付できるようにしました。<br/>
+ちなみに、画像の削除は実装していないのでリストから削除されてもストレージには残ったままです。<br/>
+管理画面から削除するという運用をしています。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fs51517765%2FListToBuy" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="s51517765/ListToBuy"></iframe><cite class="hatena-citation"><a href="https://github.com/s51517765/ListToBuy">github.com</a></cite>
+</div>

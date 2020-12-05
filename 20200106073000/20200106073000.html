@@ -1,0 +1,145 @@
+<div class="entry-content">
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%CF%A4%C6%A4%CA%A5%D6%A5%ED%A5%B0">はてなブログ</a>の記事を自動生成して投稿する<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">スクリプト</a>を作りました。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%CF%A4%C6%A4%CA%A5%D6%A5%ED%A5%B0">はてなブログ</a>には、記事を<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">スクリプト</a>で投稿する<a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>とMailによる投稿ができる仕組みがあります。<br/>
+これを利用して<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>の人気投稿を収集してブログ記事を生成します。<br/>
+できあがったブログは↓。</p><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenablog.jp%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="エンジニアの休日"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenablog.jp/">s51517765.hatenablog.jp</a></cite></p><p>この中で、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>の投稿をカード形式で埋め込みたかったのですが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>ではhtmlが<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A8%A5%B9">エス</a>ケープされているようで目的が達成できません。<br/>
+そこで、Mailによる投稿の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">スクリプト</a>を作りました。</p><p>※人気<a class="keyword" href="http://d.hatena.ne.jp/keyword/Tweet">Tweet</a>選別の細かい仕様はノウハウとして、コードの中ではぼかしてあります。</p><p></p><h3>全体の構成</h3> <br/>
+Twiiterの投稿の取得は Tweepyを使用しています。<br/>
+夜中の0時過ぎに自動的に起動して、以下のmain()が呼ばれると、<br/>
+・Twiiter <a class="keyword" href="http://d.hatena.ne.jp/keyword/api">api</a>のauth認証<br/>
+・人気<a class="keyword" href="http://d.hatena.ne.jp/keyword/Tweet">Tweet</a>の検索<br/>
+・人気<a class="keyword" href="http://d.hatena.ne.jp/keyword/Tweet">Tweet</a>が不足していたら、自分の<a class="keyword" href="http://d.hatena.ne.jp/keyword/Tweet">Tweet</a>から検索して追加<br/>
+・Mailによる<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%CF%A4%C6%A4%CA%A5%D6%A5%ED%A5%B0">はてなブログ</a>投稿<br/>
+というながれです。
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">def</span> <span class="synIdentifier">main</span>():
+    now = datetime.now()
+    <span class="synStatement">if</span> now.day % <span class="synConstant">2</span> != <span class="synConstant">0</span>:
+        acount = <span class="synConstant">"s"</span>
+        <span class="synIdentifier">print</span>(<span class="synConstant">"s51517765 Make blog!"</span>)
+        api = login(acount) <span class="synComment">#twitter api</span>
+        tweet_list = search_tweet(api, acount)
+        tweet_list = my_tweet(api, tweet_list)
+        post_main(acount, tweet_list)  
+</pre><p></p><h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a> auth認証</h3>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">def</span> <span class="synIdentifier">login</span>(acount):
+    <span class="synStatement">if</span> acount == <span class="synConstant">"s"</span>:
+        CONSUMER_KEY = <span class="synConstant">"****************"</span>
+        CONSUMER_SECRET = <span class="synConstant">"****************"</span>
+        ACCESS_TOKEN = <span class="synConstant">"****************"</span>
+        ACCESS_SECRET =<span class="synConstant">"****************"</span>
+    <span class="synStatement">else</span>:
+        exit() <span class="synComment">#アカウント指定を確認して違っていれば終了</span>
+
+    auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+    auth.set_access_token(ACCESS_TOKEN, ACCESS_SECRET)
+    api = tweepy.API(auth)
+    <span class="synStatement">return</span> api
+</pre><p></p><h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>の検索</h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a> <a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>の検索に投げるキーワードはListで保持してRTやFav.で人気<a class="keyword" href="http://d.hatena.ne.jp/keyword/Tweet">Tweet</a>を検索します。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>ではRTされているものは、RTごとに拾われるので中身を確認して重複しているものは除外します。
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">def</span> <span class="synIdentifier">search_tweet</span>(api, acount, count=<span class="synConstant">200</span>):
+    tweet_list = []
+    tweet_id = []
+    now = dt.today()
+
+    <span class="synStatement">if</span> acount != <span class="synConstant">"s"</span>:
+        <span class="synIdentifier">print</span>(<span class="synConstant">"Acount Error"</span>)
+
+    random.shuffle(keywordlist) <span class="synComment">#Twiiter検索につかうキーワード</span>
+
+    replypattern = <span class="synConstant">r"@[\w]+"</span>  <span class="synComment"># 重複確認用</span>
+
+    keyword_count = <span class="synConstant">0</span>
+    <span class="synStatement">for</span> keyword <span class="synStatement">in</span> keywordlist:
+        <span class="synStatement">for</span> tweet <span class="synStatement">in</span> api.search(q=keyword, count=count):  <span class="synComment"># 検索</span>
+            <span class="synStatement">try</span>:
+                <span class="synStatement">if</span> tweet.retweet_count &gt; ** <span class="synStatement">or</span> tweet.favorite_count &gt; **): <span class="synComment">#人気記事の判定</span>
+                    <span class="synStatement">if</span> (now - tweet.created_at).days &lt; <span class="synConstant">3</span>:
+                        txt = tweet.text
+                        <span class="synStatement">if</span> txt.count(<span class="synConstant">"#"</span>) &lt; <span class="synConstant">4</span>: <span class="synComment">#ハッシュタグの多いTweetは除外</span>
+                            <span class="synStatement">if</span> is_japanese(txt):   <span class="synComment">#日本語のTweet以外は除外                                  </span>
+                                txt = re.sub(replypattern, <span class="synConstant">''</span>, txt) <span class="synComment">#@ や RT を除外する</span>
+                                txt = txt.replace(<span class="synConstant">"RT"</span>, <span class="synConstant">""</span>)
+                                txt = txt.replace(<span class="synConstant">":"</span>, <span class="synConstant">""</span>)
+                                txt = txt.replace(<span class="synConstant">" "</span>, <span class="synConstant">""</span>)
+                                <span class="synStatement">if</span> txt <span class="synStatement">not</span> <span class="synStatement">in</span> tweet_list:  <span class="synComment"># RTによる重複確認</span>
+                                   tweet_list.append(txt)
+                                   tweet_id.append(tweet.id)
+                                <span class="synStatement">else</span>:
+                                   <span class="synStatement">break</span>
+            <span class="synStatement">except</span>:
+                <span class="synStatement">pass</span>
+
+        <span class="synStatement">if</span> <span class="synIdentifier">len</span>(tweet_id) &gt; <span class="synConstant">40</span>:
+            <span class="synStatement">break</span>
+        time.sleep(<span class="synConstant">30</span>)
+
+    <span class="synStatement">return</span> tweet_id
+</pre><p>自分の投稿は以下のようにして取得できます。自分がRTしたものは除きます。<br/>
+Twiiter <a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>ではRTは<a class="keyword" href="http://d.hatena.ne.jp/keyword/Tweet">Tweet</a>本文<code>status.text</code>に<code>RT：</code>のようなテキストが付加されていますので、これを探します。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">def</span> <span class="synIdentifier">my_tweet</span>(api, tweet_list):
+    <span class="synStatement">for</span> status <span class="synStatement">in</span> tweepy.Cursor(api.user_timeline).items():
+        <span class="synStatement">if</span> <span class="synConstant">"RT"</span> <span class="synStatement">not</span> <span class="synStatement">in</span> status.text : <span class="synComment">#自分がしたRTは除外</span>
+            tweet_list.append(status.id)
+    <span class="synStatement">return</span> tweet_list
+</pre><p>日本語以外の<a class="keyword" href="http://d.hatena.ne.jp/keyword/Tweet">Tweet</a>は除外します（日本語をキーワードに検索しているのになぜか全く関係ない海外の<a class="keyword" href="http://d.hatena.ne.jp/keyword/Tweet">Tweet</a>が引っかかることがあるため）。<br/>
+↓の記事を参考に、1文字でもひらがなorカタカナが含まれていれば日本語と判定します。<br/>
+引用下では漢字を含めていますが、漢字はチェックしなくてもよいと考えました。<br/>
+日本語で漢字のみで成立する文章というのは稀でかならず、ひらがなorカタカナが入ると思います。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fminus9d.hatenablog.com%2Fentry%2F2015%2F07%2F16%2F231608" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="Pythonで、文字列に日本語が含まれているか判定する - minus9d's diary"></iframe><cite class="hatena-citation"><a href="https://minus9d.hatenablog.com/entry/2015/07/16/231608">minus9d.hatenablog.com</a></cite></p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">def</span> <span class="synIdentifier">is_japanese</span>(string):
+    <span class="synStatement">for</span> ch <span class="synStatement">in</span> string:
+        name = unicodedata.name(ch)
+        <span class="synStatement">if</span> <span class="synConstant">"HIRAGANA"</span> <span class="synStatement">in</span> name <span class="synStatement">or</span> <span class="synConstant">"KATAKANA"</span> <span class="synStatement">in</span> name:
+            <span class="synStatement">return</span> <span class="synIdentifier">True</span>
+    <span class="synStatement">return</span> <span class="synIdentifier">False</span>
+</pre><p></p><h3>投稿する本文</h3>この<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">スクリプト</a>でMail投稿するときは「<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%CF%A4%C6%A4%CA%B5%AD%CB%A1">はてな記法</a>」にする必要があります。<br/>
+Twiiterの投稿をカード形式で表示するために、<code>＜a href=\"https://twitter.com/s51517765/status/************* "＞＜/a＞</code> のように<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>のLinkを<code>a</code>タグで挿入します。さらにこれを<code>class</code>で囲んでいます。
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">def</span> <span class="synIdentifier">post_main</span>(acount, tweet_list):
+    <span class="synComment"># はてな記法</span>
+    now = datetime.today()
+    yesterday = now - timedelta(days=<span class="synConstant">1</span>)
+    title = <span class="synConstant">"【"</span> + <span class="synIdentifier">str</span>(yesterday.year) + <span class="synConstant">"年"</span> + <span class="synIdentifier">str</span>(yesterday.month) + <span class="synConstant">"月"</span> + <span class="synIdentifier">str</span>(yesterday.day) + <span class="synConstant">"日"</span> + <span class="synConstant">"の人気ツイート】"</span>
+    body = <span class="synConstant">""</span>
+    <span class="synStatement">for</span> i <span class="synStatement">in</span> tweet_list:
+        prefix = <span class="synConstant">"&lt;blockquote class=</span><span class="synSpecial">\"</span><span class="synConstant">twitter-tweet</span><span class="synSpecial">\"</span><span class="synConstant">&gt;&lt;a href=</span><span class="synSpecial">\"</span><span class="synConstant">https://twitter.com/s51517765/status/"</span>
+        sufix = <span class="synConstant">"</span><span class="synSpecial">\"</span><span class="synConstant">&gt;&lt;/a&gt;&lt;/blockquote&gt;&lt;script async src=</span><span class="synSpecial">\"</span><span class="synConstant">https://platform.twitter.com/widgets.js</span><span class="synSpecial">\"</span><span class="synConstant"> charset=</span><span class="synSpecial">\"</span><span class="synConstant">utf-8</span><span class="synSpecial">\"</span><span class="synConstant">&gt;&lt;/script&gt;"</span>
+        body = body + prefix + <span class="synIdentifier">str</span>(i) + sufix + <span class="synConstant">"</span><span class="synSpecial">\r\n</span><span class="synConstant">"</span>
+
+    <span class="synComment"># メールによる投稿</span>
+    <span class="synComment"># g_mail.send_mail(title, body, "*****************.draft@blog.hatena.ne.jp")  # 下書き</span>
+    g_mail.send_mail(title, body, <span class="synConstant">"*****************@blog.hatena.ne.jp"</span>)  <span class="synComment"># 投稿</span>
+</pre><p></p><h3>Mailによる<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%CF%A4%C6%A4%CA%A5%D6%A5%ED%A5%B0">はてなブログ</a>投稿</h3>投稿用のアドレスは<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%CF%A4%C6%A4%CA%A5%D6%A5%ED%A5%B0">はてなブログ</a>の管理画面から取得します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20200105142812j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20200105/20200105142812.jpg" title="f:id:s51517765:20200105142812j:plain"/></span><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20200105142833j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20200105/20200105142833.jpg" title="f:id:s51517765:20200105142833j:plain"/></span><p>↓を参考に<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">スクリプト</a>を作成します。G-mailは外部から制御できるように権限を開放する必要があります。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fnews.mynavi.jp%2Farticle%2Fzeropython-51%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="ゼロからはじめるPython(51) Pythonから自動でGmailを送信"></iframe><cite class="hatena-citation"><a href="https://news.mynavi.jp/article/zeropython-51/">news.mynavi.jp</a></cite><br/>
+</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synComment"># gmail-py</span>
+<span class="synPreProc">import</span> smtplib, ssl
+<span class="synPreProc">from</span> email.mime.text <span class="synPreProc">import</span> MIMEText
+
+<span class="synComment"># https://news.mynavi.jp/article/zeropython-51/</span>
+
+<span class="synComment"># setting -----------------------------------------------------------</span>
+gmail_account = <span class="synConstant">"********@gmail.com"</span>
+gmail_password = <span class="synConstant">"*********"</span>
+<span class="synComment"># setting -----------------------------------------------------------</span>
+
+<span class="synStatement">def</span> <span class="synIdentifier">send_mail</span>(subject, body, mail_to=<span class="synConstant">"*******@gmail.com"</span>):
+    msg = MIMEText(body, <span class="synConstant">"html"</span>)
+    msg[<span class="synConstant">"Subject"</span>] = subject
+    msg[<span class="synConstant">"To"</span>] = mail_to
+    msg[<span class="synConstant">"From"</span>] = gmail_account
+
+    <span class="synComment"># Gmailに接続 --- (*4)</span>
+    server = smtplib.SMTP_SSL(<span class="synConstant">"smtp.gmail.com"</span>, <span class="synConstant">465</span>, context=ssl.create_default_context())
+    server.login(gmail_account, gmail_password)
+    server.send_message(msg)  <span class="synComment"># メールの送信</span>
+    <span class="synIdentifier">print</span>(<span class="synConstant">"Gmail send ok."</span>)
+</pre><p></p><h3>まとめ</h3>これで、ブログ記事を量産できます。<br/>
+ちなみに<a class="keyword" href="http://d.hatena.ne.jp/keyword/Instagram">Instagram</a>でも人気投稿を集めてブログ記事を作成というのを検討しているのですが、こちらは<a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>で投稿を取得できなかったり、htmlが複雑だったりで考え中です。<h3>参考</h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>による投稿<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Ftadaken3.hatenablog.jp%2Fentry%2Fpost-hatena-blog" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="はてなブログにコマンド一発で投稿するPythonスクリプトを作ってみた - タダケンのEnjoy Tech"></iframe><cite class="hatena-citation"><a href="https://tadaken3.hatenablog.jp/entry/post-hatena-blog">tadaken3.hatenablog.jp</a></cite><br/>
+Tweepy<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2017%2F09%2F24%2F130650" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="Anacondaでpythonプログラミング &amp; TeratermでRaspberry Piに転送 - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2017/09/24/130650">s51517765.hatenadiary.jp</a></cite><br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2017%2F11%2F18%2F172319" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="Twitterで趣味の似た人を探す - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2017/11/18/172319">s51517765.hatenadiary.jp</a></cite><br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2018%2F02%2F17%2F190631" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="tweepyでTwitterの画像検索 - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2018/02/17/190631">s51517765.hatenadiary.jp</a></cite><br/>
+自動投稿<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fkaraage.hatenadiary.jp%2Fentry%2F2016%2F01%2F27%2F073000" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="マルコフ連鎖を使ってブログの記事を自動生成してみた - karaage. [からあげ]"></iframe><cite class="hatena-citation"><a href="https://karaage.hatenadiary.jp/entry/2016/01/27/073000">karaage.hatenadiary.jp</a></cite>
+</div>

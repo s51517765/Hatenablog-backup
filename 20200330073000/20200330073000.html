@@ -1,0 +1,43 @@
+<div class="entry-content">
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">スクリプト</a>を作って<a class="keyword" href="http://d.hatena.ne.jp/keyword/VS%20Code">VS Code</a>で実行しようとすると、同じフォルダにおいてあるはずの”test.jpg”が見つからない、という現象が起きました。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synComment"># -*- coding: utf-8 -*-</span>
+<span class="synPreProc">from</span> PIL <span class="synPreProc">import</span> Image
+<span class="synPreProc">import</span> os
+
+path = os.getcwd()
+<span class="synIdentifier">print</span>(<span class="synConstant">"Path = "</span>+path)
+<span class="synIdentifier">file</span> = <span class="synConstant">"test.jpg"</span>
+img = Image.open(<span class="synIdentifier">file</span>)
+</pre><p><code>path = os.getcwd()</code>を実行すると、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">スクリプト</a>が実行されているpathが別のところにあることがわかります。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/VS%20Code">VS Code</a>で<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">スクリプト</a>を実行するとき、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">スクリプト</a>ファイルのある場所で実行されるほうが便利な場合があるので、その設定の仕方を説明します。</p><p>イメージとしてはsample_1とsample_2のようなプロジェクトがあって、<code>sample_1.py</code>は<code>Project\sample_1</code>、<code>sample_2.py</code>は<code>Project\sample_2</code>を作業<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C7%A5%A3%A5%EC%A5%AF%A5%C8">ディレクト</a>リとして実行されるようにします。</p>
+<pre class="code" data-lang="" data-unlink="">Project 
+    ├── sample_1
+         └── sample_1.py
+    └── sample_2
+         └── sample_2.py</pre><p>このようなときは、<code>Workspace</code>というものを設定します。<br/>
+WorkdpaceはＣ#の<a class="keyword" href="http://d.hatena.ne.jp/keyword/Visual%20Studio">Visual Studio</a>のソリューションファイル<code>xxx.sln</code>のように扱うことが出来ます。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">スクリプト</a>を<a class="keyword" href="http://d.hatena.ne.jp/keyword/VS%20Code">VS Code</a>で開いている状態で、ファイルメニューから「<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EF%A1%BC%A5%AF%A5%B9%A5%DA%A1%BC%A5%B9">ワークスペース</a>の保存」で<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EF%A1%BC%A5%AF%A5%B9%A5%DA%A1%BC%A5%B9">ワークスペース</a>を作成します。<br/>
+適当な名前<code>xxx.code-workspace</code>を付けて保存します。</p><p>作成した<code>xxx.code-workspace</code>を開くと、Pathが<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">スクリプト</a>ファイルのある場所に設定されています。</p>
+<pre class="code" data-lang="" data-unlink="">{
+	"folders": [
+		{
+			"path": "."
+		}
+	]
+}</pre><p>もしくは、↓のように<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C0%E4%C2%D0%A5%D1%A5%B9">絶対パス</a>で指定することもできます。</p>
+<pre class="code" data-lang="" data-unlink="">{
+	"folders": [
+		{
+			"path": "C:\\Users\\***\\Projects\\Python"
+		}
+	]
+}</pre><p>このように、プロジェクトごとにWorkspaceを設定し、プロジェクト（<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">スクリプト</a>）を開くとき、Workspaceを開くようにすることで各<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">スクリプト</a>のある場所で実行されるようになります。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>ではデフォルトではこのWorkspaceファイルは<a class="keyword" href="http://d.hatena.ne.jp/keyword/VS%20Code">VS Code</a>に紐づいていないようなので、紐づけておくと便利です。（Workspaceファイルで<a class="keyword" href="http://d.hatena.ne.jp/keyword/VSCode">VSCode</a>が起動するようにしておく）</p>
+<pre class="code" data-lang="" data-unlink="">Project 
+    ├── sample_1
+         └── sample_1.py
+         └── sample_1.code-workspace
+    └── sample_2
+         └── sample_2.py
+         └── sample_2.code-workspace</pre><p>とりあえず、やりたいことはできたと思いますが、もっとスマートな方法があるかもしれません。</p><p>作業<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C7%A5%A3%A5%EC%A5%AF%A5%C8">ディレクト</a>リのほかにも、エディタの設定などもプロジェクトごとにできるようです。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fprius.cc%2Fitya%2F20181218_vscode-workspace" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="vscodeの利用に必須な”ワークスペース”の概念"></iframe><cite class="hatena-citation"><a href="https://prius.cc/itya/20181218_vscode-workspace">prius.cc</a></cite></p>
+</div>

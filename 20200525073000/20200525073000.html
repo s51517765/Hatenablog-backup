@@ -1,0 +1,86 @@
+<div class="entry-content">
+<p>3年目となるラズパイによるスマートリモコンの改良です。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2018%2F07%2F15%2F144349" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="エアコン（のリモコン）をフィジカルハックしてラズパイとSlackでスマートリモコン化する - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2018/07/15/144349">s51517765.hatenadiary.jp</a></cite><br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2019%2F06%2F17%2F073000" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="エアコンをSlackでスマートリモコン化する【2019年版】 - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2019/06/17/073000">s51517765.hatenadiary.jp</a></cite><br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2020%2F05%2F18%2F073000" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="Raspberry Pi で温湿度気圧センサBME280を使う - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2020/05/18/073000">s51517765.hatenadiary.jp</a></cite></p><p>昨年のスマートリモコンに温湿度・気圧センサーを連携します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20200522124824p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20200522/20200522124824.png" title="f:id:s51517765:20200522124824p:plain"/></span></p><p>これまでの、エアコンをSlackで操る機能はそのままに、温湿度・気圧センサーもslackで取得できるようにしました。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20200522123412j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20200522/20200522123412.jpg" title="f:id:s51517765:20200522123412j:plain"/></span><br/>
+「温度」「湿度」といったキーワードに反応して温湿度・気圧センサーにアクセスします。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synComment">#plugins.py</span>
+
+<span class="synPreProc">@</span><span class="synIdentifier">listen_to</span>(<span class="synConstant">u'(温|tem|湿|環)+'</span>)
+<span class="synPreProc">@</span><span class="synIdentifier">respond_to</span>(<span class="synConstant">u'(温|tem|湿|環)+'</span>)
+<span class="synStatement">def</span> <span class="synIdentifier">temp</span>(message, something):
+    <span class="synStatement">try</span>:
+        env_result = bme280.main()  <span class="synComment">#センサーにアクセス</span>
+        message.reply(env_result)  <span class="synComment">#センサーからの応答をslackに返す</span>
+    <span class="synStatement">except</span> <span class="synType">NameError</span> <span class="synStatement">as</span> e:
+        <span class="synIdentifier">print</span>(e)
+        message.reply(<span class="synConstant">"NameError. airconSet.py"</span>)
+    <span class="synStatement">except</span> <span class="synType">Exception</span> <span class="synStatement">as</span> e:
+        <span class="synIdentifier">print</span>(e)
+        message.reply(<span class="synConstant">"指示を解釈できませんでした。"</span>)
+</pre><p>センサーの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">スクリプト</a>では、温度、気温、気圧を文字列にして返します。<br/>
+また、呼ばれるごとに、日付時刻と温度、気温、気圧を<a class="keyword" href="http://d.hatena.ne.jp/keyword/csv">csv</a>形式で書き出しておきます。<br/>
+これで、データを収集して<a class="keyword" href="http://d.hatena.ne.jp/keyword/Excel">Excel</a>で解析しやすくなります。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synComment">#bme280.py</span>
+
+<span class="synStatement">def</span> <span class="synIdentifier">main</span>():
+    <span class="synIdentifier">print</span>(<span class="synConstant">"BME280 Start!"</span>)
+    tdatetime = dt.datetime.now()
+    <span class="synStatement">try</span>:
+        sensor = Bme280()
+        Pres = <span class="synConstant">"{:.1f}"</span>.format(sensor.getPressure())
+        Temp = <span class="synConstant">"{:.1f}"</span>.format(sensor.getTemperature())
+        Hum = <span class="synConstant">"{:.1f}"</span>.format(sensor.getHumidity())
+        env_result = <span class="synIdentifier">str</span>(Pres)+<span class="synConstant">"hPa / "</span>+<span class="synIdentifier">str</span>(Temp)+<span class="synConstant">"deg / "</span>+<span class="synIdentifier">str</span>(Hum) + <span class="synConstant">"%"</span>
+        <span class="synIdentifier">print</span>(env_result)
+        <span class="synIdentifier">file</span> = <span class="synIdentifier">open</span>(<span class="synConstant">'env_result.txt'</span>, <span class="synConstant">'a'</span>, encoding=<span class="synConstant">'utf'</span>)  <span class="synComment"># 追記モードでオープン</span>
+        <span class="synIdentifier">file</span>.write(<span class="synIdentifier">str</span>(tdatetime)+<span class="synConstant">", "</span>+Pres + <span class="synConstant">", "</span>+Temp+<span class="synConstant">", "</span>+Hum+<span class="synConstant">"</span><span class="synSpecial">\n</span><span class="synConstant">"</span>)
+        <span class="synStatement">return</span> env_result
+    <span class="synStatement">except</span> <span class="synType">Exception</span> <span class="synStatement">as</span> e:
+        <span class="synIdentifier">print</span>(tdatetime)
+        <span class="synIdentifier">print</span>(<span class="synConstant">"Error in BME280"</span>)
+        <span class="synIdentifier">print</span>(e)
+</pre><p>Slackからの応答の様子。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20200521212535j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20200521/20200521212535.jpg" title="f:id:s51517765:20200521212535j:plain"/></span></p><p>また、<code>bme280.py</code>をslackBotと並行で起動しておくことで、1時間ごとに温度、気温、気圧を取得します。<br/>
+これでエアコンの設定が変わったときの様子が見れるはずです。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synComment">#bme280.py</span>
+
+<span class="synStatement">def</span> <span class="synIdentifier">get_env_loop</span>(inerval=<span class="synConstant">3600</span>):
+    <span class="synStatement">while</span> (<span class="synIdentifier">True</span>):
+        main()
+        time.sleep(inerval)
+
+<span class="synStatement">if</span> __name__ == <span class="synConstant">'__main__'</span>:
+    get_env_loop()
+</pre><p></p><h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>による並列化</h3>これを実現するために<code>SlackBot.main()</code>と<code>bme280.get_env_loop()</code>を並列化します。<br/>
+ラズパイでターミナルを２つ起動してPyhtonを２つ起動するという形でも実現可能ですが、せっかくなので<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>の並列化<code>threading</code>を利用します。<p>並列処理、並行処理、マルチプロセス、マルチスレッド…など似たような言葉が多くありますが、これらの違いについては↓がわかりやすかったです。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2F__init__%2Fitems%2F74b36eba31ccbc0364ed" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Pythonで並列化を学んでみる(マルチスレッド偏) - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/__init__/items/74b36eba31ccbc0364ed">qiita.com</a></cite><br/>
+今回はその中から並列化<code>threading</code>がやりたいことになります。</p><p>Qiitaのサンプルがわかりやすかったのでそのまま使いました。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synComment">#main.py</span>
+
+<span class="synComment"># -*- coding: utf-8 -*-</span>
+<span class="synPreProc">import</span> slackBot
+<span class="synPreProc">import</span> bme280
+<span class="synPreProc">import</span> datetime <span class="synStatement">as</span> dt
+<span class="synPreProc">import</span> threading
+
+<span class="synStatement">def</span> <span class="synIdentifier">worker1</span>():
+    slackBot.main()
+
+<span class="synStatement">def</span> <span class="synIdentifier">worker2</span>():
+    bme280.get_env_loop()
+
+<span class="synStatement">if</span> __name__ == <span class="synConstant">"__main__"</span>:
+    <span class="synIdentifier">print</span>(<span class="synConstant">"Main Start!"</span>)
+    t1 = threading.Thread(target=worker1)
+    t2 = threading.Thread(target=worker2)
+    t1.start()
+    t2.start()
+</pre><p>ここではDebug用に30秒ごとに環境を取得していますが、<code>SlackBot.main()</code>の応答と<code>bme280.get_env_loop()</code>が両方動いていることが確認できました。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20200523225228j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20200523/20200523225228.jpg" title="f:id:s51517765:20200523225228j:plain"/></span><br/>
+</p><h3>トラブったこと</h3>コーディングはリビングで実施していて、ほぼ完成したところで寝室にラズパイを設置しました。<br/>
+このとき、電源のUSBケーブルを長いものに変更したら温湿度センサがErrorになるということが起きました。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>は正常に動いているのに、i2cでのセンサだけ<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C9%D4%C7%BD">不能</a>という現象が発生。<blockquote class="twitter-tweet" data-lang="ja"><p dir="ltr" lang="ja">BME280という環境センサをラズパイでi2cで使っているんですが、ラズパイは起動するし、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>も動くのに、センサーが<br/>”[Errno 121] Remote I/O error” <br/>を吐いた。さっきまで動いていたのに？センサー壊れたか？と思ったが、もしや電源！？とUSBケーブルを戻したら動いた。場所を変えるのにケーブルを</p>— プログラミング素人 (@s51517765) <a href="https://twitter.com/s51517765/status/1263072383973289986?ref_src=twsrc%5Etfw">2020年5月20日</a></blockquote> <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script> <h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%BD%A1%BC%A5%B9%A5%B3%A1%BC%A5%C9">ソースコード</a>・回路図等の全貌</h3><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fs51517765%2FAirconPi" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="s51517765/AirconPi"></iframe><cite class="hatena-citation"><a href="https://github.com/s51517765/AirconPi">github.com</a></cite><p></p><div class="hatena-asin-detail"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/B01M98R905/shirotoakb-22/"><img alt="HiLetgo BME280 温度 センサー 湿度 センサー 気圧 センサー Arduino センサー 大気圧センサ 温湿度センサー ブレイクアウト Arduinoに対応 [並行輸入品]" class="hatena-asin-detail-image" src="https://m.media-amazon.com/images/I/41DWIpl2nSL._SL160_.jpg" title="HiLetgo BME280 温度 センサー 湿度 センサー 気圧 センサー Arduino センサー 大気圧センサ 温湿度センサー ブレイクアウト Arduinoに対応 [並行輸入品]"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/B01M98R905/shirotoakb-22/">HiLetgo BME280 温度 センサー 湿度 センサー 気圧 センサー Arduino センサー 大気圧センサ 温湿度センサー ブレイクアウト Arduinoに対応 [並行輸入品]</a></p><ul><li><span class="hatena-asin-detail-label">メディア:</span></li></ul></div><div class="hatena-asin-detail-foot"></div></div><div class="hatena-asin-detail"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/B07446WLQV/shirotoakb-22/"><img alt="Raspberry Pi Zero W - ヘッダー ハンダ付け済み - ラズベリー・パイ ゼロ W ワイヤレス" class="hatena-asin-detail-image" src="https://m.media-amazon.com/images/I/51TQvkcHJOL._SL160_.jpg" title="Raspberry Pi Zero W - ヘッダー ハンダ付け済み - ラズベリー・パイ ゼロ W ワイヤレス"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/B07446WLQV/shirotoakb-22/">Raspberry Pi Zero W - ヘッダー ハンダ付け済み - ラズベリー・パイ ゼロ W ワイヤレス</a></p><ul><li><span class="hatena-asin-detail-label">メディア:</span> エレクトロニクス</li></ul></div><div class="hatena-asin-detail-foot"></div></div><div class="hatena-asin-detail"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/B005MIF2Y4/shirotoakb-22/"><img alt="Hanwha / K-1028E 国内外 合計1000種類のエアコンコードを内蔵した エアコン用 ユニバーサル マルチリモコン [詳細日本語マニュアル付][エアコン 汎用 リモコン]" class="hatena-asin-detail-image" src="https://m.media-amazon.com/images/I/410cPCONwBL._SL160_.jpg" title="Hanwha / K-1028E 国内外 合計1000種類のエアコンコードを内蔵した エアコン用 ユニバーサル マルチリモコン [詳細日本語マニュアル付][エアコン 汎用 リモコン]"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/B005MIF2Y4/shirotoakb-22/">Hanwha / K-1028E 国内外 合計1000種類のエアコンコードを内蔵した エアコン用 ユニバーサル マルチリモコン [詳細日本語マニュアル付][エアコン 汎用 リモコン]</a></p><ul><li><span class="hatena-asin-detail-label">メディア:</span></li></ul></div><div class="hatena-asin-detail-foot"></div></div>
+</div>

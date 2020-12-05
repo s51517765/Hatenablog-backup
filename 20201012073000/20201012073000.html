@@ -1,0 +1,61 @@
+<div class="entry-content">
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>でFormを複数作ったときに他のFormのデータ（変数やオブジェクトの中身）にアクセスしたいときがあると思います。<br/>
+しかし、アクセスが拒否されてどうするんだっけ？となります。</p><p>下図はForm2からForm1のテキストボックスの中身を取得しようとしてはじかれているところです。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20201010172201p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20201010/20201010172201.png" title="f:id:s51517765:20201010172201p:plain"/></span></p><p>何度もつくっているはずですが、何度も調べなおしているのでここでまとめておこうと思います。</p><p>パターンは以下です。<br/>
+・Form1でForm1の内容をFormXへ送る。<br/>
+・FormXでForm1の内容をFormXへ送る。</p><p>これができれば、<br/>
+・Form1でFromXの内容をFormXへ送る。<br/>
+・FormXでForm1の内容をFormYへ送る。<br/>
+等もできるはずです。</p><p></p><h3>基本・Formを増やす</h3>メニューバーのプロジェクトから「<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>フォームの追加」を開き<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>フォームを選択します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20201010173321j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20201010/20201010173321.jpg" title="f:id:s51517765:20201010173321j:plain"/></span><br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20201010173334p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20201010/20201010173334.png" title="f:id:s51517765:20201010173334p:plain"/></span><p>これをButtonに割り当てるなどし、Formを追加します。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">private</span> <span class="synType">void</span> button1_Click(<span class="synType">object</span> sender, EventArgs e)
+    {
+        Form2 form2 = <span class="synStatement">new</span> Form2(); <span class="synComment">//インスタンスを作成</span>
+        form2.Show();  <span class="synComment">//form2を表示する</span>
+    }
+</pre><p>これはForm2の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A4%A5%F3%A5%B9%A5%BF%A5%F3%A5%B9">インスタンス</a>をform2という名前で作成する、というものです。<br/>
+これは、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AA%A5%D6%A5%B8%A5%A7%A5%AF%A5%C8%BB%D8%B8%FE">オブジェクト指向</a>の初歩でよく言われる、Form2という「たいやき型」もしくは「設計図」でform2というたいやきを生成したということです。</p><p></p><h3>Form1でForm1の内容をForm2へ送る</h3>ここでは、Form1のボタンを押下したときにFormを生成しForm1のテキストボックスの内容を新しく生成したFormのlabel1にセットする、とします。<br/>
+まず、あたらしく生成されるForm内の目的のオブジェクト（ここではlabel1）のプロパティのModifiersをPublicにします。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20201010175533j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20201010/20201010175533.jpg" title="f:id:s51517765:20201010175533j:plain"/></span><br/>
+デフォルトはPrivateとなっていて、これは他のClass（他のform）からはアクセスできない状態になっています。<br/>
+<code>form2.label1.Text = textBox1.Text;</code>のようにform2のlabel1にアクセスします。
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synStatement">if</span> (textBox1.Text != <span class="synConstant">""</span>)
+{
+    Form2 form2 = <span class="synStatement">new</span> Form2();
+    form2.Show();
+    form2.label1.Text = textBox1.Text;
+}
+</pre><p></p><h3>Form2でForm1の内容をForm2へ送る</h3>下図のようにForm2のボタンを押したとき、Form1のテキストボックスの中身をForm2のlabelにセットします。<br/>
+Form2はForm1から生成されるものとします。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20201010174639p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20201010/20201010174639.png" title="f:id:s51517765:20201010174639p:plain"/></span><p>Form1のtextboxもPublicにしておきます。</p><p>Form2を生成するButton_ClickイベントはForm1自身を参照として渡します。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">private</span> <span class="synType">void</span> button2_Click(<span class="synType">object</span> sender, EventArgs e)
+{
+    <span class="synComment">//Form2のインスタンスを form2という名前で作成しForm1自身を参照として渡す</span>
+    Form2  form2 = <span class="synStatement">new</span> Form2(<span class="synStatement">this</span>);     
+
+    <span class="synComment">//フォームを表示する</span>
+    form2.Show();
+}
+</pre><p>Form2にもForm1の参照を追加します。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">public</span> <span class="synStatement">partial</span> <span class="synType">class</span> Form2 : Form
+{
+    Form1 form1; <span class="synComment">//Form1を宣言</span>
+
+    <span class="synType">public</span> Form2(Form1 form1) <span class="synComment">//form1の参照を追加</span>
+    {
+        InitializeComponent();
+        <span class="synStatement">this</span>.form1 = form1; <span class="synComment">// //ここでいうform1は参照しているfomr1</span>
+    }
+
+    <span class="synType">private</span> <span class="synType">void</span> Form2_Load(<span class="synType">object</span> sender, EventArgs e)
+    {
+    }
+
+    <span class="synType">private</span> <span class="synType">void</span> button3_Click(<span class="synType">object</span> sender, EventArgs e)
+    {
+        label2.Text = form1.textBox1.Text;
+    }
+}
+</pre><p>これでForm間のやりとりが出来ます。</p>
+</div>

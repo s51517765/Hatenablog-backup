@@ -1,0 +1,36 @@
+<div class="entry-content">
+<div class="section">
+<h3>ラズパイ4にアクセスしているつもりがラズパイ3にアクセスしていた</h3>
+<p>我が家では主に<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a> <a class="keyword" href="http://d.hatena.ne.jp/keyword/Bot">Bot</a>を動かすラズパイ3B、室温環境測定をするラズパイ3B+、新規技術を試すラズパイ4B、ゼロで試したいとき用のラズパイゼロがあります。<br/>
+手元で、センサーを接続してラズパイ4をいじっているのに、全くセンサーが認識されない？？？と思ったら<a class="keyword" href="http://d.hatena.ne.jp/keyword/Teraterm">Teraterm</a>で必死にラズパイ3をたたいていました。</p><p>お仕事（本番環境）でやったらとてもマズイです。<br/>
+このために導入した施策を紹介します。</p>
+</div>
+<div class="section">
+<h3>ログインするアカウント名をラズパイごとに変える</h3>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Teraterm">Teraterm</a>でLoginするときにはローカルのUser名でログインしますが、まずこれを固有のUser IDに変更しました。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211016155724p:plain" class="hatena-fotolife" height="555" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211016/20211016155724.png" title="" width="578"/></span></p><p>これはラズパイのセットアップ時に固有のUser IDを作成します。<br/>
+これまではすべて同じUser名のほうが便利、と思っていましたが、間違いを防止するためまずこのように変更しました。<br/>
+Passwordは同じでもいいと思います。<br/>
+ラズパイ3Bをraspberrypi3、ラズパイ3B+をraspberrypi3p、ラズパイ4Bをraspberrypi4というようにしました。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2019%2F03%2F05%2F073000" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="セキュリティのためにラズパイで最低限やっておく設定まとめ - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2019/03/05/073000">s51517765.hatenadiary.jp</a></cite><br/>
+これだけでもターミナルに常にUser IDが見えている状態になるので、複数のラズパイで同時に作業していても間違いにくくなります。</p>
+</div>
+<div class="section">
+<h3>ホスト名をラズパイごとに変える</h3>
+<p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Ftool-lab.com%2Fraspberrypi-startup-14-supplement-1%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="第14回補足 Raspberry Piの名前を変更する | ツール・ラボ"></iframe><cite class="hatena-citation"><a href="https://tool-lab.com/raspberrypi-startup-14-supplement-1/">tool-lab.com</a></cite></p><p>私の環境ではローカルの固定IPが上手く動かないので、都度IP Addressを探してラズパイにアクセスしていました。<br/>
+再起動しない限り変わらないし、再起動してもそう頻繁には変わらないのでこれで”我慢”していました。<br/>
+しかし、実は<a class="keyword" href="http://d.hatena.ne.jp/keyword/SSH">SSH</a>ではホスト名でアクセスできることを知ったのでこれを設定しました。<br/>
+ホスト名の変更は以下の2つのファイルを編集します。</p>
+<pre class="code" data-lang="" data-unlink="">$ sudo vim /etc/hostname</pre><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211016160403j:plain" class="hatena-fotolife" height="496" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211016/20211016160403.jpg" title="" width="661"/></span></p>
+<pre class="code" data-lang="" data-unlink="">$ sudo vim /etc/hosts</pre><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211016160405j:plain" class="hatena-fotolife" height="498" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211016/20211016160405.jpg" title="" width="663"/></span></p><p>これでRebootすると次回からLoginは以下のようになります。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211016160746p:plain" class="hatena-fotolife" height="491" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211016/20211016160746.png" title="" width="657"/></span><br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211016160809j:plain" class="hatena-fotolife" height="498" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211016/20211016160809.jpg" title="" width="663"/></span><br/>
+</p>
+</div>
+<div class="section">
+<h3>まとめ</h3>
+<p>ラズパイのUser IDとHost名を変更して、どのラズパイに対して作業しているのかを間違いにくくしました。<br/>
+Samba等を設定しているときは、アクセス設定の修正が必要な場合があります。<br/>
+また、このような変更を行った後も従来のIP Addressによるアクセスも可能です。</p>
+</div>
+</div>

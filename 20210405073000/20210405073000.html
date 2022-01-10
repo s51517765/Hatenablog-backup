@@ -1,0 +1,116 @@
+<div class="entry-content">
+<p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210403222816j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210403/20210403222816.jpg" title=""/></span></p>
+<div class="section">
+<h3>電池の容量を測りたい</h3>
+<p>我が家ではリモコンであったり、時計であったりに大量？の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%CB%A5%C3%A5%B1%A5%EB%BF%E5%C1%C7%C5%C5%C3%D3">ニッケル水素電池</a>が稼働しています。<br/>
+たまに、電池の寿命（容量）がやけに短い？と思うことがあります。<br/>
+ニッケル水素といえど、充電池は劣化することで寿命が短くなることが知られています。</p><p>では、実際のところどれぐらい短くなっているのか測定してみることにしました。<br/>
+我が家で使われている充電池は主に、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Panasonic">Panasonic</a>のこちらのもので容量は2000mAhです。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210403180321p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210403/20210403180321.png" title=""/></span></p><p>電池の容量は、電流値を時間で<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C0%D1%CA%AC">積分</a>すれば測定できます。<br/>
+2000mAhとは2000mAで放電したとき1時間で無くなる、という意味です。<br/>
+このような定義を知らなくても、書かれている容量の単位がmAhであることが分かれば容易に推定できます。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%CB%A5%C3%A5%B1%A5%EB%BF%E5%C1%C7%C5%C5%C3%D3">ニッケル水素電池</a>は標準で1.2Vとされています。<br/>
+充電直後は1.4Vぐらいある場合もありますが、ここでは1.2V以上を出力できるまでを電池容量とします。</p><p>2000mAhとは言いますが、電池は2000mAも出力することは出来ません。<br/>
+感覚的には200mAぐらい（最大でも300mA）かな？と思いますが、試験回路としては、なるべく大きな電流を流したほうが測定時間は短くできますが部品の定格を考えて、1/4wの10Ω抵抗を2本直列にすることにしました。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210403181850p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210403/20210403181850.png" title=""/></span></p><p>測定の効率を考えて（電池ボックスが2本直列のものしかなかったので）電池を2本直列（1.4 x 2 V）にし、抵抗の電力を1/4w以下、電流を200mA以下となるようにします。 <br/>
+最大の電流が流れるのは、充電直後でこの時抵抗1本あたり<code>1.4V / 10Ω  * 1.4V = 196mW</code>で1/4w以下です。<br/>
+また回路の電流は<code>2.8V / 20Ω = 140ｍA</code>で200ｍA以下です。</p><p>このような回路を使ってラズパイで電圧を記録していきます。<br/>
+しかしながら、ラズパイにはアナログ入力がありません。<br/>
+そこで、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>のアナログ入力をラズパイに送って記録することにしました。</p><p></p><h3>シリアル通信を作る</h3>こちらのシリアル通信 <a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>→<a class="keyword" href="http://d.hatena.ne.jp/keyword/Raspberry%20Pi">Raspberry Pi</a> を参考に<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>からラズパイにデータを送る仕組みを作ります。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fshizenkarasuzon.hatenablog.com%2Fentry%2F2019%2F03%2F04%2F004048" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="Raspberry Pi と Arduino をUSBシリアル通信（第一弾） - とある科学の備忘録"></iframe><cite class="hatena-citation"><a href="https://shizenkarasuzon.hatenablog.com/entry/2019/03/04/004048">shizenkarasuzon.hatenablog.com</a></cite><br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>をUSBでラズパイに接続します。<br/>
+ラズパイゼロはMicroUSBしかないので、変換ケーブルを使います。ラズパイ3や4ではそのまま接続できます。<br/>
+認識されたかどうかは<code>lsusb</code>で確認できます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210403224222j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210403/20210403224222.jpg" title=""/></span><p>まずはサンプルコード（LED出力は削除）を試してみます。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synComment">// Arduinoで電圧の読み取りしSerialに出力</span>
+<span class="synType">void</span> setup(){
+  Serial.begin(<span class="synConstant">115200</span>);
+}
+
+<span class="synType">void</span> loop(){
+  Serial.println(<span class="synConstant">"LED ON"</span>);
+  delay(<span class="synConstant">1000</span>);
+  Serial.println(<span class="synConstant">"LED OFF"</span>);
+  delay(<span class="synConstant">1000</span>); 
+}
+</pre><pre class="code lang-python" data-lang="python" data-unlink=""><span class="synComment"># ラズパイで PythonでSerial受信</span>
+<span class="synPreProc">import</span> serial
+<span class="synPreProc">import</span> time
+ser = serial.Serial(<span class="synConstant">'/dev/ttyACM0'</span>, <span class="synConstant">115200</span>)
+
+<span class="synStatement">while</span> <span class="synIdentifier">True</span>:
+    String_data = ser.read()
+    <span class="synIdentifier">print</span>(String_data)
+ser.close()
+</pre><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210402124835p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210402/20210402124835.png" title=""/></span><br/>
+1文字づつ出力されますがこれでは扱いにくいので、改行区切りになるように、改行しない限り文字列を結合するようにします。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synPreProc">import</span> serial
+<span class="synPreProc">import</span> time
+ser = serial.Serial(<span class="synConstant">'/dev/ttyACM0'</span>, <span class="synConstant">115200</span>)
+
+data = <span class="synConstant">""</span>
+<span class="synStatement">while</span> <span class="synIdentifier">True</span>:
+    buf = ser.read()
+    <span class="synStatement">if</span> buf != <span class="synConstant">"</span><span class="synSpecial">\n</span><span class="synConstant">"</span>:
+        data += buf
+    <span class="synStatement">else</span>:
+        <span class="synIdentifier">print</span>(data)
+        data = <span class="synConstant">""</span>
+ser.close()
+</pre><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210402125333p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210402/20210402125333.png" title=""/></span></p><p>これで、シリアル通信は完成です。</p><p></p><h3>電池の電圧を測定する。</h3>電圧の読み取りは<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>でanalogReadです。
+<pre class="code lang-c" data-lang="c" data-unlink="">  <span class="synType">int</span> val=analogRead(A2);
+  Serial.println(val);
+</pre><p>試しに電池の電圧を測定してみます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210403222258p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210403/20210403222258.png" title=""/></span><br/>
+1.18V でAD240です。<br/>
+5Vで1023なので 1.18 / 5 *1024 =241.4 なのでだいたい合ってそうです（誤差1%以下）。</p><p>これで、経過時間と電圧をカンマ区切りでprint()します。<br/>
+実際に測定するときは、ラズパイで<code>nohup</code>にして<code>nohup.out</code>に出力させます。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synPreProc">import</span> serial
+<span class="synPreProc">import</span> time
+<span class="synPreProc">from</span> datetime <span class="synPreProc">import</span> datetime <span class="synStatement">as</span> dt
+
+ser = serial.Serial(<span class="synConstant">'/dev/ttyACM0'</span>, <span class="synConstant">115200</span>)
+
+start = dt.now()
+<span class="synIdentifier">print</span>(start)
+data = <span class="synConstant">""</span>
+prev = start
+timer = <span class="synConstant">10</span>
+<span class="synStatement">while</span> <span class="synIdentifier">True</span>:
+    <span class="synStatement">try</span>:
+        buf = ser.read().decode(<span class="synConstant">'utf-8'</span>)
+        <span class="synStatement">if</span> (dt.now() - prev).seconds &lt; timer <span class="synStatement">and</span> buf == <span class="synConstant">"</span><span class="synSpecial">\n</span><span class="synConstant">"</span>:
+            <span class="synStatement">continue</span>
+        <span class="synStatement">else</span>:
+            <span class="synStatement">if</span> buf != <span class="synConstant">"</span><span class="synSpecial">\n</span><span class="synConstant">"</span>:
+                data += buf
+            <span class="synStatement">else</span>:
+                t = dt.now() - start
+                prev = dt.now()
+                <span class="synIdentifier">print</span>(<span class="synIdentifier">str</span>(t)+<span class="synConstant">" , "</span>+data)
+                data = <span class="synConstant">""</span>
+    <span class="synStatement">except</span>:
+        <span class="synStatement">pass</span>
+ser.close()
+</pre><p>ざっくり試算では2000mAhを140mAで、約14時間かかります。（2000mAh / 140mA = 14.2h）</p>
+</div>
+<div class="section">
+<h3>結果発表</h3>
+<p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210403224956p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210403/20210403224956.png" title=""/></span><br/>
+約12時間で電圧が1.2Vを切りました。<br/>
+抵抗は実測で21Ωでした。誤差は±1Ωとします。<br/>
+これを寿命とし、区分求積法で時間 x 電流で容量を求めると、1386±66mAhとなりました。<br/>
+定格の約70％です。思ったより多いです。</p><p>もう一組測定してばらつきをみてみます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210404133922p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210404/20210404133922.png" title=""/></span><br/>
+同様に1.2Vを切るまでで電流容量を求めると1447±69mAhとなりました。<br/>
+4%ほど多いです。また1.2Vを下回っても急激に電圧が落ちるまではもう少しあり、実際にはさらに10%ぐらい使えるかもしれません。</p><p>念のため重ねて比較してみます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210404134715p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210404/20210404134715.png" title=""/></span><br/>
+</p>
+</div>
+<div class="section">
+<h3>まとめ</h3>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%CB%A5%C3%A5%B1%A5%EB%BF%E5%C1%C7%C5%C5%C3%D3">ニッケル水素電池</a>の容量が減っている気がしたので実測してみました。<br/>
+およそ70％程度にまで減っているといえそうです。<br/>
+いつから使っているかはっきり覚えていませんが10年ぐらい使っています。<br/>
+まだまだリモコンや時計などには使えます。</p>
+</div>
+</div>

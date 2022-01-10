@@ -1,0 +1,64 @@
+<div class="entry-content">
+<div class="section">
+<h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/%B0%E4%C5%C1%C5%AA%A5%A2%A5%EB%A5%B4%A5%EA%A5%BA%A5%E0">遺伝的アルゴリズム</a>で…</h3>
+<p></p><blockquote class="twitter-tweet" data-conversation="none" data-lang="ja"><p dir="ltr" lang="ja"><a class="keyword" href="http://d.hatena.ne.jp/keyword/%B0%E4%C5%C1%C5%AA%A5%A2%A5%EB%A5%B4%A5%EA%A5%BA%A5%E0">遺伝的アルゴリズム</a>で… <a href="https://t.co/zf2QxTaVWx">pic.twitter.com/zf2QxTaVWx</a></p>— とりてん (@s51517765) <a href="https://twitter.com/s51517765/status/1476932409945952263?ref_src=twsrc%5Etfw">2021年12月31日</a></blockquote> <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script> <p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%B0%E4%C5%C1%C5%AA%A5%A2%A5%EB%A5%B4%A5%EA%A5%BA%A5%E0">遺伝的アルゴリズム</a>(Genetic algorithm)とはプログラミングにおいて、「自然界の遺伝と変異」を応用して最適解を求める<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A2%A5%EB%A5%B4%A5%EA%A5%BA%A5%E0">アルゴリズム</a>です。<br/>
+主な流れは<br/>
+・初期個体を生成<br/>
+・優良個体を選抜<br/>
+・一定の変異をさせながら複製<br/>
+を繰り返し理想に近い状態を探索します。</p><p>一般には解析的に最適解が見つけにくい（見つけられない）問題に対して、ランダムな変異と良い傾向を組み合わせてなるべく良い解を求めることに使われます。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A2%A5%EB%A5%B4%A5%EA%A5%BA%A5%E0">アルゴリズム</a>にはいくつかのパターンがあるようですが、その中でここでは上記のタイプを選択しました。<br/>
+今回の問題に対してわかりやすく、収束が早そうという理由からです。<br/>
+この他のオプションとしては個体同士の「交叉」があります。</p>
+</div>
+<div class="section">
+<h3>解説</h3>
+<p>まず初期個体としてランダムな文字列を生成します。<br/>
+ここでは<code>pool</code>という配列にTARGETの長さの文字列をN個ランダムに生成します。<br/>
+ここで使う文字は<code>ALFABETO = list(string.ascii_letters+string.digits+"x"+" ")</code>で定義し、大文字のアルファベットと数字とスペースと小文字のxです。<br/>
+（xは16進数を表すのに使いたいため）</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">def</span> <span class="synIdentifier">init</span>():   <span class="synComment"># 初期個体を生成</span>
+    <span class="synStatement">global</span> pool
+    <span class="synStatement">for</span> i <span class="synStatement">in</span> <span class="synIdentifier">range</span>(N):
+        tmp = <span class="synConstant">""</span>
+        <span class="synStatement">for</span> j <span class="synStatement">in</span> <span class="synIdentifier">range</span>(LENGTH):
+            tmp += <span class="synIdentifier">str</span>(random.choice(ALFABETO))
+        pool.append(tmp)
+    <span class="synComment"># print(pool)</span>
+    <span class="synStatement">return</span> <span class="synConstant">0</span>
+</pre><p>ここでは目指すべき形が一つに定まっています。<br/>
+<code>TARGET = "HAPPY NEW YEAR 0x7E6"</code></p><p>これに対して「個体」の適応度を以下のように算出します。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">def</span> <span class="synIdentifier">getFitness</span>(pool):  <span class="synComment"># 適応度</span>
+    value = <span class="synConstant">0</span>
+    <span class="synStatement">for</span> i <span class="synStatement">in</span> <span class="synIdentifier">range</span>(LENGTH):
+        <span class="synStatement">if</span> pool[i] == TARGET[i]:
+            value += <span class="synConstant">1</span>
+    <span class="synComment">#print("value", value)</span>
+    <span class="synStatement">return</span> value
+</pre><p>これによりこの世代の最優良個体を選抜し、文字ごとに一定の割合で変異させます。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">def</span> <span class="synIdentifier">mutate</span>(<span class="synIdentifier">str</span>):  <span class="synComment"># 突然変異、文字ごとに変異させる</span>
+    tmp = <span class="synConstant">""</span>
+    <span class="synStatement">for</span> i <span class="synStatement">in</span> <span class="synIdentifier">str</span>:
+        <span class="synStatement">if</span> random.random() &lt; MUTATION_RATE:
+            tmp += random.choice(ALFABETO)
+        <span class="synStatement">else</span>:
+            tmp += i
+    <span class="synStatement">return</span> tmp
+</pre><p>変異させた中から優良個体を選択し、ここまでの流れを繰り返します。</p><p>パラメータとしては世代あたりの個体数<code>N</code>を大きくすると進化が早くなります。<br/>
+変異率<code>MUTATION_RATE</code>は高くしすぎても今回のケースでは必ずしも良くはなりませんでした。<br/>
+使える文字は小文字のアルファベットもすべて加えるなど増やせば遅くなります。<br/>
+これらのパラメータを調整し、だいたい2000世代ぐらいまでで収束するように調整しました。<br/>
+ただし、ランダム要素があるので早いときは400ぐらいで終わる場合もあります。</p>
+</div>
+<div class="section">
+<h3>まとめ</h3>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%B0%E4%C5%C1%C5%AA%A5%A2%A5%EB%A5%B4%A5%EA%A5%BA%A5%E0">遺伝的アルゴリズム</a>を<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>で試してみました。<br/>
+考え方と流れが分かったので今後何か意味のあることに活用してみたいですね。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fs51517765%2FHAPPY_NEW_YEAR_0x7E6" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="GitHub - s51517765/HAPPY_NEW_YEAR_0x7E6: Genetic algorithm（遺伝的アルゴリズム）で 2022 年を目指します"></iframe><cite class="hatena-citation"><a href="https://github.com/s51517765/HAPPY_NEW_YEAR_0x7E6">github.com</a></cite><br/>
+</p>
+</div>
+<div class="section">
+<h3>参考</h3>
+<p><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" frameborder="0" height="315" src="https://www.youtube.com/embed/73P1fZ7sN0o?feature=oembed" width="560"></iframe><cite class="hatena-citation"><a href="https://www.youtube.com/watch?v=73P1fZ7sN0o">www.youtube.com</a></cite></p>
+</div>
+</div>

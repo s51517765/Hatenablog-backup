@@ -1,0 +1,192 @@
+<div class="entry-content">
+<div class="section">
+<h3>お薬飲んだ記録をするものを作りたい</h3>
+<p>M5Stackを入手したので、画面とボタンが付いているメリットを最大に活かせる投薬管理アプリを作りました。</p><blockquote class="twitter-tweet" data-conversation="none" data-lang="ja"><p dir="ltr" lang="ja">M5Stackでお薬飲んだ履歴を記録·確認するアプリ作ってみた。 <a href="https://t.co/D4Fwq5OA42">pic.twitter.com/D4Fwq5OA42</a></p>— とりてん (@s51517765) <a href="https://twitter.com/s51517765/status/1388499617566789633?ref_src=twsrc%5Etfw">2021年5月1日</a></blockquote> <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script> <p>しろいとり子さんのブログを大いに参考にさせていただきました。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fsiroitori.hatenablog.com%2Fentry%2F2020%2F04%2F13%2F115538" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="M5StickCとGoogleスプレッドシートを使って服薬記録できるものを作った - カワリモノ息子の技術メモ的な〜"></iframe><cite class="hatena-citation"><a href="https://siroitori.hatenablog.com/entry/2020/04/13/115538">siroitori.hatenablog.com</a></cite><br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fsiroitori.hatenablog.com%2Fentry%2F2020%2F04%2F15%2F152254" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="M5StickCとGoogleスプレッドシートで服薬管理～その２：前回服薬日時を取得する～ - カワリモノ息子の技術メモ的な〜"></iframe><cite class="hatena-citation"><a href="https://siroitori.hatenablog.com/entry/2020/04/15/152254">siroitori.hatenablog.com</a></cite><br/>
+</p>
+</div>
+<div class="section">
+<h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/VS%20code">VS code</a>のPlatformIOを使う</h3>
+<p>ESP32のときも感じましたが、M5Stackを<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a> <a class="keyword" href="http://d.hatena.ne.jp/keyword/IDE">IDE</a>で<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%F3%A5%D1%A5%A4%A5%EB">コンパイル</a>・書き込みをするととても遅いです。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%B0%A4%B0%A4%EB">ぐぐる</a>と<a class="keyword" href="http://d.hatena.ne.jp/keyword/VS%20code">VS code</a>のPlatformIOという拡張を使うと速い、という情報を見つけたのでこれをインストールします。</p><p>↓を参考に<a class="keyword" href="http://d.hatena.ne.jp/keyword/VS%20code">VS code</a>にPlatformIOという拡張をインストールします。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Ftatsuya1970%2Fitems%2Fceeb5a5b011d53910fbb" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="【M5Stack】Arduino IDEでの書き込みが絶望的に遅いのでPlatform IOを試してみた - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/tatsuya1970/items/ceeb5a5b011d53910fbb">qiita.com</a></cite><br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210504202520j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210504/20210504202520.jpg" title=""/></span></p><p>シリアルモニタが文字化けするのでPlatformIOのmonitor_speedを変更します。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Fkomugiko%2Fitems%2F1b645f24e3373f96bfce" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="PlatformIOの設定でシリアルモニタのbpsを変更して表示する - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/komugiko/items/1b645f24e3373f96bfce">qiita.com</a></cite><br/>
+プロジェクト内のplatform.iniで以下のようにmonitor_speedを追記します</p>
+<pre class="code" data-lang="" data-unlink="">monitor_speed = 115200</pre><p>変更内容やコードの規模にもよると思いますが、ほぼほぼ40～60秒程度で書き込みまでできているようです。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a> <a class="keyword" href="http://d.hatena.ne.jp/keyword/IDE">IDE</a>では数分かかることもあることを考えると、ESP32やM5Stackでは完全にこちらに移行しようと思います。</p><p>しかしながら、PlatformIOには<code>BtnA</code>が誤作動するBugがあるようです。</p><blockquote class="twitter-tweet" data-conversation="none" data-lang="ja"><p dir="ltr" lang="ja"><a class="keyword" href="http://d.hatena.ne.jp/keyword/VS%20Code">VS Code</a>の拡張のPlatformIOにBugがあるらしい。同じコードを<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a> <a class="keyword" href="http://d.hatena.ne.jp/keyword/IDE">IDE</a>で書き込みすると問題ないことが分かった。</p>— とりてん (@s51517765) <a href="https://twitter.com/s51517765/status/1387695220423159812?ref_src=twsrc%5Etfw">2021年4月29日</a></blockquote> <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script> <p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fm5stack%2FM5Stack%2Fissues%2F52" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="M5.BtnA.wasPressed() conflicts with WiFi? · Issue #52 · m5stack/M5Stack"></iframe><cite class="hatena-citation"><a href="https://github.com/m5stack/M5Stack/issues/52">github.com</a></cite><br/>
+Issueに上がっているので、いずれ直ることを期待しますが<code>void setup()</code>内で<code>WiFi.setSleep(false);</code>することで回避できました。</p>
+<blockquote>
+<p>I am using ESP32 library v. 1.0.6 and the "black" M5Stack with the same issue.<br/>
+Even if I did not noticed the issue on the M5ez demos, I started to have it recently when I decided to start working on the M5 and reinstalled the libraries. Probably I got the new one.<br/>
+I have added the<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/WiFi">WiFi</a>.setSleep(false);<br/>
+in the Setup() sequence just after my <a class="keyword" href="http://d.hatena.ne.jp/keyword/Wire">Wire</a>.Begin(); instructions, and it seems to work.<br/>
+The battery consumption is not an issue for me, since my final device will have to work always connected to the power, and so I will remove the battery at the end of the development prior to install.</p>
+</blockquote>
+<p>PaltformIOではプロジェクトごとにInitializeが必要です。初回はその他インストールが走るのかこれには数分かかります。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210504202556j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210504/20210504202556.jpg" title=""/></span><br/>
+M5Srack Core ESP32、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>を選択しプロジェクトを作成します。（Board選択でM5と入力するとジャンプします）<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210504202608j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210504/20210504202608.jpg" title=""/></span></p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%F3%A5%D1%A5%A4%A5%EB">コンパイル</a>・ビルドは画面下の<code>チェック</code>と<code>→</code>、Serial Monitorは<code>プラグ？</code>のアイコンです。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210504203412p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210504/20210504203412.png" title=""/></span><br/>
+</p>
+</div>
+<div class="section">
+<h3>実装していく</h3>
+<p>基本的にはしろいとり子さんのブログを踏襲していきますが以下の改良を行いました。<br/>
+・ボタンをM5Stack Basicで３つ使えるようにする<br/>
+・前回飲んでからの時間を表示できるようにする<br/>
+・現在時刻を表示する<br/>
+・バッテリー残量を表示する<br/>
+・自分好みに<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EA%A5%D5%A5%A1%A5%AF%A5%BF%A5%EA%A5%F3%A5%B0">リファクタリング</a></p><p>◆画面の回転<br/>
+M5Stack Basicはボタンが3つあるのでこれを活用したいのですが、このボタンにそれぞれお薬を対応させます。<br/>
+このため、デフォルトの向きでは都合が悪いので、90°回転させます。</p><p><code>void setup()</code>内で<a class="keyword" href="http://d.hatena.ne.jp/keyword/LCD">LCD</a>の向きを指定します。引数が0, 1, 2, 3, 4 …で90°ごとに回転し、4からはミラー反転します。<br/>
+ここで、デフォルトが1の90°回転した状態のようで、欲しい角度は0でした。 </p>
+<pre class="code lang-c" data-lang="c" data-unlink="">M5.Lcd.setRotation(<span class="synConstant">0</span>); <span class="synComment">//90°回転</span>
+</pre><p>◆GAS（<a class="keyword" href="http://d.hatena.ne.jp/keyword/Google">Google</a> app script）と<a class="keyword" href="http://d.hatena.ne.jp/keyword/Google">Google</a> Spreadsheetとの連携<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%D7%A5%EC%A5%C3%A5%C9%A5%B7%A1%BC%A5%C8">スプレッドシート</a>を使うときは、どこかで↓のような権限を求める画面が出てくるはずなのですが、なぜか出てこなくて迷いました。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210504205205j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210504/20210504205205.jpg" title=""/></span><br/>
+デプロイの管理画面から権限を指定してデプロイしなおすことで権限設定ができました。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210504205152j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210504/20210504205152.jpg" title=""/></span></p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%D7%A5%EC%A5%C3%A5%C9%A5%B7%A1%BC%A5%C8">スプレッドシート</a>にデータを投げたり取得したりするには、返り値のあるPostで実行します。</p><p>GASではどのボタンが押されたかを引数で取得して、お薬ごとに列を分けて日時を書き込み最後の服薬日時と経過時間を算出して<a class="keyword" href="http://d.hatena.ne.jp/keyword/JSON">JSON</a>形式でreturnします。<br/>
+M5Stackの電源オンのときは、前回の時刻と経過時間だけが欲しいので、引数を0～2以外（実装では-1）をいれると、書き込みをせずにreturnのみします。</p>
+<pre class="code lang-javascript" data-lang="javascript" data-unlink=""><span class="synIdentifier">function</span> doPost(e) <span class="synIdentifier">{</span>  
+  <span class="synIdentifier">var</span> sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(<span class="synConstant">'シート1'</span>);
+  <span class="synIdentifier">var</span> params = JSON.parse(e.postData.getDataAsString());
+  <span class="synIdentifier">var</span> id = params.id;
+
+<span class="synStatement">if</span>(id==<span class="synConstant">"0"</span>)<span class="synIdentifier">{</span>
+  <span class="synComment">// データをシートに追加</span>
+    <span class="synIdentifier">var</span> range = sheet.getRange(<span class="synConstant">"A2"</span>);
+  range.insertCells(SpreadsheetApp.Dimension.ROWS);
+  sheet.getRange(2, 1).setValue(<span class="synStatement">new</span> <span class="synType">Date</span>());     <span class="synComment">// 受信日時を記録</span>
+<span class="synIdentifier">}</span>
+<span class="synStatement">else</span> <span class="synStatement">if</span>(id==<span class="synConstant">"1"</span>)<span class="synIdentifier">{</span>
+       <span class="synIdentifier">var</span> range = sheet.getRange(<span class="synConstant">"B2"</span>);
+  range.insertCells(SpreadsheetApp.Dimension.ROWS);
+  sheet.getRange(2, 2).setValue(<span class="synStatement">new</span> <span class="synType">Date</span>());     <span class="synComment">// 受信日時を記録</span>
+<span class="synIdentifier">}</span>
+<span class="synStatement">else</span> <span class="synStatement">if</span>(id==<span class="synConstant">"2"</span>)<span class="synIdentifier">{</span>
+      <span class="synIdentifier">var</span> range = sheet.getRange(<span class="synConstant">"C2"</span>);
+  range.insertCells(SpreadsheetApp.Dimension.ROWS);
+  sheet.getRange(2, 3).setValue(<span class="synStatement">new</span> <span class="synType">Date</span>());     <span class="synComment">// 受信日時を記録</span>
+<span class="synIdentifier">}</span>
+  <span class="synComment">// 最新行の日時セル内容を取得してフォーマット</span>
+  <span class="synIdentifier">var</span> targetDate0 = sheet.getRange(2,1).getValue();
+  <span class="synIdentifier">var</span> dateString0 = <span class="synConstant">""</span>;
+  <span class="synStatement">if</span> (targetDate0 != <span class="synStatement">null</span>)<span class="synIdentifier">{</span>
+    dateString0 = Utilities.formatDate(targetDate0,<span class="synConstant">"JST"</span>,<span class="synConstant">"MM/dd HH:mm"</span>);
+  <span class="synIdentifier">}</span>  
+  <span class="synIdentifier">var</span> targetDate1 = sheet.getRange(2,2).getValue();
+  <span class="synIdentifier">var</span> dateString1 = <span class="synConstant">""</span>;
+  <span class="synStatement">if</span> (targetDate1 != <span class="synStatement">null</span>)<span class="synIdentifier">{</span>
+    dateString1 = Utilities.formatDate(targetDate1,<span class="synConstant">"JST"</span>,<span class="synConstant">"MM/dd HH:mm"</span>);
+  <span class="synIdentifier">}</span>  
+  <span class="synIdentifier">var</span> targetDate2 = sheet.getRange(2,3).getValue();
+  <span class="synIdentifier">var</span> dateString2 = <span class="synConstant">""</span>;
+  <span class="synStatement">if</span> (targetDate2 != <span class="synStatement">null</span>)<span class="synIdentifier">{</span>
+    dateString2 = Utilities.formatDate(targetDate2,<span class="synConstant">"JST"</span>,<span class="synConstant">"MM/dd HH:mm"</span>);
+  <span class="synIdentifier">}</span>  
+  
+  <span class="synComment">// レスポンス</span>
+  <span class="synIdentifier">var</span> response = <span class="synIdentifier">{</span>
+    data: <span class="synIdentifier">{</span> <span class="synConstant">"0"</span>: dateString0 ,<span class="synConstant">"1"</span>:dateString1,<span class="synConstant">"2"</span>:dateString2<span class="synIdentifier">}</span>,
+    past:<span class="synIdentifier">{</span> <span class="synConstant">"0"</span>: get_history(0) ,<span class="synConstant">"1"</span>:get_history(1),<span class="synConstant">"2"</span>:get_history(2)<span class="synIdentifier">}</span>
+  <span class="synIdentifier">}</span>;
+  <span class="synStatement">return</span> ContentService.createTextOutput(JSON.stringify(response)).setMimeType(ContentService.MimeType.JSON);
+<span class="synIdentifier">}</span>
+
+<span class="synIdentifier">function</span> get_history(num)<span class="synIdentifier">{</span>
+  <span class="synIdentifier">var</span> sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(<span class="synConstant">'シート1'</span>);
+  <span class="synIdentifier">var</span> range;
+  <span class="synStatement">if</span>(num==0)  range = sheet.getRange(<span class="synConstant">"A2"</span>);
+  <span class="synStatement">else</span> <span class="synStatement">if</span>(num==1)  range = sheet.getRange(<span class="synConstant">"B2"</span>);
+  <span class="synStatement">else</span> <span class="synStatement">if</span>(num==2)  range = sheet.getRange(<span class="synConstant">"C2"</span>);
+
+  <span class="synIdentifier">var</span> value = range.getValue();
+  <span class="synIdentifier">var</span> lasttime =Utilities.formatDate(value,<span class="synConstant">"JST"</span>,<span class="synConstant">"MM/dd HH:mm"</span>)
+  <span class="synIdentifier">var</span> timeDelta = <span class="synStatement">new</span> <span class="synType">Date</span>()-value;
+  Logger.log(lasttime);
+  <span class="synIdentifier">var</span> h =parseInt(timeDelta/1000/60/60);
+  <span class="synIdentifier">var</span> d = parseInt(h/24);
+  <span class="synIdentifier">var</span> res;
+  <span class="synStatement">if</span>(d&gt;0) res = lasttime.toString() + <span class="synConstant">"("</span>+d.toString()+<span class="synConstant">"days before)"</span>;
+  <span class="synStatement">else</span> res = lasttime.toString() + <span class="synConstant">"("</span>+h.toString()+<span class="synConstant">"h before)"</span>;
+  Logger.log(res);
+
+  <span class="synStatement">return</span> res;
+<span class="synIdentifier">}</span>
+</pre><p>GASの動作確認は以下のような<a class="keyword" href="http://d.hatena.ne.jp/keyword/curl">curl</a>コマンドを<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%DE%A5%F3%A5%C9%A5%D7%A5%ED%A5%F3%A5%D7%A5%C8">コマンドプロンプト</a>で実行します。<br/>
+このようにすると、GASの<code>doPost(e)</code>が呼ばれるようです。</p>
+<pre class="code lang-c" data-lang="c" data-unlink="">curl -H <span class="synConstant">"Content-Type: application/json"</span> -d '{<span class="synConstant">"Alice"</span>:<span class="synConstant">"1"</span>, <span class="synConstant">"Bob"</span>:<span class="synConstant">"2"</span> }' -L <span class="synConstant">"https://script.google.com/macros/s/****/exec</span>
+</pre><p>なのですが、思ったように返ってこなくて悩んでいましたが<code>doPost(e)</code>がBugっていたようです。<br/>
+例外が発生したときに、GASは何も発さずに止まってしまうのでわかりませんでした。<br/>
+Try～Catchとかを入れておくか、事前に<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C3%B1%C2%CE%A5%C6%A5%B9%A5%C8">単体テスト</a>で確認しておくべきでした。</p><blockquote class="twitter-tweet"><p dir="ltr" lang="ja">GASがバグって止まっていたらしいことが判明。</p>— とりてん (@s51517765) <a href="https://twitter.com/s51517765/status/1388352467444768771?ref_src=twsrc%5Etfw">May 1, 2021</a></blockquote> <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script><p>前回飲んでからの時間の計算はM5Stack側でやるかGAS側でやるか両方可能ですがここではGASで行うことにしました。</p><p>◆現在時刻の表示<br/>
+あったら便利ぐらいの位置づけです。<br/>
+ntpサーバーにアクセスして時刻を取得、表示します。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synType">void</span> getTime()
+{
+  <span class="synType">const</span> <span class="synType">long</span> gmtOffset_sec = <span class="synConstant">3600</span> * <span class="synConstant">9</span>;     <span class="synComment">//UTC + 9</span>
+  <span class="synType">const</span> <span class="synType">int</span> daylightOffset_sec = <span class="synConstant">3600</span> * <span class="synConstant">0</span>; <span class="synComment">//Summer Timeなし</span>
+  <span class="synType">const</span> <span class="synType">char</span> *ntpServer = <span class="synConstant">"pool.ntp.org"</span>;
+  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+  <span class="synType">struct</span> tm timeinfo;
+  <span class="synStatement">if</span> (!getLocalTime(&amp;timeinfo))
+  {
+    Serial.println(<span class="synConstant">"Failed to obtain time"</span>);
+    <span class="synStatement">return</span>;
+  }
+  Serial.println(&amp;timeinfo, <span class="synConstant">"%m </span><span class="synSpecial">%d</span><span class="synConstant"> </span><span class="synSpecial">%A</span><span class="synConstant"> %Y %H:%M:</span><span class="synSpecial">%S</span><span class="synConstant">"</span>);
+  M5.Lcd.setCursor(<span class="synConstant">0</span>, LineProgress);
+  M5.Lcd.setTextSize(<span class="synConstant">2</span>);
+  M5.Lcd.setTextColor(CYAN);
+  M5.Lcd.print(&amp;timeinfo, <span class="synConstant">"%m/</span><span class="synSpecial">%d</span><span class="synConstant"> </span><span class="synSpecial">%a</span><span class="synConstant"> %H:%M"</span>);
+  M5.Lcd.setTextSize(<span class="synConstant">3</span>);
+  <span class="synStatement">return</span>;
+}
+</pre><p>◆バッテリー残量の表示<br/>
+M5Stackはバッテリー駆動が出来るので残量表示はあったほうがいいと思い探してみると、残量をパーセントで出力する機能があります。<br/>
+これを<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%DE%A5%DB">スマホ</a>などのバッテリー残量表示のようにゲージを<code>#####</code>のように文字列で作成し表示するようにしました。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synType">void</span> showBattery()
+{
+  <span class="synType">int</span> BatteryLv = M5.Power.getBatteryLevel();
+
+  <span class="synStatement">if</span> (BatteryLv &lt; <span class="synConstant">40</span>)
+    M5.Lcd.setTextColor(RED);
+  <span class="synStatement">else</span>
+    M5.Lcd.setTextColor(GREEN);
+  M5.Lcd.setCursor(<span class="synConstant">0</span>, <span class="synConstant">0</span>);
+  M5.Lcd.print(BatteryLv);
+  M5.Lcd.print(<span class="synConstant">"["</span>);
+  <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; <span class="synConstant">5</span>; i++)
+  {
+    <span class="synStatement">if</span> (i * <span class="synConstant">20</span> &lt; BatteryLv)
+      M5.Lcd.print(<span class="synConstant">"#"</span>);
+    <span class="synStatement">else</span>
+      M5.Lcd.print(<span class="synConstant">" "</span>);
+  }
+  M5.Lcd.println(<span class="synConstant">"]"</span>);
+}
+</pre><p>しかし、M5Stack basicのバッテリー容量は標準で110mAhで一方、消費電力が200mAほどあるらしいので、せいぜい30分しか持ちません。<br/>
+なので実質的にはバッテリー駆動は現実的ではない、と思っています。<br/>
+USB電源をつないで使用するならバッテリー残量は意味がないですが、モバイルバッテリーで駆動するなら少し意味があるかな、と思っています。</p>
+</div>
+<div class="section">
+<h3>認証情報は別ファイルに記載する</h3>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/GitHub">GitHub</a>でソースは公開したいので、認証情報などは<code>.gitignore</code>したいです。<br/>
+このため、<code>auth.h</code>というファイルを作成し、認証情報はこの中に書き込みます。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synType">extern</span> <span class="synType">char</span> *ssid = <span class="synConstant">"**********"</span>;
+<span class="synType">extern</span> <span class="synType">char</span> *password = <span class="synConstant">"**********"</span>;
+<span class="synComment">// GoogleスプレッドシートのデプロイされたウェブアプリのURLを設定</span>
+<span class="synType">extern</span> <span class="synType">char</span> *published_url = <span class="synConstant">"https://script.google.com/macros/s/********/exec"</span>;
+</pre><p>メインのコードでは↓のようにして読み込ませると、<code>auth.h</code>の中で宣言した変数が<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B0%A5%ED%A1%BC%A5%D0%A5%EB%CA%D1%BF%F4">グローバル変数</a>として使えるようになります。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synPreProc">#include </span><span class="synConstant">"auth.h"</span>
+</pre><p>これが最適な手法かどうかはまだよくわかっていません。</p>
+</div>
+<div class="section">
+<h3>まとめ</h3>
+<p>お薬を飲んだ記録をするアプリをつくりました。<br/>
+実際に活用できるものを作るのは楽しいですね。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210504221856p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210504/20210504221856.png" title=""/></span></p><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fs51517765%2FMedication_management" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="s51517765/Medication_management"></iframe><cite class="hatena-citation"><a href="https://github.com/s51517765/Medication_management">github.com</a></cite></p>
+</div>
+</div>

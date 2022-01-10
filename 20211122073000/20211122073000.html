@@ -1,0 +1,121 @@
+<div class="entry-content">
+<div class="section">
+<h3>もっと組込みプログラミング的なことをやりたい</h3>
+<p>前回はビュートローバーARMに対してサンプルコードの修正で簡単な改造をしました。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2021%2F11%2F15%2F073000" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="ビュートローバーARMでモーター制御 - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2021/11/15/073000">s51517765.hatenadiary.jp</a></cite></p><p>実はサンプルコードはある程度 <em>分かりやすい</em> 関数で組まれていて、その本質のところに触れていません。<br/>
+というのはプログラミングというのはCPUが持っているタイマーやGPIO、メモリといったものをbitの上げ下げによって制御しているのですが、これをより人にとってわかりやすい関数に丸めているので、直感的に操作することが出来るようになっています。<br/>
+そこで、今回は<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%B8%C0%B8%EC">C言語</a>でCPUを<em>より直接制御</em>することろをやってみます。</p>
+<blockquote>
+<p>それ以前にも<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%DE%A5%A4%A5%B3%A5%F3">マイコン</a>ボードはいろいろありました。ただ、「初めて触った<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%DE%A5%A4%A5%B3%A5%F3">マイコン</a>が<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>」という方には想像がつかないと思うのですが、それ以前の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%DE%A5%A4%A5%B3%A5%F3">マイコン</a>は、「その筋」の人でないと使おうとは思わないですし、使うこともできない、なかなかハードルが高いものでした。<br/>
+＜中略＞<br/>
+つまり一番奥の方では、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B5%A1%B3%A3%B8%EC">機械語</a>のプログラムが実行されていて、更にその奥には、そのプログラムを実行するための<a class="keyword" href="http://d.hatena.ne.jp/keyword/%CF%C0%CD%FD%B2%F3%CF%A9">論理回路</a>が動いているわけです。</p>
+</blockquote>
+<p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fdeviceplus.jp%2Fhobby%2Flearning-electronics-06%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Lチカを超えて電子工作をちゃんと知るための「n講」 第6回：ソースコードを覗く〜GPIO編〜 | Device Plus - デバプラ"></iframe><cite class="hatena-citation"><a href="https://deviceplus.jp/hobby/learning-electronics-06/">deviceplus.jp</a></cite><br/>
+</p>
+</div>
+<div class="section">
+<h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%BD%A1%BC%A5%B9%A5%B3%A1%BC%A5%C9">ソースコード</a>をハードウェア視点で解読する</h3>
+<p>ここでは題材としてモーターを駆動する関数を見ていきます。<br/>
+モーターを駆動する関数は<code>vs-wrc103.c</code>にある、</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synType">void</span> Mtr_Run_lv(<span class="synType">short</span> m1,<span class="synType">short</span> m2,<span class="synType">short</span> m3,<span class="synType">short</span> m4,<span class="synType">short</span> m5,<span class="synType">short</span> m6){}
+</pre><p>でした。</p><p>まず、モーターにDutyを書き込んでいると思われるのが以下です。</p>
+<pre class="code lang-c" data-lang="c" data-unlink="">LPC_TMR16B0-&gt;MR0 = t_Duty[<span class="synConstant">0</span>]&amp;<span class="synConstant">0x0000FFFF</span>;
+</pre><p>これは多段defineマクロされているので、展開してみます。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synComment">//左辺 =  ((LPC_TMR_TypeDef    *) LPC_CT16B0_BASE)-&gt;MR0</span>
+<span class="synComment">//左辺 =  ((LPC_TMR_TypeDef    *)(LPC_APB0_BASE + 0x0C000))-&gt;MR0</span>
+((LPC_TMR_TypeDef    *)((<span class="synConstant">0x40000000UL</span>) + <span class="synConstant">0x0C000</span>))-&gt;MR0= t_Duty[<span class="synConstant">0</span>]&amp;<span class="synConstant">0x0000FFFF</span>;
+</pre><p>すると<code>(0x40000000UL) + 0x0C000)</code>のところにある<code>MR0</code>にDutyを書き込んでいると分かります。<br/>
+<code>(LPC_TMR_TypeDef    *)</code>はポインタです（多分）。<br/>
+<code>t_Duty[]</code>はモーターのモーターの速度パラメータとして渡された引数を途中、2倍して論理反転していますが、プラスマイナスとか何かの調整を行っているだけだとと思います。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synStatement">if</span> (mta[i] &gt; <span class="synConstant">0</span>)
+{ 
+<span class="synComment">//0のときは何もしない</span>
+t_Duty[i] = (<span class="synType">unsigned</span> <span class="synType">int</span>)(~(mta[i] * <span class="synConstant">2</span>));
+Gpio2Temp |= <span class="synConstant">1</span> &lt;&lt; i * <span class="synConstant">2</span>; <span class="synComment">//bitを立てる 12bitまでの範囲、Dutyが0でなければそのbitを立てる</span>
+}
+</pre><p>これを右辺でBit演算して入力しています。<br/>
+<code>0x0000FFFF</code>は16進数ですが、2進数でいうと<code>0000 0000 0000 0000 1111 1111 1111 1111</code>で下位16bitが1でそれ以外が0です。<br/>
+これをAND演算しているので、16bit以上を切り捨てているということが分かります。<br/>
+つまり16bit以上の桁の値は無視して、<code>(0x40000000UL) + 0x0C000)</code>のところにある<code>MR0</code>に書き込んでいます。</p><p>LPC1343のデータシートP16をみると、ここはtimerであることが分かります。</p>
+<figure class="figure-image figure-image-fotolife" title="LPC1343データシートよりメモリマップ"><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211121112104p:plain" class="hatena-fotolife" height="860" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211121/20211121112104.png" title="" width="927"/></span><figcaption>LPC1343データシートよりメモリマップ</figcaption></figure><p>ここで、timerは広義には時間を計測するものですが、ここではPWMを扱っていると推測されその上限が16bitつまり65,535分解能のPWMということになります。</p><p>次に、このような命令があります。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synComment">//読み込み</span>
+Gpio2Temp = LPC_GPIO2-&gt;DATA;
+<span class="synComment">//書き込み</span>
+LPC_GPIO2-&gt;DATA = Gpio2Temp;
+</pre><p>これも先ほどのように多段defineマクロを展開すると（同様なので書き込みは省略）、</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synComment">//Gpio2Temp =   ((LPC_GPIO_TypeDef   *) LPC_GPIO2_BASE )-&gt;DATA;</span>
+<span class="synComment">//Gpio2Temp =   ((LPC_GPIO_TypeDef   *)(LPC_AHB_BASE  + 0x20000) )-&gt;DATA;</span>
+Gpio2Temp = ((LPC_GPIO_TypeDef *)((<span class="synConstant">0x50000000UL</span>) + <span class="synConstant">0x20000</span>))-&gt;DATA;
+</pre><p><code>((LPC_GPIO_TypeDef *)((0x50000000UL) + 0x20000))</code>のところにある<code>DATA</code>に読み書きしていることが分かります。<br/>
+こちらも先ほどのメモリマップによると、<code>GPIO PIO2</code>というGPIOであることが分かります。</p><p>これらから、二つの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EC%A5%B8%A5%B9%A5%BF">レジスタ</a>への書き込みでモーターを制御しようとしていることが分かります。<br/>
+この2つのかかわり方ですが、<code>GPIO PIO2_X</code>が回転方向を指示し、<code>16bit timer</code>がそのPWMを設定していると思われます。<br/>
+回路図をみると、二つのモーターに対して<code>PIO02_X</code>と<code>PIO0_8/XX</code><code>PIO1_9/XX</code>が接続されていることが分かります。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211122111613p:plain" class="hatena-fotolife" height="752" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211122/20211122111613.png" title="" width="811"/></span><br/>
+さらにデータシートから<code>PIO0_8/XX</code><code>PIO1_9/XX</code>がtimerであることが分かります。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211122111505p:plain" class="hatena-fotolife" height="446" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211122/20211122111505.png" title="" width="985"/></span><br/>
+これをハードウェアAND演算してFETを制御しているということになります。<br/>
+ちなみに、モーター<code>CN3</code><code>CN4</code>に対してそれぞれFETが4つついているのはHブリッジ回路というもので、正転・逆転の制御ができるものです。</p>
+</div>
+<div class="section">
+<h3>まとめ</h3>
+<p>ビュートローバーARMのモーター駆動部分をハードウェア観点で解読してみました。<br/>
+デフォルトではモーターは2つしか搭載されていないので、これらのdefineマクロ展開結果を入れて整理すると、以下のようなプログラムで同じ機能を持たせることが出来ます。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synType">void</span> Mtr_Run_lv2(<span class="synType">short</span> m1, <span class="synType">short</span> m2)
+{
+	<span class="synType">int</span> i = <span class="synConstant">0</span>;
+	<span class="synType">short</span> mta[<span class="synConstant">2</span>];
+	<span class="synType">unsigned</span> <span class="synType">int</span> t_Duty[<span class="synConstant">2</span>];
+	<span class="synType">uint32_t</span> Gpio2Temp;	
+	Gpio2Temp = ((LPC_GPIO_TypeDef *)((<span class="synConstant">0x50000000UL</span>) + <span class="synConstant">0x20000</span>))-&gt;DATA; <span class="synComment">//読み込み</span>
+
+	Gpio2Temp &amp;= ~<span class="synConstant">0x0FFF</span>; <span class="synComment">//下位12bitを0</span>
+
+	mta[<span class="synConstant">0</span>] = m1;
+	mta[<span class="synConstant">1</span>] = m2;
+
+	<span class="synStatement">for</span> (i = <span class="synConstant">0</span>; i &lt;  <span class="synStatement">sizeof</span>(mta) / <span class="synStatement">sizeof</span>(mta[<span class="synConstant">0</span>]); i++)
+	{
+		<span class="synStatement">if</span> (mta[i] == <span class="synConstant">0x8000</span>)
+			mta[i] = <span class="synConstant">0</span>;
+	}
+	mta[<span class="synConstant">1</span>] = -mta[<span class="synConstant">1</span>];
+
+	<span class="synStatement">for</span> (i = <span class="synConstant">0</span>; i &lt;  <span class="synStatement">sizeof</span>(mta) / <span class="synStatement">sizeof</span>(mta[<span class="synConstant">0</span>]); i++)
+	{
+		<span class="synStatement">if</span> (mta[i] &gt; <span class="synConstant">0</span>)
+		{ <span class="synComment">//0のときは何もしない</span>
+			t_Duty[i] = (<span class="synType">unsigned</span> <span class="synType">int</span>)(~(mta[i] * <span class="synConstant">2</span>));
+			Gpio2Temp |= <span class="synConstant">1</span> &lt;&lt; i * <span class="synConstant">2</span>; <span class="synComment">//bitを立てる 12bitまでの範囲、Dutyが0でなければそのbitを立てる</span>
+		}
+		<span class="synStatement">else</span> <span class="synStatement">if</span> (mta[i] &lt; <span class="synConstant">0</span>)
+		{
+			t_Duty[i] = (<span class="synType">unsigned</span> <span class="synType">int</span>)(~(-mta[i] * <span class="synConstant">2</span>));
+			Gpio2Temp |= <span class="synConstant">2</span> &lt;&lt; i * <span class="synConstant">2</span>; <span class="synComment">//bitを立てる 12bitまでの範囲、モータ出力を有効にする？</span>
+		}
+		<span class="synStatement">else</span>
+		{
+			t_Duty[i] = <span class="synConstant">0</span>;
+		}
+	}
+	((LPC_TMR_TypeDef *)((<span class="synConstant">0x40000000UL</span>) + <span class="synConstant">0x0C000</span>))-&gt;MR0 = t_Duty[<span class="synConstant">0</span>] &amp; <span class="synConstant">0x0000FFFF</span>; <span class="synComment">//0xFFFF=16bit以上を切り捨て、TimerにDutyを割り当て、Timerが16bitだから</span>
+	((LPC_TMR_TypeDef *)((<span class="synConstant">0x40000000UL</span>) + <span class="synConstant">0x10000</span>))-&gt;MR0 = t_Duty[<span class="synConstant">1</span>] &amp; <span class="synConstant">0x0000FFFF</span>;
+
+        <span class="synComment">//デバッグ用</span>
+	<span class="synType">char</span> sentence[<span class="synConstant">19</span>]; <span class="synComment">//送る文字数より１文字多い配列を確保する。</span>
+	<span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; <span class="synStatement">sizeof</span>(mta) / <span class="synStatement">sizeof</span>(mta[<span class="synConstant">0</span>]); i++)
+	{
+		sprintf(sentence, <span class="synConstant">"t_Duty</span><span class="synSpecial">%01d</span><span class="synConstant">=</span><span class="synSpecial">%04d\r\n</span><span class="synConstant">"</span>, i, t_Duty[i]);
+		SciStrTx(sentence, <span class="synConstant">18</span>);
+	}
+	LPC_GPIO2-&gt;DATA = Gpio2Temp;
+}
+</pre>
+</div>
+<div class="section">
+<h3>参考</h3>
+<p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fwww.alldatasheet.jp%2Fdatasheet-pdf%2Fpdf%2F328834%2FNXP%2FLPC1343.html" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="LPC1343 Datasheet(PDF) - NXP Semiconductors"></iframe><cite class="hatena-citation"><a href="https://www.alldatasheet.jp/datasheet-pdf/pdf/328834/NXP/LPC1343.html">www.alldatasheet.jp</a></cite><br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fcommunity.nxp.com%2Ft5%2FLPCXpresso-IDE%2FPWM-on-LPC1343%2Fm-p%2F527866%23M672" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="PWM on LPC1343"></iframe><cite class="hatena-citation"><a href="https://community.nxp.com/t5/LPCXpresso-IDE/PWM-on-LPC1343/m-p/527866#M672">community.nxp.com</a></cite><br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Finitial-jj.com%2Fentry%2Fcategory%2Fpc_and_software%2Fembedded_software%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="組み込みソフトウェア"></iframe><cite class="hatena-citation"><a href="https://initial-jj.com/entry/category/pc_and_software/embedded_software/">initial-jj.com</a></cite><br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fdeviceplus.jp%2Fhobby%2Flearning-electronics-06%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Lチカを超えて電子工作をちゃんと知るための「n講」 第6回：ソースコードを覗く〜GPIO編〜 | Device Plus - デバプラ"></iframe><cite class="hatena-citation"><a href="https://deviceplus.jp/hobby/learning-electronics-06/">deviceplus.jp</a></cite></p>
+</div>
+</div>

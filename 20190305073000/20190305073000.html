@@ -1,5 +1,5 @@
 <div class="entry-content">
-<p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20190304225631j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190304/20190304225631.jpg" title="f:id:s51517765:20190304225631j:plain"/></span><br/>
+<p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20190304225631j:plain" class="hatena-fotolife" height="262" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190304/20190304225631.jpg" title="" width="277"/></span><br/>
 ラズパイは便利なIOTツールの一つですが、あまり知識がなくても使えてしまうため、悪意ある輩が狙ってくるとかいないとか…。<br/>
 そこで、↓を参考に最低限の対策として、デフォルトのユーザー名 "pi"から離脱する方法を中心に、とくに躓きやすい点を重点的にまとめました。<br/>
 <iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Fmochifuture%2Fitems%2F00ca8cdf74c170e3e6c6" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="初心者向！Raspberry Pi 最低限のセキュリティ設定【所要時間 30分】 - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/mochifuture/items/00ca8cdf74c170e3e6c6">qiita.com</a></cite></p><p>まず、新しいIDを作ります。これはなるべく長いほうがいいのは基本です。変更しても ”a”みたいにしていてはほぼ同じです。<br/>
@@ -17,22 +17,26 @@
 ロックやログイン不可状態でもsudoの動作には関係ないので、rootのパスワードは変えない方が安全というか、変えるべきではありません。</p>
 </blockquote>
 <p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fjyn.jp%2Fraspberrypi-username-change%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="[Raspbian]ユーザ名変更の個人的に「正しい」と思うやり方 | 純規の暇人趣味ブログ"></iframe><cite class="hatena-citation"><a href="https://jyn.jp/raspberrypi-username-change/">jyn.jp</a></cite></p><p>すでにpiユーザーを利用しているなら、pi ユーザーのデータファイルをコピー…することもできますが、この方法でコピーすると所有権がrootになってしまうので、その後新規ユーザーで変更ができなくなってしまいました。</p>
-<pre class="code" data-lang="" data-unlink="">$ sudo cp -r /home/pi/* /home/xxx</pre><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20190303184139p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190303/20190303184139.png" title="f:id:s51517765:20190303184139p:plain"/></span><br/>
+<pre class="code" data-lang="" data-unlink="">$ sudo cp -r /home/pi/* /home/xxx</pre><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20190303184139p:plain" class="hatena-fotolife" height="496" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190303/20190303184139.png" title="" width="662"/></span><br/>
 新規ユーザーでログインしてファイルを確認した様子。すべて所有権がrootになっています（所有権の変更が必要になる）。<br/>
 結局、<code>sudo</code>ですべて削除して、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>からuploadし直しました。</p>
 <pre class="code" data-lang="" data-unlink="">$ sudo rm -f xxx</pre><p>これも、すでにpiユーザーで利用していたなら。pipするList (<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>のライブラリ一覧)を取得しておきます。メモ帳にでもコピーしておくか、テキストファイルに書き出して新規ユーザーの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C7%A5%A3%A5%EC%A5%AF%A5%C8">ディレクト</a>リにコピーしておきます。</p>
 <pre class="code" data-lang="" data-unlink="">$ pip3 freeze
 or
-$ pip freeze (python2系)</pre><p>ここまですんだら、新しいユーザーにLoginします。<figure class="figure-image figure-image-fotolife" title="SHターミナル"><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20190224180040j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190224/20190224180040.jpg" title="f:id:s51517765:20190224180040j:plain"/></span><figcaption>SHターミナル</figcaption></figure>なぜかSHモードになっている。いつもの<a class="keyword" href="http://d.hatena.ne.jp/keyword/Bash">Bash</a>に変更する。</p>
+$ pip freeze (python2系)</pre><p>または</p>
+<pre class="code" data-lang="" data-unlink="">$ pip3 freeze &gt; requirements.txt</pre><p>で出力。</p><p>ここまですんだら、新しいユーザーにLoginします。<figure class="figure-image figure-image-fotolife" title="SHターミナル"><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20190224180040j:plain" class="hatena-fotolife" height="481" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190224/20190224180040.jpg" title="" width="534"/></span><figcaption>SHターミナル</figcaption></figure>なぜかSHモードになっている。いつもの<a class="keyword" href="http://d.hatena.ne.jp/keyword/Bash">Bash</a>に変更する。</p>
 <pre class="code" data-lang="" data-unlink="">$ sudo chsh -s /bin/bash xxx</pre><p>（この状態をSHモードであるということにたどり着くまで大変でした。ラズパイのターミナルが似ているけどいつものじゃない…）<br/>
 再起動または再ログインで有効になります。<br/>
 <iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fraspberrypi.stackexchange.com%2Fquestions%2F40166%2Fwhat-does-a-mean-in-the-terminal" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="What does ^[[A mean in the terminal?"></iframe><cite class="hatena-citation"><a href="https://raspberrypi.stackexchange.com/questions/40166/what-does-a-mean-in-the-terminal">raspberrypi.stackexchange.com</a></cite></p><p>sudoユーザーグループに追加する（sudoコマンドがpassword入力なしで実行できるように）</p>
-<pre class="code" data-lang="" data-unlink="">$ sudo gpasswd -a xxx sudo</pre><p>バックアップしておくべきファイルをバックアップしたらpiユーザーを削除します。</p>
+<pre class="code" data-lang="" data-unlink="">$ sudo gpasswd -a xxx sudo</pre><p>新しいアカウントに<code>requirements.txt</code>をコピーし、</p>
+<pre class="code" data-lang="" data-unlink="">$ pip3 install -r requirements.txt</pre><p>で一括インストールできます。</p><br/>
+<p>バックアップしておくべきファイルをバックアップしたらpiユーザーを削除します。</p>
 <pre class="code" data-lang="" data-unlink="">$ sudo userdel -r pi</pre><p>削除できないErrorが発生したときは、Auto Loginをオフに。</p>
 <pre class="code" data-lang="" data-unlink="">$ sudo raspi-config
-&gt;Boot option
-&gt;Desktop/CLI
-&gt;Consple</pre><p><a href="http://sk7z.hatenablog.com/entry/2017/03/14/064939">Raspberry piでpiユーザーを消す時に(user pi is currently used by process )が出たときの対処法 - sk7z’s blog</a></p><p>削除できたととを確認するには 「ユーザーの一覧」を見るという方法があります。</p>
+&gt;System option
+&gt;Boot Auto Login
+&gt;Consple
+# 2021/10/31 更新</pre><p><a href="http://sk7z.hatenablog.com/entry/2017/03/14/064939">Raspberry piでpiユーザーを消す時に(user pi is currently used by process )が出たときの対処法 - sk7zの備忘録</a></p><p>削除できたととを確認するには 「ユーザーの一覧」を見るという方法があります。</p>
 <pre class="code" data-lang="" data-unlink="">$ nano /etc/passwd</pre><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fkazmax.zpp.jp%2Flinux_beginner%2Fetc_passwd.html" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Linux ユーザー一覧の確認と/etc/passwd ファイル"></iframe><cite class="hatena-citation"><a href="https://kazmax.zpp.jp/linux_beginner/etc_passwd.html">kazmax.zpp.jp</a></cite></p><p>ユーザーグループを追加します。</p>
 <pre class="code" data-lang="" data-unlink="">$ sudo usermod -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users,input,netdev,spi,i2c,gpio xxx</pre><p>最後にポート番号を変更します。<br/>
 <a class="keyword" href="http://d.hatena.ne.jp/keyword/ssh">ssh</a> configを開いて、</p>
@@ -65,13 +69,13 @@ reboot   system boot  4.14.34-v7+      Thu Jan  1 09:00 - 22:38 (17959+13:38)
 reboot   system boot  4.14.34-v7+      Thu Jan  1 09:00 - 17:58 (17958+08:58)
 ***** pts/0        ***.**.***.253    Sun Mar  3 16:43 - 17:01  (00:17)
 *****       pts/1        ***.**.***.253    Sat Mar  2 16:38 - 16:38  (00:00)
-***** pts/0        ***.**.***.253    Sat Mar  2 16:14 - 16:39  (00:25)</pre><p><iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Ftakuya-1st.hatenablog.jp%2Fentry%2F20100917%2F1284734237" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="Ｕｎｉｘユーザーのログイン記録を調べて、不正アクセスがないか確認する。  - それマグで！"></iframe><cite class="hatena-citation"><a href="http://takuya-1st.hatenablog.jp/entry/20100917/1284734237">takuya-1st.hatenablog.jp</a></cite></p><p>ログイン失敗の履歴も見れます。</p>
+***** pts/0        ***.**.***.253    Sat Mar  2 16:14 - 16:39  (00:25)</pre><p><iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Ftakuya-1st.hatenablog.jp%2Fentry%2F20100917%2F1284734237" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="Ｕｎｉｘユーザーのログイン記録を調べて、不正アクセスがないか確認する。  - それマグで！"></iframe><cite class="hatena-citation"><a href="http://takuya-1st.hatenablog.jp/entry/20100917/1284734237">takuya-1st.hatenablog.jp</a></cite></p><p>ログイン失敗の履歴も見れます。</p>
 <pre class="code" data-lang="" data-unlink="">$ sudo last -f /var/log/btmp
 
 ***** ssh:notty    ***.**.***.253    Sun Mar  3 16:43    gone - no logout
 ***** ssh:notty    ***.**.***.253    Sun Mar  3 16:43 - 16:43  (00:00)</pre><p>自分でパスワードを間違えた分しか出てきませんでした。<br/>
 <iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Ftakepan%2Fitems%2Fa58b58c95a4d8463460e" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="不正アクセスにイライラする編 - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/takepan/items/a58b58c95a4d8463460e">qiita.com</a></cite></p><p></p><h3>まとめ</h3>最低限のセキュリティ対策として、ユーザー名を変更する方法をまとめました。<br/>
 <a class="keyword" href="http://d.hatena.ne.jp/keyword/SSH">SSH</a> Loginすると、前回のLogin日時が表示されます。変なLoginがないことは確認しておきましょう。（変なことあったことないけど…）<br/>
-<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20190304222551p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190304/20190304222551.png" title="f:id:s51517765:20190304222551p:plain"/></span><p>どこかで、"pi" も結構狙われる、という記事も見たんだけど、adminとかrootがとくに狙われやすいみたいです。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20190304222551p:plain" class="hatena-fotolife" height="497" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20190304/20190304222551.png" title="" width="666"/></span><p>どこかで、"pi" も結構狙われる、という記事も見たんだけど、adminとかrootがとくに狙われやすいみたいです。<br/>
 <iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Fapteryx25%2Fitems%2F5fa4388a351fcec1987e" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="ハニーポットをRaspberry Piで運用してみる - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/apteryx25/items/5fa4388a351fcec1987e">qiita.com</a></cite></p>
 </div>

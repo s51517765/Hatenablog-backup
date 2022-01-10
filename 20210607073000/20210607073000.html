@@ -1,0 +1,121 @@
+<div class="entry-content">
+<div class="section">
+<h3>何もしてないのに壊れたw</h3>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/VirtualBox">VirtualBox</a>の<a class="keyword" href="http://d.hatena.ne.jp/keyword/Ubuntu">Ubuntu</a>を使っていたのですが、突然Login出来なくなりました。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/VirtualBox">VirtualBox</a>と<a class="keyword" href="http://d.hatena.ne.jp/keyword/Vagrant">Vagrant</a>を再インストールしてみたのですがだめで、しかし、<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Ubuntu">Ubuntu</a>自体は立ち上がっているので、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Vagrant">Vagrant</a>の設定が壊れたと解釈し、新しいBoxを作ってみることにしました。</p>
+</div>
+<div class="section">
+<h3>新しい<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B2%BE%C1%DB%A5%DE%A5%B7%A5%F3">仮想マシン</a>の作成</h3>
+<p>こちらの記事をトレースしただけですが簡単にできました。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fwww.kkaneko.jp%2Ftools%2Fvirtualbox%2Fvagrant.html%23S2" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Ubuntu 20.04, 18.04 仮想マシンを作る（Virtual Box, Vagrant を使用）（Windows 上，Ubuntu 上）"></iframe><cite class="hatena-citation"><a href="https://www.kkaneko.jp/tools/virtualbox/vagrant.html#S2">www.kkaneko.jp</a></cite></p><p>適当なフォルダを作り、移動する。</p>
+<pre class="code" data-lang="" data-unlink="">$ mkdir ubuntu64_20
+$ cd ubuntu64_20</pre><p>Vagrantfileをダウンロード</p>
+<pre class="code" data-lang="" data-unlink="">$ vagrant init generic/ubuntu2010</pre><p>ここでVagrantfileをカスタマイズ。（今まで使っていたVagrantfileを参考に修正）</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%B2%BE%C1%DB%A5%DE%A5%B7%A5%F3">仮想マシン</a>を作成</p>
+<pre class="code" data-lang="" data-unlink="">$ vagrant up --provider=virtualbox</pre><p>ここで数分かかります。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/SSH">SSH</a>の設定を確認</p>
+<pre class="code" data-lang="" data-unlink="">$ vagrant ssh-config</pre><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/vagrant">vagrant</a> upして以下でLogin。</p>
+<pre class="code" data-lang="" data-unlink="">id ：vagrant
+pass ：vagrant
+秘密鍵： D:\vagrant\ubuntu64_20\.vagrant\machines\default\virtualbox\private_key</pre><p>前回はvagrantfileで以下を指定していたためにUbuntu18.xxになってしまったと後でわかりました。</p>
+<pre class="code" data-lang="" data-unlink="">  config.vm.box = "ubuntu/bionic64"</pre>
+</div>
+<div class="section">
+<h3>Herokuのセットアップ</h3>
+<p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Fryotaro76%2Fitems%2F6aa9d3187d742eed0325" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Heroku CLI を ubuntuに入れる - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/ryotaro76/items/6aa9d3187d742eed0325">qiita.com</a></cite><br/>
+</p>
+<pre class="code" data-lang="" data-unlink="">$ wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh</pre><p>以下でVerが出ればOK。</p>
+<pre class="code" data-lang="" data-unlink="">heroku --version</pre><p>以下のようにLoginすると、</p>
+<pre class="code" data-lang="" data-unlink="">$ heroku login</pre><p>URLが表示されるので、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>で開き、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%DE%A5%DB">スマホ</a>アプリの認証をします。<code>Logged in as *******@gmail.com</code>のようになればOKです。</p>
+<pre class="code" data-lang="" data-unlink="">vagrant@ubuntu-bionic:~$ heroku login
+heroku: Press any key to open up the browser to login or q to exit:
+Opening browser to https://cli-auth.heroku.com/auth/cli/browser/f523c3ff-8d94-40e3-9e64-6bbd5d5269b3?requestor=S***********************
+ ?   Warning: Cannot open browser.
+Logging in... done
+Logged in as *******@gmail.com
+vagrant@ubuntu-bionic:~$</pre><p>あとはPython3.9など必要なものをインストールします。</p>
+</div>
+<div class="section">
+<h3>vagrantfile</h3>
+<p>参考にすべきかどうかはわかりませんがvagrantfileはこんな感じです。<br/>
+<code>#</code>は<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%E1%A5%F3%A5%C8%A5%A2%A5%A6%A5%C8">コメントアウト</a>ですのでなくてもいいはず。</p>
+<pre class="code" data-lang="" data-unlink=""># -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+Vagrant.configure("2") do |config|
+  # The most common configuration options are documented and commented below.
+  # For a complete reference, please see the online documentation at
+  # https://docs.vagrantup.com.
+
+  # Every Vagrant development environment requires a box. You can search for
+  # boxes at https://vagrantcloud.com/search.
+  config.vm.box = "generic/ubuntu2010"
+
+  # Disable automatic box update checking. If you disable this, then
+  # boxes will only be checked for updates when the user runs
+  # `vagrant box outdated`. This is not recommended.
+  # config.vm.box_check_update = false
+
+  # Create a forwarded port mapping which allows access to a specific port
+  # within the machine from a port on the host machine. In the example below,
+  # accessing "localhost:8080" will access port 80 on the guest machine.
+  # NOTE: This will enable public access to the opened port
+  config.vm.network "forwarded_port", guest: 8000, host: 8000
+
+  # Create a forwarded port mapping which allows access to a specific port
+  # within the machine from a port on the host machine and only allow access
+  # via 127.0.0.1 to disable public access
+  # config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
+
+  # Create a private network, which allows host-only access to the machine
+  # using a specific IP.
+  # config.vm.network "private_network", ip: "192.168.33.10"
+
+  # Create a public network, which generally matched to bridged network.
+  # Bridged networks make the machine appear as another physical device on
+  # your network.
+  # config.vm.network "public_network"
+
+  # Share an additional folder to the guest VM. The first argument is
+  # the path on the host to the actual folder. The second argument is
+  # the path on the guest to mount the folder. And the optional third
+  # argument is a set of non-required options.
+  # config.vm.synced_folder "../data", "/vagrant_data"
+  config.vm.synced_folder "./workspace", "/home/vagrant/workspace"
+  config.vm.provider :virtualbox do |vb|
+    vb.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate//home/vagrant/workspace","1"]
+  end
+  # Provider-specific configuration so you can fine-tune various
+  # backing providers for Vagrant. These expose provider-specific options.
+  # Example for VirtualBox:
+  #
+  config.vm.provider "virtualbox" do |vb|
+  #   # Display the VirtualBox GUI when booting the machine
+  #   vb.gui = true
+  #
+  #   # Customize the amount of memory on the VM:
+   vb.memory = "2048"
+  end
+  #
+  # View the documentation for the provider you are using for more
+  # information on available options.
+
+  # Enable provisioning with a shell script. Additional provisioners such as
+  # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
+  # documentation for more information about their specific syntax and use.
+  # config.vm.provision "shell", inline: &lt;&lt;-SHELL
+  #   apt-get update
+  #   apt-get install -y apache2
+  # SHELL
+end</pre><p>Vagrantfileについては以下が参考になりました。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fyukiyan.hatenablog.jp%2Fentry%2F2015%2F05%2F08%2F092100" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="初期状態のVagrantfileのコメントアウト部分を読む - 雑なメモ"></iframe><cite class="hatena-citation"><a href="https://yukiyan.hatenablog.jp/entry/2015/05/08/092100">yukiyan.hatenablog.jp</a></cite></p>
+</div>
+<div class="section">
+<h3>まとめ</h3>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/VirtualBox">VirtualBox</a>の仮想環境として<a class="keyword" href="http://d.hatena.ne.jp/keyword/Ubuntu">Ubuntu</a>を作り直しました。<br/>
+せっかくなのでUbuntu20.xxにしました。</p><p>ところでPython3.9の次は4なのでしょうか？3.10なのでしょうか？</p>
+</div>
+</div>

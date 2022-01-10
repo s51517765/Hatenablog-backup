@@ -1,0 +1,65 @@
+<div class="entry-content">
+<p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210613181336p:plain" class="hatena-fotolife" height="498" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210613/20210613181336.png" title="" width="828"/></span></p>
+<div class="section">
+<h3>ラズパイで<a class="keyword" href="http://d.hatena.ne.jp/keyword/NAS">NAS</a>を構築しました。</h3>
+<p>家で複数のPCを使っていると、あっちのPCのあのデータが…、ということがたまにあります。<br/>
+ネットワーク対応のハードディスク（<a class="keyword" href="http://d.hatena.ne.jp/keyword/NAS">NAS</a>）を買って、とかも少し考えましたがヘビーに使うわけではないので小さな<a class="keyword" href="http://d.hatena.ne.jp/keyword/NAS">NAS</a>をラズパイで構築してみることにしました。<br/>
+ラズパイはこのためにもう一台立ち上げようかとも考えましたが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>のサーバーに相乗りさせることにしました。</p><p>こちらの記事を大いに参考にしました。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fwww.itmedia.co.jp%2Fnews%2Farticles%2F2002%2F09%2Fnews012.html" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="ラズパイで自宅ファイルサーバを作る"></iframe><cite class="hatena-citation"><a href="https://www.itmedia.co.jp/news/articles/2002/09/news012.html">www.itmedia.co.jp</a></cite><br/>
+</p>
+</div>
+<div class="section">
+<h3>工程 じゃ～～～～～ん</h3>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>でUSBを<a class="keyword" href="http://d.hatena.ne.jp/keyword/NTFS">NTFS</a>でフォーマットしたら、ラズパイに接続しラズパイを再起動します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210613181907j:plain" class="hatena-fotolife" height="694" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210613/20210613181907.jpg" title="" width="336"/></span><br/>
+Userフォルダの２つ上の階層（ルートフォルダ）にmediaというフォルダがあります。<br/>
+これが外付けメモリです。</p>
+<pre class="code" data-lang="" data-unlink="">$ ls /
+&gt;&gt;&gt; media ...</pre><p>ここに共有フォルダを作ります。ここでは<code>samba</code>とします。</p>
+<pre class="code" data-lang="" data-unlink="">$ mkdir /media/samba</pre><p>フォルダのアクセス権を設定します。ここでは雑に777とします。</p>
+<pre class="code" data-lang="" data-unlink="">$ sudo chmod 777 /media/samba</pre><p>ますSambaをインストールします。</p>
+<pre class="code" data-lang="" data-unlink="">$ sudo apt install samba samba-common-bin</pre><p>途中、WINS（<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a> Internet Name Service）について確認が求められますが、Windows10ではNoで良いらしいです。</p><p>つぎにsambaの設定をします。<br/>
+一応もとの設定ファイルをバックアップしておきます。</p>
+<pre class="code" data-lang="" data-unlink="">$ sudo cp /etc/samba/smb.conf /etc/samba/smb.conf_backup210612</pre><p>一番最後に以下を記入します。</p>
+<pre class="code" data-lang="" data-unlink="">[raspberry_pi3]
+path = /media/samba
+public = yes
+read only = no
+browsable = yes
+force user = xxx</pre><p>home以下、いつものフォルダの下に作るときは<code>path = /home/xxx/samba</code>のようにします。<br/>
+pathはラズパイ上の共有したいフォルダですが、この設定の仕方はフルパスにするほうが間違いがないです。<br/>
+ラズパイで共有設定したいフォルダに移動（cd）してここで、<code>pwd</code>で表示されたフォルダパスを記入すると間違いないです。<br/>
+ここで[raspberry_pi3]は<a class="keyword" href="http://d.hatena.ne.jp/keyword/windows">windows</a>から見たときに表示したいフォルダ名になります。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210613180353j:plain" class="hatena-fotolife" height="677" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210613/20210613180353.jpg" title="" width="1200"/></span><br/>
+force user はこのフォルダにアクセスする権限を設定します。通常はいつもラズパイにログインしているUser名でいいと思います。</p><p>sambaを再起動します。</p>
+<pre class="code" data-lang="" data-unlink="">$ sudo systemctl restart smbd</pre><p>これで<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>からラズパイの<a class="keyword" href="http://d.hatena.ne.jp/keyword/IP%A5%A2%A5%C9%A5%EC%A5%B9">IPアドレス</a>にアクセスすると<code>/media/samba</code>が見えるはずです。<br/>
+始めてアクセスするとき、IDとPassを聞かれます。いつものラズパイにLoginしているときのモノを入力します。</p><p>環境によって？フォルダは見えるけどアクセスできない、という場合があります。<br/>
+このときは↓を参考に「SMBのクライアントを有効化」する必要があります。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210613180537j:plain" class="hatena-fotolife" height="694" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210613/20210613180537.jpg" title="" width="696"/></span><br/>
+<a href="https://www.iodata.jp/pdf/win10_smb1.pdf">https://www.iodata.jp/pdf/win10_smb1.pdf</a><br/>
+</p>
+</div>
+<div class="section">
+<h3>速度を測定してみる</h3>
+<p>比較として、SDカード（OSが入っているドライブ）に共有フォルダを設定して転送速度を測定してみました。</p>
+<figure class="figure-image figure-image-fotolife" title="上図:USBメモリ、下図:SDカード、若干SDカードが速い？"><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210613180943p:plain" class="hatena-fotolife" height="730" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210613/20210613180943.png" title="" width="562"/></span><figcaption>上図:<a class="keyword" href="http://d.hatena.ne.jp/keyword/USB%A5%E1%A5%E2%A5%EA">USBメモリ</a>、下図:SDカード、若干SDカードが速い？</figcaption></figure><p>SDカードのほうが若干速いようですが、どちらでも普通に使う分には十分な速度が出ているといえるのではないでしょうか。</p><p><code>dd</code>コマンドも見てみます。</p>
+<pre class="code" data-lang="" data-unlink="">$ dd bs=1M count=100 if=/dev/zero of=/media/samba/disktest oflag=direct
+st oflag=direct
+100+0 records in
+100+0 records out
+104857600 bytes (105 MB, 100 MiB) copied, 13.0413 s, 8.0 MB/s
+
+$ dd bs=1M count=100 if=/dev/zero of=/home/xxx/samba/disktest oflag=direct
+100+0 records in
+100+0 records out
+104857600 bytes (105 MB, 100 MiB) copied, 19.8014 s, 5.3 MB/s</pre><p>こちらでは<a class="keyword" href="http://d.hatena.ne.jp/keyword/USB%A5%E1%A5%E2%A5%EA">USBメモリ</a>のほうが速いという結果です。<br/>
+トータルでは大差ないということでしょう。</p>
+</div>
+<div class="section">
+<h3>まとめ</h3>
+<p>Smabaを設定して共有サーバーをラズパイに設定しました。<br/>
+今回、共有フォルダを<a class="keyword" href="http://d.hatena.ne.jp/keyword/USB%A5%E1%A5%E2%A5%EA">USBメモリ</a>に設定しました。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/USB%A5%E1%A5%E2%A5%EA">USBメモリ</a>に設定するとSDカードに対して速度的には若干のデメリットがある場合がありますが、OSが書き込まれているSDカードに読み書きの負荷を増やすのは寿命に影響しそうなので別のストレージを設定しました。<br/>
+ラズパイのバックアップストレージとしても活用できそうです。</p>
+</div>
+</div>

@@ -1,0 +1,140 @@
+<div class="entry-content">
+<div class="section">
+<h3>ロータリーエンコーダなるものを試してみた</h3>
+<p></p><blockquote class="twitter-tweet" data-conversation="none" data-lang="ja"><p dir="ltr" lang="ja"><a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>でロータリーエンコーダを使ってみた。 <a href="https://t.co/j7kxPiki4U">pic.twitter.com/j7kxPiki4U</a></p>— とりてん (@s51517765) <a href="https://twitter.com/s51517765/status/1474709318478200832?ref_src=twsrc%5Etfw">2021年12月25日</a></blockquote> <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script> <p>ロータリーエンコーダとは回転数や角度、回転速度等を電気信号を用いて測定できるものです。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211225205435p:plain" class="hatena-fotolife" height="623" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211225/20211225205435.png" title="" width="455"/></span><br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AA%A5%B7%A5%ED%A5%B9%A5%B3%A1%BC%A5%D7">オシロスコープ</a>のレンジ調整つまみなどに使われていて、可変抵抗と似ていますがどちらの方向にも無限に回すことが出来ます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211225205557j:plain" class="hatena-fotolife" height="281" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211225/20211225205557.jpg" title="" width="602"/></span><br/>
+ロータリーエンコーダの仕組みは2つの信号をが位相がずれて出力されることで、一回転を4分割することでその位相を検出します。<br/>
+位相を4分解で取得することで回転数や角度、回転速度等を検出することが出来ます。</p><p>今回は、いらなくなったマウスのホイール部分からロータリーエンコーダを取り出して<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>で読み取ってみました。<br/>
+あらかじめ分解前にその出力を<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AA%A5%B7%A5%ED%A5%B9%A5%B3%A1%BC%A5%D7">オシロスコープ</a>で観測することで、A/B出力、電源、GNDを確認しました。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211225210003j:plain" class="hatena-fotolife" height="1200" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211225/20211225210003.jpg" title="" width="900"/></span><br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211225210027p:plain" class="hatena-fotolife" height="1200" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211225/20211225210027.png" title="" width="971"/></span></p><p>これを基板上に再構成しました。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211225210431p:plain" class="hatena-fotolife" height="676" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211225/20211225210431.png" title="" width="1199"/></span><br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211225221930p:plain" class="hatena-fotolife" height="600" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211225/20211225221930.png" title="" width="800"/></span><br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AA%A5%B7%A5%ED%A5%B9%A5%B3%A1%BC%A5%D7">オシロスコープ</a>では出力がうまく取れても<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>ではうまく出力が取れなくて、A/B出力を両方ともプルダウンすることでうまくいきました。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AA%A5%B7%A5%ED%A5%B9%A5%B3%A1%BC%A5%D7">オシロスコープ</a>と<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>の入力<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A4%A5%F3%A5%D4%A1%BC%A5%C0%A5%F3%A5%B9">インピーダンス</a>の違いによる差だと思います。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>でロータリーエンコーダの位相を取得するには、2つのdigital入力のHigh or Lowの組み合わせで4つの状態(state)を検出します。</p>
+<pre class="code lang-c" data-lang="c" data-unlink="">a = <span class="synIdentifier">digitalRead</span>(pinA); 
+b = <span class="synIdentifier">digitalRead</span>(pinB);
+
+<span class="synType">int</span> <span class="synIdentifier">get_state</span>(<span class="synType">int</span> a, <span class="synType">int</span> b) {
+  <span class="synType">int</span> state;
+  <span class="synStatement">if</span> (a == <span class="synConstant">1</span> &amp;&amp; b == <span class="synConstant">0</span>)state = <span class="synConstant">1</span>;
+  <span class="synStatement">else</span> <span class="synStatement">if</span> (a == <span class="synConstant">1</span> &amp;&amp; b == <span class="synConstant">1</span>)state = <span class="synConstant">2</span>;
+  <span class="synStatement">else</span> <span class="synStatement">if</span> (a == <span class="synConstant">0</span> &amp;&amp; b == <span class="synConstant">1</span>)state = <span class="synConstant">3</span>;
+  <span class="synStatement">else</span> state = <span class="synConstant">0</span>;
+
+  <span class="synStatement">return</span> state;
+}
+</pre><p>これが正回転か逆回転かは、前の状態(state)をprevとして保存しておいて現在の状態と比較します。<br/>
+これによってカウントを動かしていきます。<br/>
+状態は4つなので、正回転であれば0→1 or 1→2 or 2→3 or 3→4 or 4→0となります(<a class="keyword" href="http://d.hatena.ne.jp/keyword/vice%20versa">vice versa</a>)。<br/>
+ただし、どちらがどちら回転かはやってみないとわからないのでここでいう正・逆はとくに拘ることでもないです。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synStatement">if</span> (prev == state + <span class="synConstant">1</span> || prev == state - <span class="synConstant">3</span>)count += <span class="synConstant">1</span>;
+<span class="synStatement">else</span> <span class="synStatement">if</span> (prev == state - <span class="synConstant">1</span> || prev == state + <span class="synConstant">3</span>)count -= <span class="synConstant">1</span>;
+</pre><p>これで、回転数等を測ることはできますが、せっかくなので<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B8%AB%A4%A8%A4%EB%B2%BD">見える化</a>してみます。<br/>
+LEDを5つ表示灯としてつけてみました。<br/>
+ちなみに4つであれば、ロータリーエンコーダの4つの状態にLEDを当てはめると簡単にできてしまいますのであえて5つにし、countを5で割った”余り”でLEDを制御します。</p>
+</div>
+<div class="section">
+<h3>まとめ</h3>
+<p>マウスから取り出したロータリーエンコーダを<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>で使ってみました。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synType">const</span> <span class="synType">int</span> pinA = <span class="synConstant">2</span>;
+<span class="synType">const</span> <span class="synType">int</span> pinB = <span class="synConstant">3</span>;
+<span class="synType">int</span> a, b, state, prev;
+<span class="synType">const</span> <span class="synType">int</span> LED0 = A0;
+<span class="synType">const</span> <span class="synType">int</span> LED1 = A1;
+<span class="synType">const</span> <span class="synType">int</span> LED2 = A2;
+<span class="synType">const</span> <span class="synType">int</span> LED3 = A3;
+<span class="synType">const</span> <span class="synType">int</span> LED4 = A4;
+
+<span class="synType">void</span> <span class="synIdentifier">setup</span>() {
+  <span class="synIdentifier">pinMode</span>(pinA, INPUT);
+  <span class="synIdentifier">pinMode</span>(pinB, INPUT);
+  <span class="synIdentifier">pinMode</span>(LED0, OUTPUT);
+  <span class="synIdentifier">pinMode</span>(LED1, OUTPUT);
+  <span class="synIdentifier">pinMode</span>(LED2, OUTPUT);
+  <span class="synIdentifier">pinMode</span>(LED3, OUTPUT);
+  <span class="synIdentifier">pinMode</span>(LED4, OUTPUT);
+  Serial.<span class="synIdentifier">begin</span>(<span class="synConstant">9600</span>);
+}
+
+<span class="synType">void</span> <span class="synIdentifier">LED</span>(<span class="synType">unsigned</span> <span class="synType">int</span> count) {
+  <span class="synStatement">switch</span> (count % <span class="synConstant">5</span>) {
+    <span class="synStatement">case</span> <span class="synConstant">0</span>:
+      <span class="synIdentifier">digitalWrite</span>(LED0, HIGH);
+      <span class="synIdentifier">digitalWrite</span>(LED1, LOW);
+      <span class="synIdentifier">digitalWrite</span>(LED2, LOW);
+      <span class="synIdentifier">digitalWrite</span>(LED3, LOW);
+      <span class="synIdentifier">digitalWrite</span>(LED4, LOW);
+      <span class="synStatement">break</span>;
+    <span class="synStatement">case</span> <span class="synConstant">1</span>:
+      <span class="synIdentifier">digitalWrite</span>(LED0, LOW);
+      <span class="synIdentifier">digitalWrite</span>(LED1, HIGH);
+      <span class="synIdentifier">digitalWrite</span>(LED2, LOW);
+      <span class="synIdentifier">digitalWrite</span>(LED3, LOW);
+      <span class="synIdentifier">digitalWrite</span>(LED4, LOW);
+      <span class="synStatement">break</span>;
+    <span class="synStatement">case</span> <span class="synConstant">2</span>:
+      <span class="synIdentifier">digitalWrite</span>(LED0, LOW);
+      <span class="synIdentifier">digitalWrite</span>(LED1, LOW);
+      <span class="synIdentifier">digitalWrite</span>(LED2, HIGH);
+      <span class="synIdentifier">digitalWrite</span>(LED3, LOW);
+      <span class="synIdentifier">digitalWrite</span>(LED4, LOW);
+      <span class="synStatement">break</span>;
+    <span class="synStatement">case</span> <span class="synConstant">3</span>:
+      <span class="synIdentifier">digitalWrite</span>(LED0, LOW);
+      <span class="synIdentifier">digitalWrite</span>(LED1, LOW);
+      <span class="synIdentifier">digitalWrite</span>(LED2, LOW);
+      <span class="synIdentifier">digitalWrite</span>(LED3, HIGH);
+      <span class="synIdentifier">digitalWrite</span>(LED4, LOW);
+      <span class="synStatement">break</span>;
+    <span class="synStatement">case</span> <span class="synConstant">4</span>:
+      <span class="synIdentifier">digitalWrite</span>(LED0, LOW);
+      <span class="synIdentifier">digitalWrite</span>(LED1, LOW);
+      <span class="synIdentifier">digitalWrite</span>(LED2, LOW);
+      <span class="synIdentifier">digitalWrite</span>(LED3, LOW);
+      <span class="synIdentifier">digitalWrite</span>(LED4, HIGH);
+      <span class="synStatement">break</span>;
+  }
+}
+
+<span class="synType">int</span> <span class="synIdentifier">get_state</span>(<span class="synType">int</span> a, <span class="synType">int</span> b) {
+  <span class="synType">int</span> state;
+  <span class="synStatement">if</span> (a == <span class="synConstant">1</span> &amp;&amp; b == <span class="synConstant">0</span>)state = <span class="synConstant">1</span>;
+  <span class="synStatement">else</span> <span class="synStatement">if</span> (a == <span class="synConstant">1</span> &amp;&amp; b == <span class="synConstant">1</span>)state = <span class="synConstant">2</span>;
+  <span class="synStatement">else</span> <span class="synStatement">if</span> (a == <span class="synConstant">0</span> &amp;&amp; b == <span class="synConstant">1</span>)state = <span class="synConstant">3</span>;
+  <span class="synStatement">else</span> state = <span class="synConstant">0</span>;
+
+  Serial.<span class="synIdentifier">print</span>(a);
+  Serial.<span class="synIdentifier">print</span>(<span class="synConstant">","</span>);
+  Serial.<span class="synIdentifier">print</span>(b);
+  Serial.<span class="synIdentifier">print</span>(<span class="synConstant">","</span>);
+  Serial.<span class="synIdentifier">println</span>(state);
+
+  <span class="synStatement">return</span> state;
+}
+
+<span class="synType">unsigned</span> <span class="synType">int</span> count = <span class="synConstant">1</span> &lt;&lt; <span class="synConstant">14</span>;
+<span class="synType">void</span> <span class="synIdentifier">loop</span>() {
+  a = <span class="synIdentifier">digitalRead</span>(pinA);
+  b = <span class="synIdentifier">digitalRead</span>(pinB);
+  state = <span class="synIdentifier">get_state</span>(a, b);
+
+  <span class="synStatement">if</span> (prev == state + <span class="synConstant">1</span> || prev == state - <span class="synConstant">3</span>)count += <span class="synConstant">1</span>;
+  <span class="synStatement">else</span> <span class="synStatement">if</span> (prev == state - <span class="synConstant">1</span> || prev == state + <span class="synConstant">3</span>)count -= <span class="synConstant">1</span>;
+
+  <span class="synComment">//Serial.println(count);</span>
+
+  <span class="synIdentifier">LED</span>(count );
+  prev = state;
+}
+</pre>
+</div>
+<div class="section">
+<h3>P.S.</h3>
+<p>実は、最初これとは異なるマウスから取ったロータリーエンコーダを動かそうと試したのですが結局仕組みがよくわかりませんでした。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211225212359p:plain" class="hatena-fotolife" height="676" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211225/20211225212359.png" title="" width="1199"/></span><br/>
+こちらはLEDのアノード・カソードと回転するスリット、エンコーダの電源とA/B出力？と思われるピンが3本あるのですがまた違う方式のようです。</p>
+</div>
+</div>

@@ -1,0 +1,80 @@
+<div class="entry-content">
+<div class="section">
+<h3>ラズパイはアナログ入力がない</h3>
+<p>アナログ入力とはGPIOで電圧値を0~1023(10bit)や0~4096(12bit)といった値で受け取る機能です。<br/>
+これに対してHigh or Lowまたは1 or 0という2値をとるのをデジタル入力といいます。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>やESP32ではこのどちらも使うことが出来ますが、ラズパイではアナログ入力はありません。</p><p>このためアナログ入力を数値に変換してラズパイに渡すパーツを使う必要があります。<br/>
+このようなパーツをAD（Analog - digital）コンバータといいます。</p><p></p><div class="hatena-asin-detail"><a class="hatena-asin-detail-image-link" href="https://www.amazon.co.jp/exec/obidos/ASIN/B08XJX53M7/shirotoakb-22/" rel="noopener" target="_blank"><img alt="Microchip 10ビット ADコンバータ SPI 8ピン PDIP MCP3002-I/P 2個" class="hatena-asin-detail-image" src="https://m.media-amazon.com/images/I/31FY+B080RL._SL500_.jpg" title="Microchip 10ビット ADコンバータ SPI 8ピン PDIP MCP3002-I/P 2個"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/B08XJX53M7/shirotoakb-22/" rel="noopener" target="_blank">Microchip 10ビット ADコンバータ SPI 8ピン PDIP MCP3002-I/P 2個</a></p><ul class="hatena-asin-detail-meta"><li>Microchip Technology</li></ul><a class="asin-detail-buy" href="https://www.amazon.co.jp/exec/obidos/ASIN/B08XJX53M7/shirotoakb-22/" rel="noopener" target="_blank">Amazon</a></div></div><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fakizukidenshi.com%2Fcatalog%2Fg%2FgI-02584%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="１０ｂｉｔ　２ｃｈ　ＡＤコンバータ　ＭＣＰ３００２−Ｉ／Ｐ: 半導体(モジュール) 秋月電子通商-電子部品・ネット通販"></iframe><cite class="hatena-citation"><a href="https://akizukidenshi.com/catalog/g/gI-02584/">akizukidenshi.com</a></cite><p>抜き差ししたりブレッドボード上で使うときはソケットもあったほうがいいです。<br/>
+ないと、ブレッドボード上でぐらぐらする場合があります。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211106165911p:plain" class="hatena-fotolife" height="523" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211106/20211106165911.png" title="" width="1200"/></span><br/>
+ちなみに丸ピンと平ピンがありますが、よく抜き差しするなら丸ピンのほうがいいらしいです（<a class="keyword" href="http://d.hatena.ne.jp/keyword/%BD%A9%B7%EE%C5%C5%BB%D2">秋月電子</a>店員談）。<br/>
+<a href="https://akizukidenshi.com/catalog/g/gP-00035/">丸ピンＩＣソケット （ ８Ｐ）: パーツ一般 秋月電子通商-電子部品・ネット通販</a><br/>
+<a href="https://akizukidenshi.com/catalog/g/gP-00017/">ＩＣソケット （ ８Ｐ） （１０個入）: パーツ一般 秋月電子通商-電子部品・ネット通販</a></p><br/>
+<p>ラズパイで10bitのADコンバータＭＣＰ３００２－Ｉ／Ｐを使ってみたので<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>での使い方を紹介します。</p>
+</div>
+<div class="section">
+<h3>SPIを有効にする</h3>
+<p>このようなADコンバータはSPIというシリアル通信を使います。シリアル通信は他にI2CやUARTといったものがあります。<br/>
+シリアル通信は雑に説明すると、HighとLowの信号の組み合わせで決まったパターンを送受信することでバイナリを送るようなイメージです。</p><p>ラズパイではraspi-configからInterface Option ￥ SPI  を選択し「はい」を設定します。</p>
+<pre class="code" data-lang="" data-unlink="">$ sudo raspi-config</pre>
+</div>
+<div class="section">
+<h3>回路</h3>
+<p>実験用回路として以下のようなものを用意しました。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211030221155p:plain" class="hatena-fotolife" height="600" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211030/20211030221155.png" title="" width="800"/></span><br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211030221303p:plain" class="hatena-fotolife" height="1017" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211030/20211030221303.png" title="" width="1199"/></span></p><p>ちなみに、この可変抵抗をブレッドボードにさせるものは<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>でア<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A4%A5%C7%A5%A2">イデア</a>を見つけてマネしました。</p><blockquote class="twitter-tweet" data-conversation="none" data-lang="ja"><p dir="ltr" lang="ja">ボタンはそのままでも一応ブレッドボードに刺さるんだけど、安定しないのでユニバーサル基板の切れ端に乗っけてやった。 <a href="https://t.co/x0cTls2v4Z">pic.twitter.com/x0cTls2v4Z</a></p>— 散散満／阿部市英夫 (@til_til_mitil) <a href="https://twitter.com/til_til_mitil/status/1370929605989732356?ref_src=twsrc%5Etfw">2021年3月14日</a></blockquote> <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script> <p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211030221438p:plain" class="hatena-fotolife" height="676" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211030/20211030221438.png" title="" width="1199"/></span><br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211030221451p:plain" class="hatena-fotolife" height="676" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211030/20211030221451.png" title="" width="1199"/></span><br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211030221511p:plain" class="hatena-fotolife" height="676" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211030/20211030221511.png" title="" width="1199"/></span><br/>
+裏側はピンを片方しか敢えてつけなかったのですが、するとバランスが悪く安定しないので、紫外線硬化樹脂やスポンジで足を付けました。</p>
+</div>
+<div class="section">
+<h3>結果</h3>
+<p>抵抗を動かすと↓のように出力が変化することが確認できました。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211030221634j:plain" class="hatena-fotolife" height="498" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211030/20211030221634.jpg" title="" width="663"/></span><br/>
+</p>
+</div>
+<div class="section">
+<h3>コード</h3>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synComment"># coding: utf-8</span>
+
+<span class="synPreProc">import</span> spidev
+<span class="synPreProc">import</span> RPi.GPIO <span class="synStatement">as</span> GPIO
+<span class="synPreProc">import</span> time
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(<span class="synConstant">17</span>, GPIO.OUT)
+GPIO.setup(<span class="synConstant">22</span>, GPIO.OUT)
+
+spi = spidev.SpiDev()
+spi.open(<span class="synConstant">0</span>, <span class="synConstant">0</span>)
+spi.max_speed_hz = <span class="synConstant">1000000</span>
+spi.bits_per_word = <span class="synConstant">8</span>
+
+dummy = <span class="synConstant">0xff</span>
+start = <span class="synConstant">0x47</span>
+sgl = <span class="synConstant">0x20</span>
+ch0 = <span class="synConstant">0x00</span>
+msbf = <span class="synConstant">0x08</span>
+
+<span class="synStatement">def</span> <span class="synIdentifier">measure</span>(ch):
+    ad = spi.xfer2([(start + sgl + ch + msbf), dummy])
+    val = ((ad[<span class="synConstant">0</span>] &amp; <span class="synConstant">0x03</span>) &lt;&lt; <span class="synConstant">8</span>) + ad[<span class="synConstant">1</span>]
+    <span class="synStatement">return</span> val
+
+<span class="synStatement">while</span> (<span class="synIdentifier">True</span>):
+    AD0 = measure(ch0)
+    <span class="synIdentifier">print</span>(AD0)
+    time.sleep(<span class="synConstant">1</span>)
+</pre>
+</div>
+<div class="section">
+<h3>まとめ</h3>
+<p>ラズパイでADコンバータの出力を取得してみました。<br/>
+センサーによってはアナログ出力で値が出てくるものがあってラズパイではこのようにADコンバータを使う必要があります。<br/>
+また、ADコンバータには出力分解能が12bitのものや4系統出力のものなどもあります。<br/>
+ちなみにADコンバータは内部的には基準電圧を複数保持してこれと比較したり、バ<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A4%A5%CA%A5%EA%A5%B5%A1%BC%A5%C1">イナリサーチ</a>的に変更しながら入力電圧と比較して値を取得しているそうです。<br/>
+MCP3002はデータシートによると逐次比較型のようです。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fwww.rohm.co.jp%2Felectronics-basics%2Fad-converters" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="A/Dコンバータとは？ | エレクトロニクス豆知識 | ローム株式会社 - ROHM Semiconductor"></iframe><cite class="hatena-citation"><a href="https://www.rohm.co.jp/electronics-basics/ad-converters">www.rohm.co.jp</a></cite><br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FSuccessive-approximation_ADC" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Successive-approximation ADC - Wikipedia"></iframe><cite class="hatena-citation"><a href="https://en.wikipedia.org/wiki/Successive-approximation_ADC">en.wikipedia.org</a></cite></p>
+</div>
+</div>

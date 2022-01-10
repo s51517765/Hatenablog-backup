@@ -1,0 +1,66 @@
+<div class="entry-content">
+<div class="section">
+<h3>FormでKeybordからの入力を受け取りたい</h3>
+<p>KeyDown（またはKeyUp、KeyPresでも可）イベントを使うと、例えば「Ctrl」+「s」のようなキー入力コマンドを受け取ることが出来ます。<br/>
+これをうまく使うと隠しコマンドのようなものを作ることが出来ます。<br/>
+これが何が便利かというと、ボタンなどを設置しないので、特定のキーの組み合わせの入力を知っている人だけが実行できるイベント（管理者向けイベント）を作ることが出来ます。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">private</span> <span class="synType">void</span> textBox1_KeyDown(<span class="synType">object</span> sender, KeyEventArgs e)
+{
+    <span class="synComment">// 下がったキーがCtrlキー + S の場合</span>
+    <span class="synStatement">if</span> (e.KeyCode == Keys.S &amp;&amp; e.Control == <span class="synConstant">true</span>)
+    {
+    }
+}
+</pre><p>テキストボックスなどは、このようにします。<br/>
+<code>textBox1_KeyDown</code>イベントは、textBox1がアクティブの時のみ有効です。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">private</span> <span class="synType">void</span> Form1_KeyDown(<span class="synType">object</span> sender, KeyEventArgs e)
+{
+    <span class="synComment">// 下がったキーがCtrlキー + S の場合</span>
+    <span class="synStatement">if</span> (e.KeyCode == Keys.S &amp;&amp; e.Control == <span class="synConstant">true</span>)
+    {
+    }
+}
+</pre><p>しかし、Formで受け取りたいときは、これだけではうまくいきません。<br/>
+<code>KeyPreview</code>をTrueにしなければなりません。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210725184919p:plain" class="hatena-fotolife" height="486" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210725/20210725184919.png" title="" width="430"/></span></p><p>しかしこのとき、すべての<code>KeyDown</code>をいったんFormで受け取ることになります。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Javascript">Javascript</a>での親要素へのイベントプロパゲーションのような感じです。<br/>
+以下のようにtextBox1に<code>KeyDown</code>を設定してもFormにも<code>KeyDown</code>が設定されていると、textBox1で<code>KeyDown</code>をしてもtextBox1とFormの両方が受け取ることになります。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">private</span> <span class="synType">void</span> textBox1_KeyDown(<span class="synType">object</span> sender, KeyEventArgs e)
+{
+
+}
+</pre><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fdobon.net%2Fvb%2Fdotnet%2Fform%2Fkeypreview.html" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="KeyPressなどのキーイベントをすべてフォームが受け取るようにする"></iframe><cite class="hatena-citation"><a href="https://dobon.net/vb/dotnet/form/keypreview.html">dobon.net</a></cite><br/>
+</p>
+</div>
+<div class="section">
+<h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D5%A5%A1%A5%DF%A5%B3%A5%F3">ファミコン</a>の隠しコマンドっぽいものとか</h3>
+<p>以下のようにすると、「Ctrl」を押したまま「S」「D」「A」と押したときのみ発火します。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">int</span> state = <span class="synConstant">0</span>;
+<span class="synType">private</span> <span class="synType">void</span> Form1_KeyDown(<span class="synType">object</span> sender, KeyEventArgs e)
+{
+    <span class="synComment">// 下がったキーがCtrlキー + S の場合</span>
+    <span class="synStatement">if</span> (state == <span class="synConstant">0</span> &amp;&amp; e.KeyCode == Keys.S &amp;&amp; e.Control == <span class="synConstant">true</span>)
+    {
+        state += <span class="synConstant">1</span>;
+    }
+    <span class="synStatement">if</span> (state == <span class="synConstant">1</span> &amp;&amp; e.KeyCode == Keys.D &amp;&amp; e.Control == <span class="synConstant">true</span>)
+    {
+        state += <span class="synConstant">1</span>;
+    }
+    <span class="synStatement">if</span> (state == <span class="synConstant">2</span> &amp;&amp; e.KeyCode == Keys.A &amp;&amp; e.Control == <span class="synConstant">true</span>)
+    {
+        MessageBox.Show(<span class="synConstant">"Congratulations!"</span>);
+    }
+}
+
+<span class="synType">private</span> <span class="synType">void</span> Form1_KeyUp(<span class="synType">object</span> sender, KeyEventArgs e)
+{
+    <span class="synComment">// 上がったキーがCtrlキーの場合</span>
+    <span class="synStatement">if</span> (e.KeyCode == Keys.ControlKey)
+    {
+        state = <span class="synConstant">0</span>;
+    }
+}
+</pre>
+</div>
+</div>

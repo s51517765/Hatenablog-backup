@@ -1,0 +1,81 @@
+<div class="entry-content">
+<div class="section">
+<h3>Herokuでアプリを動かしてみたい</h3>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>にはFlaskという使いやすいサーバーモジュールがあります。<br/>
+これを用いてサーバーを構築してみたいと思いました。<br/>
+ラズパイなどで構築する方法もありますが、（家の）外部からのアクセスを考えるとサーバーレスのほうがいいと思い、Herokuと<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>で構築を試してみることにしました。</p>
+</div>
+<div class="section">
+<h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/Ubuntu">Ubuntu</a>に<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>の別Versionをインストールする</h3>
+<p>Heroku上の<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>は2021年5月現在、デフォルトは<code>3.9.5</code>です。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>では<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>のVersionとモジュールのVersionが依存関係が強いので、ローカル（<a class="keyword" href="http://d.hatena.ne.jp/keyword/Ubuntu">Ubuntu</a>）とリモート（Heroku）の<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>のVersionは統一したいです。<br/>
+ここで個人的な都合（<a class="keyword" href="http://d.hatena.ne.jp/keyword/N%CD%BD%C8%F7%B9%BB">N予備校</a>の教材で<a class="keyword" href="http://d.hatena.ne.jp/keyword/Ubuntu">Ubuntu</a>にHeroku <a class="keyword" href="http://d.hatena.ne.jp/keyword/CLI">CLI</a>がセットアップされているの）で<a class="keyword" href="http://d.hatena.ne.jp/keyword/VirtualBox">VirtualBox</a>で構築した仮想環境の<a class="keyword" href="http://d.hatena.ne.jp/keyword/Ubuntu">Ubuntu</a>に<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>の仮想環境を構築します。<br/>
+私の<a class="keyword" href="http://d.hatena.ne.jp/keyword/Ubuntu">Ubuntu</a>では<code>Python3.6.9</code>がインストールされていました。<br/>
+↓によれば<code>3.6.9</code>または<code>3.7.4</code>も使えるはずですが、<code>runtime.txt</code>で指定しようとしても上手くいきませんでした。</p>
+<blockquote>
+<p>サポートされているランタイム<br/>
+​<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>-3.7.4​ (すべてのランタイムスタック)<br/>
+​<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>-3.6.9​ (すべてのランタイムスタック)<br/>
+​<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a>-2.7.16​ (すべてのランタイムスタック)</p>
+</blockquote>
+<p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fdevcenter.heroku.com%2Fja%2Farticles%2Fpython-support" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Heroku の Python サポート | Heroku Dev Center"></iframe><cite class="hatena-citation"><a href="https://devcenter.heroku.com/ja/articles/python-support">devcenter.heroku.com</a></cite></p><p>以下を参考に<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>の仮想環境とPython3.9をインストールします。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fwww.suzu6.net%2Fposts%2F236-install-python3-at-ubuntu%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="suzu6.net"></iframe><cite class="hatena-citation"><a href="https://www.suzu6.net/posts/236-install-python3-at-ubuntu/">www.suzu6.net</a></cite><br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fkazuhira-r.hatenablog.com%2Fentry%2F2019%2F01%2F09%2F231800" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="Ubuntu Linux 18.04 LTSで、Pythonの仮想環境（venv）を使用する - CLOVER🍀"></iframe><cite class="hatena-citation"><a href="https://kazuhira-r.hatenablog.com/entry/2019/01/09/231800">kazuhira-r.hatenablog.com</a></cite></p><p>まず、pipとvenvをインストールします。</p>
+<pre class="code" data-lang="" data-unlink="">$ sudo apt install python3-venv python3-pip</pre><p>Python3.9については、こちら↓のとおりに行うことでがインストールできました。<br/>
+（3.8でよければ上記のみを参考にインストールできます。）<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Ftechstorm.io%2Fpython-3-9-how-to-install-on-ubuntu-18-04%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Python 3.9: How to Install on Ubuntu 18.04"></iframe><cite class="hatena-citation"><a href="https://techstorm.io/python-3-9-how-to-install-on-ubuntu-18-04/">techstorm.io</a></cite></p>
+<pre class="code" data-lang="" data-unlink="">$ sudo apt install software-properties-common
+$ sudo add-apt-repository ppa:deadsnakes/ppa
+$ sudo apt install python3.9
+$ python3.9 -V
+&gt;&gt;&gt; Python 3.9.5</pre><p>これで<code>Python 3.9.5</code>がインストールできました。</p><p>つぎに仮想環境を構築します。</p>
+<pre class="code" data-lang="" data-unlink=""># venvのモジュールが入ったpython3-venvをインストール
+$ sudo apt install python3.9-venv
+# 仮想環境の名前(ここではpython39)を決める
+$ python3.9 -m venv python39
+# ディレクトリを移動
+$ cd ~/python39/bin
+# activate
+$ source activate</pre><p>ターミナルの表示が以下のようになれば仮想環境の起動が完了です。</p>
+<pre class="code" data-lang="" data-unlink="">(python39) vagrant@ubuntu-bionic:~/python39/bin$</pre><p>ここで<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>のVersionを確認すると、<code>3.9.5</code>が有効になっていることがわかります。<br/>
+また、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>のデフォルトがこれになっているので、<code>python3</code>としなくてもよくなります。</p>
+<pre class="code" data-lang="" data-unlink="">$ python -V
+&gt;&gt;&gt;Python3.9.5</pre><p>また、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>の仮想環境を抜ける（不活化）は以下のようにします。</p>
+<pre class="code" data-lang="" data-unlink="">$ deactivate</pre>
+</div>
+<div class="section">
+<h3>Herokuにデプロイするサーバープログラムの<a class="keyword" href="http://d.hatena.ne.jp/keyword/Hello%20world">Hello world</a>!</h3>
+<p>基本的に↓のとおりに実行すればOKです。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Fredpanda%2Fitems%2Fa056daea48b545250ce7" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="HerokuにFlaskアプリをデプロイする - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/redpanda/items/a056daea48b545250ce7">qiita.com</a></cite><br/>
+ハマったところは<code>requirements.txt</code>は以下のように最低限だけにするほうが良いようです。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>のVersionとの不整合があるとHeroku上でのデプロイが失敗します。</p>
+<pre class="code" data-lang="" data-unlink="">Flask==1.1.1
+gunicorn==20.0.4
+itsdangerous==1.1.0
+Jinja2==2.10.3
+MarkupSafe==1.1.1
+Werkzeug==0.16.0</pre><p>また、Herokuのログインが<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%DE%A5%DB">スマホ</a>アプリによる認証が必要になっています。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210526223938p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210526/20210526223938.png" title=""/></span><br/>
+わたしはSaleceforece Authenticatorを選択しました。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210526224118p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210526/20210526224118.png" title=""/></span><br/>
+指示に従って、アプリをインストールし情報を登録すればOKです。</p><p>あとは、Herokuにgitでデプロイします。</p>
+<pre class="code" data-lang="" data-unlink=""># Herokuはセットアップ済みとする
+$ heroku login
+$ heroku create
+$ git init
+$ git add .
+$ git commit -m "コミットメッセージ"
+$ git push heroku master</pre>
+</div>
+<div class="section">
+<h3>まとめ</h3>
+<p>Herokuに<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>でサーバーを構築しました。<br/>
+この中で<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>の仮想環境を<a class="keyword" href="http://d.hatena.ne.jp/keyword/VirtualBox">VirtualBox</a>上の<a class="keyword" href="http://d.hatena.ne.jp/keyword/Ubuntu">Ubuntu</a>に構築しました。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Ubuntu">Ubuntu</a>にPython3.9をインストールするには少し特殊なところがあります。Python3.9の位置づけはまだあれなのでしょうか。</p>
+</div>
+<div class="section">
+<h3>関連記事</h3>
+<p><iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2020%2F04%2F13%2F073000" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="VirtualBoxとVagrantでUbuntuの仮想環境を作る - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2020/04/13/073000">s51517765.hatenadiary.jp</a></cite><br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2020%2F06%2F29%2F073000" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="N予備校の3章 「サーバーサイドプログラミング入門」を終了 - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2020/06/29/073000">s51517765.hatenadiary.jp</a></cite></p>
+</div>
+</div>

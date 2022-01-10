@@ -1,0 +1,57 @@
+<div class="entry-content">
+<div class="section">
+<h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>の検索が使いにくい</h3>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>にはファイル検索Boxがありますが、挙動が期待と違うことが多くあります。<br/>
+自動的に検索範囲が制限されているのが原因らしいです。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fwww.pasoble.jp%2Fwindows%2F10%2Fkensaku-dekinai.html" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Windows 10 ファイルの検索ができないときの確認と解決方法"></iframe><cite class="hatena-citation"><a href="https://www.pasoble.jp/windows/10/kensaku-dekinai.html">www.pasoble.jp</a></cite></p><p>そこでファイル・フォルダ構造をすべて出力する<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">スクリプト</a>を作ってみました。<br/>
+カレントフォルダ（もしくは<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%E1%A5%F3%A5%C8%A5%A2%A5%A6%A5%C8">コメントアウト</a>した部分に指定するフォルダ）を基準として、その下層のフォルダ・ファイル構造を出力します。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A2%A5%EB%A5%B4%A5%EA%A5%BA%A5%E0">アルゴリズム</a>としては、現在フォルダから下層にあるものをファイルとフォルダに分けて、ファイルはいったんリストに追加しまとめて出力。フォルダはキューに追加して、キューが空になるまでカレントフォルダを移動してファイルのリストを出力していきます。<br/>
+フォルダのアクセスは<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C9%FD%CD%A5%C0%E8%C3%B5%BA%F7">幅優先探索</a>的になります。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synPreProc">import</span> os
+<span class="synPreProc">import</span> glob
+<span class="synPreProc">import</span> queue
+<span class="synPreProc">import</span> datetime
+
+q = queue.Queue()
+
+
+<span class="synComment"># os.chdir(r"C:\\Users\\xxxx\\Pictures")</span>
+d = os.getcwd()
+q.put(d)
+filename = <span class="synConstant">'output.txt'</span>
+output = <span class="synIdentifier">open</span>(filename, <span class="synConstant">'a'</span>, encoding=<span class="synConstant">'utf'</span>)  <span class="synComment"># 書き込みモードでオープン</span>
+output.write(<span class="synIdentifier">str</span>(datetime.datetime.now()))
+output.write(<span class="synConstant">"</span><span class="synSpecial">\n</span><span class="synConstant">"</span>)
+output.close()
+
+
+<span class="synStatement">def</span> <span class="synIdentifier">wfs</span>(wd):
+    <span class="synStatement">try</span>:
+        files = glob.glob(wd+<span class="synConstant">"/*"</span>)
+        <span class="synIdentifier">list</span> = []
+        <span class="synStatement">for</span> f <span class="synStatement">in</span> files:
+            <span class="synStatement">if</span> <span class="synStatement">not</span> os.path.isfile(f):
+                q.put(f)
+            <span class="synStatement">else</span>:
+                index = f.rfind(<span class="synConstant">"</span><span class="synSpecial">\\</span><span class="synConstant">"</span>)+<span class="synConstant">1</span>
+                f = f[index:]
+                <span class="synIdentifier">list</span>.append(f)
+        <span class="synIdentifier">print</span>(<span class="synConstant">""</span>)
+        <span class="synIdentifier">print</span>(wd)
+        <span class="synIdentifier">print</span>(<span class="synIdentifier">list</span>)
+        output = <span class="synIdentifier">open</span>(filename, <span class="synConstant">'a'</span>, encoding=<span class="synConstant">'utf'</span>)  <span class="synComment"># 書き込みモードでオープン</span>
+        output.write(<span class="synConstant">"</span><span class="synSpecial">\n</span><span class="synConstant">"</span>+wd+<span class="synConstant">"</span><span class="synSpecial">\n</span><span class="synConstant">"</span>)
+        output.write(<span class="synIdentifier">str</span>(<span class="synIdentifier">list</span>))
+        output.write(<span class="synConstant">"</span><span class="synSpecial">\n</span><span class="synConstant">"</span>)
+        output.close()
+    <span class="synStatement">except</span> <span class="synType">Exception</span> <span class="synStatement">as</span> e:
+        <span class="synIdentifier">print</span>(e)
+
+
+<span class="synStatement">while</span> <span class="synStatement">not</span> q.empty():
+    wfs(q.get())
+
+output = <span class="synIdentifier">open</span>(filename, <span class="synConstant">'a'</span>, encoding=<span class="synConstant">'utf'</span>)  <span class="synComment"># 書き込みモードでオープン</span>
+output.write(<span class="synConstant">"</span><span class="synSpecial">\n</span><span class="synConstant">"</span>)
+</pre>
+</div>
+</div>

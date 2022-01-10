@@ -1,0 +1,30 @@
+<div class="entry-content">
+<p></p><h3>発生した問題</h3><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20201205182934p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20201205/20201205182934.png" title=""/></span><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>で条件を指定してフォルダの画像ファイル（ここではpxが100x100以下）を削除しようとしたらPermissionErrorと怒られました。</p><p>以下のようにPILで画像を開いてサイズを取得、条件に一致したら削除、というようなことをやろうとしました。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synPreProc">from</span> PIL <span class="synPreProc">import</span> Image
+os.chdir(<span class="synConstant">r"C:\Users\***\Documents\***"</span>)
+files = glob.glob(<span class="synConstant">"./*"</span>)
+<span class="synStatement">for</span> <span class="synIdentifier">file</span> <span class="synStatement">in</span> files:
+    <span class="synStatement">if</span> <span class="synConstant">".jpeg"</span> <span class="synStatement">in</span> <span class="synIdentifier">file</span>: <span class="synComment">#拡張子で画像をさがす</span>
+        img = Image.open(<span class="synIdentifier">file</span>)
+        <span class="synStatement">if</span> img.height &lt;= <span class="synConstant">100</span> <span class="synStatement">and</span> img.width &lt;= <span class="synConstant">100</span>:
+            <span class="synIdentifier">print</span>(<span class="synIdentifier">file</span>)
+            os.remove(<span class="synIdentifier">file</span>)
+</pre><p>これは言われているError自体は、他のプロセスが画像を開いている（掴んでいるって言ったりする）から削除できません、という簡単なことではありますが、じゃあどうやってプロセスを開放すればいいの？というところです。</p><p></p><h3>答え</h3>delしてあげればよい。
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">del</span> img
+</pre><p><code>del</code>はオブジェクトや変数を削除する構文です。<br/>
+オブジェクトというのは、慣れてしまえば気にしなくなりますが、変数や変数の箱？のようなもので、これを削除するとは定義する前の状態に戻ることです。<br/>
+例えば、ここで間違った書き方をして<code>del file</code>とすると、<code>os.remove(file)</code>のところで</p>
+<pre class="code" data-lang="" data-unlink="">例外が発生しました: UnboundLocalError
+local variable 'file' referenced before assignment</pre><p>のようになります。</p><p></p><h3>修正後のコード</h3>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synPreProc">from</span> PIL <span class="synPreProc">import</span> Image
+os.chdir(<span class="synConstant">r"C:\Users\***\Documents\***"</span>)
+files = glob.glob(<span class="synConstant">"./*"</span>)
+<span class="synStatement">for</span> <span class="synIdentifier">file</span> <span class="synStatement">in</span> files:
+    <span class="synStatement">if</span> <span class="synConstant">".jpeg"</span> <span class="synStatement">in</span> <span class="synIdentifier">file</span>:
+        img = Image.open(<span class="synIdentifier">file</span>)
+        <span class="synStatement">if</span> img.height &lt;= <span class="synConstant">100</span> <span class="synStatement">and</span> img.width &lt;= <span class="synConstant">100</span>:
+            <span class="synIdentifier">print</span>(<span class="synIdentifier">file</span>)
+            <span class="synStatement">del</span> img
+            os.remove(<span class="synIdentifier">file</span>)
+</pre>
+</div>

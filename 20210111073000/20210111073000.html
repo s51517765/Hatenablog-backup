@@ -1,0 +1,70 @@
+<div class="entry-content">
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Mac%A5%A2%A5%C9%A5%EC%A5%B9">Macアドレス</a>はCPUに対して一意（まれに適当で重複があったりすることがあります）に付与されていてその上位6桁（24bit）がVenderコードになっています。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Mac%A5%A2%A5%C9%A5%EC%A5%B9">Macアドレス</a>とVenderの対応は<a class="keyword" href="http://d.hatena.ne.jp/keyword/IEEE">IEEE</a>にリスト化されているので、これを用いて<a class="keyword" href="http://d.hatena.ne.jp/keyword/Mac%A5%A2%A5%C9%A5%EC%A5%B9">Macアドレス</a>からVenderを探すことが出来ます。<br/>
+<a href="http://standards-oui.ieee.org/oui/oui.txt">http://standards-oui.ieee.org/oui/oui.txt</a></p><p>ここで、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Mac%A5%A2%A5%C9%A5%EC%A5%B9">Macアドレス</a>/Venderのリストは約2万9000件あります。</p><p>一方、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Mac%A5%A2%A5%C9%A5%EC%A5%B9">Macアドレス</a>/Venderリストは16進数であらわされた数字であり、順番に並んでいます。</p><p>とすると、キー（<a class="keyword" href="http://d.hatena.ne.jp/keyword/Mac%A5%A2%A5%C9%A5%EC%A5%B9">Macアドレス</a>）と値（Vender Name）の組み合わせで、キーに対して単調増加のListとなります。<br/>
+単調増加のキーに対して値を探すのは二分探索O(logn)をするのがセオリーで、どこかでそのようなコードを見た気がしますが、辞書にするとO(1)なのでこの方針で実装します。</p><p>まずはoui.txtから<a class="keyword" href="http://d.hatena.ne.jp/keyword/Mac%A5%A2%A5%C9%A5%EC%A5%B9">Macアドレス</a>とVenderの辞書を作成します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210109130200p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210109/20210109130200.png" title=""/></span><br/>
+このtextファイルの中から、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Mac%A5%A2%A5%C9%A5%EC%A5%B9">Macアドレス</a>が6桁であらわされた行を<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C0%B5%B5%AC%C9%BD%B8%BD">正規表現</a>で取得すると、先頭6文字が<a class="keyword" href="http://d.hatena.ne.jp/keyword/Mac%A5%A2%A5%C9%A5%EC%A5%B9">Macアドレス</a>でタブ以降がVender Nameとなります。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synStatement">using</span> System.Collections.Generic;
+
+<span class="synType">private</span> <span class="synType">void</span> Read_MacAddressList()
+{
+    <span class="synType">string</span> fileName;
+    fileName = <span class="synConstant">"oui.txt"</span>;
+    <span class="synStatement">if</span> (!File.Exists(fileName))
+    {
+        MessageBox.Show(fileName + <span class="synConstant">" not find!"</span>);
+        <span class="synStatement">return</span>;
+    }
+    <span class="synStatement">try</span>
+    {
+        StreamReader sr = <span class="synStatement">new</span> StreamReader(fileName, Encoding.GetEncoding(<span class="synConstant">"UTF-8"</span>));
+        <span class="synType">string</span> tmp;
+        <span class="synType">string</span> mac;
+        <span class="synType">string</span> vender;
+
+        <span class="synStatement">while</span> (<span class="synConstant">true</span>)
+        {
+            <span class="synStatement">if</span> (sr.EndOfStream) <span class="synStatement">return</span>;
+            tmp = sr.ReadLine();
+            <span class="synStatement">if</span> (tmp.Length &lt; <span class="synConstant">8</span>) <span class="synStatement">continue</span>;
+
+            mac = tmp.Substring(<span class="synConstant">0</span>, <span class="synConstant">6</span>);
+            <span class="synStatement">if</span> (!System.Text.RegularExpressions.Regex.IsMatch(mac, <span class="synSpecial">@</span><span class="synConstant">"[\dabcdefABCDEF]{6}"</span>)) <span class="synStatement">continue</span>;
+            vender = tmp.Substring(<span class="synConstant">7</span>).Trim();
+            vender = vender.Substring(vender.IndexOf(<span class="synConstant">"</span><span class="synSpecial">\t</span><span class="synConstant">"</span>));
+            vender = vender.Replace(<span class="synConstant">"</span><span class="synSpecial">\t</span><span class="synConstant">"</span>, <span class="synConstant">""</span>);
+            <span class="synStatement">if</span> (MacAddressList.ContainsKey(mac)) <span class="synStatement">continue</span>;
+            MacAddressList.Add(mac, vender);
+        }
+    }
+    <span class="synStatement">catch</span>
+    {
+        MessageBox.Show(<span class="synConstant">"File Open Error!"</span>);
+    }
+}
+</pre><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Mac%A5%A2%A5%C9%A5%EC%A5%B9">Macアドレス</a>は<code>:</code>区切りで与えられる文字列とすると、その先頭6桁を<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C0%B5%B5%AC%C9%BD%B8%BD">正規表現</a>で取得して辞書を検索します。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">private</span> <span class="synType">string</span> Get_VenderName(<span class="synType">string</span> macAdrres)
+{
+    <span class="synStatement">try</span>
+    {
+        System.Text.RegularExpressions.MatchCollection Regs = System.Text.RegularExpressions.Regex.Matches(macAdrres, <span class="synSpecial">@</span><span class="synConstant">"[\dabcdefABCDEF]{2}"</span>);
+        <span class="synType">string</span> mac = <span class="synConstant">""</span>;
+        mac = Regs[<span class="synConstant">0</span>].Value + Regs[<span class="synConstant">1</span>].Value + Regs[<span class="synConstant">2</span>].Value;
+        <span class="synStatement">return</span> MacAddressList[mac];
+    }
+    <span class="synStatement">catch</span>
+    {
+        <span class="synStatement">return</span> <span class="synConstant">""</span>;
+    }
+}
+</pre><p></p><h3>まとめ</h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/Mac%A5%A2%A5%C9%A5%EC%A5%B9">Macアドレス</a>からVenderを探すコードを実装しました。<br/>
+二分探索O(logn)をするのがセオリーで、どこかでそのようなコードを見た気がしますが一度辞書を作ってしまえばそのほうが速くなりそうです。<br/>
+また、2万9000件であってもこれ自体は必ずしも二分探索を必要とする量ではないと思います。<br/>
+AtCorderで<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%BF%A5%A4%A5%E0%A5%A2%A5%A6%A5%C8">タイムアウト</a>するのがだいたい200万件以上（言語によっても実装によっても異なるが）なので実は十分短時間で処理できます。<br/>
+ただし、ファイルから読み込む速度はもっと遅かったり、リストの内容が毎回変わったり、1秒間に数百回探索したり、CPUが非力だったりなどの条件によっては異なるかもしれません。
+
+    
+
+  
+</div>

@@ -1,0 +1,19 @@
+<div class="entry-content">
+<p></p><h3>読み込めない<a class="keyword" href="http://d.hatena.ne.jp/keyword/JPEG">JPEG</a>ファイルがある</h3><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210313181414p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210313/20210313181414.png" title=""/></span><p>動画は（いまのところ）問題なく読み込めて編集もできるのですが、画像（<a class="keyword" href="http://d.hatena.ne.jp/keyword/JPEG">JPEG</a>）が読み込めない場合がありました。<br/>
+プロジェクトファイルの一覧でもプレビューがでないし、タイムラインに乗せても画像が表示されません。<br/>
+しかし、これを<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>のペイントで<code>JPEG</code>として保存しなおすと読み込めます。</p><p>分かってしまうと簡単？なのですが、中身が本当は<code>PNG</code>なのに拡張子が<code>JPEG</code>であると、Openshotでは拡張子で判断して<code>PNG</code>なのに<code>JPEG</code>として読み込もうとしてしまう様子。<br/>
+まぁ、それが拡張子の目的なんですが…</p><p>それで、私が作ったEasyRetouchというソフトなんですが、中身が<code>PNG</code>なのに<code>JPEG</code>で出力していたようです。</p><p>JpegAnalyzer Plusというツールで見てみたら、<code>PNG</code>になってました。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fwww.vector.co.jp%2Fsoft%2Fdl%2Fwin95%2Fart%2Fse257653.html" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="JpegAnalyzer Plusの詳細情報 : Vector ソフトを探す！"></iframe><cite class="hatena-citation"><a href="https://www.vector.co.jp/soft/dl/win95/art/se257653.html">www.vector.co.jp</a></cite></p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/JPEG">JPEG</a>の場合。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210313183332p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210313/20210313183332.png" title=""/></span><br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/png">png</a>の場合。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210313183445p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210313/20210313183445.png" title=""/></span></p><p></p><h3>画像処理ソフトの修正</h3>画像出力形式を明確に<code>JPEG</code>を指定してあげればこれを修正できます。
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synStatement">if</span> (radioButtonOutputJPG.Checked)
+{
+    canvas0.Save(FileName + suffix + (suffix_no == <span class="synConstant">0</span> ? <span class="synConstant">""</span> : suffix_no.ToString()) + <span class="synConstant">".jpg"</span>, System.Drawing.Imaging.ImageFormat.Jpeg);
+}
+<span class="synStatement">else</span>
+{
+    canvas0.Save(FileName + suffix + (suffix_no == <span class="synConstant">0</span> ? <span class="synConstant">""</span> : suffix_no.ToString()) + <span class="synConstant">".png"</span>);
+}
+</pre><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fwww.ipentec.com%2Fdocument%2Fcsharp-save-image-to-jpeg" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="画像をJpegファイルで保存する (Jpegファイルへの変換) - C#プログラミング"></iframe><cite class="hatena-citation"><a href="https://www.ipentec.com/document/csharp-save-image-to-jpeg">www.ipentec.com</a></cite></p>
+</div>

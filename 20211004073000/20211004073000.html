@@ -1,0 +1,123 @@
+<div class="entry-content">
+<div class="section">
+<h3>4頂点を左回りに並べ替える</h3>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>で台形補正を以前作ったのですが、この<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A2%A5%EB%A5%B4%A5%EA%A5%BA%A5%E0">アルゴリズム</a>では頂点を左上から左回りに並べる必要があります。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2021%2F08%2F09%2F073000" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="C#で画像の台形補正をする - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2021/08/09/073000">s51517765.hatenadiary.jp</a></cite></p><p>つまり、XY座標上で4つの頂点により形成される交差しない4つの線分による四角形があるとして、この頂点の中で左上を見つけ出し左回りに頂点を並べ替える必要があります。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>の<a class="keyword" href="http://d.hatena.ne.jp/keyword/Canvas">Canvas</a>に合わせて、左上を原点としマイナスは考えないものとします。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210929204835p:plain" class="hatena-fotolife" height="320" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210929/20210929204835.png" title="" width="388"/></span><br/>
+また、↓のような辺が交差する状態は考えないものとします。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210929204950p:plain" class="hatena-fotolife" height="320" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210929/20210929204950.png" title="" width="388"/></span></p><p>台形補正したい対象物の4頂点は順番にクリックすることで取得しますが、これが人によっては左回りであったり右回りであったりする可能性があります。<br/>
+右回りの時はP3とP1をいれかえる必要があります。<br/>
+また、だれもが左上から始める、とも限りません。</p>
+</div>
+<div class="section">
+<h3>最初に考えた方法</h3>
+<p>絶対だれか数学の得意な人が文書化しているはずだとは思いましたが、上手いキーワードが思いつかず、まず自分で実装できるか試してみました。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210929210207p:plain" class="hatena-fotolife" height="320" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210929/20210929210207.png" title="" width="388"/></span></p><p>左回りであるという前提で考えると、四角形の重心に対して、P0がどこにあるかを考えると４つの頂点の位置と順番が決まります。<br/>
+P0が左上の時はそのままでいいので、それ以外の3つの場合に頂点を入れ替えます。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">private</span> <span class="synType">void</span> point_normarize(<span class="synStatement">ref</span> System.Drawing.Point px0, <span class="synStatement">ref</span> System.Drawing.Point px1, <span class="synStatement">ref</span> System.Drawing.Point px2, <span class="synStatement">ref</span> System.Drawing.Point px3)
+{
+    <span class="synType">int</span> aveWidth = (px0.X + px1.X + px2.X + px3.X) / <span class="synConstant">4</span>;
+    <span class="synType">int</span> aveHight = (px0.Y + px1.Y + px2.Y + px3.Y) / <span class="synConstant">4</span>;
+
+    System.Drawing.Point tmp = px3;
+    <span class="synStatement">if</span> (px0.Y &gt; aveHight &amp;&amp; px0.X &lt; aveWidth)
+    {
+        px3 = px2;
+        px2 = px1;
+        px1 = px0;
+        px0 = tmp;
+    }
+    <span class="synStatement">else</span> <span class="synStatement">if</span> (px0.Y &gt; aveHight &amp;&amp; px0.X &gt; aveWidth)
+    {
+        System.Drawing.Point tmp2 = px2;
+        px2 = px0;
+        px0 = tmp2;
+        px3 = px1;               
+        px1 = tmp;              
+    }
+    <span class="synStatement">else</span> <span class="synStatement">if</span> (px0.Y &lt; aveHight &amp;&amp; px0.X &gt; aveWidth)
+    {
+        px3 = px0;
+        px0 = px1;
+        px1 = px2;               
+        px2 = tmp;                
+    }
+}
+</pre><p>右回りの時も同様にできます。<br/>
+しかし、左回りか右回りかを求める必要があります。<br/>
+左回りか右回りかは以下に記す採用した方法と同じです。</p>
+</div>
+<div class="section">
+<h3>採用した方法</h3>
+<p>採用した方法は、まず左上の点を求めます。<br/>
+これは<code>PN.X + PN.Y</code>がMinになる点といえます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210929212403p:plain" class="hatena-fotolife" height="320" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210929/20210929212403.png" title="" width="389"/></span><br/>
+この図で斜めの赤線がX+Yが一定の線です。</p><p>これが左上の点といえることは、この反例としてP1を下図のように移動すると、実はこのときP1を左上と考えても「台形補正上は」問題がないのです。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210929212550p:plain" class="hatena-fotolife" height="320" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210929/20210929212550.png" title="" width="389"/></span></p><p>次に右回りか左回りかですが、これは左回りと仮定したとき、左上の点と次の点、左上の点と前の点のYの差分を比較する<code>if (y[(idx + 1) % 4] - y[idx] &gt; y[(idx + 3) % 4] - y[idx])</code>ことで判断できます。<br/>
+<code>idx</code>→<code>idx+1</code>のとき<code>idx</code>→<code>idx-1</code>よりYが増加すれば左回り、減少すれば右回りです。<br/>
+そして、左回りと仮定したのに、Yが減少するときは右回りとなります。</p><p>左回りの時は、左上の点をpx0とするようにidxをオフセットします。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synComment">//左回り</span>
+px0 = p[idx];
+px1 = p[(idx + <span class="synConstant">1</span>) % <span class="synConstant">4</span>];
+px2 = p[(idx + <span class="synConstant">2</span>) % <span class="synConstant">4</span>];
+px3 = p[(idx + <span class="synConstant">3</span>) % <span class="synConstant">4</span>];
+</pre><p>右回りの時は、左上の点をpx0とし逆順にします。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synComment">//右回り</span>
+px0 = p[idx];
+px1 = p[(idx + <span class="synConstant">3</span>) % <span class="synConstant">4</span>];
+px2 = p[(idx + <span class="synConstant">2</span>) % <span class="synConstant">4</span>];
+px3 = p[(idx + <span class="synConstant">1</span>) % <span class="synConstant">4</span>];
+</pre><p>これで、4頂点を左上から左回りに変換できました。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">private</span> <span class="synType">void</span> point_normarize(<span class="synStatement">ref</span> System.Drawing.Point px0, <span class="synStatement">ref</span> System.Drawing.Point px1, <span class="synStatement">ref</span> System.Drawing.Point px2, <span class="synStatement">ref</span> System.Drawing.Point px3)
+{
+    System.Drawing.Point[] p = { px0, px1, px2, px3 };
+
+    <span class="synComment">//左上の点を求める</span>
+    <span class="synType">int</span>[] x_y = { px0.X + px0.Y, px1.X + px1.Y, px2.X + px2.Y, px3.X + px3.Y };
+
+    <span class="synType">int</span> tmp = <span class="synConstant">100000</span>;
+    <span class="synType">int</span> idx = <span class="synConstant">0</span>;
+    <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; <span class="synConstant">4</span>; i++)
+    {
+        <span class="synStatement">if</span> (x_y[i] &lt; tmp)
+        {
+            tmp = x_y[i];
+            idx = i;
+        }
+    }
+    <span class="synComment">//左周りか右回りか</span>
+    <span class="synType">int</span>[] y = { px0.Y, px1.Y, px2.Y, px3.Y };
+
+    <span class="synStatement">if</span> (y[(idx + <span class="synConstant">1</span>) % <span class="synConstant">4</span>] - y[idx] &gt; y[(idx + <span class="synConstant">3</span>) % <span class="synConstant">4</span>] - y[idx])
+    {
+        <span class="synComment">//左回り</span>
+        px0 = p[idx];
+        px1 = p[(idx + <span class="synConstant">1</span>) % <span class="synConstant">4</span>];
+        px2 = p[(idx + <span class="synConstant">2</span>) % <span class="synConstant">4</span>];
+        px3 = p[(idx + <span class="synConstant">3</span>) % <span class="synConstant">4</span>];
+    }
+    <span class="synStatement">else</span>
+    {
+        <span class="synComment">//右回り</span>
+        px0 = p[idx];
+        px1 = p[(idx + <span class="synConstant">3</span>) % <span class="synConstant">4</span>];
+        px2 = p[(idx + <span class="synConstant">2</span>) % <span class="synConstant">4</span>];
+        px3 = p[(idx + <span class="synConstant">1</span>) % <span class="synConstant">4</span>];
+    }
+}
+</pre><p>ただしこれらは考慮漏れがあったりバグがある可能性があります。</p><p>このような<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A2%A5%EB%A5%B4%A5%EA%A5%BA%A5%E0">アルゴリズム</a>を実装した後、以下のようなものを見つけました。<br/>
+符号付面積というものを算出すると右回り、左回りを算出できるらしいです。<br/>
+私が考えた方法はこちらの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A2%A5%EB%A5%B4%A5%EA%A5%BA%A5%E0">アルゴリズム</a>のある限定条件下に一致するものではないかと思います。<br/>
+もしバグがあったらこちらに変更します。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fwww5d.biglobe.ne.jp%2F~noocyte%2FProgramming%2FGeometry%2FPolygonMoment-jp.html" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="多角形の面積，重心(図心)，断面Ｎ次モーメントの公式と，向き (頂点列の回転方向) の判別方法"></iframe><cite class="hatena-citation"><a href="http://www5d.biglobe.ne.jp/~noocyte/Programming/Geometry/PolygonMoment-jp.html">www5d.biglobe.ne.jp</a></cite><br/>
+</p>
+</div>
+<div class="section">
+<h3>まとめ</h3>
+<p>4頂点が左回りか右回りかを考えるのは結構複雑でした。<br/>
+しかしながら大抵の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A2%A5%EB%A5%B4%A5%EA%A5%BA%A5%E0">アルゴリズム</a>は先人が考えつくしています。<br/>
+基本的には自分で考えるより先人の知恵を使うべきですが、必ずしも見つけられるとは限らないのが悩みどころです。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fs51517765%2FEasyRetouch" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="GitHub - s51517765/EasyRetouch: Simple retouch app. for Blog making."></iframe><cite class="hatena-citation"><a href="https://github.com/s51517765/EasyRetouch">github.com</a></cite></p>
+</div>
+</div>

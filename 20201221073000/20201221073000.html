@@ -1,0 +1,103 @@
+<div class="entry-content">
+<p>ESP32に入門しました。<br/>
+ESP32は <a class="keyword" href="http://d.hatena.ne.jp/keyword/Wi-Fi">Wi-Fi</a>と<a class="keyword" href="http://d.hatena.ne.jp/keyword/Bluetooth">Bluetooth</a>を内蔵する<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%DE%A5%A4%A5%B3%A5%F3">マイコン</a>で、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>の開発環境と類似のプログラムでIOTが出来ます。<br/>
+このようなボード（開発ボード）が1400円ぐらいで売っていて、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>より安くコンパクトです。</p>
+<figure class="figure-image figure-image-fotolife" title="左からArduinoNano互換、ESP32-WROOM-32、ArduinoUnoR3"><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20201219153447p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20201219/20201219153447.png" title=""/></span><figcaption>左からArduinoNano互換、ESP32-WROOM-32、ArduinoUnoR3</figcaption></figure><p>ESP(32)といったとき、上記のような開発ボードであったり、SOCだけの場合があるので購入するときは注意ですね。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>に対してネットワークや無線通信が付いていて安い点は魅力ですが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a> Unoと比較すると、AnalogWriteが使えるピンが少ない点が注意です。</p><p>またVersionが違うのか、メーカーが違うのかオリジナルなのかコンパチなのかわかりにくい気がします。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>は<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AA%A1%BC%A5%D7%A5%F3%A5%BD%A1%BC%A5%B9">オープンソース</a>で互換品がたくさん出ていて、しかし「<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>」という名前は本家しか使ってはいけないという明確なルールがありますが、ESP32の場合はこのESP32という名称自体はSOCでしかないので、よくわからない互換品がいろいろ出ている、ということになっている気がします。</p><p>それで適当に安いのを買ったらWebの情報と違ってなかなか動かない、ということに遭遇してしまいます。</p><div class="hatena-asin-detail"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/B077ZSPKLZ/shirotoakb-22/"><img alt="KKHMF ESP32 ESP-32S NodeMCU開発ボード2.4GHz WiFi + Bluetooth デュアルコアCPU低消費電力 「国内配送」" class="hatena-asin-detail-image" src="https://m.media-amazon.com/images/I/51MnbJyueRL.jpg" title="KKHMF ESP32 ESP-32S NodeMCU開発ボード2.4GHz WiFi + Bluetooth デュアルコアCPU低消費電力 「国内配送」"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/B077ZSPKLZ/shirotoakb-22/">KKHMF ESP32 ESP-32S NodeMCU開発ボード2.4GHz WiFi + Bluetooth デュアルコアCPU低消費電力 「国内配送」</a></p><ul><li><span class="hatena-asin-detail-label">メディア:</span></li></ul></div><div class="hatena-asin-detail-foot"></div></div><a class="keyword" href="http://d.hatena.ne.jp/keyword/Amazon">Amazon</a>で同じもの（と思われるもの）を買っても同じものが来ないかもしれません。<p></p><h3>環境設定</h3>それでは使ってみます。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a> <a class="keyword" href="http://d.hatena.ne.jp/keyword/IDE">IDE</a>にESP32を追加します。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Frikoubou.hatenablog.com%2Fentry%2F2019%2F06%2F19%2F161443" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="【ESP-32/Arduino】Windows10にESP-32の環境を構築する - ソースに絡まるエスカルゴ"></iframe><cite class="hatena-citation"><a href="https://rikoubou.hatenablog.com/entry/2019/06/19/161443">rikoubou.hatenablog.com</a></cite><br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fdeviceplus.jp%2Fhobby%2Fentry_069%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="第69回 ESP-WROOM-32をArduinoで触ってみよう(環境構築セットアップ～Lチカ編)"></iframe><cite class="hatena-citation"><a href="https://deviceplus.jp/hobby/entry_069/">deviceplus.jp</a></cite><p>ボードは<code>ESP32 Dev module</code>を選択します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20201213182622p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20201213/20201213182622.png" title=""/></span></p><p>・トラブルその１<br/>
+USBケーブルが原因でポートが見つかりません。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fteratail.com%2Fquestions%2F220879" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="[ESP32,ArduinoIDE]シリアルポートを選択できません｜teratail"></iframe><cite class="hatena-citation"><a href="https://teratail.com/questions/220879">teratail.com</a></cite><br/>
+USBケーブルを交換したら認識しました。</p><p>コン<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%ED%A1%BC%A5%EB">トロール</a>パネルでUSBデ<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D0%A5%A4%A5%B9">バイス</a>が認識されることを確認しながらUSBケーブルを選びます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20201219161456p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20201219/20201219161456.png" title=""/></span></p><p>・トラブルその2<br/>
+書き込み時にErrorが出て書き込めません。<br/>
+このときは、Connecting... となったところでBootボタンを長押しすると書き込めるということです。Connectされたら離して大丈夫です。<br/>
+また特定のdigitalピン（とりあえずD2はだめでした、D5はOK）がプルアップ（結線されている）されていると書き込めない場合があります。<br/>
+このときは書き込み時そのピンのリード線を外しておきます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20201213182124j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20201213/20201213182124.jpg" title=""/></span><br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fwww.opensourcetech.tokyo%2Fentry%2F20200112%2F1578828570" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="ESP32 Arduino書き込み時「A fatal error occurred: Failed to connect to ESP32: Timed out waiting for packet header」となった時の対応方法」 - Opensourcetechブログ"></iframe><cite class="hatena-citation"><a href="https://www.opensourcetech.tokyo/entry/20200112/1578828570">www.opensourcetech.tokyo</a></cite></p><p></p><h3>もう少し使ってみる</h3>簡単な<a class="keyword" href="http://d.hatena.ne.jp/keyword/Hello%20world">Hello world</a>をしたら、もう少し実際的なプログラム書きます。<br/>
+ESP32の一番メリットである<a class="keyword" href="http://d.hatena.ne.jp/keyword/Wifi">Wifi</a>接続でWebhookを試します。<br/>
+Line notifyと<a class="keyword" href="http://d.hatena.ne.jp/keyword/Wifi">Wifi</a>接続は↓を利用しました。<a class="keyword" href="http://d.hatena.ne.jp/keyword/Wifi">Wifi</a> ConnectのところでTryError中断処理を追加しました。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fnext.rikunabi.com%2Fjournal%2F20170719_t12_iq%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="「猫の食生活」を超音波距離センサーでLINEに通知してみた─にゃんてっく☆やせないアイツ【vol5】 - リクナビNEXTジャーナル"></iframe><cite class="hatena-citation"><a href="https://next.rikunabi.com/journal/20170719_t12_iq/">next.rikunabi.com</a></cite><p></p><h3>回路</h3>ボタンを押したらLineにメッセージを送るようにします。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20201219160723j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20201219/20201219160723.jpg" title=""/></span><br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fcircuits4you.com%2F2018%2F12%2F31%2Fesp32-devkit-esp32-wroom-gpio-pinout%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="ESP32 DevKit ESP32-WROOM GPIO Pinout"></iframe><cite class="hatena-citation"><a href="https://circuits4you.com/2018/12/31/esp32-devkit-esp32-wroom-gpio-pinout/">circuits4you.com</a></cite><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20201219163859j:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20201219/20201219163859.jpg" title=""/></span><br/>
+D5ピンを5kΩでプルアップ、タクトスイッチを押したときGNDになるようにしています。<br/>
+プルアップ抵抗はGPIOの電流を制限する意味もあり10kΩ前後がよく使われます（ここではすぐ出てきた5kΩを適当に選択）。<br/>
+ESP32の場合はGPIOの電流はMax 20～40mAとのこと（細かくはこれから使っていきながら調べる予定）で、3.3Vで20mA、マージン20％とすると、198Ω以上が絶対必要になります。<br/>
+ここではスイッチの検知だけなのでもっと抑えてよいです。 <br/>
+だいたいプルアップ抵抗は5kΩ以上、と思っておくといいと思います。</p><p></p><h3>完成</h3><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20201219164350p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20201219/20201219164350.png" title=""/></span><br/>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synPreProc">#include </span><span class="synConstant">&lt;WiFi.h&gt;</span>
+<span class="synPreProc">#include </span><span class="synConstant">&lt;WiFiClientSecure.h&gt;</span>
+<span class="synType">const</span> <span class="synType">char</span>* ssid = <span class="synConstant">"++++++++"</span>;
+<span class="synType">const</span> <span class="synType">char</span>* password = <span class="synConstant">"++++++++"</span>;
+<span class="synType">const</span> <span class="synType">char</span>* token = <span class="synConstant">"++++++++"</span>;
+
+<span class="synType">void</span> wifiConnect() {
+  <span class="synType">int</span> tryCount = <span class="synConstant">0</span>;
+  WiFi.disconnect();
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);  <span class="synComment">// Wi-Fi接続</span>
+  <span class="synStatement">while</span> (WiFi.status() != WL_CONNECTED) {  <span class="synComment">// Wi-Fi 接続待ち</span>
+    delay(<span class="synConstant">100</span>);
+    Serial.printf(<span class="synConstant">"."</span>);
+    tryCount += <span class="synConstant">1</span>;
+    <span class="synStatement">if</span> (tryCount &gt; <span class="synConstant">30</span>) {
+      Serial.println(<span class="synConstant">"</span><span class="synSpecial">\n</span><span class="synConstant">wifi connect NG"</span>);
+      <span class="synStatement">return</span>;
+    };
+  }
+  Serial.println(<span class="synConstant">"</span><span class="synSpecial">\n</span><span class="synConstant">wifi connect OK"</span>);
+}
+
+<span class="synType">void</span> sendLine(String message) {
+  <span class="synType">const</span> <span class="synType">char</span>* host = <span class="synConstant">"notify-api.line.me"</span>;
+  WiFiClientSecure client;
+  Serial.println(<span class="synConstant">"Try"</span>);
+  <span class="synComment">//LineのAPIサーバに接続</span>
+  <span class="synStatement">if</span> (!client.connect(host, <span class="synConstant">443</span>)) {
+    Serial.println(<span class="synConstant">"Connection failed"</span>);
+    <span class="synStatement">return</span>;
+  }
+  Serial.println(<span class="synConstant">"Connected"</span>);
+  <span class="synComment">//リクエストを送信</span>
+  String query = String(<span class="synConstant">"message="</span>) + message;
+  String request = String(<span class="synConstant">""</span>) +
+                   <span class="synConstant">"POST /api/notify HTTP/1.1</span><span class="synSpecial">\r\n</span><span class="synConstant">"</span> +
+                   <span class="synConstant">"Host: "</span> + host + <span class="synConstant">"</span><span class="synSpecial">\r\n</span><span class="synConstant">"</span> +
+                   <span class="synConstant">"Authorization: Bearer "</span> + token + <span class="synConstant">"</span><span class="synSpecial">\r\n</span><span class="synConstant">"</span> +
+                   <span class="synConstant">"Content-Length: "</span> + String(query.length()) +  <span class="synConstant">"</span><span class="synSpecial">\r\n</span><span class="synConstant">"</span> +
+                   <span class="synConstant">"Content-Type: application/x-www-form-urlencoded</span><span class="synSpecial">\r\n\r\n</span><span class="synConstant">"</span> +
+                   query + <span class="synConstant">"</span><span class="synSpecial">\r\n</span><span class="synConstant">"</span>;
+  client.print(request);
+
+  <span class="synComment">//受信終了まで待つ</span>
+  <span class="synStatement">while</span> (client.connected()) {
+    String line = client.readStringUntil(<span class="synSpecial">'\n'</span>);
+    Serial.println(line);
+    <span class="synStatement">if</span> (line == <span class="synConstant">"</span><span class="synSpecial">\r</span><span class="synConstant">"</span>) {
+      <span class="synStatement">break</span>;
+    }
+  }
+  String line = client.readStringUntil(<span class="synSpecial">'\n'</span>);
+  Serial.println(line);
+  delay(<span class="synConstant">500</span>);
+}
+
+<span class="synType">void</span> setup() {
+  Serial.begin(<span class="synConstant">115200</span>);
+  wifiConnect();
+}
+
+<span class="synType">void</span> loop() {
+  <span class="synComment">//ボタンが押されたら</span>
+  <span class="synStatement">if</span> (digitalRead(<span class="synConstant">5</span>) == LOW) {
+    Serial.print(<span class="synConstant">"Button pushed.</span><span class="synSpecial">\n</span><span class="synConstant">"</span>);
+    sendLine(<span class="synConstant">"Hello ESP world!!"</span>);
+  }
+  delay(<span class="synConstant">100</span>);
+}
+</pre>
+</div>

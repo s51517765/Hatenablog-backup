@@ -1,0 +1,83 @@
+<div class="entry-content">
+<div class="section">
+<h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>クライアントアプリを作って公開したい</h3>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>の<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>モジュールであるCoreTweetを例にサンプルコードを示します。</p><p>以下がよくあるTokenを取得して<a class="keyword" href="http://d.hatena.ne.jp/keyword/Tweet">Tweet</a>するまでのサンプルコードです。<br/>
+<code>API key</code>、<code>API secret</code>、<code>Access token</code>、<code>Access token secret</code>を<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a> Developersから取得してTokenを生成します。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">  <span class="synType">static</span> <span class="synType">void</span> Main(<span class="synType">string</span>[] args)
+{
+    var tokens = CoreTweet.Tokens.Create(
+          <span class="synConstant">"{API key}"</span>
+        , <span class="synConstant">"{API secret}"</span>
+        , <span class="synConstant">"{Access token}"</span>
+        , <span class="synConstant">"{Access token secret}"</span>);
+
+    var text = <span class="synConstant">"status text"</span>;
+    tokens.Statuses.Update(<span class="synStatement">new</span> { status = text });
+}
+</pre><p>自分でつくったアプリを自分で使っているときは、これでもいいのですが、アプリをつくって公開して使ってもらいたい、というときはこれではダメなことは一目瞭然です。<br/>
+このような場合は自分のアカウントとして<a class="keyword" href="http://d.hatena.ne.jp/keyword/Tweet">Tweet</a>がされてしまいます。<br/>
+アプリを公開するには、ユーザーのアカウントで<a class="keyword" href="http://d.hatena.ne.jp/keyword/Tweet">Tweet</a>が出来なければなりません。</p>
+</div>
+<div class="section">
+<h3>Tokenは各ユーザーに取得してもらう必要がある</h3>
+<p><code>Access token</code>、<code>Access token secret</code>は各ユーザーに取得してもらう必要があります。<br/>
+<code>buttonAuth</code>をクリックすると、<code>Access token</code>、<code>Access token secret</code>がPropertiesに記録されていなければOAuthのセッションを起動します。<br/>
+ユーザーにPincodeを取得してもらいTokenを生成します。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">private</span> <span class="synType">void</span> Form1_Load(<span class="synType">object</span> sender, EventArgs e)
+{
+    <span class="synComment">//認証情報を読み込み</span>
+    A_Token = Properties.Settings.Default.A_Token;
+    A_TokenSecret = Properties.Settings.Default.A_TokenSecret;
+}
+
+<span class="synType">private</span> <span class="synType">void</span> buttonAuth_Click(<span class="synType">object</span> sender, EventArgs e)
+{
+    <span class="synStatement">if</span> (A_Token != <span class="synConstant">null</span>)
+    {
+        DialogResult result = MessageBox.Show(<span class="synConstant">"アカウントを再登録します"</span>, <span class="synConstant">"Authentification"</span>, MessageBoxButtons.YesNo);
+        <span class="synStatement">if</span> (result == DialogResult.No)
+        {
+            <span class="synStatement">return</span>;
+        }
+    }
+
+    pincode = <span class="synConstant">""</span>; <span class="synComment">//ここでは入力用のForm2を立ち上げる</span>
+    Form2 form2 = <span class="synStatement">new</span> Form2(<span class="synStatement">this</span>); <span class="synComment">//インスタンスを作成</span>
+    form2.Show();  <span class="synComment">//form2を表示する</span>
+    Application.DoEvents();
+    var session = OAuth.Authorize(API_Key, API_Secret);
+    System.Diagnostics.Process.Start(session.AuthorizeUri.ToString());
+
+    <span class="synStatement">while</span> (pincode == <span class="synConstant">""</span>)
+    {
+        <span class="synComment">// pincode入力待ち</span>
+        Application.DoEvents();
+    }
+    var tokens = OAuth.GetTokens(session, pincode);
+
+    <span class="synComment">//認証情報を保存</span>
+    Properties.Settings.Default.A_Token = tokens.AccessToken;
+    Properties.Settings.Default.A_TokenSecret = tokens.AccessTokenSecret;
+    Properties.Settings.Default.Save();
+}
+</pre><p>ここまでで<a class="keyword" href="http://d.hatena.ne.jp/keyword/Tweet">Tweet</a>他<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>の権限は取得できますが、このセッションを保存しておけば、アプリを再起動後も有効です。<br/>
+そこで、認証情報をPropertiesに保存しておきアプリを起動後に読み込みます。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">private</span> <span class="synType">void</span> buttonTweet_Click(<span class="synType">object</span> sender, EventArgs e)
+{
+    var tokens = Tokens.Create(API_Key, API_Secret, A_Token, A_TokenSecret);
+}
+</pre>
+</div>
+<div class="section">
+<h3>まとめ</h3>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>のTokenの使用方法を解説しました。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A1%BC%A5%AF">トーク</a>ン（token）とは直訳すると「証拠」「しるし」「象徴」などの意味ですが、プログラミングでは「ユーザーのセキュリティ識別情報」です。<br/>
+<code>API key</code>、<code>API secret</code>がアプリの識別情報であるのに対して、Tokenはユーザー側の識別情報ということだと思います。</p>
+</div>
+<div class="section">
+<h3>関連記事</h3>
+<p><iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2017%2F05%2F07%2F135735" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="C#でTwitterにつぶやく - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2017/05/07/135735">s51517765.hatenadiary.jp</a></cite><br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2017%2F06%2F22%2F225304" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="Twitterへの自動投稿 - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2017/06/22/225304">s51517765.hatenadiary.jp</a></cite><br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2017%2F08%2F21%2F164447" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="CoretweetによるTwitter検索の実装 - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2017/08/21/164447">s51517765.hatenadiary.jp</a></cite></p>
+</div>
+</div>

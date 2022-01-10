@@ -1,0 +1,81 @@
+<div class="entry-content">
+<div class="section">
+<h3>ラズパイで温湿度・気圧を測定していました</h3>
+<p><iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2020%2F05%2F25%2F073000" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="エアコンをSlackでスマートリモコン化の効果を温湿度センサで測定する【2020年版】 - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2020/05/25/073000">s51517765.hatenadiary.jp</a></cite><br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2020%2F05%2F18%2F073000" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="Raspberry Pi で温湿度気圧センサBME280を使う - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2020/05/18/073000">s51517765.hatenadiary.jp</a></cite><br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2020%2F08%2F17%2F073000" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="ラズパイからFirebaseのCloud Firestoreへpushする - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2020/08/17/073000">s51517765.hatenadiary.jp</a></cite></p><p>昨年、やりかけたのですが放置していたのでグラフ表示を完成させました。</p><p>ちなみに、エアコン制御は妻がSwitchBotを導入したようで、今年は活用されない見込み…</p><p>昨年、ラズパイゼロでFirebaseへのアクセスを試みていたのですが、結局解決しなかったので今年はラズパイ3B+で<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B8%AB%A4%A8%A4%EB%B2%BD">見える化</a>をすることにしました。</p>
+</div>
+<div class="section">
+<h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/Google">Google</a> chartsを使ってグラフ化</h3>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Google">Google</a> chartsというものを使ってグラフ化します。<br/>
+<a href="https://developers.google.com/chart/interactive/docs/gallery/linechart">Line Chart  |  Charts  |  Google Developers</a></p><p>温湿度、気圧なので、横軸を時刻（日付）としたLine Chartを選択します。<br/>
+<code>drawChart()</code>がグラフの中身を設定する部分なので、ここにFirebaseからデータを引き出してグラフを作ります。</p><p>まず、FirebaseのデータベースであるFirestore Databaseからデータを引き出します。<br/>
+Firestore Databaseの基本的な使い方は、先に示した過去記事を参照ください。</p>
+<pre class="code lang-javascript" data-lang="javascript" data-unlink=""><span class="synIdentifier">let</span> dateList = <span class="synIdentifier">[]</span>;
+<span class="synIdentifier">let</span> tempList = <span class="synIdentifier">[]</span>;
+<span class="synIdentifier">let</span> humList = <span class="synIdentifier">[]</span>;
+<span class="synIdentifier">let</span> presList = <span class="synIdentifier">[]</span>;
+<span class="synIdentifier">var</span> db = firebase.firestore();
+<span class="synIdentifier">function</span> ListLoad()
+<span class="synIdentifier">{</span>
+    <span class="synIdentifier">var</span> List1 = <span class="synStatement">document</span>.getElementById(<span class="synConstant">"List1"</span>);
+
+    <span class="synComment">//データを取得</span>
+    db.collection(<span class="synConstant">"Database"</span>).get().then((querySnapshot) =&gt;
+    <span class="synIdentifier">{</span>
+        querySnapshot.forEach((doc) =&gt;
+        <span class="synIdentifier">{</span>
+            console.log(`$<span class="synIdentifier">{</span>doc.id<span class="synIdentifier">}</span> : $<span class="synIdentifier">{</span>doc.data().Temp<span class="synIdentifier">}</span> ℃, $<span class="synIdentifier">{</span>doc.data().Hum<span class="synIdentifier">}</span> %RH, $<span class="synIdentifier">{</span>doc.data().Pres<span class="synIdentifier">}</span> hPa`);
+            <span class="synIdentifier">var</span> element = <span class="synStatement">document</span>.createElement(<span class="synConstant">"li"</span>);
+            element.innerHTML = doc.id + <span class="synConstant">" : "</span> + doc.data().Temp + <span class="synConstant">"℃, "</span> + doc.data().Hum + <span class="synConstant">"%RH, "</span> + doc.data().Pres + <span class="synConstant">"hPa"</span>;
+            dateList.push(doc.id);
+            tempList.push(doc.data().Temp);
+            humList.push(doc.data().Hum);
+            presList.push(doc.data().Pres);
+            List1.append(element);
+        <span class="synIdentifier">}</span>);
+    <span class="synIdentifier">}</span>);
+<span class="synIdentifier">}</span>
+</pre><p>これをchartの<code>data</code>にpushします。<br/>
+ここで、Firestoreのデータは文字列になっているので、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C9%E2%C6%B0%BE%AE%BF%F4%C5%C0%BF%F4">浮動小数点数</a>に変換します。<br/>
+また、日付も文字列ですのでData型に変換します。<br/>
+温度・湿度と気圧の二つのグラフを作成します。</p>
+<pre class="code lang-javascript" data-lang="javascript" data-unlink=""><span class="synStatement">for</span> (<span class="synIdentifier">let</span> i = 0; i &lt; dateList.length; i++)
+<span class="synIdentifier">{</span>
+    data.addRows(<span class="synIdentifier">[</span>
+        <span class="synIdentifier">[</span><span class="synStatement">new</span> <span class="synType">Date</span>(dateList<span class="synIdentifier">[</span>i<span class="synIdentifier">]</span>), parseFloat(tempList<span class="synIdentifier">[</span>i<span class="synIdentifier">]</span>), parseFloat(humList<span class="synIdentifier">[</span>i<span class="synIdentifier">]</span>)<span class="synIdentifier">]</span> <span class="synComment">//文字列はparseする</span>
+    <span class="synIdentifier">]</span>);
+    data1.addRows(<span class="synIdentifier">[</span>
+        <span class="synIdentifier">[</span><span class="synStatement">new</span> <span class="synType">Date</span>(dateList<span class="synIdentifier">[</span>i<span class="synIdentifier">]</span>), parseFloat(presList<span class="synIdentifier">[</span>i<span class="synIdentifier">]</span>)<span class="synIdentifier">]</span> <span class="synComment">//文字列はparseする</span>
+    <span class="synIdentifier">]</span>);
+<span class="synIdentifier">}</span>
+</pre><p>また、日付のカラムはdatetime型にしておきます。</p>
+<pre class="code lang-javascript" data-lang="javascript" data-unlink="">data.addColumn(<span class="synConstant">'datetime'</span>, <span class="synConstant">'Day'</span>); <span class="synComment">//横軸は日付形式</span>
+</pre>
+</div>
+<div class="section">
+<h3>読み込みに時間差をつける</h3>
+<p>どうやら<a class="keyword" href="http://d.hatena.ne.jp/keyword/Google">Google</a> Chartsは非同期で実行されるらしく、「Firestoreからデータの読み込み→グラフの作成」としてもデータの読み込みより先にグラフの作成がされて、表示されるデータがない、ということが起きます。<br/>
+これを回避するため、グラフの作成を待たせます。<br/>
+データ量にも依存するとは思いますが、私が試した範囲では500ms以上遅延させればうまくいきました。<br/>
+ここでは余裕を持たせて1000msの遅延を入れています。<br/>
+同期処理にするのが本当はいいのでしょうが、知見がないので簡易的に済ませました。</p>
+<pre class="code lang-javascript" data-lang="javascript" data-unlink=""><span class="synStatement">window</span>.onload = <span class="synIdentifier">function</span> ()
+<span class="synIdentifier">{</span>
+    ListLoad();
+    setTimeout(<span class="synIdentifier">function</span> ()
+    <span class="synIdentifier">{</span>　<span class="synComment">// 処理の実行に遅延を入れる</span>
+        google.charts.load(<span class="synConstant">'current'</span>, <span class="synIdentifier">{</span> <span class="synConstant">'packages'</span>: <span class="synIdentifier">[</span><span class="synConstant">'line'</span><span class="synIdentifier">]</span> <span class="synIdentifier">}</span>);
+        google.charts.setOnLoadCallback(drawChart);
+    <span class="synIdentifier">}</span>, 1000); <span class="synComment">//500ms以上</span>
+<span class="synIdentifier">}</span>;
+</pre>
+</div>
+<div class="section">
+<h3>まとめ</h3>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Google">Google</a> Chartsを使って環境値をグラフ化し、Webで見れるようにしました。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Google">Google</a> Chartsはほかにもおしゃれな見た目のグラフが色々使えるようです。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210711172550j:plain" class="hatena-fotolife" height="886" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210711/20210711172550.jpg" title="" width="891"/></span><br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210711172610j:plain" class="hatena-fotolife" height="848" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210711/20210711172610.jpg" title="" width="588"/></span></p><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fs51517765%2FEnvironment_graph" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="s51517765/Environment_graph"></iframe><cite class="hatena-citation"><a href="https://github.com/s51517765/Environment_graph">github.com</a></cite></p>
+</div>
+</div>

@@ -1,0 +1,56 @@
+<div class="entry-content">
+<div class="section">
+<h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%CF%A5%F3%A5%C9%A5%B9%A5%D4%A5%CA%A1%BC">ハンドスピナー</a>の回転数をM5Stackで測ってみた</h3>
+<p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210828223704j:plain" class="hatena-fotolife" height="646" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210828/20210828223704.jpg" title="" width="879"/></span><br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210828223711j:plain" class="hatena-fotolife" height="870" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210828/20210828223711.jpg" title="" width="984"/></span><br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%CF%A5%F3%A5%C9%A5%B9%A5%D4%A5%CA%A1%BC">ハンドスピナー</a>とは、上図のように複数の羽をもったもので、回転させて楽しむおもちゃです。<br/>
+手遊びするフィジェット(fidget)の一つですが、性能のいいものや上手い人ならより高速により長く回転させることが出来ます。 </p><p>これを測定する仕組みを作ってみました。<br/>
+とても簡単で、光センサ(<a class="keyword" href="http://d.hatena.ne.jp/keyword/cds">cds</a>)で<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%CF%A5%F3%A5%C9%A5%B9%A5%D4%A5%CA%A1%BC">ハンドスピナー</a>の羽を検出し、<a class="keyword" href="http://d.hatena.ne.jp/keyword/FFT">FFT</a>(<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>のライブラリを使用)で周波数を算出し、回転数を算出します。<br/>
+コードの全容は<a class="keyword" href="http://d.hatena.ne.jp/keyword/GitHub">GitHub</a>を見ていただくとして、<a class="keyword" href="http://d.hatena.ne.jp/keyword/CDS">CDS</a>を使った明るさ検知は↓のような回路で実現できます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210828224045p:plain" class="hatena-fotolife" height="400" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210828/20210828224045.png" title="" width="640"/></span><br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/CDS">CDS</a>は明るさによって抵抗が変わるので、羽が<a class="keyword" href="http://d.hatena.ne.jp/keyword/CDS">CDS</a>の上に来たときとそうでないときで抵抗が変わります。<br/>
+これと基準抵抗（ここでは5kΩ）との分圧によって抵抗を検出すると、この切り替わりを検出することが出来ます。<br/>
+上の写真ではかまぼこ板に<a class="keyword" href="http://d.hatena.ne.jp/keyword/CDS">CDS</a>が張り付けてあります。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; FFTsamples; i++)
+{
+    inputRe[i] = analogRead(CdS_Port); <span class="synComment">//0 - 4095</span>
+    delay(<span class="synConstant">1000</span> / SAMPLING_FREQUENCY); <span class="synComment">//ms</span>
+    ave += inputRe[i];
+}
+ave /= FFTsamples;
+</pre><p>アナログ入力で抵抗を検出し、これを一定間隔で取得します。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/FFT">FFT</a>を行いたいので、配列に順番に格納します。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/FFT">FFT</a>においては平均値が非ゼロであると、周波数0Hzの定数項が出ます。<br/>
+ここでは定数項は除外したいので、平均値がゼロになるように<code>ave</code>を算出しオフセットします。<br/>
+これで平均が0になり<a class="keyword" href="http://d.hatena.ne.jp/keyword/FFT">FFT</a>の定数項がでないようになります。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; FFTsamples; i++)
+{
+  inputRe[i] -= ave; <span class="synComment">//平均値を0にする</span>
+}
+</pre><p>このように取得したデータを<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>の<a class="keyword" href="http://d.hatena.ne.jp/keyword/FFT">FFT</a>ライブラリ<code>#include "arduinoFFT.h"</code>に入力すると、簡単に周波数を取得できます。<br/>
+<code>FFT.MajorPeak</code>が最も強度の強い周波数を取得する関数です。</p>
+<pre class="code lang-c" data-lang="c" data-unlink="">arduinoFFT FFT = arduinoFFT(inputRe, inputIm, FFTsamples, SAMPLING_FREQUENCY); <span class="synComment">// FFTオブジェクトを作る</span>
+FFT.Compute(inputRe, inputIm, FFTsamples, FFT_FORWARD);
+FFT.ComplexToMagnitude(inputRe, inputIm, FFTsamples);
+<span class="synType">double</span> Freq = FFT.MajorPeak(inputRe, FFTsamples, SAMPLING_FREQUENCY);
+</pre><p>これを<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%CF%A5%F3%A5%C9%A5%B9%A5%D4%A5%CA%A1%BC">ハンドスピナー</a>の回転数に変換します。<br/>
+ここでは羽が3枚なので取得される周波数に対して3で割り、周波数は1秒基準なので<a class="keyword" href="http://d.hatena.ne.jp/keyword/rpm">rpm</a>（回転数）にするため1分基準に変換します。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synType">double</span> Rpm = Freq / <span class="synConstant">3</span> * <span class="synConstant">60</span>; 
+</pre>
+</div>
+<div class="section">
+<h3>はまったところ</h3>
+<p>実はこれを作るのに半分以上ライブラリの使い方で迷ってました。<br/>
+迷った点というのがM5Stackにビルド・書き込みはできるのにRebootを繰り返すというものでした。<br/>
+原因は入力データ数を9Bit以上にするとダメ、というものでした。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/FFT">FFT</a>は入力データ数を2のN乗にすることで効率的に<a class="keyword" href="http://d.hatena.ne.jp/keyword/%BF%F4%C3%CD%B7%D7%BB%BB">数値計算</a>ができるというものですが、サンプリング時間（サンプリング数）を多くしたほうが周波数分解能は高くなります。</p>
+</div>
+<div class="section">
+<h3>まとめ</h3>
+<p>M5Stackで<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%CF%A5%F3%A5%C9%A5%B9%A5%D4%A5%CA%A1%BC">ハンドスピナー</a>の回転数を測定しました。<br/>
+(<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>の<a class="keyword" href="http://d.hatena.ne.jp/keyword/FFT">FFT</a>ライブラリは)<a class="keyword" href="http://d.hatena.ne.jp/keyword/FFT">FFT</a>はデータ数8bit(256データ)までしか使えないようです。<br/>
+実は<a class="keyword" href="http://d.hatena.ne.jp/keyword/FFT">FFT</a>をハードコーディングもしてみたのですが、同様にRebootしていてライブラリの問題ではないようですが、真の原因はわかりません。<br/>
+<iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" frameborder="0" height="315" src="https://www.youtube.com/embed/5weT4MUtj3s?feature=oembed" width="560"></iframe><cite class="hatena-citation"><a href="https://youtu.be/5weT4MUtj3s">youtu.be</a></cite><br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fs51517765%2Fhandspinner_tachometer" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="GitHub - s51517765/handspinner_tachometer: Measure the number of revolutions of the fidget spinner with M5stack"></iframe><cite class="hatena-citation"><a href="https://github.com/s51517765/handspinner_tachometer">github.com</a></cite><br/>
+<span style="font-size: 80%">ArduinoIDEを使う人は<code>src/main.cpp</code>の中身をArduinoIDEににコピペするか<code>xxx.ino</code>にファイル名を変更してください。</span></p>
+</div>
+</div>

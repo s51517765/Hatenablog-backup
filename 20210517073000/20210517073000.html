@@ -1,0 +1,48 @@
+<div class="entry-content">
+<div class="section">
+<h3>フリマアプリで買ったM5Stackのバッテリーが壊れました</h3>
+<p>もとから興味はあったM5Stackですがelchikaのキャンペーンでもらって、その面白さにはまりボタンが3つあるBasicを追加購入しました。<br/>
+某フリマアプリで3000円でBasic（ほぼ未使用）を購入したのですが<br/>
+「バッテリーが弱い？」<br/>
+とは思いつつ起動するからOK、と出品者の評価も済ませていました。</p><p>その後「24時間充電」とかしてもバッテリーでは全く起動しなくなりました。</p>
+</div>
+<div class="section">
+<h3>M5Stack公式<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>に問い合わせる</h3>
+<p>以前、M5StackCでもバッテリーの不具合があって、そのとき公式<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>がユーザーの問い合わせに答えていたことがありました。</p><blockquote class="twitter-tweet" data-conversation="none" data-lang="ja"><p dir="ltr" lang="ja">M5StickCが起動しない状況について公式様よりリプライを頂きました。これは…3V3とG0の間に抵抗を挿してみる、ということでしょうか…。 <a href="https://t.co/nktwrQ6OYn">https://t.co/nktwrQ6OYn</a></p>— らびやん (@lovyan03) <a href="https://twitter.com/lovyan03/status/1148227480689336326?ref_src=twsrc%5Etfw">2019年7月8日</a></blockquote> <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script> <br/>
+そこで、私も問いかけてみました。<blockquote class="twitter-tweet" data-conversation="none" data-lang="ja"><p dir="ltr" lang="en">My M5stack  basic is not start on battery. But it start with usb power supply. <br/>I checked battery level is 3.9V and 5Vpin has 1.9V、3.3VPin has 1.2V. <br/>So i seems to it is start but <a class="keyword" href="http://d.hatena.ne.jp/keyword/LCD">LCD</a> and devices are not.<br/>What can i do?<a href="https://twitter.com/M5Stack?ref_src=twsrc%5Etfw">@M5Stack</a> <a href="https://t.co/xXjQnsymQo">pic.twitter.com/xXjQnsymQo</a></p>— とりてん (@s51517765) <a href="https://twitter.com/s51517765/status/1389501662738345987?ref_src=twsrc%5Etfw">2021年5月4日</a></blockquote> <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script> <br/>
+すると、このように答えていただけました。<blockquote class="twitter-tweet" data-conversation="none" data-lang="ja"><p dir="ltr" lang="en">It is strange, pls check the voltage of 5v and 3.3v pin when it all turns off. Did it be able to start with battery before?</p>— M5Stack (@M5Stack) <a href="https://twitter.com/M5Stack/status/1389519073755729924?ref_src=twsrc%5Etfw">2021年5月4日</a></blockquote> <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script> <br/>
+この後、数回のやり取りの後「事態は重そうだな」と私が判断してDMに移りましたが、こちらでもいろいろと答えてもらいました。
+
+</div>
+<div class="section">
+<h3>結局の原因</h3>
+<p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210512213803p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210512/20210512213803.png" title=""/></span><br/>
+バッテリーが膨らみ、液漏れしている状態で、バッテリーがダメになったと判断しました。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210512212935p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210512/20210512212935.png" title=""/></span><br/>
+しかし、この状態でもバッテリーの両端は3.8Vぐらいでていたので、これで動かないのはバッテリーの保護回路が動いているのでしょうか？</p><p>回路図を見ても、とくに何か特別なことはしているように見えないのでこれ以上はわかりません。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210516220621p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210516/20210516220621.png" title=""/></span><br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fm5stack%2FM5-Schematic%2Fblob%2Fmaster%2FCore%2FBasic%2FM5-Core-Schematic(20171206).pdf" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="m5stack/M5-Schematic"></iframe><cite class="hatena-citation"><a href="https://github.com/m5stack/M5-Schematic/blob/master/Core/Basic/M5-Core-Schematic(20171206).pdf">github.com</a></cite><br/>
+</p>
+</div>
+<div class="section">
+<h3>私の対応</h3>
+<p>ニッパーでバッテリーのリード線を切断し、バッテリーなしで使うことにしました。<br/>
+分解グッズ（無くても可）でBottomを外します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210512215116p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210512/20210512215116.png" title=""/></span><br/>
+ボトムは6角ネジを外します。サイズは1.5mmです。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210512215247p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210512/20210512215247.png" title=""/></span><br/>
+すると、先の写真のようにバッテリーが出現します。</p><p>バッテリーが無くてもUSB給電で起動できます。<br/>
+M5Stackがバッテリーなしでも起動できることは覚えておいて損はないと思います。</p><blockquote class="twitter-tweet" data-conversation="none" data-lang="ja"><p dir="ltr" lang="ja">M5stack はBottomを外してもUSB給電なら起動で来るんだ。<br/>BottomはバッテリーとGPIOがあるだけ。<br/>そして向かい合ったピンヘッダは繋がってるんだ。ラベルが左右、上下対称なのはそういうことだったのか。 <a href="https://t.co/TiHB0B7M5W">pic.twitter.com/TiHB0B7M5W</a></p>— とりてん (@s51517765) <a href="https://twitter.com/s51517765/status/1389844344643801089?ref_src=twsrc%5Etfw">2021年5月5日</a></blockquote> <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script> <p>また、電池3本直列でも起動できました。</p><blockquote class="twitter-tweet" data-conversation="none" data-lang="ja"><p dir="ltr" lang="ja">M5Stack のバッテリーが死んだようなので安全のため取り外して、電池駆動を試したら単4電池3本で動いた! <a href="https://t.co/YJHZrShFeM">pic.twitter.com/YJHZrShFeM</a></p>— とりてん (@s51517765) <a href="https://twitter.com/s51517765/status/1391288899255771137?ref_src=twsrc%5Etfw">2021年5月9日</a></blockquote> <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script> <p>ここで、電池ボックスは100均のLEDライトから取りました。<br/>
+普通に電池ボックスを買うと110円以上することもあるので、これは活用できる<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%E9%A5%A4%A5%D5%A5%CF%A5%C3%A5%AF">ライフハック</a>だと思います。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210512215805p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210512/20210512215805.png" title=""/></span><br/>
+</p>
+</div>
+<div class="section">
+<h3>まとめ</h3>
+<p>M5Stackがバッテリーで起動しなくなったので、バッテリーなしで使うことにしました。<br/>
+バッテリーをなくしても電池3本で起動できます。<br/>
+また、M5Stackの公式<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a>はユーザーの問いかけに気軽に答えてくれます。<br/>
+他にもユーザーのM5Stackの<a class="keyword" href="http://d.hatena.ne.jp/keyword/Tweet">Tweet</a>はもれなくFav.してきます。<a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>でやってるんでしょうけど。<br/>
+また、質の高い作品はRTしているのでM5Stackユーザーはこれを追いかけているだけでも楽しいです。</p>
+</div>
+</div>

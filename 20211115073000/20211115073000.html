@@ -1,0 +1,116 @@
+<div class="entry-content">
+<div class="section">
+<h3>ARMでモーター制御</h3>
+<p>以前ARMに入門しましたがもう少し進めてみました。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2021%2F10%2F25%2F073000" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="ビュートローバーでARM CortexM3入門 - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2021/10/25/073000">s51517765.hatenadiary.jp</a></cite></p><p>ビュートローバーにはモータが2つついていて、前進後進のほかに転回もできるようになっています。<br/>
+また、ライントレーサーとしてのプログラミングもできるように反射光で地面を観測できるセンサが付いています。<br/>
+ライントレーサーはよっぽど広い場所がないといまいち楽しめないですが、これらを使って簡単なプログラムを作ってみました。</p><blockquote class="twitter-tweet" data-conversation="none" data-lang="ja"><p dir="ltr" lang="ja">ビュートローバーARMでモーター制御出来た!<br/>地面の境目でターン! <a href="https://t.co/j8EcPupScC">pic.twitter.com/j8EcPupScC</a></p>— とりてん (@s51517765) <a href="https://twitter.com/s51517765/status/1459438831233421314?ref_src=twsrc%5Etfw">2021年11月13日</a></blockquote> <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script> <blockquote class="twitter-tweet" data-conversation="none" data-lang="ja"><p dir="ltr" lang="ja">押しボタンで転回機能追加。 <a href="https://t.co/t1RwBi0nFR">pic.twitter.com/t1RwBi0nFR</a></p>— とりてん (@s51517765) <a href="https://twitter.com/s51517765/status/1459441676124971018?ref_src=twsrc%5Etfw">2021年11月13日</a></blockquote> <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script>
+</div>
+<div class="section">
+<h3>シリアル通信と押しボタン検知を実装</h3>
+<p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fvstone.co.jp%2Frobotshop%2Fblog%2Farchives%2F1293" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="【ロボコンに最適！】ビュートローバー・パソコン間で通信すると便利すぎた！【シリアル通信】 ｜ ロボット専門店のスタッフブログ -ロボットとの共存-"></iframe><cite class="hatena-citation"><a href="https://vstone.co.jp/robotshop/blog/archives/1293">vstone.co.jp</a></cite><br/>
+こちらを参考にシリアル通信と押しボタン検知を実装します。</p><p>ARMのシリアル通信機能を用いてセンサー値をまず読んでみます。<br/>
+ただし、シリアル出力はサンプルとして<code>cdcuser.c</code>に実装されています。<br/>
+<code>ADRead()</code>は<code>vs-wrc103.c</code>に実装されています。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synPreProc">#include </span><span class="synConstant">&lt;stdio.h&gt;</span>
+
+<span class="synType">char</span> sentence [<span class="synConstant">11</span>]; <span class="synComment">//送る文字数より１文字多い配列を確保する。</span>
+<span class="synStatement">while</span>(<span class="synConstant">1</span>){ <span class="synComment">//{}内を永遠に繰り返す</span>
+  	<span class="synStatement">for</span>(<span class="synType">int</span> i=<span class="synConstant">0</span>; i&lt;<span class="synConstant">2</span>; i++){                <span class="synComment">//for文　２回くりかえす</span>
+  	    <span class="synType">unsigned</span> <span class="synType">short</span>  data=ADRead(i);                <span class="synComment">//赤外線センサの値をA/D変換してdataに代入</span>
+	    sprintf(sentence,<span class="synConstant">"AN</span><span class="synSpecial">%01d</span><span class="synConstant">=</span><span class="synSpecial">%04d\r\n</span><span class="synConstant">"</span>,i,data);    <span class="synComment">//%01にはiの値が1桁、%04にはdataの値が4桁で</span>
+  	               <span class="synComment">//文字列に変換され</span>
+  	               <span class="synComment">//まとめてsentenceに文字列として格納される</span>
+  	               <span class="synComment">//\r\n（２文字）は改行を表す</span>
+        SciStrTx(sentence,<span class="synConstant">10</span>);            <span class="synComment">//変数sentenceに入った10文字をパソコンに送信</span>
+        Wait(<span class="synConstant">20</span>);                    <span class="synComment">//0.02秒待つ</span>
+}
+sprintf(sentence,<span class="synConstant">"</span><span class="synSpecial">\033</span><span class="synConstant">[1;1H"</span>);             <span class="synComment">//1行目1列目にカーソルを戻すエスケープシーケンスの命令</span>
+SciStrTx(sentence,<span class="synConstant">6</span>);                 <span class="synComment">//エスケープシーケンス6文字を送信</span>
+Wait(<span class="synConstant">20</span>);                    <span class="synComment">//0.02秒待つ</span>
+  	}
+</pre><p>これで2つ実装されているセンサの値をシリアルに出力します。<br/>
+シリアル通信は<a class="keyword" href="http://d.hatena.ne.jp/keyword/TeraTerm">TeraTerm</a>で見ることが出来ます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211113175228p:plain" class="hatena-fotolife" height="493" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211113/20211113175228.png" title="" width="661"/></span><br/>
+ここで、FW書き込みのためのUSB接続と<a class="keyword" href="http://d.hatena.ne.jp/keyword/TeraTerm">TeraTerm</a>によるシリアル通信は排他的になるようです。<br/>
+他方を閉じないと接続できません。<br/>
+これで、転回させる位置とそれ以外の位置のセンサー出力を確認し、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%EF%E7%C3%CD">閾値</a>を決めます。<br/>
+私の環境では、転回位置ではおよそ800でそれ以外ではおよそ400でした。<br/>
+これより<a class="keyword" href="http://d.hatena.ne.jp/keyword/%EF%E7%C3%CD">閾値</a>を600とします。</p><p>次に押しボタンを検出するコードです。<br/>
+ここではシリアルに出力しています。<br/>
+ここで<code>getSW()</code>は<code>vs-wrc103.c</code>に実装されています。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synStatement">while</span> (<span class="synConstant">1</span>) {
+	<span class="synStatement">if</span>(getSW()==<span class="synConstant">1</span>){<span class="synComment">//押しボタンがおされたら</span>
+		SciByteTx(<span class="synConstant">'C'</span>); <span class="synComment">//（大文字のC）を送信</span>
+		Wait(<span class="synConstant">100</span>); <span class="synComment">//0.1秒待つ</span>
+	}
+</pre>
+</div>
+<div class="section">
+<h3>地面の境目で転回し、押しボタン検知で転回する</h3>
+<p>あとは、モーターが制御できれば目的は達成できそうです。<br/>
+モーターの制御は<code>vs-wrc103.c</code>に実装されてされています。<br/>
+<code>void Mtr_Run_lv(short m1,short m2,short m3,short m4,short m5,short m6)</code>は中身とドキュメント（VS-WRC103LV_doc_ver04.pdf）、サンプルコードを見ると、標準で実装されている2つのモーターは<code>m1</code>と<code>m2</code>で制御できそうとわかります。<br/>
+ここに速度のパラメータを渡せばよさそうです。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synPreProc">#include </span><span class="synConstant">"lpc13xx.h"</span>
+<span class="synPreProc">#include </span><span class="synConstant">"gpio.h"</span>
+<span class="synPreProc">#include </span><span class="synConstant">"vs-wrc103.h"</span>
+<span class="synPreProc">#include </span><span class="synConstant">"ixbus.h"</span>
+<span class="synPreProc">#include </span><span class="synConstant">"cdcuser.h"</span>
+<span class="synPreProc">#include </span><span class="synConstant">&lt;stdio.h&gt;</span>
+
+<span class="synType">int</span> read_sensor(){
+  	<span class="synType">char</span> sentence [<span class="synConstant">11</span>]; <span class="synComment">//送る文字数より１文字多い配列を確保する。</span>
+  	<span class="synType">unsigned</span> <span class="synType">short</span> data[<span class="synConstant">2</span>];
+	<span class="synStatement">for</span>(<span class="synType">int</span> i=<span class="synConstant">0</span>; i&lt;<span class="synConstant">2</span>; i++){                <span class="synComment">//for文　２回くりかえす</span>
+		data[i]=ADRead(i);                <span class="synComment">//赤外線センサの値をA/D変換してdataに代入</span>
+		sprintf(sentence,<span class="synConstant">"AN</span><span class="synSpecial">%01d</span><span class="synConstant">=</span><span class="synSpecial">%04d\r\n</span><span class="synConstant">"</span>,i,data[i]);    <span class="synComment">//%01にはiの値が1桁、%04にはdataの値が4桁で</span>
+						<span class="synComment">//文字列に変換され</span>
+						<span class="synComment">//まとめてsentenceに文字列として格納される</span>
+								<span class="synComment">//\r\n（２文字）は改行を表す</span>
+		SciStrTx(sentence,<span class="synConstant">10</span>);            <span class="synComment">//変数sentenceに入った10文字をパソコンに送信</span>
+		Wait(<span class="synConstant">20</span>);                    <span class="synComment">//0.02秒待つ</span>
+	}
+	sprintf(sentence,<span class="synConstant">"</span><span class="synSpecial">\033</span><span class="synConstant">[1;1H"</span>);             <span class="synComment">//1行目1列目にカーソルを戻すエスケープシーケンスの命令</span>
+	SciStrTx(sentence,<span class="synConstant">6</span>);                 <span class="synComment">//エスケープシーケンス6文字を送信</span>
+	Wait(<span class="synConstant">20</span>);                    <span class="synComment">//0.02秒待つ</span>
+
+	<span class="synStatement">if</span> ((data[<span class="synConstant">0</span>]+data[<span class="synConstant">1</span>])/<span class="synConstant">2</span>&gt;<span class="synConstant">600</span>)<span class="synStatement">return</span> <span class="synConstant">1</span>;
+	<span class="synStatement">else</span> <span class="synStatement">return</span> <span class="synConstant">0</span>;
+}
+
+<span class="synType">int</span> main (<span class="synType">void</span>)
+{
+	<span class="synComment">//制御周期の設定[単位：Hz　範囲：30.0~]</span>
+	<span class="synType">const</span> <span class="synType">unsigned</span> <span class="synType">short</span> MainCycle = <span class="synConstant">60</span>;
+	Init(MainCycle);		<span class="synComment">//CPUの初期設定</span>
+	SciInit();
+	<span class="synStatement">while</span>(<span class="synConstant">1</span>){
+		<span class="synType">int</span> sns=	read_sensor();
+		<span class="synStatement">if</span>(getSW()==<span class="synConstant">1</span>){<span class="synComment">//押しボタンがおされたら</span>
+			<span class="synComment">//逆転回</span>
+			Mtr_Run_lv(<span class="synConstant">10000</span>,<span class="synConstant">10000</span>,<span class="synConstant">0</span>,<span class="synConstant">0</span>,<span class="synConstant">0</span>,<span class="synConstant">0</span>);
+			Wait(<span class="synConstant">3000</span>);
+		}
+		<span class="synStatement">else</span> <span class="synStatement">if</span> (sns==<span class="synConstant">1</span>) {
+			<span class="synComment">//転回</span>
+			Mtr_Run_lv(-<span class="synConstant">10000</span>,-<span class="synConstant">10000</span>,<span class="synConstant">0</span>,<span class="synConstant">0</span>,<span class="synConstant">0</span>,<span class="synConstant">0</span>);
+			Wait(<span class="synConstant">3000</span>);
+		}
+		<span class="synStatement">else</span> {
+			<span class="synComment">//前進</span>
+			Mtr_Run_lv(-<span class="synConstant">10000</span>,<span class="synConstant">10000</span>,<span class="synConstant">0</span>,<span class="synConstant">0</span>,<span class="synConstant">0</span>,<span class="synConstant">0</span>);
+			<span class="synComment">//後進</span>
+			<span class="synComment">//Mtr_Run_lv(10000,-10000,0,0,0,0);</span>
+		}
+	}
+}
+</pre>
+</div>
+<div class="section">
+<h3>まとめ</h3>
+<p>といっても、<code>LPC_TMR16B0-&gt;MR0 = t_Duty[0]&amp;0x0000FFFF;</code>のあたりとか意味わからないです。<br/>
+サンプルコードやドキュメントは以下の公式ページで見れます。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fwww.vstone.co.jp%2Fproducts%2Fbeauto_rover%2Fdownload.html" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="ビュートローバーARM/H8 (Beauto Rover) - ダウンロード | ヴイストン株式会社"></iframe><cite class="hatena-citation"><a href="https://www.vstone.co.jp/products/beauto_rover/download.html">www.vstone.co.jp</a></cite></p>
+</div>
+</div>

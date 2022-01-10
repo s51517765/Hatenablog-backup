@@ -28,6 +28,10 @@ a,b,c=<span class="synIdentifier">map</span>(<span class="synIdentifier">int</sp
 <span class="synStatement">for</span> i <span class="synStatement">in</span> <span class="synIdentifier">range</span>(n):
     <span class="synIdentifier">list</span>=[<span class="synIdentifier">int</span>(s) <span class="synStatement">for</span> s <span class="synStatement">in</span> <span class="synIdentifier">input</span>().split()]
 <span class="synIdentifier">print</span>(<span class="synIdentifier">list</span>[<span class="synConstant">0</span>]+<span class="synIdentifier">list</span>[<span class="synConstant">1</span>])
+</pre><p>文字列をListに（スペース区切りではないとき）</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synComment">#入力→ '日月火水木金土'</span>
+<span class="synIdentifier">list</span>(<span class="synIdentifier">input</span>())
+<span class="synComment">#  ['日', '月', '火', '水', '木', '金', '土']</span>
 </pre><p>これらを応用して、n行にわたって入力がある場合は<code>for</code>で<code>input()</code>を回します</p><p></p><h3>出力編</h3>スペース区切りで出力せよ、という回答の仕方はよく出ます。<br/>
 listのjoinで複数の数値をスペース区切りの一つの文字列にします。
 <pre class="code lang-python" data-lang="python" data-unlink=""><span class="synIdentifier">list</span>=[<span class="synConstant">"6"</span>, <span class="synConstant">"5"</span>, <span class="synConstant">"6"</span>, <span class="synConstant">"8"</span>]

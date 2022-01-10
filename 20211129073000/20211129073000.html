@@ -1,0 +1,43 @@
+<div class="entry-content">
+<div class="section">
+<h3>なぜかラズパイへの<a class="keyword" href="http://d.hatena.ne.jp/keyword/SSH">SSH</a>接続が<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C9%D4%C4%EA">不定</a>期に切断する</h3>
+<p>通常、ラズパイを用いた開発では<a class="keyword" href="http://d.hatena.ne.jp/keyword/SSH">SSH</a>で<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a> PCからアクセスしてるのですが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EB%A1%BC%A5%BF%A1%BC">ルーター</a>を変えてから<a class="keyword" href="http://d.hatena.ne.jp/keyword/SSH">SSH</a>が<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C9%D4%C4%EA">不定</a>期に強制切断されて<a class="keyword" href="http://d.hatena.ne.jp/keyword/TeraTerm">TeraTerm</a>が落ちる、ということが続いています。<br/>
+ネットワークが切れているだけで、<a class="keyword" href="http://d.hatena.ne.jp/keyword/HDMI">HDMI</a>でモニター出力してみると、ラズパイは生きているのですが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a> PCからの<a class="keyword" href="http://d.hatena.ne.jp/keyword/ping">ping</a>が届かないような状況です。<br/>
+また、ラズパイで<a class="keyword" href="http://d.hatena.ne.jp/keyword/GUI">GUI</a>のブラウザを一度起動するとアクセスが復活する、という状況です。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/TeraTerm">TeraTerm</a>にもこのような現象に対応する機能があるようなのですが、私の状況下では効果がありませんでした。</p>
+</div>
+<div class="section">
+<h3>対策</h3>
+<p>shell<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">スクリプト</a>で定期的に適当なところに<a class="keyword" href="http://d.hatena.ne.jp/keyword/ping">ping</a>を打ち続けることで解決しました。</p>
+<pre class="code lang-sh" data-lang="sh" data-unlink=""><span class="synComment">#!/bin/bash</span>
+<span class="synStatement">while :</span>
+<span class="synStatement">do</span>
+	ping <span class="synConstant">172</span>.<span class="synConstant">16</span>.<span class="synConstant">80</span>.<span class="synConstant">29</span> <span class="synStatement">-c</span> <span class="synConstant">1</span> <span class="synStatement">&gt;&gt;</span> /dev/null
+	<span class="synStatement">sleep</span> <span class="synConstant">30</span>
+<span class="synStatement">done</span>
+</pre><p>これを<code>ping.sh</code>としてhomeに保存します。</p><p><code>ping</code>はそのまま、<a class="keyword" href="http://d.hatena.ne.jp/keyword/ping">ping</a>を打ちます。<br/>
+パラメータの<code>-c 1</code>は1回という指定です。<br/>
+<code>&gt;&gt; /dev/null</code>はそのレスポンス結果を破棄する、というものです。<br/>
+これを30秒ごとにループします。<br/>
+ターゲットの<a class="keyword" href="http://d.hatena.ne.jp/keyword/ip%A5%A2%A5%C9%A5%EC%A5%B9">ipアドレス</a>はローカルで、使われていないアドレスです(<a class="keyword" href="http://d.hatena.ne.jp/keyword/DHCP">DHCP</a>だと何かが設定される可能性はありますが)。</p>
+</div>
+<div class="section">
+<h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/%BC%AB%C6%B0%B5%AF%C6%B0">自動起動</a>する</h3>
+<p>これをラズパイ起動時に実行することで<a class="keyword" href="http://d.hatena.ne.jp/keyword/SSH">SSH</a>が切れることがなくなりました。<br/>
+これは常に実行したいので、ラズパイ起動時に<a class="keyword" href="http://d.hatena.ne.jp/keyword/%BC%AB%C6%B0%B5%AF%C6%B0">自動起動</a>するように設定します。<br/>
+ラズパイ起動時に自動実行する方法は各種ありますが、一番簡単な方法（個人の感想です）で設定しました。</p>
+<pre class="code" data-lang="" data-unlink="">$ sudo vim /etc/rc.local</pre><p>このファイルのexit 0の上に</p>
+<pre class="code" data-lang="" data-unlink="">sh /home/raspberrypi0/ping.sh</pre><p>を追記します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211122142741p:plain" class="hatena-fotolife" height="498" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211122/20211122142741.png" title="" width="663"/></span></p><p>再起動します。<br/>
+<code>ping.sh</code>が起動されていれば成功です。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211122142852j:plain" class="hatena-fotolife" height="498" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211122/20211122142852.jpg" title="" width="663"/></span></p><p>また、複数設定したい場合は末尾に<code> &amp;</code>を付けます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211122143630p:plain" class="hatena-fotolife" height="498" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211122/20211122143630.png" title="" width="663"/></span><br/>
+</p>
+</div>
+<div class="section">
+<h3>まとめ</h3>
+<p>ラズパイでの自動実行とこれを用いて<a class="keyword" href="http://d.hatena.ne.jp/keyword/SSH">SSH</a>が切れる対策をしました。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Frainbow-engine.com%2Flinux-scheduled-ping-check%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Linux：サーバ死活管理スクリプト – Rainbow Engine"></iframe><cite class="hatena-citation"><a href="https://rainbow-engine.com/linux-scheduled-ping-check/">rainbow-engine.com</a></cite><br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fwebbibouroku.com%2FBlog%2FArticle%2Fdev-null" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="/dev/null の意味と使い道、ファイルを空で初期化"></iframe><cite class="hatena-citation"><a href="https://webbibouroku.com/Blog/Article/dev-null">webbibouroku.com</a></cite><br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Frikoubou.hatenablog.com%2Fentry%2F2020%2F09%2F18%2F165936" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="【Raspberry Pi】プログラムの自動起動 - ソースに絡まるエスカルゴ"></iframe><cite class="hatena-citation"><a href="https://rikoubou.hatenablog.com/entry/2020/09/18/165936">rikoubou.hatenablog.com</a></cite></p>
+</div>
+</div>

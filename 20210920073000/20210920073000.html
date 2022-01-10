@@ -1,0 +1,108 @@
+<div class="entry-content">
+<div class="section">
+<h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%D7%A5%EC%A5%C3%A5%C9%A5%B7%A1%BC%A5%C8">スプレッドシート</a>にLogを書き込むと便利</h3>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%D7%A5%EC%A5%C3%A5%C9%A5%B7%A1%BC%A5%C8">スプレッドシート</a>とは<a class="keyword" href="http://d.hatena.ne.jp/keyword/Google">Google</a>アカウントで無料で使える<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C9%BD%B7%D7%BB%BB">表計算</a>シートですが、これを<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>などでデータの収集に使えます。<br/>
+以前、お薬記録にも使っています。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2021%2F05%2F10%2F073000" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="M5Stackでお薬飲んだ記録を作る - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2021/05/10/073000">s51517765.hatenadiary.jp</a></cite></p><p>M5StackではCでhttp requestでしたが、今回<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%E9%A5%BA%A5%D9%A5%EA%A1%BC">ラズベリー</a>パイでPython3で使ってみました。<br/>
+やってみると、出来てしまえば<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>のほうが簡単なのですが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>の初期化が少してこずりました。<br/>
+参考記事も情報が不足している（もしかしたら執筆当時はそれでよかった？）ところがありましたので、改めてここにまとめました。</p>
+</div>
+<div class="section">
+<h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%D7%A5%EC%A5%C3%A5%C9%A5%B7%A1%BC%A5%C8">スプレッドシート</a>の設定</h3>
+<p>こちらからプロジェクトを作成します。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fconsole.developers.google.com%2Fcloud-resource-manager" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Google Cloud Platform"></iframe><cite class="hatena-citation"><a href="https://console.developers.google.com/cloud-resource-manager">console.developers.google.com</a></cite><br/>
+名前は自由に付けます。<br/>
+Firebaseなどと共通の管理で、無料では最大5つまでになるようです。<br/>
+私はすでにFirebaseで使っているプロジェクトをそのまま使いました。</p><p>左上のナビゲーションメニューから、<a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>とサービス￥ライブラリと選択し、下記2つを有効化します。<br/>
+「sheet」で検索<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Google">Google</a> sheet <a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>を選択し、有効化<br/>
+「Drive」で検索<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Google%20Drive">Google Drive</a> <a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>を選択し、有効化<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210918165639p:plain" class="hatena-fotolife" height="839" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210918/20210918165639.png" title="" width="1200"/></span></p><p>左上のナビゲーションメニューから、<a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>とサービス →認証情報を開く。<br/>
+「認証情報を作成」をクリック、サービスアカウント<br/>
+サービスアカウント名を適当に入力し「作成して続行」。<br/>
+「ロールを選択」を選択し、「Project」 → 「編集者」を選択。<br/>
+続行し完了。<br/>
+ここでFilterしようと思うとなぜか「Project」が出てこず、手動でドロップダウンリストを送ります。</p><p>サービスアカウントメニューにもどって 今作ったアカウントを選択。<br/>
+メニューの「キー」を選択。<br/>
+鍵を追加 → <a class="keyword" href="http://d.hatena.ne.jp/keyword/JSON">JSON</a>を選択<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210918170040p:plain" class="hatena-fotolife" height="716" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210918/20210918170040.png" title="" width="1200"/></span><br/>
+鍵を保存。ラズパイのspread.pyと同じフォルダに転送します。<br/>
+spread.pyにこのファイル名を入力します。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Google%20Drive">Google Drive</a>で<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%D7%A5%EC%A5%C3%A5%C9%A5%B7%A1%BC%A5%C8">スプレッドシート</a>を新規に作成し、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%D7%A5%EC%A5%C3%A5%C9%A5%B7%A1%BC%A5%C8">スプレッドシート</a>を開きます。<br/>
+右上の緑の共有ボタンを押すと共有するユーザーのメールアドレスを入力するエリアが表示されるので<br/>
+先ほどの<a class="keyword" href="http://d.hatena.ne.jp/keyword/JSON">JSON</a>ファイルを開いて「client_email」行のメールアドレスをコピーして貼り付けます。<br/>
+<code>"client_email": "xxxxx@gspread-sample-202808.iam.gserviceaccount.com"</code><br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210918170542p:plain" class="hatena-fotolife" height="534" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210918/20210918170542.png" title="" width="1199"/></span><br/>
+また、リンクを取得の下にある「変更」を開き「リンクを知っている人全員」を編集者にします。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210918170352p:plain" class="hatena-fotolife" height="535" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210918/20210918170352.png" title="" width="1199"/></span></p><p>スプレッドのURL<code>https://docs.google.com/spreadsheets/d/xxxxxxxxx/edit#gid=0</code>の<code>xxxx</code>の部分を<br/>
+spread.pyに入力します。</p>
+</div>
+<div class="section">
+<h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a> Ratelimit</h3>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%D7%A5%EC%A5%C3%A5%C9%A5%B7%A1%BC%A5%C8">スプレッドシート</a>のRatelimitは100秒で100回となっています。</p>
+<blockquote>
+<p>This version of the <a class="keyword" href="http://d.hatena.ne.jp/keyword/Google">Google</a> Sheets <a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a> has a limit of 500 requests per 100 seconds per project, and 100 requests per 100 seconds per user. Limits for reads and writes are tracked separately. There is no daily usage limit.</p>
+</blockquote>
+<p><a href="https://developers.google.com/sheets/api/reference/limits">Usage Limits  |  Sheets API  |  Google Developers</a></p><p>10秒のWaitを入れているので大丈夫、と思っていたら5分で16*5件の書き込みでRateLimitに引っかかってしまいました。<br/>
+これは、書き込みだけではなく読み込みもカウントの対象になっているため、のようです。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">sprd_row = <span class="synConstant">2</span>  <span class="synComment"># スプレッドシートのスタート行</span>
+<span class="synStatement">while</span> worksheet.cell(sprd_row, <span class="synConstant">1</span>).value != <span class="synIdentifier">None</span>:  <span class="synComment"># 空白でなければ1行進む  → 行が増えるとRATELIMITに引っかかる</span>
+sprd_row += <span class="synConstant">1</span>
+</pre><p>実際に引っかかってしまったのがこのようなコードで「上から探索して空白行に書き込む」というものですが、30行程度あるとこれが1分あたり3回程度動いたときに100回を超えてしまいます。</p><p>これは、以下のようにして回避できました。<br/>
+これでA列のデータをカウントし、次の行の行番号を取得します。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">sprd_row = <span class="synConstant">2</span>  <span class="synComment"># スプレッドシートのスタート行</span>
+A_COL_ARRAY = worksheet.col_values(<span class="synConstant">1</span>)
+sprd_row = <span class="synIdentifier">len</span>(A_COL_ARRAY)+<span class="synConstant">1</span>
+</pre>
+</div>
+<div class="section">
+<h3>まとめ</h3>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>で<a class="keyword" href="http://d.hatena.ne.jp/keyword/Google">Google</a><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%D7%A5%EC%A5%C3%A5%C9%A5%B7%A1%BC%A5%C8">スプレッドシート</a>を使う<a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>の使い方をまとめました。<br/>
+「1分で100回」等のRasteLimitは書き込みだけでなく、読み込みの回数も含みます。<br/>
+データが多くなったときは、探索のときにデータ読み込みを効率的に（まとめて取得してローカルでカウントする等）する必要があります。</p>
+<pre class="code" data-lang="" data-unlink="">$sudo pip3 install gspread 
+$sudo pip3 install oauth2client</pre><pre class="code lang-python" data-lang="python" data-unlink=""><span class="synComment">#!/usr/bin/env python3</span>
+
+<span class="synPreProc">import</span> gspread
+<span class="synPreProc">import</span> datetime
+<span class="synPreProc">from</span> oauth2client.service_account <span class="synPreProc">import</span> ServiceAccountCredentials
+
+<span class="synStatement">def</span> <span class="synIdentifier">main</span>(data=[<span class="synConstant">0</span>, <span class="synConstant">0</span>]):
+    scope = [<span class="synConstant">'https://spreadsheets.google.com/feeds'</span>,
+             <span class="synConstant">'https://www.googleapis.com/auth/drive'</span>]
+
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(<span class="synConstant">'phonic-embassy-xxxxxx-xxxxxxxxx.json'</span>, scope)  <span class="synComment"># jsonのファイル名</span>
+
+    gc = gspread.authorize(credentials)
+    SPREADSHEET_KEY = <span class="synConstant">'xxxxxxxxxxxxxxxxxxxxxxxxx'</span>  <span class="synComment"># スプレッドシートのファイル名</span>
+    worksheet = gc.open_by_key(SPREADSHEET_KEY).worksheet(<span class="synConstant">'シート1'</span>)  <span class="synComment"># スプレッドシートのシート名</span>
+
+    sprd_row = <span class="synConstant">2</span>  <span class="synComment"># スプレッドシートのスタート行</span>
+    <span class="synComment">#while worksheet.cell(sprd_row, 1).value != None:  # 空白でなければ1行進む  → 行が増えるとRATELIMITに引っかかる</span>
+    <span class="synComment">#    sprd_row += 1</span>
+    A_COL_ARRAY = worksheet.col_values(<span class="synConstant">1</span>)
+    sprd_row = <span class="synIdentifier">len</span>(A_COL_ARRAY)+<span class="synConstant">1</span>
+
+    t_now = datetime.datetime.now().strftime(<span class="synConstant">'%Y/%m/%d %H:%M:%S'</span>)
+    worksheet.update_cell(sprd_row, <span class="synConstant">1</span>, t_now)  <span class="synComment"># 時刻</span>
+    <span class="synStatement">if</span> data[<span class="synConstant">0</span>] != <span class="synConstant">0</span>:
+        worksheet.update_cell(sprd_row, <span class="synConstant">2</span>, data[<span class="synConstant">0</span>].temperature)  <span class="synComment"># 温度0</span>
+        worksheet.update_cell(sprd_row, <span class="synConstant">3</span>, data[<span class="synConstant">0</span>].humidity)  <span class="synComment"># 湿度0</span>
+    <span class="synStatement">if</span> data[<span class="synConstant">1</span>] != <span class="synConstant">0</span>:
+        worksheet.update_cell(sprd_row, <span class="synConstant">4</span>, data[<span class="synConstant">1</span>].temperature)  <span class="synComment"># 温度1</span>
+        worksheet.update_cell(sprd_row, <span class="synConstant">5</span>, data[<span class="synConstant">1</span>].humidity)  <span class="synComment"># 湿度1</span>
+    <span class="synStatement">if</span> data[<span class="synConstant">0</span>] == <span class="synConstant">0</span> <span class="synStatement">and</span> data[<span class="synConstant">1</span>] == <span class="synConstant">0</span>:
+        worksheet.update_cell(sprd_row, <span class="synConstant">2</span>, <span class="synConstant">"Nodata"</span>)
+
+
+<span class="synStatement">if</span> __name__ == <span class="synConstant">'__main__'</span>:
+    main()
+</pre>
+</div>
+<div class="section">
+<h3>参考</h3>
+<p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Ftanuhack.com%2Foperate-spreadsheet%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="【もう迷わない】Pythonでスプレッドシートに読み書きする初期設定まとめ"></iframe><cite class="hatena-citation"><a href="https://tanuhack.com/operate-spreadsheet/">tanuhack.com</a></cite><br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Fakabei%2Fitems%2F0eac37cb852ad476c6b9" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="PythonでGoogleスプレッドシートを編集 - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/akabei/items/0eac37cb852ad476c6b9">qiita.com</a></cite><br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fwww.yorozu-sys.net%2Fblogpost%2F1823%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="pythonからGoogleスプレッドシートの最下行にログ的に行を追加する。 | よろづシステムズ"></iframe><cite class="hatena-citation"><a href="https://www.yorozu-sys.net/blogpost/1823/">www.yorozu-sys.net</a></cite></p>
+</div>
+</div>

@@ -1,0 +1,25 @@
+<div class="entry-content">
+<div class="section">
+<h3>PNGNの透過処理をしたい</h3>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/PNG">PNG</a>形式画像には透過処理というものがあります。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>のアイコンで、余白を透過にすると背景であるデスクトップが透過したり、Openshotでも画像の透過処理が有効で重ねて表示させることが出来ます。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>では、以下のように、RGBの色を指定してこの透過処理を入れることが出来ます。<br/>
+出力形式は<a class="keyword" href="http://d.hatena.ne.jp/keyword/PNG">PNG</a>で保存時に<code>System.Drawing.Imaging.ImageFormat.Png</code>を指定します。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synStatement">if</span> (checkBoxTransparent.Checked)
+{
+    <span class="synType">int</span> r = (<span class="synType">int</span>)numericUpDownTransRed.Value;
+    <span class="synType">int</span> g = (<span class="synType">int</span>)numericUpDownTransGreen.Value;
+    <span class="synType">int</span> b = (<span class="synType">int</span>)numericUpDownTransBlue.Value;
+    <span class="synComment">//近似色または近接ドットの処理は不要か？</span>
+    canvas0.MakeTransparent(Color.FromArgb(r, g, b));
+}
+canvas0.Save(FileName, System.Drawing.Imaging.ImageFormat.Png);
+</pre><p>透過する色はRGBのほかに<code>Color.White</code>のようにもできます。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">canvas0.MakeTransparent(Color.White);
+</pre><p>しかし、同じ画像の白背景なのに、<code>r=255、g=255、b=255</code>としたときは透過するのに、<code>Color.White</code>だと透過にならない事例がありました。</p><p>↓はOpenshotでこのように透過処理をした「テスト」という文字の画像を黄色と黒の画像に重ねたものです。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210410222657p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210410/20210410222657.png" title=""/></span><br/>
+少し、文字の縁が白っぽく抜けているのが見えます。<br/>
+これは、文字が画像としての縁がグラデーションのようになっているために起きてしまいます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20210410223828p:plain" class="hatena-fotolife" itemprop="image" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20210410/20210410223828.png" title=""/></span><br/>
+これで使ってみて実用上不具合があったら、対策できるかどうか考えることとします。</p><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fs51517765%2FEasyRetouch" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="s51517765/EasyRetouch"></iframe><cite class="hatena-citation"><a href="https://github.com/s51517765/EasyRetouch">github.com</a></cite></p>
+</div>
+</div>

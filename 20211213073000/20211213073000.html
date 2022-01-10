@@ -1,0 +1,35 @@
+<div class="entry-content">
+<div class="section">
+<h3>既存のローカル<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EA%A5%DD%A5%B8%A5%C8%A5%EA">リポジトリ</a>にリモー<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%EA%A5%DD%A5%B8">トリポジ</a>トリを追加しようとするとコンフリクトする</h3>
+<p>リモー<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%EA%A5%DD%A5%B8">トリポジ</a>トリが最初にあって、空の状態のリモー<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%EA%A5%DD%A5%B8">トリポジ</a>トリをローカルにクローンしてくると間違いにくいのですが、逆にしたいこともよくあります。<br/>
+もともと想定していたよりプロジェクト規模が大きくなってGit管理したくなった、というようなケースです。<br/>
+このとき適当に始めると、コンフリクトして時間を溶かしてしまいます。<br/>
+そうならないための手順をまとめました。</p>
+</div>
+<div class="section">
+<h3>手順</h3>
+<p>リモートに全くの空っぽの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EA%A5%DD%A5%B8%A5%C8%A5%EA">リポジトリ</a>を作ります。<br/>
+ここではBitbucketを例にしますが<a class="keyword" href="http://d.hatena.ne.jp/keyword/GitHub">GitHub</a>でも同様に可能です。<br/>
+とくにデフォルトで設定される<code>readme</code>や<code>.gitignore</code>を含めないようにします。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211208215021p:plain" class="hatena-fotolife" height="708" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211208/20211208215021.png" title="" width="810"/></span><br/>
+ローカルの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EA%A5%DD%A5%B8%A5%C8%A5%EA">リポジトリ</a>となるフォルダで<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%DE%A5%F3%A5%C9%A5%E9%A5%A4%A5%F3">コマンドライン</a>を開きます。<br/>
+フォルダのアドレス欄に<code>cmd</code>と打ち込むとここをカレントフォルダとして<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%DE%A5%F3%A5%C9%A5%E9%A5%A4%A5%F3">コマンドライン</a>が立ち上がります。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211208215148p:plain" class="hatena-fotolife" height="668" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211208/20211208215148.png" title="" width="1200"/></span></p><p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211208215228p:plain" class="hatena-fotolife" height="626" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211208/20211208215228.png" title="" width="1199"/></span><br/>
+Gitの初期化からコミットまでします。</p>
+<pre class="code" data-lang="" data-unlink="">$ git init
+$ git  add .
+$ git commit -m "first commit"</pre><p>Sorcetreeでこのフォルダを開きます。<br/>
+ローカル<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EA%A5%DD%A5%B8%A5%C8%A5%EA">リポジトリ</a>にリモートのURLを追加します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211208215420p:plain" class="hatena-fotolife" height="675" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211208/20211208215420.png" title="" width="1200"/></span><br/>
+アカウントも正しく設定します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211208215533p:plain" class="hatena-fotolife" height="382" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211208/20211208215533.png" title="" width="762"/></span><br/>
+first commitは済んでいるのでpushします。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20211208220329p:plain" class="hatena-fotolife" height="675" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20211208/20211208220329.png" title="" width="1200"/></span><br/>
+これでGit管理していなかった<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EA%A5%DD%A5%B8%A5%C8%A5%EA">リポジトリ</a>をGit管理しリモートにバックアップが出来ます。</p>
+</div>
+<div class="section">
+<h3>まとめ</h3>
+<p>既存のローカル<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EA%A5%DD%A5%B8%A5%C8%A5%EA">リポジトリ</a>にリモー<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%EA%A5%DD%A5%B8">トリポジ</a>トリを追加する手順をまとめました。<br/>
+私の「やりやすさ」で<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%DE%A5%F3%A5%C9%A5%E9%A5%A4%A5%F3">コマンドライン</a>とSorcetreeを混ぜて使っていますが、どちらかだけでももちろん完結できます。</p>
+</div>
+</div>

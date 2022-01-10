@@ -1,0 +1,158 @@
+<div class="entry-content">
+<div class="section">
+<h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/%CA%B8%BB%FA%A5%B3%A1%BC%A5%C9">文字コード</a>を正しく判別しないと文字化けする</h3>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>でテキストファイル(.txt)からテキストを読み込むときに<a class="keyword" href="http://d.hatena.ne.jp/keyword/%CA%B8%BB%FA%A5%B3%A1%BC%A5%C9">文字コード</a>を正しく判別できないことによって文字化けすることがあります。<br/>
+多くのテキストファイルはBOM（Byte Order Mark）という、先頭の数Byteに<a class="keyword" href="http://d.hatena.ne.jp/keyword/%CA%B8%BB%FA%A5%B3%A1%BC%A5%C9">文字コード</a>指定が記述されています。</p><p>この仕組みを利用してDOBONに<a class="keyword" href="http://d.hatena.ne.jp/keyword/%CA%B8%BB%FA%A5%B3%A1%BC%A5%C9">文字コード</a>の識別サンプルコードがあります。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fdobon.net%2Fvb%2Fdotnet%2Fstring%2Fdetectcode.html" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="文字コードを判別する"></iframe><cite class="hatena-citation"><a href="https://dobon.net/vb/dotnet/string/detectcode.html">dobon.net</a></cite></p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">public</span> <span class="synType">static</span> System.Text.Encoding DetectEncodingFromBOM(<span class="synType">byte</span>[] bytes)
+{
+    <span class="synStatement">if</span> (bytes.Length &lt; <span class="synConstant">2</span>)
+    {
+        <span class="synStatement">return</span> <span class="synConstant">null</span>;
+    }
+    <span class="synStatement">if</span> ((bytes[<span class="synConstant">0</span>] == <span class="synConstant">0xfe</span>) &amp;&amp; (bytes[<span class="synConstant">1</span>] == <span class="synConstant">0xff</span>))
+    {
+        <span class="synComment">//UTF-16 BE</span>
+        <span class="synStatement">return</span> <span class="synStatement">new</span> System.Text.UnicodeEncoding(<span class="synConstant">true</span>, <span class="synConstant">true</span>);
+    }
+    <span class="synStatement">if</span> ((bytes[<span class="synConstant">0</span>] == <span class="synConstant">0xff</span>) &amp;&amp; (bytes[<span class="synConstant">1</span>] == <span class="synConstant">0xfe</span>))
+    {
+        <span class="synStatement">if</span> ((<span class="synConstant">4</span> &lt;= bytes.Length) &amp;&amp;
+            (bytes[<span class="synConstant">2</span>] == <span class="synConstant">0x00</span>) &amp;&amp; (bytes[<span class="synConstant">3</span>] == <span class="synConstant">0x00</span>))
+        {
+            <span class="synComment">//UTF-32 LE</span>
+            <span class="synStatement">return</span> <span class="synStatement">new</span> System.Text.UTF32Encoding(<span class="synConstant">false</span>, <span class="synConstant">true</span>);
+        }
+        <span class="synComment">//UTF-16 LE</span>
+        <span class="synStatement">return</span> <span class="synStatement">new</span> System.Text.UnicodeEncoding(<span class="synConstant">false</span>, <span class="synConstant">true</span>);
+    }
+    <span class="synStatement">if</span> (bytes.Length &lt; <span class="synConstant">3</span>)
+    {
+        <span class="synStatement">return</span> <span class="synConstant">null</span>;
+    }
+    <span class="synStatement">if</span> ((bytes[<span class="synConstant">0</span>] == <span class="synConstant">0xef</span>) &amp;&amp; (bytes[<span class="synConstant">1</span>] == <span class="synConstant">0xbb</span>) &amp;&amp; (bytes[<span class="synConstant">2</span>] == <span class="synConstant">0xbf</span>))
+    {
+        <span class="synComment">//UTF-8</span>
+        <span class="synStatement">return</span> <span class="synStatement">new</span> System.Text.UTF8Encoding(<span class="synConstant">true</span>, <span class="synConstant">true</span>);
+    }
+    <span class="synStatement">if</span> (bytes.Length &lt; <span class="synConstant">4</span>)
+    {
+        <span class="synStatement">return</span> <span class="synConstant">null</span>;
+    }
+    <span class="synStatement">if</span> ((bytes[<span class="synConstant">0</span>] == <span class="synConstant">0x00</span>) &amp;&amp; (bytes[<span class="synConstant">1</span>] == <span class="synConstant">0x00</span>) &amp;&amp;
+        (bytes[<span class="synConstant">2</span>] == <span class="synConstant">0xfe</span>) &amp;&amp; (bytes[<span class="synConstant">3</span>] == <span class="synConstant">0xff</span>))
+    {
+        <span class="synComment">//UTF-32 BE</span>
+        <span class="synStatement">return</span> <span class="synStatement">new</span> System.Text.UTF32Encoding(<span class="synConstant">true</span>, <span class="synConstant">true</span>);
+    }
+
+    <span class="synStatement">return</span> <span class="synConstant">null</span>;
+}
+</pre><p>これを用いると、代表的な<a class="keyword" href="http://d.hatena.ne.jp/keyword/%CA%B8%BB%FA%A5%B3%A1%BC%A5%C9">文字コード</a>は以下のように識別されます。</p>
+<table>
+<tr>
+<td><a class="keyword" href="http://d.hatena.ne.jp/keyword/%CA%B8%BB%FA%A5%B3%A1%BC%A5%C9">文字コード</a></td>
+<td>識別結果</td>
+</tr>
+<tr>
+<td>UTF-16LE<br/><a class="keyword" href="http://d.hatena.ne.jp/keyword/Unicode">Unicode</a></td>
+<td><a class="keyword" href="http://d.hatena.ne.jp/keyword/utf-16">utf-16</a></td>
+</tr>
+<tr>
+<td>UTF-16BE</td>
+<td>utf-16BE</td>
+</tr>
+<tr>
+<td>UTF-8N<br/><a class="keyword" href="http://d.hatena.ne.jp/keyword/Shift_JIS">Shift_JIS</a><br/><a class="keyword" href="http://d.hatena.ne.jp/keyword/EUC">EUC</a></td>
+<td>null</td>
+</tr>
+</table><p>（BE:Big <a class="keyword" href="http://d.hatena.ne.jp/keyword/Endian">Endian</a>、LE:Littel <a class="keyword" href="http://d.hatena.ne.jp/keyword/Endian">Endian</a>）</p><p>さらにこのコードを使うと以下のように<a class="keyword" href="http://d.hatena.ne.jp/keyword/%CA%B8%BB%FA%A5%B3%A1%BC%A5%C9">文字コード</a>を判別して読み込むことが出来ます。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synComment">//テキストファイルを開く</span>
+<span class="synType">byte</span>[] bs = System.IO.File.ReadAllBytes(textBoxFilePass.Text);
+System.Text.Encoding enc = DetectEncodingFromBOM(bs);
+
+<span class="synStatement">if</span> (enc != <span class="synConstant">null</span>)
+{    <span class="synComment">//文字コードを特定できた</span>
+    <span class="synComment">//行ごとの配列として、テキストファイルの中身をすべて読み込む</span>
+    textlines = System.IO.File.ReadAllLines(textBoxFilePass.Text, enc);
+}
+<span class="synStatement">else</span>
+{
+    <span class="synComment">//文字コードを特定できなかった</span>
+    <span class="synComment">//Shift_JIS・EUCはここにくるが、デフォルトはUTF-8と解釈するので読めない</span>
+    textlines = System.IO.File.ReadAllLines(textBoxFilePass.Text); <span class="synComment">// UTF-8N (Bomなし)</span>
+}
+</pre><p>しかし、実は<code>System.IO.File.ReadAllLines</code>に自動判別が組み込まれていて、BOMありは</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">textlines = System.IO.File.ReadAllLines(textBoxFilePass.Text);
+</pre><p>これだけで読み込めます。</p>
+</div>
+<div class="section">
+<h3>BOMなしテキストファイルを<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>で「正しく」読む</h3>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Shift_JIS">Shift_JIS</a>は<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>ではかなり一般的だと思っていましたが、少し前に<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>のメモ帳もデフォルトがUTF-8Nになったようです。<br/>
+ここで、UTF-8Nという<a class="keyword" href="http://d.hatena.ne.jp/keyword/%CA%B8%BB%FA%A5%B3%A1%BC%A5%C9">文字コード</a>はBOMなしの<a class="keyword" href="http://d.hatena.ne.jp/keyword/UTF-8">UTF-8</a>です。<br/>
+（どうやら日本語などを書き込んだときのみUTF-8Nになり、そうでないときは<a class="keyword" href="http://d.hatena.ne.jp/keyword/Shift_JIS">Shift_JIS</a>？BOMなしになる。）</p><p>あまり使われませんが、ASCIIもBOMなしです。<br/>
+メモ帳などでは<a class="keyword" href="http://d.hatena.ne.jp/keyword/%CA%B8%BB%FA%A5%B3%A1%BC%A5%C9">文字コード</a>を<a class="keyword" href="http://d.hatena.ne.jp/keyword/ANSI">ANSI</a>と表記する場合がありますが、ほぼ同じと思ってよさそうです。</p>
+<blockquote>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%CA%B8%BB%FA%A5%B3%A1%BC%A5%C9">文字コード</a>では<a class="keyword" href="http://d.hatena.ne.jp/keyword/ANSI">ANSI</a>コードとASCIIコードという言葉があって紛らわしいことがあります。ASCIIは<a class="keyword" href="http://d.hatena.ne.jp/keyword/ANSI">ANSI</a>が定める<a class="keyword" href="http://d.hatena.ne.jp/keyword/%CA%B8%BB%FA%A5%B3%A1%BC%A5%C9">文字コード</a>でAmerican Standard Code for Information Interchange のことです。つまりASCIIは<a class="keyword" href="http://d.hatena.ne.jp/keyword/ANSI">ANSI</a>の定める規格のひとつなのです。</p>
+</blockquote>
+<p><a href="http://www.daido-it.ac.jp/~oishi/HT191/ht191.html">http://www.daido-it.ac.jp/~oishi/HT191/ht191.html</a></p><p>これらのBOMなしテキストファイル（UTF-8N、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Shift_JIS">Shift_JIS</a>）を<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>で正しく読み込むことを考えます。<br/>
+ついでにASCIIについていうと、<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>ではデフォルトは<a class="keyword" href="http://d.hatena.ne.jp/keyword/UTF-8">UTF-8</a>と解釈しますが、ASCIIは<a class="keyword" href="http://d.hatena.ne.jp/keyword/UTF-8">UTF-8</a>と解釈しても読み込むことが出来ます。<br/>
+ASCIIは雑に言えば、半角のアルファベットと数字と記号であり<a class="keyword" href="http://d.hatena.ne.jp/keyword/%CA%B8%BB%FA%A5%B3%A1%BC%A5%C9">文字コード</a>のうち最も基本的で、ASCIIに使われる文字は他の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%CA%B8%BB%FA%A5%B3%A1%BC%A5%C9">文字コード</a>でそのまま使われています。<br/>
+つまりあらゆる<a class="keyword" href="http://d.hatena.ne.jp/keyword/%CA%B8%BB%FA%A5%B3%A1%BC%A5%C9">文字コード</a>に対して下位互換であるといえ、この為どの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%CA%B8%BB%FA%A5%B3%A1%BC%A5%C9">文字コード</a>として解釈しても読めるのです。<br/>
+<a href="https://www.k-cube.co.jp/wakaba/server/ascii_code.html">https://www.k-cube.co.jp/wakaba/server/ascii_code.html</a></p><p>本題にもどってUTF-8Nと<a class="keyword" href="http://d.hatena.ne.jp/keyword/Shift_JIS">Shift_JIS</a>の区別ですが、これについては明確な識別法が見つかりませんでした。<br/>
+しかし、日本語環境という前提で以下のように考えることで「だいたい」対応できそうです。</p><p>日本語の通常の文章では必ず一定割合のひらがな・カタカナが含まれます。<br/>
+よって、Byte列を<a class="keyword" href="http://d.hatena.ne.jp/keyword/Shift_JIS">Shift_JIS</a>とみなして読み込んだとき「ひらがな・カタカナ」と一致する割合が7%より大きければ<a class="keyword" href="http://d.hatena.ne.jp/keyword/Shift_JIS">Shift_JIS</a>と判定します。（<a class="keyword" href="http://d.hatena.ne.jp/keyword/%EF%E7%C3%CD">閾値</a>は精査していません）<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fcharset.7jp.net%2Fsjis.html" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="文字コード表 シフトJIS(Shift_JIS)"></iframe><cite class="hatena-citation"><a href="http://charset.7jp.net/sjis.html">charset.7jp.net</a></cite></p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Shift_JIS">Shift_JIS</a>でひらがなは<code>0x82 0x9f</code>から<code>0x82 0xf1</code>、カタカナは<code>0x83 0x40</code>から<code>0x83 0x96</code>ですのでこれは以下のようになります。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">private</span> <span class="synType">bool</span> isShiftJis(<span class="synType">byte</span>[] bs)
+{
+    <span class="synType">int</span> count = <span class="synConstant">0</span>;
+
+    <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; bs.Length - <span class="synConstant">1</span>; i++)
+    {
+        <span class="synStatement">if</span> (bs[i] == <span class="synConstant">0x82</span> &amp;&amp; (<span class="synConstant">0x9f</span> &lt;= bs[i + <span class="synConstant">1</span>] || bs[i + <span class="synConstant">1</span>] &lt;= <span class="synConstant">0xf1</span>))
+        {
+            <span class="synComment">//S-JISのひらがな</span>
+            count += <span class="synConstant">1</span>;
+        }
+        <span class="synStatement">else</span> <span class="synStatement">if</span>(bs[i] == <span class="synConstant">0x83</span> &amp;&amp; (<span class="synConstant">0x40</span> &lt;= bs[i + <span class="synConstant">1</span>] || bs[i + <span class="synConstant">1</span>] &lt;= <span class="synConstant">0x96</span>))
+        {
+            <span class="synComment">//S-JISのカタカナ</span>
+            count += <span class="synConstant">1</span>;
+        }
+    }
+    <span class="synStatement">if</span> ((<span class="synType">double</span>)count / (<span class="synType">double</span>)bs.Length &gt; <span class="synConstant">0.07</span>) <span class="synStatement">return</span> <span class="synConstant">true</span>;
+    <span class="synStatement">else</span> <span class="synStatement">return</span> <span class="synConstant">false</span>;
+}
+</pre><p>これをもちいて最終的に↓のようになります。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synComment">//テキストファイルを開く</span>
+<span class="synType">byte</span>[] bs = System.IO.File.ReadAllBytes(textBoxFilePass.Text);
+System.Text.Encoding enc = DetectEncodingFromBOM(bs);
+
+<span class="synStatement">if</span> (enc != <span class="synConstant">null</span>)
+{
+    textlines = System.IO.File.ReadAllLines(textBoxFilePass.Text); <span class="synComment">// BOMあり         </span>
+}
+<span class="synStatement">else</span> <span class="synStatement">if</span> (isShiftJis(bs))
+{
+    <span class="synComment">//S-Jis</span>
+    <span class="synComment">//行ごとの配列として、テキストファイルの中身をすべて読み込む</span>
+    textlines = <span class="synConstant">""</span>.Split();
+    System.IO.StreamReader sr = <span class="synStatement">new</span> System.IO.StreamReader(textBoxFilePass.Text, System.Text.Encoding.GetEncoding(<span class="synConstant">"shift_jis"</span>));
+    textlines = System.IO.File.ReadAllLines(textBoxFilePass.Text, System.Text.Encoding.GetEncoding(<span class="synConstant">"shift_jis"</span>));
+}
+<span class="synStatement">else</span>
+{
+    <span class="synComment">//UTF-8N</span>
+    textlines = System.IO.File.ReadAllLines(textBoxFilePass.Text);
+}
+</pre>
+</div>
+<div class="section">
+<h3>まとめ</h3>
+<p>このようにして「だいたい」<a class="keyword" href="http://d.hatena.ne.jp/keyword/%CA%B8%BB%FA%A5%B3%A1%BC%A5%C9">文字コード</a>に対応できました。<br/>
+もう少し複雑になるが精度の高い<a class="keyword" href="http://d.hatena.ne.jp/keyword/UTF-8">UTF-8</a>と<a class="keyword" href="http://d.hatena.ne.jp/keyword/Shift_JIS">Shift_JIS</a>の判定方法もあるようですがバイナリの読み方の勉強もかねて作ってみました。</p><div class="hatena-asin-detail"><a class="hatena-asin-detail-image-link" href="https://www.amazon.co.jp/exec/obidos/ASIN/B07M98R3S5/shirotoakb-22/" rel="noopener" target="_blank"><img alt="［改訂新版］プログラマのための文字コード技術入門 WEB+DB PRESS plus" class="hatena-asin-detail-image" src="https://m.media-amazon.com/images/I/51M4td-sVGL._SL500_.jpg" title="［改訂新版］プログラマのための文字コード技術入門 WEB+DB PRESS plus"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/B07M98R3S5/shirotoakb-22/" rel="noopener" target="_blank">［改訂新版］プログラマのための文字コード技術入門 WEB+DB PRESS plus</a></p><ul class="hatena-asin-detail-meta"><li><span class="hatena-asin-detail-label">作者:</span><a class="keyword" href="http://d.hatena.ne.jp/keyword/%CC%F0%CC%EE%20%B7%BC%B2%F0">矢野 啓介</a></li><li><a class="keyword" href="http://d.hatena.ne.jp/keyword/%B5%BB%BD%D1%C9%BE%CF%C0%BC%D2">技術評論社</a></li></ul><a class="asin-detail-buy" href="https://www.amazon.co.jp/exec/obidos/ASIN/B07M98R3S5/shirotoakb-22/" rel="noopener" target="_blank">Amazon</a></div></div>こちらの書籍を参考にしました。<br/>
+こちらには<a class="keyword" href="http://d.hatena.ne.jp/keyword/Shift_JIS">Shift_JIS</a>と<a class="keyword" href="http://d.hatena.ne.jp/keyword/EUC">EUC</a>の判別方法は書かれていますが「可能性が高い」という以上のものではないと書かれています。<br/>
+どちらかの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%CA%B8%BB%FA%A5%B3%A1%BC%A5%C9">文字コード</a>にしかない文字が含まれている場合のみ確定できます。<p>（実は<a class="keyword" href="http://d.hatena.ne.jp/keyword/EUC">EUC</a>は最初に少し触れたのみで無視していますが、今はあまり使われないかな？ということで。）<br/>
+これで判別できないときは、メモ帳などで<a class="keyword" href="http://d.hatena.ne.jp/keyword/UTF-8">UTF-8</a>（BOMあり）などを指定して保存しなおしてもらうしかないのではないかと思います。</p>
+</div>
+</div>

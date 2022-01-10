@@ -1,0 +1,96 @@
+<div class="entry-content">
+<div class="section">
+<h3>Errorを読めない人は読んでないだけ</h3>
+<p>Errorの内容って読めない人はいつまでも読めないんですよね。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Ftogetter.com%2Fli%2F1714921" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="IT業界じゃない人にとって「エラーが発生したとき画面に出ている内容を他人に伝える」は難しいことなのか"></iframe><cite class="hatena-citation"><a href="https://togetter.com/li/1714921">togetter.com</a></cite></p><p>一方で、Errorの読み方というのを上手く説明しているWebも見つからなくて最初は私も苦労しました。<br/>
+そこで、最近必要あって<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>のFlaskというWebサーバーのモジュールを初めて使ってみたので、この機会にどのようなErrorメッセージがどのように出るかを確認しながら、その解読方法をまとめてみました。<br/>
+意外と漫然と見ていると<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%BF%A5%C3%A5%AF%A5%C8%A5%EC%A1%BC%A5%B9">スタックトレース</a>が、親プロセスからさきに出てくるのか子プロセスからさきに出てくるのかとか分からないものです。</p>
+</div>
+<div class="section">
+<h3>Errorメッセージと対処方法</h3>
+<p>まず適当なコードを書いて、初めて起動しようとしたとき以下のようにErrorメッセージが出ます。（環境によって異なります。）</p>
+<pre class="code" data-lang="" data-unlink="">xxx@raspberrypi:~/flask $ python3 main.py
+Traceback (most recent call last):
+  File "main.py", line 5, in &lt;module&gt;
+    from flask import Flask, render_template, make_response, send_file, send_from_directory
+ModuleNotFoundError: No module named 'flask'</pre><p>Error出力の基本構文は、<br/>
+File ＜ファイル名＞line ＜何行目＞in ＜Errorの起きた構文＞です。<br/>
+ここでは<code>from flask import Flask, ~</code>の行に対してErrorが発生していて、最後にかかれているように、<code>flask</code>というモジュールが見つからないことが原因です。つまり、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>の「flask」がインストールされていないので</p>
+<pre class="code" data-lang="" data-unlink="">$ pip3 install Flask</pre><p>のようにインストールを行います。<br/>
+インストールする<code>pip～</code>はモジュールが分かれば<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B0%A5%B0%A4%EB">ググる</a>とインストール方法が分かるはずです。<br/>
+「<a class="keyword" href="http://d.hatena.ne.jp/keyword/python">python</a> flask」などでググります。</p><p>次は↓のようなErrorが出ます。</p>
+<pre class="code" data-lang="" data-unlink="">xxxx@raspberrypi:~/flask $ python3 main.py
+Traceback (most recent call last):
+  File "main.py", line 8, in &lt;module&gt;
+    from matplotlib.backends.backend_agg import FigureCanvasAgg
+ModuleNotFoundError: No module named 'matplotlib'</pre><p>今度は<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>のmatplotlibがインストールされていないというErrorです。</p>
+<pre class="code" data-lang="" data-unlink="">$ sudo apt-get install python-matplotlib</pre><p>のようにインストールします。</p><p>次はやっとFlaskが起動しようとしました。</p>
+<pre class="code" data-lang="" data-unlink="">* Serving Flask app "main" (lazy loading)
+* Environment: production
+WARNING: Do not use the development server in a production environment.
+Use a production WSGI server instead.
+* Debug mode: on
+Traceback (most recent call last):
+File "/home/***/Flask/main.py", line 86, in &lt;module&gt;
+app.run(debug=True, host='0.0.00', port=8888, threaded=True)
+File "/usr/lib/python3/dist-packages/flask/app.py", line 943, in run
+run_simple(host, port, self, **options)
+File "/usr/lib/python3/dist-packages/werkzeug/serving.py", line 795, in run_simple
+s.bind(get_sockaddr(hostname, port, address_family))
+socket.gaierror: [Errno -2] Name or service not known</pre><p>まず、以下の部分はFlaskを起動しようとしているLogで、Errorではありません。<br/>
+ただの英語ですが、プロダクション環境で起動しようとしているけど、開発サーバーをプロダクション環境で使わないほうがいいよ、代わりに本番用の<a class="keyword" href="http://d.hatena.ne.jp/keyword/WSGI">WSGI</a>サーバーを使用してください。<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C7%A5%D0%A5%C3%A5%B0">デバッグ</a>モードです、というようなことを言っています。</p>
+<pre class="code" data-lang="" data-unlink="">* Serving Flask app "main" (lazy loading)
+* Environment: production
+WARNING: Do not use the development server in a production environment.
+Use a production WSGI server instead.
+* Debug mode: on</pre><p>Traceback からがErrorの内容です。<br/>
+ここでは３つのErrorが芋づる式に出ています。<br/>
+Tracebackとは記録を遡ること、つまりErrorが出た原因を遡って出力しています。<br/>
+基本的には呼び出した順番に上から出力されているはずです。</p>
+<pre class="code" data-lang="" data-unlink="">File "/home/**/Flask/main.py", line 86, in &lt;module&gt;
+app.run(debug=True, host='0.0.00', port=8888, threaded=True)</pre><p>つまりmain.pyの 86行目、app.run.... のところで最初のErrorが発生しました。</p><p>次に、↑の最初のap.run.....は flaskのapp.py ↓ を呼び出しています。</p>
+<pre class="code" data-lang="" data-unlink="">File "/usr/lib/python3/dist-packages/flask/app.py", line 943, in run
+run_simple(host, port, self, **options)</pre><p>↑のapp.pyは serving.py ↓ を呼び出しています。</p>
+<pre class="code" data-lang="" data-unlink="">File "/usr/lib/python3/dist-packages/werkzeug/serving.py", line 795, in run_simple
+s.bind(get_sockaddr(hostname, port, address_family))</pre><p>最後に出力されているのがきっかけとなった↓のErrorです。<br/>
+serving.py のなかにあるもので、詳細はわからないですが↓のErrorが発生し止まったということになります。</p>
+<pre class="code" data-lang="" data-unlink="">socket.gaierror: [Errno -2] Name or service not known</pre><p>なので、まずは自身が記述したmain.pyの86行目に問題がないか確認します。<br/>
+構文エラー、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%BF%A5%A4%A5%D7%A5%DF%A5%B9">タイプミス</a>、引数の使い方など。<br/>
+これで原因がつかめなければ次のエラー（flaskのapp.py）のエラーを見ます。<br/>
+<code>run_simple(host, port, self, **options)</code>とあるので、ここに渡している引数がおかしい可能性があります。<br/>
+ここでは、１つめのapp.run()の引数と２つめ<br/>
+run_simple()の引数が似ていつことから、このあたりに問題があると考えられます。<br/>
+このように考えても原因がわからない場合は、さらに３つめを見て、３つめのエラーをググります。<br/>
+または、ライブラリがversion不一致とか、他のライブラリと干渉しているなどを疑います。</p><p>ここでは、<code>app.run(debug=True, host='0.0.00', port=8888, threaded=True)</code>の0.0.0.0が<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%BF%A5%A4%A5%D7%A5%DF%A5%B9">タイプミス</a>でした。</p><p>サーバーが起動したら、今度は以下のようなErrorがでました。</p>
+<pre class="code" data-lang="" data-unlink="">xxx@raspberrypi:~/flask $ sudo python3 main.py
+Traceback (most recent call last):
+  File "main.py", line 19, in &lt;module&gt;
+    fig = plt.figure()
+  File "/usr/lib/python3/dist-packages/matplotlib/pyplot.py", line 535, in figure
+    **kwargs)
+  File "/usr/lib/python3/dist-packages/matplotlib/backends/backend_tkagg.py", line 81, in new_figure_manager
+    return new_figure_manager_given_figure(num, figure)
+  File "/usr/lib/python3/dist-packages/matplotlib/backends/backend_tkagg.py", line 89, in new_figure_manager_given_figure
+    window = Tk.Tk()
+  File "/usr/lib/python3.5/tkinter/__init__.py", line 1880, in __init__
+    self.tk = _tkinter.create(screenName, baseName, className, interactive, wantobjects, useTk, sync, use)
+_tkinter.TclError: no display name and no $DISPLAY environment variable</pre><p>今度は<code>fig = plt.figure()</code>でErrorが出ています。<br/>
+続けて呼び出されているのは<code>matplotlib</code>と<code>tkinter</code>の中身のようです。<br/>
+しかし、<code>matplotlib</code>は使っているのですが、<code>tkinter</code>は使っていません。<br/>
+なぜ呼び出されているのでしょう？<br/>
+ここでは、<code>fig = plt.figure()</code>には<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%BF%A5%A4%A5%D7%A5%DF%A5%B9">タイプミス</a>がなさそうです。</p><p>このように自分の書いたコードに問題が見つからないときは、最後の出力をググります。<br/>
+ヒットしなければ、「ラズパイ」などのキーワードを追加します。</p>
+<pre class="code" data-lang="" data-unlink="">ラズパイ matplotlib “_tkinter.TclError: no display name and no $DISPLAY environment variable”</pre><p>↓のような記事が見つかりました。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fnc30mtd.oops.jp%2Fblog%2F2016%2F08%2Fmatplotlibdisplay.html" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="matplotlibで$DISPLAYが未定義の際に怒られた場合の対応 - そこに部品があるから"></iframe><cite class="hatena-citation"><a href="http://nc30mtd.oops.jp/blog/2016/08/matplotlibdisplay.html">nc30mtd.oops.jp</a></cite><br/>
+</p>
+</div>
+<div class="section">
+<h3>まとめ</h3>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>のErrorの読み方を解説しました。<br/>
+基本は、最初の出力か最後の出力に解決策が見つかることが多です。<br/>
+これでわからないときは最後の出力をググります。<br/>
+必要に応じて「ラズパイ」「<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>」「<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>」などのキーワードを付加すると見つかることが多いです。<br/>
+これでも見つからない場合は「RaspberryPi」などの付加キーワードで英語のページを探します。<br/>
+これでもこれでも見つからないときは、公式<a class="keyword" href="http://d.hatena.ne.jp/keyword/GitHub">GitHub</a>のIsssueを探します。</p><div class="hatena-asin-detail"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/487311778X/shirotoakb-22/"><img alt="退屈なことはPythonにやらせよう ―ノンプログラマーにもできる自動化処理プログラミング" class="hatena-asin-detail-image" src="https://m.media-amazon.com/images/I/51hk+5bKNrL._SL500_.jpg" title="退屈なことはPythonにやらせよう ―ノンプログラマーにもできる自動化処理プログラミング"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="https://www.amazon.co.jp/exec/obidos/ASIN/487311778X/shirotoakb-22/">退屈なことはPythonにやらせよう ―ノンプログラマーにもできる自動化処理プログラミング</a></p><ul><li><span class="hatena-asin-detail-label">作者:</span><a class="keyword" href="http://d.hatena.ne.jp/keyword/Al%20Sweigart">Al Sweigart</a></li><li><span class="hatena-asin-detail-label">発売日:</span> 2017/06/03</li><li><span class="hatena-asin-detail-label">メディア:</span> 単行本（ソフトカバー）</li></ul></div><div class="hatena-asin-detail-foot"></div></div>
+</div>
+</div>

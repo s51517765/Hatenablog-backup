@@ -1,0 +1,48 @@
+<div class="entry-content">
+<div class="section">
+<h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>の電源電圧は何ボルト必要か？</h3>
+<p>公式の仕様としては、推奨7～12V、最低6～20Vとあります。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20220410175808p:plain" class="hatena-fotolife" height="482" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220410/20220410175808.png" title="" width="843"/></span></p><p>ではこの電圧範囲を超えると何が起きるのでしょうか？<br/>
+上限は部品の損傷ということが第一に考えられますので、ここでは除外します。<br/>
+入力の下限を切ったらどうなるのかを調査してみました。</p>
+</div>
+<div class="section">
+<h3>いろいろなpinを実測してみる</h3>
+<p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20220410180315p:plain" class="hatena-fotolife" height="899" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220410/20220410180315.png" title="" width="1199"/></span><br/>
+電源電圧が不足するとGPIOの出力他が不足すると考えられます。<br/>
+これが標準状態と比べて変化する点を限界点（最小）とします。</p><p>グラフの系列はPWM dutyで、縦軸はPWMをローパスフィルターした電圧です。<br/>
+USB入力は5Vですが、DCジャックからの入力とは系統が異なります。<br/>
+USBの5V入力または推奨の7V以上では出力電圧が安定していることが確認できました。<br/>
+これを下回るとPWMの出力、他のPinの出力電圧が低下し4Vでは、ほぼ出力が無くなりました。<br/>
+最低限、とかかれている6Vも出力は下がっていることが分かります。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20220410180719p:plain" class="hatena-fotolife" height="452" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220410/20220410180719.png" title="" width="752"/></span><br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20220410180219p:plain" class="hatena-fotolife" height="361" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220410/20220410180219.png" title="" width="793"/></span><br/>
+</p>
+</div>
+<div class="section">
+<h3>回路図から確認してみる</h3>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a> Unoの関連図面は以下にあります。<br/>
+<a href="http://store-usa.arduino.cc/products/arduino-uno-rev3">Arduino Uno Rev3</a><cite class="hatena-citation"><a href="https://store-usa.arduino.cc/products/arduino-uno-rev3?selectedStore=us">store-usa.arduino.cc</a></cite><br/>
+回路図<br/>
+<a href="https://content.arduino.cc/assets/UNO-TH_Rev3e_sch.pdf">https://content.arduino.cc/assets/UNO-TH_Rev3e_sch.pdf</a></p><p>まずUSB入力は、5VはそのままUSBからの5Vを使っていて、3.3VはLP2985というレギュレータが入っています。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20220410181604p:plain" class="hatena-fotolife" height="182" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220410/20220410181604.png" title="" width="547"/></span><br/>
+<a href="https://www.ti.com/lit/ds/symlink/lp2985.pdf?ts=1649581986476&amp;ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252Fja-jp%252FLP2985%253Futm_source%253Dgoogle%2526utm_medium%253Dcpc%2526utm_campaign%253Depd-dlp-ecd-prodfolderdynamic-cpc-pf-google-jp%2526utm_content%253Dprodfolddynamic%2526ds_k%253DDYNAMIC%2BSEARCH%2BADS%2526DCM%253Dyes%2526gclid%253DCj0KCQjwgMqSBhDCARIsAIIVN1U8dPpq6WCbPQy6eHz_8GmIpFAJmOv1JVcxacEhQ-T29FyP2Zd-zr0aAkp6EALw_wcB%2526gclsrc%253Daw.ds">https://www.ti.com/lit/ds/symlink/lp2985.pdf?ts=1649581986476&amp;ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252Fja-jp%252FLP2985%253Futm_source%253Dgoogle%2526utm_medium%253Dcpc%2526utm_campaign%253Depd-dlp-ecd-prodfolderdynamic-cpc-pf-google-jp%2526utm_content%253Dprodfolddynamic%2526ds_k%253DDYNAMIC%2BSEARCH%2BADS%2526DCM%253Dyes%2526gclid%253DCj0KCQjwgMqSBhDCARIsAIIVN1U8dPpq6WCbPQy6eHz_8GmIpFAJmOv1JVcxacEhQ-T29FyP2Zd-zr0aAkp6EALw_wcB%2526gclsrc%253Daw.ds</a><br/>
+ちなみに、このレギュレータは最大入力が16Vなので、USB経由で16Vをいれても大丈夫と考えられます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20220410182648p:plain" class="hatena-fotolife" height="261" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220410/20220410182648.png" title="" width="883"/></span></p><p>DCジャックからの入力は<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C0%A5%A4%A5%AA%A1%BC%A5%C9">ダイオード</a>を通ってそのままVINに入っています。<br/>
+電源電圧とVinとの差はこの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C0%A5%A4%A5%AA%A1%BC%A5%C9">ダイオード</a>の順方向電圧と考えられます。</p><p>次にNCP1117というレギュレータで5Vを作っています。<br/>
+このレギュレータのMaximum Input Voltageが20Vとなっています。<br/>
+これにより<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>公式の上限値が20Vとなっているということになります。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20220410181830p:plain" class="hatena-fotolife" height="208" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220410/20220410181830.png" title="" width="542"/></span><br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20220410182524p:plain" class="hatena-fotolife" height="307" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220410/20220410182524.png" title="" width="870"/></span><br/>
+<a href="https://www.mouser.jp/datasheet/2/308/NCP1117_D-2307187.pdf">https://www.mouser.jp/datasheet/2/308/NCP1117_D-2307187.pdf</a><br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20220410182213p:plain" class="hatena-fotolife" height="357" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220410/20220410182213.png" title="" width="502"/></span><br/>
+</p>
+</div>
+<div class="section">
+<h3>まとめ</h3>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>のDCジャックからの入力は7~20Vであることが分かりました。<br/>
+下限は<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>公式の推奨値と一致し、上限はレギュレータの入力上限で決まっています。<br/>
+電源電圧が変動する可能性がある場合は、電源電圧が下振れしたとき7V以上を確保する必要があるといえます。<br/>
+USBの場合は通常ACアダプターからの電源を使うのでそれなりに安定していると思いますので、気にすることは少ないかと思います。</p>
+</div>
+</div>

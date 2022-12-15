@@ -1,0 +1,115 @@
+<div class="entry-content">
+<div class="section">
+<h3>データを収集するのにSpreadsheetは便利</h3>
+<p>以前M5Stackの服薬管理アプリでSpreadsheetは使っていますが、ESP32でSpreadsheetを使ってみました。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2021%2F05%2F10%2F073000" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="M5Stackでお薬飲んだ記録を作る - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2021/05/10/073000">s51517765.hatenadiary.jp</a></cite></p><p>そのまま移植しようとしたら上手くいかなくて、というのも中身がよくわかっていないところが多くコピペで乗り切っていただけなので、この機会にもう少し中身を理解してみようと思いました。</p>
+</div>
+<div class="section">
+<h3>SpreadsheetにPOSTする</h3>
+<p>POSTについては以下を参考にしました。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Fmarlex%2Fitems%2F3e24a2c56a00421a317a" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="ESP32で百葉箱IoT - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/marlex/items/3e24a2c56a00421a317a">qiita.com</a></cite></p><p>これによると、POSTは以下のように簡単にできます。<br/>
+ここではクエリでデータを追加しています。</p>
+<pre class="code lang-c" data-lang="c" data-unlink="">String url= <span class="synConstant">"https://script.google.com/macros/s/*********/exec"</span>
+String <span class="synIdentifier">PostRequest</span>(String url, <span class="synType">float</span> temperature, <span class="synType">float</span> humidity)
+{
+  HTTPClient http;
+  String data = <span class="synConstant">"?temperature="</span> + <span class="synIdentifier">String</span>(temperature) + <span class="synConstant">"&amp;humidity="</span> + <span class="synIdentifier">String</span>(humidity);
+  http.<span class="synIdentifier">begin</span>(url + data); <span class="synComment">//データを投げるだけならクエリでこれだけで完了出来る</span>
+}
+</pre><p>このクエリで付加されたデータをGASで処理します。<br/>
+GASではアクセス権を設定しておきます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20220211175013j:plain" class="hatena-fotolife" height="643" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220211/20220211175013.jpg" title="" width="1200"/></span></p><p>クエリは<code>e</code>で取得できます。<br/>
+これでシートに記入したり、計算したり自由に使えます。</p>
+<pre class="code lang-javascript" data-lang="javascript" data-unlink=""><span class="synIdentifier">function</span> doGet(e) <span class="synIdentifier">{</span>
+  <span class="synStatement">if</span>(e!=<span class="synStatement">undefined</span>)<span class="synIdentifier">{</span>
+    <span class="synComment">//データがあれば</span>
+    <span class="synStatement">const</span> params = <span class="synIdentifier">{</span>
+    <span class="synConstant">"timestamp"</span>: <span class="synStatement">new</span> <span class="synType">Date</span>(),
+    <span class="synConstant">"temperature"</span>: e.parameter.temperature,
+    <span class="synConstant">"humidity"</span>: e.parameter.humidity
+    <span class="synIdentifier">}</span>;
+  sheet.getRange(2, 2).setValue(params.temperature);    <span class="synComment">//データをセルに記録</span>
+<span class="synIdentifier">}</span>
+<span class="synIdentifier">}</span>
+</pre><p>ここで、GASの動作確認は<a class="keyword" href="http://d.hatena.ne.jp/keyword/curl">curl</a>を使うと便利です。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/curl">curl</a>は<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>でも<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%DE%A5%F3%A5%C9%A5%D7%A5%ED%A5%F3%A5%D7%A5%C8">コマンドプロンプト</a>から実行でき、GASを動作させることが出来ます。<br/>
+ESP32やM5stackはビルド・書き込みが時間がかかるのでdebug時にESP32から実行していては効率が悪いです。</p><p>今回のようにクエリがあるときは下記のようにurl全体をダブルクォーテーションで囲みます。<br/>
+クエリが無いときはダブルクォーテーションが無くても動く場合がありそうです。<br/>
+このようにして期待通りにGASが動かなければ、アクセス権やurlが違う、クエリの書式が違う、GASがバグっているなどを疑います。</p>
+<pre class="code" data-lang="" data-unlink="">$ curl "https://script.google.com/macros/s/xxxxxxxxxxxxx/exec?temperature=28&amp;humidity=50"</pre>
+</div>
+<div class="section">
+<h3>SpreadsheetからGETする</h3>
+<p>GETは少し複雑です。<br/>
+リク<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A8%A5%B9">エス</a>トをすると一度リダイレクトされてからレスポンスが得られます。<br/>
+全体の流れは以下のようになります。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synComment">//httpアクセス</span>
+http.<span class="synIdentifier">begin</span>(url);
+<span class="synComment">//データをPOST</span>
+http.<span class="synIdentifier">POST</span>(data);
+<span class="synComment">//リダイレクトされる</span>
+<span class="synComment">//リダイレクト先にアクセス</span>
+http.<span class="synIdentifier">begin</span>(redirect_url)
+<span class="synComment">//目的のレスポンスが得られる</span>
+String res = http.<span class="synIdentifier">getString</span>(); 
+</pre><p>こちらも<a class="keyword" href="http://d.hatena.ne.jp/keyword/curl">curl</a>では自動的にリダイレクトを追いかけるオプション<code>-L</code>があり、以下のようにするとレスポンスが得られます。</p>
+<pre class="code" data-lang="" data-unlink="">curl -L "https://script.google.com/macros/s/*******/exec?temperature=28&amp;humidity=50"
+&gt;&gt;&gt;Fri Feb 11 2022 04:03:47 GMT-0500 (アメリカ東部標準時) , Fri Feb 11 2022 04:02:58 GMT-0500 (アメリカ東部標準時)</pre><p>ここでは、POST時刻と、ひとつ前のPOST時刻を文字列として取得しています。</p><p>POSTしてGETする関数の全体では以下のようになります。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synPreProc">#include </span><span class="synConstant">&lt;WiFi.h&gt;</span>
+<span class="synPreProc">#include </span><span class="synConstant">&lt;WebServer.h&gt;</span>
+<span class="synPreProc">#include </span><span class="synConstant">&lt;HTTPClient.h&gt;</span>
+<span class="synPreProc">#include </span><span class="synConstant">"auth.h"</span> <span class="synComment">//認証情報を書いてあるファイル</span>
+
+String <span class="synIdentifier">PostRequest</span>(String url, <span class="synType">float</span> temperature, <span class="synType">float</span> humidity)
+{
+  HTTPClient http;
+  String data = <span class="synConstant">"?temperature="</span> + <span class="synIdentifier">String</span>(temperature) + <span class="synConstant">"&amp;humidity="</span> + <span class="synIdentifier">String</span>(humidity);
+  http.<span class="synIdentifier">begin</span>(url + data); <span class="synComment">// beginは必要、データを投げるだけならクエリでこれだけで完了出来る</span>
+  <span class="synComment">//リダイレクトして、データを送る</span>
+  <span class="synType">const</span> <span class="synType">char</span> *headerNames[] = {<span class="synConstant">"Location"</span>}; <span class="synComment">// Locationをとる</span>
+  http.<span class="synIdentifier">collectHeaders</span>(headerNames, <span class="synStatement">sizeof</span>(headerNames) / <span class="synStatement">sizeof</span>(headerNames[<span class="synConstant">0</span>]));
+
+  Serial.<span class="synIdentifier">print</span>(<span class="synConstant">"[HTTP POST] ...</span><span class="synSpecial">\n</span><span class="synConstant">"</span>);
+  <span class="synType">int</span> httpCode = http.<span class="synIdentifier">POST</span>(data);
+  <span class="synType">int</span> status_code = http.<span class="synIdentifier">GET</span>();
+  Serial.<span class="synIdentifier">printf</span>(<span class="synConstant">"</span><span class="synSpecial">\n</span><span class="synConstant">post request: status code = </span><span class="synSpecial">%d\n</span><span class="synConstant">"</span>, httpCode);
+  Serial.<span class="synIdentifier">printf</span>(<span class="synConstant">"</span><span class="synSpecial">\n</span><span class="synConstant">get request: status code = </span><span class="synSpecial">%d\n</span><span class="synConstant">"</span>, status_code);
+
+  <span class="synStatement">if</span> (status_code == HTTP_CODE_FOUND)
+  {
+    <span class="synComment">//リダイレクトされた 302</span>
+    String payload = http.<span class="synIdentifier">getString</span>();
+    Serial.<span class="synIdentifier">println</span>(payload);
+
+    <span class="synComment">// ヘッダのLocation（リダイレクト先URL）を取り出す</span>
+    Serial.<span class="synIdentifier">println</span>(<span class="synConstant">"Location"</span>);
+    Serial.<span class="synIdentifier">println</span>(http.<span class="synIdentifier">header</span>(<span class="synConstant">"Location"</span>));
+
+    <span class="synComment">// リダイレクト先にGetリクエスト</span>
+    String redirect_url = http.<span class="synIdentifier">header</span>(<span class="synConstant">"Location"</span>);
+    http.<span class="synIdentifier">begin</span>(redirect_url); <span class="synComment">// HTTP</span>
+    <span class="synType">int</span> httpCode = http.<span class="synIdentifier">GET</span>();
+
+    <span class="synStatement">if</span> (httpCode == HTTP_CODE_OK)
+    {
+      String res = http.<span class="synIdentifier">getString</span>(); <span class="synComment">//目的のレスポンスが得られる</span>
+      Serial.<span class="synIdentifier">println</span>(<span class="synConstant">"GET RESPONSE!"</span>);
+      Serial.<span class="synIdentifier">println</span>(res);
+      <span class="synStatement">return</span> res;
+    }
+  }
+}
+</pre><p>GASでレスポンスはreturnに設定します。</p>
+<pre class="code lang-javascript" data-lang="javascript" data-unlink=""><span class="synIdentifier">var</span> res=sheet.getRange(2, 1).getValue();                <span class="synComment">//returnするデータを取得</span>
+res=res+<span class="synConstant">" , "</span>+sheet.getRange(3, 1).getValue();
+<span class="synStatement">return</span> ContentService.createTextOutput(res);
+</pre>
+</div>
+<div class="section">
+<h3>まとめ</h3>
+<p>ESP32でSpreadsheetを使えるようにしました。<br/>
+また、<a class="keyword" href="http://d.hatena.ne.jp/keyword/curl">curl</a>も少し使えるようになりました。<br/>
+ESP32やM5stack(中身はESP32ですけど)はネットワークが安く使えますがビルド・書き込みが遅いのでGASのDebugには<a class="keyword" href="http://d.hatena.ne.jp/keyword/curl">curl</a>は必須ですね。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fs51517765%2FESP32_SpreadSheet" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="GitHub - s51517765/ESP32_SpreadSheet: Most small ESP32 sample to GET or POST Google Spreadsheet"></iframe><cite class="hatena-citation"><a href="https://github.com/s51517765/ESP32_SpreadSheet">github.com</a></cite></p>
+</div>
+</div>

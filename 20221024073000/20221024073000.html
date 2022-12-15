@@ -1,0 +1,75 @@
+<div class="entry-content">
+<div class="section">
+<h3 id="Twitter-APIのデフォルトがv2となった"><a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a> <a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>のデフォルトがv2となった</h3>
+<p>2021年11月からデフォルトがv2となりました。<br/>
+それまでは、v1.1がデフォルトでしたが、現在はデフォルトではv1.1はアクティベートされていません。<br/>
+そのかわり、v2は以前のv1.1のような英語で申請をする必要はなくなっていて簡単に使うことが出来ます（Essential Level）。<br/>
+一方、現在でもv1.1は残されていて、特に廃止の予定は告知されていませんが、新規に<a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>アカウントを作成した場合v1.1のアクティベートにはElevated Levelへのアップグレードが必要です。<br/>
+Elevated Levelへのアップグレードには以前のv1.1のときのような英語での申請が必要となっています。</p><p>従来のAPI1.1を使いたい場合は</p>
+<blockquote>
+<p>To use the old v1.1 <a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>, you need to get Elevated <a class="keyword" href="http://d.hatena.ne.jp/keyword/Access">Access</a> </p>
+</blockquote>
+<p>とのことです。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img class="hatena-fotolife" height="405" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20221018/20221018135249.png" title="" width="1067"/></span><br/>
+<a href="https://twittercommunity.com/t/how-to-get-twitter-api-v1-1-instead-of-v2/176450">https://twittercommunity.com/t/how-to-get-twitter-api-v1-1-instead-of-v2/176450</a></p><p>アクセスレベルの違いの一覧を見るとそのように書かれているようです。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img class="hatena-fotolife" height="753" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20221018/20221018135050.png" title="" width="1200"/></span><br/>
+<iframe class="embed-card embed-webcard" frameborder="0" loading="lazy" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fdeveloper.twitter.com%2Fen%2Fdocs%2Ftwitter-api%2Fgetting-started%2Fabout-twitter-api" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Getting Started with the Twitter API"></iframe><cite class="hatena-citation"><a href="https://developer.twitter.com/en/docs/twitter-api/getting-started/about-twitter-api">developer.twitter.com</a></cite></p><p>V1.1を使うためのElevated へのアップグレード申請は、以下にまとまっています。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" loading="lazy" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fzenn.dev%2Feito_blog%2Farticles%2F9a17a64ffa3c6b" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="【2022年度最新版】Twitter API 申請方法(Twitter v1.1 v2対応)"></iframe><cite class="hatena-citation"><a href="https://zenn.dev/eito_blog/articles/9a17a64ffa3c6b">zenn.dev</a></cite><br/>
+承認までは少しかかるようです。</p>
+</div>
+<div class="section">
+<h3 id="Python3でAPI-v2を試す">Python3で<a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a> v2を試す</h3>
+<p>v2の公式のサンプルコードは以下にあります。<br/>
+こちらでは <a class="keyword" href="http://d.hatena.ne.jp/keyword/JavaScript">JavaScript</a>、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Ruby">Ruby</a>、Python3のサンプルが一通りあります。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" loading="lazy" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Ftwitterdev%2FTwitter-API-v2-sample-code" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="GitHub - twitterdev/Twitter-API-v2-sample-code: Sample code for the Twitter API v2 endpoints"></iframe><cite class="hatena-citation"><a href="https://github.com/twitterdev/Twitter-API-v2-sample-code">github.com</a></cite></p><p>ここでは、<code>API_KEY</code><code>API_KEY_SECRET</code><code>ACCESS_TOKEN</code><code>ACCESS_TOKEN_SECRET</code>を取得済みとして試します。<br/>
+<code>Bearer_Token</code>というものもあります。<br/>
+こちらは、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a> にLoginしなくても取得できるレベルのもの、例えば「検索結果」や「特定のUserの<a class="keyword" href="http://d.hatena.ne.jp/keyword/Tweet">Tweet</a>」などが取れますが、上記の<code>ACCESS_TOKEN_SECRET</code>等でも取得が可能です。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>の構成は、<br/>
+①認証情報（<code>ACCESS_TOKEN_SECRET</code>等）をまとめて<code>OAuth1Session</code>を作成する<br/>
+②<a href="https://api.twitter.com/xxx">https://api.twitter.com/xxx</a> 等のエンドポイントへ上記①と<code>payload</code>or <code>query</code>をPOSTする<br/>
+③Responseを受信する<br/>
+④Responseを加工する<br/>
+のようになります。</p><p>Create <a class="keyword" href="http://d.hatena.ne.jp/keyword/Tweet">Tweet</a>(<a class="keyword" href="http://d.hatena.ne.jp/keyword/Tweet">Tweet</a> Post)ではResponseは「成功」or「失敗」等でSearchではこれにプラスして「検索結果」が得られます。</p><p>認証情報の作成にはPython3では<code>import auth</code>で行い、<code>from requests_oauthlib import OAuth1Session</code>でPOSTします。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/JSON">JSON</a>形式でResponseが返ってくるので、必要に応じて<code>import json</code>で加工します。</p><p><iframe class="embed-card embed-webcard" frameborder="0" loading="lazy" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Ftwitterdev%2FTwitter-API-v2-sample-code%2Fblob%2Fmain%2FManage-Tweets%2Fcreate_tweet.py" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Twitter-API-v2-sample-code/create_tweet.py at main · twitterdev/Twitter-API-v2-sample-code"></iframe><cite class="hatena-citation"><a href="https://github.com/twitterdev/Twitter-API-v2-sample-code/blob/main/Manage-Tweets/create_tweet.py">github.com</a></cite><br/>
+Create <a class="keyword" href="http://d.hatena.ne.jp/keyword/Tweet">Tweet</a>はこのサンプルのようにありますが、こちらでは<code># Get authorization</code>でPIN CODEを取得していますが、<code>ACCESS_TOKEN_SECRET</code>等を使うように変更しました。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" loading="lazy" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fs51517765%2FTwitter-API-V2-tutorial-with-Python3%2Fblob%2Fmain%2FCreateTweet.py" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Twitter-API-V2-tutorial-with-Python3/CreateTweet.py at main · s51517765/Twitter-API-V2-tutorial-with-Python3"></iframe><cite class="hatena-citation"><a href="https://github.com/s51517765/Twitter-API-V2-tutorial-with-Python3/blob/main/CreateTweet.py">github.com</a></cite><br/>
+自分しか使わない場合はこれでよいでしょう。</p><p>認証情報は以下のようにまとめておきます。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" loading="lazy" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fs51517765%2FTwitter-API-V2-tutorial-with-Python3%2Fblob%2Fmain%2F_auth.py" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Twitter-API-V2-tutorial-with-Python3/_auth.py at main · s51517765/Twitter-API-V2-tutorial-with-Python3"></iframe><cite class="hatena-citation"><a href="https://github.com/s51517765/Twitter-API-V2-tutorial-with-Python3/blob/main/_auth.py">github.com</a></cite></p><p>変更した<code>CreateTweet.py</code>では<code>def main()</code>で以下のような流れで処理を行います。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synComment"># textにTweet内容を設定</span>
+payload = {<span class="synConstant">"text"</span>: text}
+<span class="synComment"># エンドポイントURLを指定</span>
+request_token_url = xxx
+<span class="synComment"># 認証情報オブジェクトを作成</span>
+oauth = auth.define_client()
+<span class="synComment"># リクエストする</span>
+    response = oauth.post(
+        <span class="synConstant">"https://api.twitter.com/2/tweets"</span>,
+        json=payload,
+    )
+<span class="synComment"># リクエストの成功or失敗を確認</span>
+<span class="synStatement">if</span> response.status_code != <span class="synConstant">201</span>:
+<span class="synComment"># レスポンスのJSONを整形して出力</span>
+json_response = response.json()
+<span class="synIdentifier">print</span>(json.dumps(json_response, indent=<span class="synConstant">4</span>, sort_keys=<span class="synIdentifier">True</span>))
+</pre><p>これはWeb <a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>の使い方の一般的な流れといっていいかと思います。<br/>
+この他、検索等も同様になります。</p><p>Create <a class="keyword" href="http://d.hatena.ne.jp/keyword/Tweet">Tweet</a>ではPOSTまでが主ですが、検索ではレスポンスの処理が主となります。<br/>
+該当する<a class="keyword" href="http://d.hatena.ne.jp/keyword/Tweet">Tweet</a>の<code>Tweet ID</code>を取得して<a class="keyword" href="http://d.hatena.ne.jp/keyword/ReTweet">ReTweet</a>やLike等を行うことが出来ます。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">def</span> <span class="synIdentifier">main</span>(keyword):
+    query_params = {<span class="synConstant">'query'</span>: keyword}
+    json_response = connect_to_endpoint(search_url, query_params)
+    <span class="synComment">#print(json.dumps(json_response, indent=4, sort_keys=True))</span>
+    <span class="synStatement">for</span> d <span class="synStatement">in</span> json_response[<span class="synConstant">"data"</span>]:
+        <span class="synIdentifier">print</span>(<span class="synConstant">"【Tweet ID】"</span>, d[<span class="synConstant">"id"</span>])
+        <span class="synIdentifier">print</span>(d[<span class="synConstant">"text"</span>])
+        <span class="synIdentifier">print</span>(<span class="synConstant">"---------------------------------------------------"</span>)
+</pre><p><iframe class="embed-card embed-webcard" frameborder="0" loading="lazy" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fs51517765%2FTwitter-API-V2-tutorial-with-Python3%2Fblob%2Fmain%2FRecentSearch.py" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Twitter-API-V2-tutorial-with-Python3/RecentSearch.py at main · s51517765/Twitter-API-V2-tutorial-with-Python3"></iframe><cite class="hatena-citation"><a href="https://github.com/s51517765/Twitter-API-V2-tutorial-with-Python3/blob/main/RecentSearch.py">github.com</a></cite></p><p>Create <a class="keyword" href="http://d.hatena.ne.jp/keyword/Tweet">Tweet</a>とSearchが使えると、<a class="keyword" href="http://d.hatena.ne.jp/keyword/ReTweet">ReTweet</a>やLike、UserTimeLineなども応用で使うことが出来ると思います。</p>
+</div>
+<div class="section">
+<h3 id="まとめ">まとめ</h3>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Twitter">Twitter</a> <a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>のデフォルトがv2になったので、v2 <a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>を使ってみました。<br/>
+使ってみるとWeb <a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>の標準的な使い方が分かると思います。<br/>
+また、Python3はライブラリが手厚く簡単に使うことが出来ます。<br/>
+しばらくはv1.1が廃止されるということはないと思いますが、徐々に置き換えの検討も必要かもしれません。<br/>
+通常は、このように直接エンドポイントを叩くというよりはライブラリを使うと思いますが、ライブラリがない<a class="keyword" href="http://d.hatena.ne.jp/keyword/API">API</a>を使う方法として覚えておきたいと思います。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" loading="lazy" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fs51517765%2FTwitter-API-V2-tutorial-with-Python3" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="GitHub - s51517765/Twitter-API-V2-tutorial-with-Python3: Python3でTwitter API V2 を触ってみた"></iframe><cite class="hatena-citation"><a href="https://github.com/s51517765/Twitter-API-V2-tutorial-with-Python3">github.com</a></cite></p>
+</div>
+</div>

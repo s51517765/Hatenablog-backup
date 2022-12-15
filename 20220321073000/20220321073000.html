@@ -1,0 +1,111 @@
+<div class="entry-content">
+<div class="section">
+<h3>作って確かめてみた</h3>
+<p><span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20220320165813p:plain" class="hatena-fotolife" height="400" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220320/20220320165813.png" title="" width="640"/></span><br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AA%A5%DA%A5%A2%A5%F3%A5%D7">オペアンプ</a>はNJM2904D、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>は2SC1815です。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fakizukidenshi.com%2Fcatalog%2Fg%2FgI-09216%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="２回路入単電源用オペアンプ　ＮＪＭ２９０４Ｄ: 半導体(モジュール) 秋月電子通商-電子部品・ネット通販"></iframe><cite class="hatena-citation"><a href="https://akizukidenshi.com/catalog/g/gI-09216/">akizukidenshi.com</a></cite></p><p>こちらが<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AA%A5%DA%A5%A2%A5%F3%A5%D7">オペアンプ</a>を使った定電流回路です。<br/>
+この回路はモーターやLEDの駆動によく使われます。<br/>
+ここでは実験のために可変抵抗<a class="keyword" href="http://d.hatena.ne.jp/keyword/VR">VR</a>を置いていますが、実際はLEDなどの負荷をここに載せます。<br/>
+この回路の左端D3にPWMを入力すると、このDutyに応じてR1の電圧が定電圧にフィードバックされ、負荷に流れる電流が一定になります。</p><p>この定電流回路の仕組みを知らないとすると、このように考えられます。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/VR">VR</a>が変化する（LEDが発熱等でVfが変化した想定）と5V電源に対して<a class="keyword" href="http://d.hatena.ne.jp/keyword/VR">VR</a>とR1の分圧でR1の電圧が変化するので、R1に流れる電流が変わり、つまり負荷（ここでは<a class="keyword" href="http://d.hatena.ne.jp/keyword/VR">VR</a>）に流れる電流が変わります。（<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>のBE間の電流が無視できるほど小さいとすると）</p><p>しかしながら、この回路では負荷（<a class="keyword" href="http://d.hatena.ne.jp/keyword/VR">VR</a>）が変わってもP点の電圧が一定でR1の電圧が一定、つまりR1、<a class="keyword" href="http://d.hatena.ne.jp/keyword/VR">VR</a>の電流が一定になるとされています。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=http%3A%2F%2Fwww.nahitech.com%2Fnahitafu%2Fmame%2Fmame3%2Fteid1.html" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="電子回路の豆知識"></iframe><cite class="hatena-citation"><a href="http://www.nahitech.com/nahitafu/mame/mame3/teid1.html">www.nahitech.com</a></cite><br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fdetail-infomation.com%2Fconstant-current-circuit-opamp%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="オペアンプを用いた『定電流回路』を分かりやすく解説！原理や計算方法なども解説！"></iframe><cite class="hatena-citation"><a href="https://detail-infomation.com/constant-current-circuit-opamp/">detail-infomation.com</a></cite><br/>
+詳細な理論は他のサイトにお任せとして、本当にそのようなことになるのかを実験してみました。</p>
+</div>
+<div class="section">
+<h3>任意の電圧発生原を<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>で作る</h3>
+<p>シリアルモニタからPWMを指定してdigitalピンに任意のDutyを発生させるプログラムを作ります。<br/>
+これによって安定的な電圧を自由に呼び出すことが出来ます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20220320145836p:plain" class="hatena-fotolife" height="852" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220320/20220320145836.png" title="" width="797"/></span><br/>
+シリアルモニタからの入力はAsciiコードとしてByteで受け取られるので</p>
+<pre class="code lang-c" data-lang="c" data-unlink="">b[digit++] = incomingByte - <span class="synConstant">48</span>;
+</pre><p>のようにして数値に変換できます。（char文字列の1が49）<br/>
+これを改行毎に受け取り足し合わせるとPWMの値になります。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synStatement">if</span> (incomingByte == <span class="synConstant">10</span>)  <span class="synComment">//改行</span>
+{
+    inputValue = <span class="synConstant">100</span> * b[<span class="synConstant">0</span>] + <span class="synConstant">10</span> * b[<span class="synConstant">1</span>] +  b[<span class="synConstant">2</span>];
+}
+</pre><p>ちなみに、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>(AVR)の指数計算にはbugがあります。</p><blockquote class="twitter-tweet" data-conversation="none" data-lang="ja"><p dir="ltr" lang="ja">int b[3];<br/>int inputValue;<br/>inputValue = pow(10, 2 ) * b[0] + pow(10, 1) * b[1] + pow(10, 0) * b[2];<br/>だと上手くいくのに<br/>for (int i = 0; i &lt; 3; i++)     inputValue += pow(10, 2 - i) *  b[i];<br/>だとなぜか-1された値が出るんだけど、なんでか分からない。</p>— とりてん (@s51517765) <a href="https://twitter.com/s51517765/status/1502560849881624576?ref_src=twsrc%5Etfw">2022年3月12日</a></blockquote> <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script> <blockquote class="twitter-tweet" data-conversation="none" data-lang="ja"><p dir="ltr" lang="ja"><a class="keyword" href="http://d.hatena.ne.jp/keyword/Github">Github</a>のissueにありました。<a href="https://t.co/AVqJdbOCHh">https://t.co/AVqJdbOCHh</a><br/>avr-<a class="keyword" href="http://d.hatena.ne.jp/keyword/gcc">gcc</a>のbugのようです。</p>— とりてん (@s51517765) <a href="https://twitter.com/s51517765/status/1502643299227934723?ref_src=twsrc%5Etfw">2022年3月12日</a></blockquote> <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synType">int</span> digit = <span class="synConstant">0</span>;
+<span class="synType">int</span> b[<span class="synConstant">3</span>];
+<span class="synType">int</span> inputValue = <span class="synConstant">0</span>;
+
+<span class="synType">int</span> <span class="synIdentifier">input</span>()
+{
+  <span class="synType">int</span> incomingByte = Serial.<span class="synIdentifier">read</span>();
+  <span class="synStatement">if</span> (incomingByte == <span class="synConstant">10</span>) {
+    <span class="synStatement">if</span> (digit == <span class="synConstant">2</span>) {
+      b[<span class="synConstant">2</span>] = b[<span class="synConstant">1</span>];
+      b[<span class="synConstant">1</span>] = b[<span class="synConstant">0</span>];
+      b[<span class="synConstant">0</span>] = <span class="synConstant">0</span>;
+    }
+    <span class="synStatement">else</span> <span class="synStatement">if</span> (digit == <span class="synConstant">1</span>) {
+      b[<span class="synConstant">2</span>] = b[<span class="synConstant">0</span>];
+      b[<span class="synConstant">1</span>] = b[<span class="synConstant">0</span>] = <span class="synConstant">0</span>;
+    }
+    inputValue = <span class="synConstant">0</span>;
+    <span class="synComment">/*   ずれる </span>
+<span class="synComment">          for (int i = 0; i &lt; 3; i++)  {</span>
+<span class="synComment">          inputValue += pow(10, 2 - i) *  b[i];</span>
+<span class="synComment">        }</span>
+<span class="synComment">    */</span>
+    <span class="synComment">/*   これもずれる</span>
+<span class="synComment">    inputValue = pow(10, 2 ) * b[0] + pow(10, 1) * b[1] + pow(10, 0) * b[2];</span>
+<span class="synComment">    */</span>
+    inputValue = <span class="synConstant">100</span> * b[<span class="synConstant">0</span>] + <span class="synConstant">10</span> * b[<span class="synConstant">1</span>] +  b[<span class="synConstant">2</span>];
+    inputValue = <span class="synIdentifier">min</span>(<span class="synConstant">255</span>, inputValue); <span class="synComment">//最大値丸める</span>
+    Serial.<span class="synIdentifier">print</span>(<span class="synConstant">"PWM= "</span>);
+    Serial.<span class="synIdentifier">println</span>(inputValue);
+    <span class="synIdentifier">analogWrite</span>(<span class="synConstant">3</span>, inputValue );
+
+    digit = <span class="synConstant">0</span>;
+    <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; <span class="synConstant">3</span>; i++)      b[i] = <span class="synConstant">0</span>;
+    <span class="synStatement">return</span> (<span class="synType">int</span>)inputValue;
+  }
+  <span class="synStatement">else</span> {
+    b[digit++] = incomingByte - <span class="synConstant">48</span>;
+  }
+}
+<span class="synType">void</span> <span class="synIdentifier">setup</span>() {
+  <span class="synIdentifier">pinMode</span>(<span class="synConstant">3</span>, OUTPUT);
+  Serial.<span class="synIdentifier">begin</span>(<span class="synConstant">9600</span>);
+}
+
+<span class="synType">void</span> <span class="synIdentifier">loop</span>() {
+  <span class="synStatement">if</span> (Serial.<span class="synIdentifier">available</span>() &gt; <span class="synConstant">0</span>) {
+    <span class="synIdentifier">input</span>();
+  }
+}
+</pre>
+</div>
+<div class="section">
+<h3>測定</h3>
+<p>まず、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>のPWM特性を見てみます。<br/>
+回路図でいうと<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AA%A5%DA%A5%A2%A5%F3%A5%D7">オペアンプ</a>の+の入力の位置です。<br/>
+テスターで測定すると理想的に出力されているように見えます。<br/>
+一方、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AA%A5%B7%A5%ED%A5%B9%A5%B3%A1%BC%A5%D7">オシロスコープ</a>での実効値はやや曲線を描いていますが、ほぼ一致しています。<br/>
+一方<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>のBase入力となる、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AA%A5%DA%A5%A2%A5%F3%A5%D7">オペアンプ</a>の出力は3.64Vで飽和してしまいました。<br/>
+（Base電圧は<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>の特性よりV-に対して0.7V高くなる。）<br/>
+何か、回路の定数がよろしくなくて出力が不十分になっているように思います。<br/>
+ですが、3.64Vまでは評価できるので、これで進めます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20220320161417p:plain" class="hatena-fotolife" height="452" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220320/20220320161417.png" title="" width="752"/></span></p><p>次に定電流の基準となるP点（<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>のエミッタ）の電圧を見ます。<br/>
+可変抵抗を4水準に変更して、またPWMを変更したときの結果が以下です。<br/>
+抵抗によらずPWMによって<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>のエミッター電圧（基準抵抗R1の電圧）が制御出来ている結果が得られました。<br/>
+これが、定電流回路の挙動です。<br/>
+また、定電流電源電圧を変化させても（9Vまで確認）同じであることも確認できました。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20220320162014p:plain" class="hatena-fotolife" height="452" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220320/20220320162014.png" title="" width="752"/></span></p><p>ためしに、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AA%A5%DA%A5%A2%A5%F3%A5%D7">オペアンプ</a>を使わない（定電流でない）場合、本当にこの電圧が動くのかも確かめておきます。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AA%A5%DA%A5%A2%A5%F3%A5%D7">オペアンプ</a>を外して、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AA%A5%DA%A5%A2%A5%F3%A5%D7">オペアンプ</a>の+に入力していたところを<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>のBaseに入力します。<br/>
+PWM（入力電圧）に対して変な特性が出ていますが、エミッター電圧が抵抗（負荷）によって動き定電流ではなくなっていることがわかります。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img alt="f:id:s51517765:20220320162343p:plain" class="hatena-fotolife" height="452" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220320/20220320162343.png" title="" width="752"/></span><br/>
+</p>
+</div>
+<div class="section">
+<h3>まとめ</h3>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AA%A5%DA%A5%A2%A5%F3%A5%D7">オペアンプ</a>を使った定電流回路を作成し定電流制御の実験をしました。<br/>
+実際に作って測定してみるまでは、ある程度電源電圧の影響をうけるのかと思っていましたが、思った以上に安定していました。<br/>
+また、この他のこの回路の重要な特性としては<br/>
+・<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AA%A5%DA%A5%A2%A5%F3%A5%D7">オペアンプ</a>のV+とV-の電位は同じ<br/>
+・<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%AA%A5%DA%A5%A2%A5%F3%A5%D7">オペアンプ</a>のVout電圧はエミッタ電圧（P点電圧）+0.7V（<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%F3%A5%B8%A5%B9%A5%BF">トランジスタ</a>のVbe電圧）<br/>
+といったものがあります。</p>
+</div>
+</div>

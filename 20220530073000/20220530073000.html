@@ -1,0 +1,54 @@
+<div class="entry-content">
+<div class="section">
+<h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%E9%A5%BA%A5%D9%A5%EA%A1%BC">ラズベリー</a>パイ4にラズパイピコのビルド環境を作る</h3>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>から<a class="keyword" href="http://d.hatena.ne.jp/keyword/Teraterm">Teraterm</a>で<a class="keyword" href="http://d.hatena.ne.jp/keyword/SSH">SSH</a>接続した<a class="keyword" href="http://d.hatena.ne.jp/keyword/Raspberry%20Pi">Raspberry Pi</a> 4 (8GB)上でラズパイピコ向けの<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%B8%C0%B8%EC">C言語</a>ソースをビルドします。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>上でももちろんラズパイピコのビルド環境は作れるのですが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%E9%A5%BA%A5%D9%A5%EA%A1%BC">ラズベリー</a>パイ（4）ではもっと簡単にできるらしい、ということでやってみました。</p>
+</div>
+<div class="section">
+<h3>やってみる</h3>
+<p>以下を参考にしました。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fnote.com%2Frasen%2Fn%2Fn0dd582aa348c" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="C/C++でもPicoってみる！（RapberryPi Pico・C/C++ でLチカ）｜神楽坂らせん｜note"></iframe><cite class="hatena-citation"><a href="https://note.com/rasen/n/n0dd582aa348c">note.com</a></cite><br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Ftetsufuku-blog.com%2Fpico-dev-environment%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Raspberry Pi Picoの開発環境構築 (Ubuntu PC) | てつふくブログ"></iframe><cite class="hatena-citation"><a href="https://tetsufuku-blog.com/pico-dev-environment/">tetsufuku-blog.com</a></cite></p><p>まずは公式の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B7%A5%A7%A5%EB%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">シェルスクリプト</a>をダウンロードします。<br/>
+この<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B7%A5%A7%A5%EB%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">シェルスクリプト</a>を使うことで、簡単に環境構築できるようです。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/wget">wget</a>で<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B7%A5%A7%A5%EB%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">シェルスクリプト</a>をダウンロードするので、インストールされていないときはまずこちらをダウンロードします。<br/>
+ダウンロードできたら続けてこの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B7%A5%A7%A5%EB%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">シェルスクリプト</a>を実行します。</p>
+<pre class="code" data-lang="" data-unlink="">$ sudo apt install wget
+$ wget https://raw.githubusercontent.com/raspberrypi/pico-setup/master/pico_setup.sh
+$ sh pico_setup.sh</pre><p>するとhome<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C7%A5%A3%A5%EC%A5%AF%A5%C8">ディレクト</a>リに<code>pico</code>というフォルダができます。<br/>
+このなかに<code>pico-examples</code><code>pico-sdk</code>というフォルダができています。<br/>
+（なぜかpico-examplesが生成されないことがありましたが、もう一度<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B7%A5%A7%A5%EB%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">シェルスクリプト</a>を実行すると生成されました。）</p>
+<pre class="code" data-lang="" data-unlink="">$ cd pico
+raspberrypi4@raspberrypi4:~/pico $ ls
+&gt;&gt;pico-examples  pico-sdk</pre><p>何やらPathの設定をします。</p>
+<pre class="code" data-lang="" data-unlink="">$ cd pico-examples
+$ mkdir build
+$ cd build
+$ export PICO_SDK_PATH=../../pico-sdk</pre><p>サンプルをBuildしてみたいので以下のようにmakeします。</p>
+<pre class="code" data-lang="" data-unlink="">raspberrypi4@raspberrypi4:~/pico/pico-examples/build $
+$ cmake ..
+$ make -j4  // jオプションは並列化、これで4並列</pre><p>以下の場所に<code>blink.uf2</code>が出来上がります。</p>
+<pre class="code" data-lang="" data-unlink="">/home/raspberrypi4/pico/pico-examples/build/blink</pre><p>Gitで自動的にダウンロードされたこの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B5%A5%F3%A5%D7%A5%EB%A5%BD%A1%BC%A5%B9">サンプルソース</a>の中にはいくつかの<code>.c</code>ファイルがあるのですが、このやり方でmakeするとすべてがmakeされるようです。<br/>
+そのためかmakeは結構時間がかかります。<br/>
+引用元のnoteでは個別にビルドできるようなことが書かれていますが、Blinkのほかにhello_worldやpwm等の基本的なサンプルコードが入っているのですが、これらすべてがビルドされています。<br/>
+しかし、2回目以降は、変更のあるファイルしかビルドされないのでこれでも大きな問題はないと思います。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img class="hatena-fotolife" height="702" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220526/20220526134258.png" title="" width="755"/></span></p><p>あとは、このように出来上がった<code>blink.uf2</code>をラズパイピコへ転送すればOKですが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%E9%A5%BA%A5%D9%A5%EA%A1%BC">ラズベリー</a>パイ4にUSB接続して転送してもよいですが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/TeraTerm">TeraTerm</a>で<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>へ転送し<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>から転送してもOKです。<br/>
+ラズパイピコへの接続はbootボタンを押しながらUSB接続します。<br/>
+このようにするとあくまで<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%E9%A5%BA%A5%D9%A5%EA%A1%BC">ラズベリー</a>パイ4をビルドサーバーとして使うことができます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img class="hatena-fotolife" height="231" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220526/20220526135002.png" title="" width="271"/></span><br/>
+</p>
+</div>
+<div class="section">
+<h3>CMakeLists.txtとは何なのか？</h3>
+<p>さて、これでビルドは一通りできたのですが、何をやっているのかさっぱりわからないですね。<br/>
+まずは<code>CMakeLists.txt</code>というファイルですが、「ビルドに際しての設定項目の仕様」が書かれているようです。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fkamino.hatenablog.com%2Fentry%2Fcmake_tutorial1" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="勝手に作るCMake入門 その1 基本的な使い方 - かみのメモ"></iframe><cite class="hatena-citation"><a href="https://kamino.hatenablog.com/entry/cmake_tutorial1">kamino.hatenablog.com</a></cite><br/>
+</p>
+</div>
+<div class="section">
+<h3>まとめ</h3>
+<p>ラズパイピコの開発環境をラズパイ4に構築してビルドしてみました。<br/>
+また、全く同じ手順で<a class="keyword" href="http://d.hatena.ne.jp/keyword/VirtualBox">VirtualBox</a>上の<a class="keyword" href="http://d.hatena.ne.jp/keyword/Ubuntu">Ubuntu</a>でもビルドできました。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a> <a class="keyword" href="http://d.hatena.ne.jp/keyword/IDE">IDE</a>で開発も出来ますが、パッケージをダウンロードして依存関係を気にしながらビルドするにはこうした環境が必要ではないかと思い公式の環境を構築しました。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>でこのような環境を構築するには<a class="keyword" href="http://d.hatena.ne.jp/keyword/VS%20code">VS code</a>を使ったり、なにかいろいろ複雑そう…、と思っていたのですがラズパイ含めて<a class="keyword" href="http://d.hatena.ne.jp/keyword/Linux">Linux</a>上では比較的に簡単に構築することができます。</p>
+</div>
+</div>

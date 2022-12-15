@@ -1,0 +1,63 @@
+<div class="entry-content">
+<div class="section">
+<h3>ESP32でIOTにWebとかUIとか作ってみた</h3>
+<p></p><blockquote class="twitter-tweet" data-conversation="none" data-lang="ja"><p dir="ltr" lang="ja">ESP32でつくったローカルサーバーにWebからアクセスしてLEDを操作するやつ、さらにこれを<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>アプリでも出来るようにする基本技術を身に着けた。 <a href="https://t.co/g0gyd20dgl">pic.twitter.com/g0gyd20dgl</a></p>— とりてん (@s51517765) <a href="https://twitter.com/s51517765/status/1492066223538188295?ref_src=twsrc%5Etfw">2022年2月11日</a></blockquote> <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script> <br/>
+ESP32でローカルサーバーを構成すること自体はいろんな記事があります。<br/>
+これらはESP32でサーバー構成したWebページにブラウザでアクセスして操作するものです。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2Fmine820%2Fitems%2F01d5b7dbf65296c6f6e8%23%25E3%2582%25BD%25E3%2583%25BC%25E3%2582%25B9%25E3%2582%25B3%25E3%2583%25BC%25E3%2583%2589" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="ESP32をWebサーバにしてGroveセンサーを制御してみる - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/mine820/items/01d5b7dbf65296c6f6e8#%E3%82%BD%E3%83%BC%E3%82%B9%E3%82%B3%E3%83%BC%E3%83%89">qiita.com</a></cite><br/>
+まず、こちらを参考にWebからLEDを点灯させてみます。
+
+</div>
+<div class="section">
+<h3>サーバープログラムの修正</h3>
+<p>この参考記事ではWebが画面遷移するので、続けて操作することが出来ません。<br/>
+まず、これを修正しました。</p><p>ルートページで関数<code>handleLED()</code>が実行されるように変更します。</p>
+<pre class="code lang-c" data-lang="c" data-unlink="">  <span class="synComment">//このアドレスにアクセスしたときに処理される関数を指定</span>
+  server.<span class="synIdentifier">on</span>(<span class="synConstant">"/"</span>, handleLED);
+</pre><p>Linkの遷移先をルートに変更します。</p>
+<pre class="code lang-html" data-lang="html" data-unlink=""><span class="synIdentifier">&lt;</span><span class="synStatement">a</span><span class="synIdentifier"> </span><span class="synType">href</span><span class="synIdentifier">=</span><span class="synConstant">\"/?button=on\"</span><span class="synIdentifier">&gt;</span><span class="synUnderlined">ON</span><span class="synIdentifier">&lt;/</span><span class="synStatement">a</span><span class="synIdentifier">&gt;</span>
+</pre><p><code>\</code>は<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A8%A5%B9">エス</a>ケープで<code>?</code>はクエリです。</p>
+<pre class="code lang-html" data-lang="html" data-unlink="">// HTMLを組み立てる
+String html = "<span class="synComment">&lt;!DOCTYPE html&gt;</span><span class="synIdentifier">&lt;</span><span class="synStatement">html</span><span class="synIdentifier">&gt;&lt;</span><span class="synStatement">head</span><span class="synIdentifier">&gt;&lt;</span><span class="synStatement">meta</span><span class="synIdentifier"> </span><span class="synType">charset</span><span class="synIdentifier">=</span><span class="synConstant">\"utf-8\"</span><span class="synIdentifier">&gt;&lt;</span><span class="synStatement">title</span><span class="synIdentifier">&gt;</span>LEDをON/OFFする<span class="synIdentifier">&lt;/</span><span class="synStatement">title</span><span class="synIdentifier">&gt;&lt;/</span><span class="synStatement">head</span><span class="synIdentifier">&gt;&lt;</span><span class="synStatement">body</span><span class="synIdentifier">&gt;&lt;</span><span class="synStatement">p</span><span class="synIdentifier">&gt;</span>リンクをクリックするとLEDがON/OFFします<span class="synIdentifier">&lt;/</span><span class="synStatement">p</span><span class="synIdentifier">&gt;&lt;</span><span class="synStatement">ul</span><span class="synIdentifier">&gt;&lt;</span><span class="synStatement">li</span><span class="synIdentifier">&gt;&lt;</span><span class="synStatement">a</span><span class="synIdentifier"> </span><span class="synType">href</span><span class="synIdentifier">=</span><span class="synConstant">\"/?button=on\"</span><span class="synIdentifier">&gt;</span><span class="synUnderlined">ON</span><span class="synIdentifier">&lt;/</span><span class="synStatement">a</span><span class="synIdentifier">&gt;&lt;/</span><span class="synStatement">li</span><span class="synIdentifier">&gt;&lt;</span><span class="synStatement">li</span><span class="synIdentifier">&gt;&lt;</span><span class="synStatement">a</span><span class="synIdentifier"> </span><span class="synType">href</span><span class="synIdentifier">=</span><span class="synConstant">\"/?button=off\"</span><span class="synIdentifier">&gt;</span><span class="synUnderlined">OFF</span><span class="synIdentifier">&lt;/</span><span class="synStatement">a</span><span class="synIdentifier">&gt;&lt;/</span><span class="synStatement">li</span><span class="synIdentifier">&gt;&lt;/</span><span class="synStatement">ul</span><span class="synIdentifier">&gt;&lt;/</span><span class="synStatement">body</span><span class="synIdentifier">&gt;&lt;/</span><span class="synStatement">html</span><span class="synIdentifier">&gt;</span>";
+</pre><p><code>handleLED()</code>でhtmlの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EC%A5%F3%A5%C0%A5%EA%A5%F3%A5%B0">レンダリング</a><code>  server.send(200, "text/html", html);</code>を追加します。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synComment">// LEDのON/OFF</span>
+<span class="synType">void</span> <span class="synIdentifier">handleLED</span>()
+{
+  <span class="synStatement">if</span> (server.<span class="synIdentifier">hasArg</span>(<span class="synConstant">"button"</span>))
+  {
+    <span class="synStatement">if</span> (server.<span class="synIdentifier">arg</span>(<span class="synConstant">"button"</span>).<span class="synIdentifier">equals</span>(<span class="synConstant">"on"</span>))
+    {
+      <span class="synIdentifier">digitalWrite</span>(ledPin, HIGH);
+    }
+    <span class="synStatement">else</span>
+    {
+      <span class="synIdentifier">digitalWrite</span>(ledPin, LOW);
+    }
+    Serial.<span class="synIdentifier">println</span>(server.<span class="synIdentifier">arg</span>(<span class="synConstant">"button"</span>));
+  }
+  server.<span class="synIdentifier">send</span>(<span class="synConstant">200</span>, <span class="synConstant">"text/html"</span>, html);
+}
+</pre><p>これで同一ページ（ルート）に留まったままになります。</p>
+</div>
+<div class="section">
+<h3>クライアントアプリを作成</h3>
+<p>このESP32によるサーバーアプリを<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>アプリで操作できるようにしてみます。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>アプリは<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>で作成します。</p><p>サーバーへのアクセスはブラウザ以外でも可能で、<a class="keyword" href="http://d.hatena.ne.jp/keyword/curl">curl</a>でもアクセスが出来ます。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/curl">curl</a>は<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%DE%A5%F3%A5%C9%A5%D7%A5%ED%A5%F3%A5%D7%A5%C8">コマンドプロンプト</a>から実行できます。</p>
+<pre class="code" data-lang="" data-unlink="">curl http://172.16.xx.xxx/?button=on</pre><p>このような形でもESP32サーバーは反応してくれます。</p><p>これを<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>で実行するには、以下のようにします。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synStatement">using</span> (var httpClient = <span class="synStatement">new</span> HttpClient())
+{
+    <span class="synComment">//   using (var request = new HttpRequestMessage(new HttpMethod("GET"), "http://172.16.xx.xxx/?button=on"))</span>
+    <span class="synStatement">using</span> (var request = <span class="synStatement">new</span> HttpRequestMessage(<span class="synStatement">new</span> HttpMethod(<span class="synConstant">"GET"</span>), url))
+    {
+        var response = await httpClient.SendAsync(request);
+    }
+}
+</pre><p>これをボタンによってクエリを切り替えてrequestします。</p>
+</div>
+<div class="section">
+<h3>まとめ</h3>
+<p>ESP32でサーバーを作成し、<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>によるクライアントアプリを作成しました。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fs51517765%2FESP32_Server" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="GitHub - s51517765/ESP32_Server: Make web server with ESP32 and C# client."></iframe><cite class="hatena-citation"><a href="https://github.com/s51517765/ESP32_Server">github.com</a></cite></p>
+</div>
+</div>

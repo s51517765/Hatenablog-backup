@@ -1,0 +1,238 @@
+<div class="entry-content">
+<div class="section">
+<h3>アプリの動作Logをとりたい</h3>
+<p>アプリのdebugには動作Logを確認することが重要です。<br/>
+Logとはテキストファイルとして動作させようとしたこと、した結果などが記載されたものです。<br/>
+テキストファイルなので<a class="keyword" href="http://d.hatena.ne.jp/keyword/StreamWriter">StreamWriter</a>で必要に応じて記載してもいいのですが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>には専用のクラスがあるのでこれを使ってみました。<br/>
+このクラスを使うと、Debug出力に出したりファイルに出力したりが簡単に切り替えられます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img class="hatena-fotolife" height="643" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220616/20220616214543.png" title="" width="1199"/></span><br/>
+</p>
+</div>
+<div class="section">
+<h3>TL;DR</h3>
+<p>・<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>の機能でLog出力を作成<br/>
+・Log出力は<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C7%A5%D0%A5%C3%A5%B0">デバッグ</a>モニタやファイルに出力が出来る<br/>
+・暗号化も<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>で出来る<br/>
+・隠しファイルにしたり解除したりも出来る</p>
+</div>
+<div class="section">
+<h3>Log出力の主要部分</h3>
+<p>dobon.netを参考に以下のように構成しました。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">        <span class="synType">private</span> <span class="synType">void</span> Form1_Load(<span class="synType">object</span> sender, EventArgs e)
+        {
+            InitTrace(); <span class="synComment">//コメントアウトでLogファイル出力をoff</span>
+            timer1.Start();
+
+            <span class="synComment">//一定日時を過ぎたらlogファイルを削除</span>
+            deleteFiles();
+        }
+
+      AES AES = <span class="synStatement">new</span> AES();<span class="synComment">//これを記入して「Alt」+「Enter」でclassファイルを生成する</span>
+
+        <span class="synType">private</span> <span class="synType">void</span> InitTrace()
+        {
+            <span class="synComment">//https://dobon.net/vb/dotnet/programing/tracelisteners.html</span>
+            <span class="synComment">//https://csharp.keicode.com/topics/debug-trace.php</span>
+
+            <span class="synComment">//TextWriterTraceListenerオブジェクトを作成</span>
+            DateTime dt = DateTime.Now;
+            <span class="synType">string</span> st = dt.ToString(<span class="synConstant">"yyyy_MM_dd_HH_mm_ss"</span>);
+            StreamWriter sw = <span class="synStatement">new</span> StreamWriter(st + <span class="synConstant">".log"</span>);
+<span class="synPreProc">#if !DEBUG</span>
+            System.IO.FileAttributes attr = System.IO.File.GetAttributes(st + <span class="synConstant">".log"</span>);
+            System.IO.File.SetAttributes(st + <span class="synConstant">".log"</span>, attr | System.IO.FileAttributes.Hidden);
+<span class="synPreProc">#endif</span>
+
+            <span class="synComment">//自動的にフラッシュされるようにする</span>
+            sw.AutoFlush = <span class="synConstant">true</span>;
+            <span class="synComment">//スレッドセーフラッパを作成</span>
+            TextWriter tw = TextWriter.Synchronized(sw);
+            <span class="synComment">//名前を LogFile としてTextWriterTraceListenerオブジェクトを作成</span>
+            TextWriterTraceListener twtl = <span class="synStatement">new</span> TextWriterTraceListener(tw, <span class="synConstant">"LogFile"</span>);
+            <span class="synComment">//リスナコレクションに追加する</span>
+            Trace.Listeners.Add(twtl);
+        }
+<span class="synType">int</span> count = <span class="synConstant">0</span>;
+        <span class="synType">private</span> <span class="synType">void</span> timer1_Tick(<span class="synType">object</span> sender, EventArgs e)
+        {
+            count++;
+            <span class="synType">string</span> text = <span class="synConstant">"Hello_Trace"</span> + count.ToString();
+
+<span class="synPreProc">#if !DEBUG</span>
+            <span class="synComment">// 暗号化された文字列</span>
+            text = AES.Encrypt(text);
+
+            Trace.WriteLine(text);
+
+            <span class="synComment">//復号</span>
+            text = AES.Decrypt(text);
+<span class="synPreProc">#endif</span>
+            Trace.WriteLine(text);
+        }
+</pre><p><code>Form1_Load</code>の<code>InitTrace(); </code>を削除するとLog出力が一切なくなります。<br/>
+基本はDebug出力に出力されますが、以下のような追加をするとファイルにも出力されます。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synComment">//名前を LogFile としてTextWriterTraceListenerオブジェクトを作成</span>
+TextWriterTraceListener twtl = <span class="synStatement">new</span> TextWriterTraceListener(tw, <span class="synConstant">"LogFile"</span>);
+<span class="synComment">//リスナコレクションに追加する</span>
+Trace.Listeners.Add(twtl);
+</pre><p>本番環境では暗号化したり隠しファイルにしておいたりが必要な場面があると思います。<br/>
+しかしDebugではこれはめんどくささになります。</p><p>このようなときにReleaseビルドとDebugビルドで動作を切り替える方法が<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>にはあって、以下のように書きます。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synPreProc">#if !DEBUG</span>
+<span class="synComment">//リリース時のみ</span>
+<span class="synPreProc">#endif</span>
+<span class="synPreProc">#if DEBUG</span>
+<span class="synComment">//デバッグ時のみ</span>
+<span class="synPreProc">#endif</span>
+</pre><p>ここではリリース時に暗号化してファイルに書き込んでいます。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">            AES AES = <span class="synStatement">new</span> AES();
+
+<span class="synPreProc">#if !DEBUG</span>
+            text = AES.Encrypt(text);
+            Trace.WriteLine(text);
+<span class="synPreProc">#endif</span>
+</pre><p>暗号化は以下のページをそのまま使ってクラスを作成しました。  <br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fyuyu-code.com%2Fprogramming-languages%2Fc-sharp%2Faes-encryption-decryption%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="【C#中級】 AES-256で暗号化・復号化する方法"></iframe><cite class="hatena-citation"><a href="https://yuyu-code.com/programming-languages/c-sharp/aes-encryption-decryption/">yuyu-code.com</a></cite><br/>
+</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synStatement">using</span> System.IO;
+<span class="synStatement">using</span> System.Security.Cryptography;
+<span class="synStatement">using</span> System.Text;
+<span class="synType">namespace</span> WindowsFormsTraceDebug
+{
+    <span class="synType">internal</span> <span class="synType">class</span> AES
+    {
+        <span class="synComment">// 初期化ベクトル"&lt;半角16文字（1byte=8bit, 8bit*16=128bit&gt;"</span>
+        <span class="synType">private</span> <span class="synType">const</span> <span class="synType">string</span> AES_IV_256 = <span class="synSpecial">@</span><span class="synConstant">"pg532LLijWFyZnHB"</span>;
+        <span class="synComment">// 暗号化鍵&lt;半角32文字（8bit*32文字=256bit）&gt;</span>
+        <span class="synType">private</span> <span class="synType">const</span> <span class="synType">string</span> AES_Key_256 = <span class="synSpecial">@</span><span class="synConstant">"55GB&amp;UfNfUsM(IK&lt;1DSB&amp;YHN7UJM(IK&lt;"</span>;
+
+        <span class="synComment">//https://yuyu-code.com/programming-languages/c-sharp/aes-encryption-decryption/</span>
+        <span class="synComment">/// </span><span class="synIdentifier">&lt;</span><span class="synStatement">summary</span><span class="synIdentifier">&gt;</span>
+        <span class="synComment">/// 対称鍵暗号を使って文字列を暗号化する</span>
+        <span class="synComment">/// </span><span class="synIdentifier">&lt;/</span><span class="synStatement">summary</span><span class="synIdentifier">&gt;</span>
+        <span class="synComment">/// </span><span class="synIdentifier">&lt;</span><span class="synStatement">param</span><span class="synIdentifier"> </span><span class="synType">name</span>=<span class="synConstant">"text"</span><span class="synIdentifier">&gt;</span><span class="synComment">暗号化する文字列</span><span class="synIdentifier">&lt;/</span><span class="synStatement">param</span><span class="synIdentifier">&gt;</span>
+        <span class="synComment">/// </span><span class="synIdentifier">&lt;</span><span class="synStatement">param</span><span class="synIdentifier"> </span><span class="synType">name</span>=<span class="synConstant">"AES_IV_256"</span><span class="synIdentifier">&gt;</span><span class="synComment">対称アルゴリズムの初期ベクター</span><span class="synIdentifier">&lt;/</span><span class="synStatement">param</span><span class="synIdentifier">&gt;</span>
+        <span class="synComment">/// </span><span class="synIdentifier">&lt;</span><span class="synStatement">param</span><span class="synIdentifier"> </span><span class="synType">name</span>=<span class="synConstant">"AES_Key_256"</span><span class="synIdentifier">&gt;</span><span class="synComment">対称アルゴリズムの共有鍵</span><span class="synIdentifier">&lt;/</span><span class="synStatement">param</span><span class="synIdentifier">&gt;</span>
+        <span class="synComment">/// </span><span class="synIdentifier">&lt;</span><span class="synStatement">returns</span><span class="synIdentifier">&gt;</span><span class="synComment">暗号化された文字列</span><span class="synIdentifier">&lt;/</span><span class="synStatement">returns</span><span class="synIdentifier">&gt;</span>
+        <span class="synType">public</span> <span class="synType">static</span> <span class="synType">string</span> Encrypt(<span class="synType">string</span> text)
+        {
+            <span class="synStatement">using</span> (RijndaelManaged myRijndael = <span class="synStatement">new</span> RijndaelManaged())
+            {
+                <span class="synComment">// ブロックサイズ（何文字単位で処理するか）</span>
+                myRijndael.BlockSize = <span class="synConstant">128</span>;
+                <span class="synComment">// 暗号化方式はAES-256を採用</span>
+                myRijndael.KeySize = <span class="synConstant">256</span>;
+                <span class="synComment">// 暗号利用モード</span>
+                myRijndael.Mode = CipherMode.CBC;
+                <span class="synComment">// パディング</span>
+                myRijndael.Padding = PaddingMode.PKCS7;
+
+                myRijndael.IV = Encoding.UTF8.GetBytes(AES_IV_256);
+                myRijndael.Key = Encoding.UTF8.GetBytes(AES_Key_256);
+
+                <span class="synComment">// 暗号化</span>
+                ICryptoTransform encryptor = myRijndael.CreateEncryptor(myRijndael.Key, myRijndael.IV);
+
+                <span class="synType">byte</span>[] encrypted;
+                <span class="synStatement">using</span> (MemoryStream mStream = <span class="synStatement">new</span> MemoryStream())
+                {
+                    <span class="synStatement">using</span> (CryptoStream ctStream = <span class="synStatement">new</span> CryptoStream(mStream, encryptor, CryptoStreamMode.Write))
+                    {
+                        <span class="synStatement">using</span> (StreamWriter sw = <span class="synStatement">new</span> StreamWriter(ctStream))
+                        {
+                            sw.Write(text);
+                        }
+                        encrypted = mStream.ToArray();
+                    }
+                }
+                <span class="synComment">// Base64形式（64種類の英数字で表現）で返す</span>
+                <span class="synStatement">return</span> (System.Convert.ToBase64String(encrypted));
+            }
+        }
+
+        <span class="synComment">/// </span><span class="synIdentifier">&lt;</span><span class="synStatement">summary</span><span class="synIdentifier">&gt;</span>
+        <span class="synComment">/// 対称鍵暗号を使って暗号文を復号する</span>
+        <span class="synComment">/// </span><span class="synIdentifier">&lt;/</span><span class="synStatement">summary</span><span class="synIdentifier">&gt;</span>
+        <span class="synComment">/// </span><span class="synIdentifier">&lt;</span><span class="synStatement">param</span><span class="synIdentifier"> </span><span class="synType">name</span>=<span class="synConstant">"cipher"</span><span class="synIdentifier">&gt;</span><span class="synComment">暗号化された文字列</span><span class="synIdentifier">&lt;/</span><span class="synStatement">param</span><span class="synIdentifier">&gt;</span>
+        <span class="synComment">/// </span><span class="synIdentifier">&lt;</span><span class="synStatement">param</span><span class="synIdentifier"> </span><span class="synType">name</span>=<span class="synConstant">"AES_IV_256"</span><span class="synIdentifier">&gt;</span><span class="synComment">対称アルゴリズムの初期ベクター</span><span class="synIdentifier">&lt;/</span><span class="synStatement">param</span><span class="synIdentifier">&gt;</span>
+        <span class="synComment">/// </span><span class="synIdentifier">&lt;</span><span class="synStatement">param</span><span class="synIdentifier"> </span><span class="synType">name</span>=<span class="synConstant">"AES_Key_256"</span><span class="synIdentifier">&gt;</span><span class="synComment">対称アルゴリズムの共有鍵</span><span class="synIdentifier">&lt;/</span><span class="synStatement">param</span><span class="synIdentifier">&gt;</span>
+        <span class="synComment">/// </span><span class="synIdentifier">&lt;</span><span class="synStatement">returns</span><span class="synIdentifier">&gt;</span><span class="synComment">復号された文字列</span><span class="synIdentifier">&lt;/</span><span class="synStatement">returns</span><span class="synIdentifier">&gt;</span>
+        <span class="synType">public</span> <span class="synType">static</span> <span class="synType">string</span> Decrypt(<span class="synType">string</span> cipher)
+        {
+            <span class="synStatement">using</span> (RijndaelManaged rijndael = <span class="synStatement">new</span> RijndaelManaged())
+            {
+                <span class="synComment">// ブロックサイズ（何文字単位で処理するか）</span>
+                rijndael.BlockSize = <span class="synConstant">128</span>;
+                <span class="synComment">// 暗号化方式はAES-256を採用</span>
+                rijndael.KeySize = <span class="synConstant">256</span>;
+                <span class="synComment">// 暗号利用モード</span>
+                rijndael.Mode = CipherMode.CBC;
+                <span class="synComment">// パディング</span>
+                rijndael.Padding = PaddingMode.PKCS7;
+
+                rijndael.IV = Encoding.UTF8.GetBytes(AES_IV_256);
+                rijndael.Key = Encoding.UTF8.GetBytes(AES_Key_256);
+
+                ICryptoTransform decryptor = rijndael.CreateDecryptor(rijndael.Key, rijndael.IV);
+
+                <span class="synType">string</span> plain = <span class="synType">string</span>.Empty;
+                <span class="synStatement">using</span> (MemoryStream mStream = <span class="synStatement">new</span> MemoryStream(System.Convert.FromBase64String(cipher)))
+                {
+                    <span class="synStatement">using</span> (CryptoStream ctStream = <span class="synStatement">new</span> CryptoStream(mStream, decryptor, CryptoStreamMode.Read))
+                    {
+                        <span class="synStatement">using</span> (StreamReader sr = <span class="synStatement">new</span> StreamReader(ctStream))
+                        {
+                            plain = sr.ReadLine();
+                        }
+                    }
+                }
+                <span class="synStatement">return</span> plain;
+            }
+        }
+    }
+}
+</pre><p>初期化ベクトルや暗号化鍵は秘密にしておく必要があります。<br/>
+これを変更すると生成される暗号文字列が変わり、復号にもこれを使います。</p><p>リリースビルドではLogファイルは隠しファイルにします。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synPreProc">#if !DEBUG</span>
+            System.IO.FileAttributes attr = System.IO.File.GetAttributes(st + <span class="synConstant">".log"</span>);
+            System.IO.File.SetAttributes(st + <span class="synConstant">".log"</span>, attr | System.IO.FileAttributes.Hidden);
+<span class="synPreProc">#endif</span>
+</pre><p>Logファイルが増えてくるとストレージを圧迫してしまうので時間や日にちで更新日を確認し、古いファイルは削除していきます。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink="">        <span class="synType">private</span> <span class="synType">void</span> deleteFiles()
+        {
+<span class="synPreProc">#if !DEBUG</span>
+            <span class="synType">string</span> cDir = System.Environment.CurrentDirectory;
+            <span class="synType">string</span>[] files = System.IO.Directory.GetFiles(cDir, <span class="synConstant">"*.log"</span>, System.IO.SearchOption.AllDirectories);
+            <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; files.Length; i++)
+            {
+                DateTime lastWriteTime = System.IO.File.GetLastWriteTime(files[i]);
+                <span class="synStatement">if</span> (DateTime.Now - lastWriteTime &gt; TimeSpan.FromMinutes(<span class="synConstant">1</span>))
+                {
+                    <span class="synComment">//FileInfoオブジェクトを作成する</span>
+                    System.IO.FileInfo fi = <span class="synStatement">new</span> System.IO.FileInfo(files[i]);
+                    <span class="synComment">//ファイルを削除</span>
+                    fi.Delete();
+                }
+            }
+<span class="synPreProc">#endif</span>
+        }
+</pre><p>リリース後、Logファイルが必要なときは隠しファイルを解除してLogファイルを出現させます。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">private</span> <span class="synType">void</span> buttonOutputLog_Click(<span class="synType">object</span> sender, EventArgs e)
+{
+    <span class="synComment">//隠しファイルを出現させる</span>
+    <span class="synType">string</span> cDir = System.Environment.CurrentDirectory;
+    <span class="synType">string</span>[] files = System.IO.Directory.GetFiles(cDir, <span class="synConstant">"*.log"</span>, System.IO.SearchOption.AllDirectories);
+    <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; files.Length; i++)
+    {
+        System.IO.FileAttributes attr = System.IO.File.GetAttributes(files[i]);
+        <span class="synComment">//読み取り専用属性を削除する</span>
+        System.IO.File.SetAttributes(files[i], attr &amp; (~System.IO.FileAttributes.Hidden));
+    }
+}
+</pre>
+</div>
+<div class="section">
+<h3>まとめ</h3>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>のLog出力を使ってみました。<br/>
+また暗号化や隠しファイルの設定も使ってみました。</p>
+</div>
+</div>

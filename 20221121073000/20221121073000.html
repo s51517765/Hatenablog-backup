@@ -1,0 +1,46 @@
+<div class="entry-content">
+<div class="section">
+<h3 id="今年もM5Stack-Japan-Creativity-Contestに応募しました">今年もM5Stack Japan Creativity Contestに応募しました</h3>
+<p><iframe class="embed-card embed-webcard" frameborder="0" loading="lazy" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fprotopedia.net%2Fprototype%2F3231" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="M5Stackを使った迷路ゲーム | ProtoPedia"></iframe><cite class="hatena-citation"><a href="https://protopedia.net/prototype/3231">protopedia.net</a></cite><br/>
+<iframe class="embed-card embed-webcard" frameborder="0" loading="lazy" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fprotopedia.net%2Fevent%2Fm5stack2022" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="M5Stack Japan Creativity Contest 2022 | ProtoPedia"></iframe><cite class="hatena-citation"><a href="https://protopedia.net/event/m5stack2022">protopedia.net</a></cite><br/>
+<iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" frameborder="0" height="315" src="https://www.youtube.com/embed/OwcvV5rolq4?feature=oembed" title="【M5stackコンテスト2022応募作品】3軸加速度センサを用いた迷路ゲーム（Labyrinth）" width="560"></iframe><cite class="hatena-citation"><a href="https://youtu.be/OwcvV5rolq4">youtu.be</a></cite></p><p>狙い通り、参加賞のTシャツが送られてくる予定です。</p><p>今回はゲームを作りました。<br/>
+プログラミングでゲームを作ってみたいと思っていて、そこにちょうど購入した3軸加速度センサがありました。 <br/>
+小学校の頃に作った迷路を思い出して、これをデジタルで作ってみようと思いました。<br/>
+（↓こんなやつですが、今時はキットになっているのがあるのですね…）</p><div class="hatena-asin-detail"><a class="hatena-asin-detail-image-link" href="https://www.amazon.co.jp/dp/B089QQNLF2?tag=shirotoakb-22&amp;linkCode=osi&amp;th=1&amp;psc=1" rel="noopener" target="_blank"><img alt="段ボール 自由工作用 工作キット ビー玉迷路 Myダンボール ビー玉コロコロ迷路" class="hatena-asin-detail-image" src="https://m.media-amazon.com/images/I/41LSspFdzdL._SL500_.jpg" title="段ボール 自由工作用 工作キット ビー玉迷路 Myダンボール ビー玉コロコロ迷路"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="https://www.amazon.co.jp/dp/B089QQNLF2?tag=shirotoakb-22&amp;linkCode=osi&amp;th=1&amp;psc=1" rel="noopener" target="_blank">段ボール 自由工作用 工作キット ビー玉迷路 Myダンボール ビー玉コロコロ迷路</a></p><ul class="hatena-asin-detail-meta"><li>N</li></ul><a class="asin-detail-buy" href="https://www.amazon.co.jp/dp/B089QQNLF2?tag=shirotoakb-22&amp;linkCode=osi&amp;th=1&amp;psc=1" rel="noopener" target="_blank">Amazon</a></div></div>
+</div>
+<div class="section">
+<h3 id="技術的解説">技術的解説</h3>
+<p><iframe class="embed-card embed-webcard" frameborder="0" loading="lazy" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fs51517765%2FKoroKoro" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="GitHub - s51517765/KoroKoro: KoroKoro with M5Stack basic"></iframe><cite class="hatena-citation"><a href="https://github.com/s51517765/KoroKoro">github.com</a></cite><br/>
+プロジェクトは<a class="keyword" href="http://d.hatena.ne.jp/keyword/Visual%20Studio%20Code">Visual Studio Code</a>でM5Stackが扱えるPlatform IOを使っています。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a> <a class="keyword" href="http://d.hatena.ne.jp/keyword/IDE">IDE</a>を使うときは<code>src</code>フォルダの中身だけを使えば動かせるはずです。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a> <a class="keyword" href="http://d.hatena.ne.jp/keyword/IDE">IDE</a>ではM5Stack等ESP32は<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%F3%A5%D1%A5%A4%A5%EB">コンパイル</a>の時間がかかりますが、Platform IOを使ったほうが<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%F3%A5%D1%A5%A4%A5%EB">コンパイル</a>が速くなる傾向があります。</p><p><code>/src/main.cpp</code>がメインエントリポイント等を含み、<code>/src/maze_.cpp</code>では迷路を生成します。</p><p>迷路は穴掘り法と呼ばれる<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A2%A5%EB%A5%B4%A5%EA%A5%BA%A5%E0">アルゴリズム</a>を使っています。<br/>
+これの<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A2%A5%EB%A5%B4%A5%EA%A5%BA%A5%E0">アルゴリズム</a>では、スタートを決めると、領域内にランダムにコースを作成します。<br/>
+このように穴掘り法では最初にすべての領域を壁に初期化し、掘り進めていくことで通路と壁の配列を作成します。<br/>
+これを配列<code>static int maze[MEIRO_HEIGHT][MEIRO_WIDTH] = {};</code>に保存します。</p><p>この<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A2%A5%EB%A5%B4%A5%EA%A5%BA%A5%E0">アルゴリズム</a>にひと工夫して、スタートからの「道のり」が一番遠くなる場所をゴールに設定するようにしています。</p><p>迷路を掘る中では<code>mazeDepth += 1;</code>のようにスタートからの深さを保持し、戻るときには<code>mazeDepth -= 1;</code>のように減算し、その場所のスタートからの道<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%CE%A4%EA%A4%F2">のりを</a>算出します。<br/>
+これが最大値になる場所が最も遠い場所になるので、その場所をゴールに設定します。<br/>
+最大深さを<code>int mazeDepthMax = 0;</code>に保持し、そのときの座標（その時点での一番遠い場所）を<code>int maxDepthGoal_xy[2];</code>に保持し、最後まで探索が終わると自動的にゴールの座標が求まります。</p><p><code>/src/main.cpp</code>では<code>void setup()</code>と<code>void loop()</code>が主ですが、<br/>
+<code>void setup()</code>ではi2cの加速度センサの初期化、<a class="keyword" href="http://d.hatena.ne.jp/keyword/LCD">LCD</a>の初期化を行った後、スタートメニュー<code>void startMenue()</code>を表示します。<br/>
+Bボタンが押されると、<code>initRand();</code><code>createMaze();</code>で迷路を作成します。<br/>
+カウントダウン<code>countDown();</code>を行い、ステージを表示します<code>initStage();</code>。</p><p>ゲームがスタートすると<code>void loop()</code>に進みます。<br/>
+ゲーム中は、ボタンの読み取り、画面更新、i2cのデータ受信、ボール（および迷路）の表示、経過時間の表示行います。<br/>
+ボールがゴール地点に到達したら、<code>void showResult(unsigned long t, bool tooLongTime)</code>へ進みます。<br/>
+<code>while (true)</code>で入力待ちとなります。</p>
+</div>
+<div class="section">
+<h3 id="製作の履歴">製作の履歴</h3>
+<p>まずは、加速度センサの動きを試します。</p><blockquote class="twitter-tweet" data-conversation="none" data-lang="ja"><p dir="ltr" lang="ja">M5stack画面上をボールが転がる。 <a href="https://t.co/YOJZPH5Ihc">pic.twitter.com/YOJZPH5Ihc</a></p>— とりてん (@s51517765) <a href="https://twitter.com/s51517765/status/1549736412156940288?ref_src=twsrc%5Etfw">2022年7月20日</a></blockquote> <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script> <br/>
+加速度センサの入力に応じてボールが動きます。<br/>
+この時点で壁との当たり判定は組み込まれていますが、のちにバグがあることが分かります。<br/>
+また、ボールの速度調整が出来ていません。<blockquote class="twitter-tweet" data-conversation="none" data-lang="ja"><p dir="ltr" lang="ja">迷路をボールが転がる。<br/>画面更新を止めているので残像が残っています。 <a href="https://t.co/eio4EiHqSH">pic.twitter.com/eio4EiHqSH</a></p>— とりてん (@s51517765) <a href="https://twitter.com/s51517765/status/1552983832462499840?ref_src=twsrc%5Etfw">2022年7月29日</a></blockquote> <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script> <br/>
+壁に引っかかるバグがまだ残っています。<br/>
+ボールの移動量の分解能がintにキャストされることで荒くなっていたことが原因でした。<blockquote class="twitter-tweet" data-conversation="none" data-lang="ja"><p dir="ltr" lang="ja">迷路らしくなった。<a href="https://twitter.com/hashtag/M5stack?src=hash&amp;ref_src=twsrc%5Etfw">#M5stack</a> <a href="https://t.co/8lEE3intBD">pic.twitter.com/8lEE3intBD</a></p>— とりてん (@s51517765) <a href="https://twitter.com/s51517765/status/1554745406059266048?ref_src=twsrc%5Etfw">2022年8月3日</a></blockquote> <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script> <br/>
+引っかかりが無くスムーズに動くようになりました。<blockquote class="twitter-tweet" data-conversation="none" data-lang="ja"><p dir="ltr" lang="ja">ボールを滑らかに動くようにして、さらにゴールを表示。<br/>ゴールは迷路作成時に一番遠いところを探して設定されます。 <a href="https://twitter.com/hashtag/M5Stack?src=hash&amp;ref_src=twsrc%5Etfw">#M5Stack</a> <a href="https://t.co/J8SX5HHcn1">pic.twitter.com/J8SX5HHcn1</a></p>— とりてん (@s51517765) <a href="https://twitter.com/s51517765/status/1559520416091480065?ref_src=twsrc%5Etfw">2022年8月16日</a></blockquote> <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script> <br/>
+タイム計測機能を追加してメインの機能は完成です。<blockquote class="twitter-tweet" data-conversation="none" data-lang="ja"><p dir="ltr" lang="ja">タイム計測機能を追加。<a href="https://twitter.com/hashtag/M5stack?src=hash&amp;ref_src=twsrc%5Etfw">#M5stack</a> <a href="https://t.co/4bpXZsZIVg">pic.twitter.com/4bpXZsZIVg</a></p>— とりてん (@s51517765) <a href="https://twitter.com/s51517765/status/1560816585614725121?ref_src=twsrc%5Etfw">2022年8月20日</a></blockquote> <script async="" charset="utf-8" src="https://platform.twitter.com/widgets.js"></script> <br/>
+ずべての機能の完成形は<a class="keyword" href="http://d.hatena.ne.jp/keyword/Youtube">Youtube</a>に。<br/>
+<iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" frameborder="0" height="315" src="https://www.youtube.com/embed/OwcvV5rolq4?feature=oembed" title="【M5stackコンテスト2022応募作品】3軸加速度センサを用いた迷路ゲーム（Labyrinth）" width="560"></iframe><cite class="hatena-citation"><a href="https://youtu.be/OwcvV5rolq4">youtu.be</a></cite><br/>
+</div>
+<div class="section">
+<h3 id="まとめ">まとめ</h3>
+<p>M5Stack Japan Creativity Contest応募作の解説と紹介でした。</p>
+</div>
+</div>

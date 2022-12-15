@@ -1,0 +1,154 @@
+<div class="entry-content">
+<div class="section">
+<h3 id="CでArudinoと通信したい"><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>でArudinoと通信したい</h3>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>はGPIOがあるため、モーターやLEDを駆動したりスイッチの状態や電圧を読んだりすることが出来ます。<br/>
+一方、Ｃ#では<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>上でリッチな<a class="keyword" href="http://d.hatena.ne.jp/keyword/GUI">GUI</a>アプリを構成することが出来ます。<br/>
+これらを組み合わせることが出来れば、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>からデ<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D0%A5%A4%A5%B9">バイス</a>を制御したり、デ<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%D0%A5%A4%A5%B9">バイス</a>の状態を<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>上で確認することが出来ます。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>ではSerial通信が簡単につかえて、以下を参考にしました。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" loading="lazy" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fwww.atsumitakeshi.com%2Fcsharp_arduino1.html" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="C#でArduinoと通信"></iframe><cite class="hatena-citation"><a href="https://www.atsumitakeshi.com/csharp_arduino1.html">www.atsumitakeshi.com</a></cite></p><p>ちなみにシリアル通信とは、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>であればシリアルモニタに文字列を表示できるものを思い浮かべるかと思いますが、これは<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>固有のものではなく一般的に使える通信の仕組みの一つです。</p>
+</div>
+<div class="section">
+<h3 id="Arduinoから文字列を送信する"><a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>から文字列を送信する</h3>
+<p>まずはシンプルに<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>から文字列を送信してみます。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>に接続したスイッチを押したとき「Switch pushed.」という文字列を送ります。<br/>
+(スイッチのピンはプルアップにしてあります)</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synStatement">if</span> (<span class="synIdentifier">digitalRead</span>(SwPin) == LOW) {
+  <span class="synIdentifier">delay</span>(<span class="synConstant">400</span>);<span class="synComment">//チャタリング防止</span>
+  <span class="synStatement">while</span> (<span class="synIdentifier">digitalRead</span>(SwPin) == LOW) {}
+  Serial.<span class="synIdentifier">print</span>(<span class="synConstant">"Switch pushed."</span>);
+}
+</pre><p>これを<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>で受け取り、TextBoxに追記します。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>でのシリアルの受信は<code>string data = serialPort1.ReadExisting();</code>のようにします。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">private</span> <span class="synType">void</span> serialPort1_DataReceived(<span class="synType">object</span> sender, System.IO.Ports.SerialDataReceivedEventArgs e)
+{
+    <span class="synStatement">try</span>
+    {
+        <span class="synType">string</span> data <span class="synStatement">=</span> serialPort1.ReadExisting();   <span class="synComment">// ポートから文字列を受信する</span>
+        <span class="synStatement">if</span> (<span class="synStatement">!</span><span class="synType">string</span>.IsNullOrEmpty(data))
+        {
+            Invoke((MethodInvoker)(() <span class="synStatement">=&gt;</span>    <span class="synComment">// 受信用スレッドから切り替えてデータを書き込む</span>
+            {
+                textBoxLog.AppendText(data<span class="synStatement">+</span> System.Environment.NewLine);
+                Application.DoEvents();
+                Thread.Sleep(<span class="synConstant">1</span>);
+            }));
+        }
+    }
+    <span class="synStatement">catch</span> (Exception ex)
+    {
+        MessageBox.Show(ex.Message);
+    }
+}
+</pre><p>このような少し長めの「文字列」を送信すると、本来終わりでないところでいったん受信が切れているように見えます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img class="hatena-fotolife" height="437" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220924/20220924180552.png" title="" width="628"/></span><br/>
+送った文字列は最終的にはすべて送信され、<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>で受信されてはいますが「一塊を誤認識」しているような形になってしまいます。<br/>
+ここでは文字列を受信したら、これをTextBoxに書き出し改行を加えていますが、文字列が分割して受信されているようです。</p><p>これを防止するためには、「文字列」が”ここまで”ということを示す「文字」=「終端文字」=<code>'\0'</code>を文字列の最後に追加します。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synStatement">if</span> (<span class="synIdentifier">digitalRead</span>(SwPin) == LOW) {
+  <span class="synIdentifier">delay</span>(<span class="synConstant">400</span>);
+  <span class="synStatement">while</span> (<span class="synIdentifier">digitalRead</span>(SwPin) == LOW) {}
+  Serial.<span class="synIdentifier">print</span>(<span class="synConstant">"Switch pushed."</span>);
+  Serial.<span class="synIdentifier">print</span>(<span class="synSpecial">'\0'</span>);
+}
+</pre><p>終端文字を受信側で認識して改行に置き換えます。</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">private</span> <span class="synType">void</span> serialPort1_DataReceived(<span class="synType">object</span> sender, System.IO.Ports.SerialDataReceivedEventArgs e)
+{
+    <span class="synStatement">try</span>
+    {
+        <span class="synType">string</span> data <span class="synStatement">=</span> serialPort1.ReadExisting();   <span class="synComment">// ポートから文字列を受信する</span>
+        <span class="synStatement">if</span> (<span class="synStatement">!</span><span class="synType">string</span>.IsNullOrEmpty(data))
+        {
+            Invoke((MethodInvoker)(() <span class="synStatement">=&gt;</span>    <span class="synComment">// 受信用スレッドから切り替えてデータを書き込む</span>
+            {
+                data <span class="synStatement">=</span> data.Replace(<span class="synConstant">"</span><span class="synSpecial">\0</span><span class="synConstant">"</span>, System.Environment.NewLine);
+                textBoxLog.AppendText(data);
+                Application.DoEvents();
+                Thread.Sleep(<span class="synConstant">1</span>);
+    }));
+        }
+    }
+    <span class="synStatement">catch</span> (Exception ex)
+    {
+        MessageBox.Show(ex.Message);
+    }
+}
+</pre><p><span itemscope="" itemtype="http://schema.org/Photograph"><img class="hatena-fotolife" height="437" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220924/20220924181019.png" title="" width="628"/></span><br/>
+</p>
+</div>
+<div class="section">
+<h3 id="Cから文字列を送信する"><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>から文字列を送信する</h3>
+<p>今度は<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>（<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>）から送信してみます。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>側では、受け取るものは主に「数値」のような気がしますので、数値に限定して送信することを考えます。<br/>
+ここでは3桁の数値を送ることを考えます。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>側では数値は「全角」と「半角」がありますので、これらをすべて半角に変換し、数値以外は無視するように以下のような処理をいれました。<br/>
+このように変換した文字列を<code>serialPort1.Write(value);</code>で送信します。<br/>
+こちらも、終端文字を送信したいのですが<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>には終端文字が無いようなので、<code>/</code>（ Asciiで47） を送信することにします。<br/>
+（一般的な慣習があれば教えてください。）</p>
+<pre class="code lang-cs" data-lang="cs" data-unlink=""><span class="synType">private</span> <span class="synType">void</span> DataSend()
+{
+    <span class="synType">string</span> data <span class="synStatement">=</span> textBoxValue.Text;
+
+    <span class="synComment">//全角数字を半角数字に変換</span>
+    data <span class="synStatement">=</span> data.Replace(<span class="synConstant">"０"</span>, <span class="synConstant">"0"</span>);
+    data <span class="synStatement">=</span> data.Replace(<span class="synConstant">"１"</span>, <span class="synConstant">"1"</span>);
+    data <span class="synStatement">=</span> data.Replace(<span class="synConstant">"２"</span>, <span class="synConstant">"2"</span>);
+    data <span class="synStatement">=</span> data.Replace(<span class="synConstant">"３"</span>, <span class="synConstant">"3"</span>);
+    data <span class="synStatement">=</span> data.Replace(<span class="synConstant">"４"</span>, <span class="synConstant">"4"</span>);
+    data <span class="synStatement">=</span> data.Replace(<span class="synConstant">"５"</span>, <span class="synConstant">"5"</span>);
+    data <span class="synStatement">=</span> data.Replace(<span class="synConstant">"６"</span>, <span class="synConstant">"6"</span>);
+    data <span class="synStatement">=</span> data.Replace(<span class="synConstant">"７"</span>, <span class="synConstant">"7"</span>);
+    data <span class="synStatement">=</span> data.Replace(<span class="synConstant">"８"</span>, <span class="synConstant">"8"</span>);
+    data <span class="synStatement">=</span> data.Replace(<span class="synConstant">"９"</span>, <span class="synConstant">"9"</span>);
+
+    <span class="synComment">//正規表現で数値を取得</span>
+    System.Text.RegularExpressions.MatchCollection mc <span class="synStatement">=</span> System.Text.RegularExpressions.Regex.Matches(data, <span class="synConstant">@"\d+"</span>);
+    {
+        <span class="synStatement">foreach</span> (System.Text.RegularExpressions.Match m <span class="synStatement">in</span> mc)
+        {
+            <span class="synType">string</span> <span class="synStatement">value</span> <span class="synStatement">=</span> m.ToString();
+            <span class="synStatement">while</span> (<span class="synStatement">value</span>.Length <span class="synStatement">&lt;</span> <span class="synConstant">3</span>) <span class="synStatement">value</span> <span class="synStatement">=</span> <span class="synConstant">"0"</span> <span class="synStatement">+</span> <span class="synStatement">value</span>.ToString(); <span class="synComment">//3桁の文字列に変換して送る</span>
+            serialPort1.Write(<span class="synStatement">value</span>);
+            serialPort1.Write(<span class="synConstant">"/"</span>); <span class="synComment">//終端文字？</span>
+            <span class="synStatement">break</span>;
+        }
+    }
+}
+</pre><p>これをArudinoで受信します。<br/>
+受信した数値は3桁であるという前提にしているので、以下のように100の位、10の位、1の位という順番に受信しますので、もとの数値を復元します。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>側でも正しく送信されたことを確認するために<code>Serial.print(count); Serial.print('\0');</code>のように数値を返還します。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synType">void</span> <span class="synIdentifier">loop</span>() {
+  SerialRead = Serial.<span class="synIdentifier">available</span>();  <span class="synComment">// シリアルポートにデータがあるかを確認</span>
+  <span class="synStatement">if</span> (SerialRead &gt; <span class="synConstant">0</span>) 
+  {
+    <span class="synComment">// Serial.print("L");</span>
+    inByte[digit++] = Serial.<span class="synIdentifier">read</span>(); <span class="synComment">// データを読み込む</span>
+
+    <span class="synStatement">if</span> (digit == <span class="synConstant">47</span>) <span class="synComment">//"/"を受信したら</span>
+    { 
+      <span class="synComment">//3桁のデータを受信したら、文字列を数値に</span>
+      count += (inByte[<span class="synConstant">0</span>] - <span class="synConstant">48</span>) * <span class="synConstant">100</span>;
+      count += (inByte[<span class="synConstant">1</span>] - <span class="synConstant">48</span>) * <span class="synConstant">10</span>;
+      count += inByte[<span class="synConstant">2</span>] - <span class="synConstant">48</span>;
+
+      <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; count; i++) {
+        <span class="synIdentifier">digitalWrite</span>(LED_BUILTIN, HIGH);
+        <span class="synIdentifier">delay</span>(<span class="synConstant">300</span>);
+        <span class="synIdentifier">digitalWrite</span>(LED_BUILTIN, LOW);
+        <span class="synIdentifier">delay</span>(<span class="synConstant">300</span>);
+      }
+      Serial.<span class="synIdentifier">print</span>(count);
+      Serial.<span class="synIdentifier">print</span>(<span class="synSpecial">'\0'</span>);
+
+      <span class="synIdentifier">delay</span>(<span class="synConstant">1000</span>);  <span class="synComment">// 通信用の待機時間</span>
+      count = <span class="synConstant">0</span>;
+      digit = <span class="synConstant">0</span>;
+    }
+  }
+</pre>
+</div>
+<div class="section">
+<h3 id="まとめ">まとめ</h3>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>とArudinoでシリアル通信を実装してみました。<br/>
+Serial通信は基本的な通信技術なので、使い道はいろいろあると思います。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" loading="lazy" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fs51517765%2FSerial-communication-with-Csharp-and-Arduino" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="s51517765/Serial-communication-with-Csharp-and-Arduino"></iframe><cite class="hatena-citation"><a href="https://github.com/s51517765/Serial-communication-with-Csharp-and-Arduino">github.com</a></cite></p>
+</div>
+</div>

@@ -1,0 +1,149 @@
+<div class="entry-content">
+<div class="section">
+<h3 id="M5Stackのアニメーション制御を解説します">M5Stackのアニメーション制御を解説します</h3>
+<p>このプロジェクトでもっとも重要な要素の一つである、M5Stackの<a class="keyword" href="http://d.hatena.ne.jp/keyword/LCD">LCD</a>上でアニメーションを制御（表示）する方法を解説します。<br/>
+先の記事の続き的な位置づけです。<br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" loading="lazy" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2022%2F11%2F21%2F073000" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="M5Stack Japan Creativity Contest応募作の解説 - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2022/11/21/073000">s51517765.hatenadiary.jp</a></cite><br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%BD%A1%BC%A5%B9%A5%B3%A1%BC%A5%C9">ソースコード</a>は以下です。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" loading="lazy" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fs51517765%2FKoroKoro" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="GitHub - s51517765/KoroKoro: KoroKoro with M5Stack basic"></iframe><cite class="hatena-citation"><a href="https://github.com/s51517765/KoroKoro">github.com</a></cite><br/>
+</p>
+</div>
+<div class="section">
+<h3 id="画素オブジェクトを点滅させる">画素オブジェクトを点滅させる</h3>
+<p>最も基本的にはカーソル位置を指定<code>M5.Lcd.setCursor(60, 105);</code>し、文字列を表示<code>M5.Lcd.print("&gt;STARTします。<br/>
+これをフラグ<code>print</code>を見て、表示と消去<code>m5.Lcd.fillScreen(BLACK);</code>を交互に行います。<br/>
+これで点滅が表現できます。(動画は<a class="keyword" href="http://d.hatena.ne.jp/keyword/Youtube">Youtube</a>で見てください。Linkはこの記事の末にあります。)<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img class="hatena-fotolife" height="700" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20221123/20221123193926.png" title="" width="798"/></span></code></p>
+<pre class="code lang-c" data-lang="c" data-unlink="">  <span class="synStatement">while</span> (<span class="synConstant">true</span>)
+  {
+    M5.Lcd.<span class="synIdentifier">setCursor</span>(<span class="synConstant">60</span>, <span class="synConstant">105</span>);
+    <span class="synStatement">if</span> (print)
+      M5.Lcd.<span class="synIdentifier">print</span>(<span class="synConstant">"&gt;START&lt;"</span>);
+    <span class="synStatement">else</span>
+      m5.Lcd.<span class="synIdentifier">fillScreen</span>(BLACK);
+    print = !print;
+  }
+</pre>
+</div>
+<div class="section">
+<h3 id="画素オブジェクトを追加する">画素オブジェクトを追加する</h3>
+<p>次は<code>Circle</code>を円周状に追加していくことで、時計のような効果になります。<br/>
+円周なので<a class="keyword" href="http://d.hatena.ne.jp/keyword/%BB%B0%B3%D1%B4%D8%BF%F4">三角関数</a>を使うと完結に表現できます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img class="hatena-fotolife" height="642" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20221123/20221123193707.png" title="" width="796"/></span></p>
+<pre class="code lang-c" data-lang="c" data-unlink="">    <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; step; i++)
+    {
+      x = posi_x + offset + <span class="synConstant">80</span> * <span class="synIdentifier">sin</span>(<span class="synType">float</span>(i * PI * <span class="synConstant">2</span> / step));
+      y = posi_y + offset - <span class="synConstant">80</span> * <span class="synIdentifier">cos</span>(<span class="synType">float</span>(i * PI * <span class="synConstant">2</span> / step));
+      M5.Lcd.<span class="synIdentifier">fillCircle</span>(x, y, <span class="synConstant">5</span>, GREEN);
+      <span class="synIdentifier">delay</span>(<span class="synConstant">1000</span> / step);
+    }
+</pre><p>中央の数字を更新するときは<code>M5.Lcd.fillScreen(BLACK);</code>で全体を塗りつぶします。</p>
+</div>
+<div class="section">
+<h3 id="迷路を描画する">迷路を描画する</h3>
+<p>迷路は一定のサイズの四角のタイルを迷路配列<code>maze[j][i]</code>に応じて描画します。<br/>
+ここでは<code>if ((i + j) % 2 == 0)</code>のようにすることで色を交互にして<a class="keyword" href="http://d.hatena.ne.jp/keyword/%BB%D4%BE%BE%CC%CF%CD%CD">市松模様</a>にしています。<br/>
+<code>M5.Lcd.fillRect(x-pos,y-pos,x-size,y-size,color)</code>で四角を描画できますが、引数は順番にポジションx、ポジションy、サイズx、サイズｙ、色となっています。</p>
+<pre class="code lang-c" data-lang="c" data-unlink="">  M5.Lcd.<span class="synIdentifier">setTextSize</span>(<span class="synConstant">5</span>);
+  <span class="synStatement">for</span> (<span class="synType">int</span> j = <span class="synConstant">0</span>; j &lt; MEIRO_HEIGHT; j++)
+  {
+    <span class="synStatement">for</span> (<span class="synType">int</span> i = <span class="synConstant">0</span>; i &lt; MEIRO_WIDTH; i++)
+    {
+      <span class="synStatement">if</span> (maze[j][i] == <span class="synConstant">1</span>)
+      {
+        <span class="synStatement">if</span> ((i + j) % <span class="synConstant">2</span> == <span class="synConstant">0</span>)
+        {
+          M5.Lcd.<span class="synIdentifier">fillRect</span>(i * BLOCKSIZE, j * BLOCKSIZE, BLOCKSIZE, BLOCKSIZE, ORANGE); <span class="synComment">// x-pos,y-pos,x-size,y-size,color //orange 0xFD20</span>
+        }
+        <span class="synStatement">else</span>
+        {
+          M5.Lcd.<span class="synIdentifier">fillRect</span>(i * BLOCKSIZE, j * BLOCKSIZE, BLOCKSIZE, BLOCKSIZE, YELLOW);
+        }
+      }
+    }
+  }
+</pre>
+</div>
+<div class="section">
+<h3 id="ボールの移動">ボールの移動</h3>
+<p><span itemscope="" itemtype="http://schema.org/Photograph"><img class="hatena-fotolife" height="773" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20221123/20221123201106.png" title="" width="867"/></span><br/>
+ボールの移動も画像の描画で表現します。<br/>
+このため、新しいボールの位置にボールを描画することと、その前（現在）の位置のボールの描画を消去する、ということが必要になります。</p>
+<pre class="code lang-c" data-lang="c" data-unlink="">  <span class="synComment">//ボールの軌跡を消す</span>
+  <span class="synIdentifier">printBackground</span>(x, y);
+  <span class="synComment">//ボールの位置</span>
+  M5.Lcd.<span class="synIdentifier">fillCircle</span>((<span class="synType">int</span>)x, (<span class="synType">int</span>)y, BALLSIZE, GREEN); <span class="synComment">// x,y,r,color</span>
+</pre><p>ここで<code>printBackground(x, y);</code>は現在の位置の通路の再描画と、パラメータによりますが、周囲の壁の再描画を行います。<br/>
+最初は、画面すべての迷路の再描画を行っていましたが、このようにすると時間がかかりすぎてしまうので、ボールの周囲のみにすることでゲームに違和感のない速度を実現しています。<br/>
+また、すべてを一度「Black」に塗りつぶすと画面全体が点滅したような状態になってしまいます。<br/>
+ボール自体は若干点滅が見えると思いますが、この辺はゲームのレスポンスと見た目の違和感（点滅）のバランスで再描画の速度（<a class="keyword" href="http://d.hatena.ne.jp/keyword/FPS">FPS</a>といわれるやつですね）を調整しました。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synType">void</span> <span class="synIdentifier">printBackground</span>(<span class="synType">int</span> x, <span class="synType">int</span> y)
+{
+  <span class="synComment">//迷路を描画</span>
+  M5.Lcd.<span class="synIdentifier">setTextSize</span>(<span class="synConstant">5</span>);
+  <span class="synType">int</span> h_start = <span class="synIdentifier">max</span>((<span class="synType">int</span>)(y / BLOCKSIZE - <span class="synConstant">1</span>), <span class="synConstant">0</span>);
+  <span class="synType">int</span> w_start = <span class="synIdentifier">max</span>((<span class="synType">int</span>)(x / BLOCKSIZE - <span class="synConstant">1</span>), <span class="synConstant">0</span>);
+
+  <span class="synStatement">for</span> (<span class="synType">int</span> j = h_start; j &lt; h_start + <span class="synConstant">3</span>; j++)
+  {
+    <span class="synStatement">for</span> (<span class="synType">int</span> i = w_start; i &lt; w_start + <span class="synConstant">3</span>; i++)
+    {
+      <span class="synStatement">if</span> (maze[j][i] == <span class="synConstant">1</span>)
+      {
+        <span class="synStatement">if</span> ((i + j) % <span class="synConstant">2</span> == <span class="synConstant">0</span>)
+        {
+          M5.Lcd.<span class="synIdentifier">fillRect</span>(i * BLOCKSIZE, j * BLOCKSIZE, BLOCKSIZE, BLOCKSIZE, ORANGE); <span class="synComment">// x-pos,y-pos,x-size,y-size,color //orange 0xFD20</span>
+        }
+        <span class="synStatement">else</span>
+        {
+          M5.Lcd.<span class="synIdentifier">fillRect</span>(i * BLOCKSIZE, j * BLOCKSIZE, BLOCKSIZE, BLOCKSIZE, YELLOW);
+        }
+      }
+      <span class="synStatement">else</span>
+      {
+        M5.Lcd.<span class="synIdentifier">fillRect</span>(i * BLOCKSIZE, j * BLOCKSIZE, BLOCKSIZE, BLOCKSIZE, BLACK);
+      }
+    }
+  }
+}
+</pre>
+</div>
+<div class="section">
+<h3 id="経過時間の表示">経過時間の表示</h3>
+<p>ボールの描画の応用ですが、経過時間の表示位置のBackgroundを迷路で塗りつぶしてから新しい経過時間を表示します。</p>
+<pre class="code lang-c" data-lang="c" data-unlink=""><span class="synType">void</span> <span class="synIdentifier">dispTime</span>()
+{
+  M5.Lcd.<span class="synIdentifier">setTextSize</span>(<span class="synConstant">5</span>);
+  <span class="synType">int</span> j = <span class="synConstant">0</span>;
+  <span class="synStatement">for</span> (<span class="synType">int</span> i = MEIRO_WIDTH - <span class="synConstant">4</span>; i &lt; MEIRO_WIDTH; i++)
+  {
+    <span class="synStatement">if</span> (maze[j][i] == <span class="synConstant">1</span>)
+    {
+      <span class="synStatement">if</span> ((i + j) % <span class="synConstant">2</span> == <span class="synConstant">0</span>)
+      {
+        M5.Lcd.<span class="synIdentifier">fillRect</span>(i * BLOCKSIZE, j * BLOCKSIZE, BLOCKSIZE, BLOCKSIZE, ORANGE); <span class="synComment">// x-pos,y-pos,x-size,y-size,color //orange 0xFD20</span>
+      }
+      <span class="synStatement">else</span>
+      {
+        M5.Lcd.<span class="synIdentifier">fillRect</span>(i * BLOCKSIZE, j * BLOCKSIZE, BLOCKSIZE, BLOCKSIZE, YELLOW);
+      }
+    }
+  }
+}
+
+  m5.Lcd.<span class="synIdentifier">setCursor</span>(<span class="synConstant">170</span>, <span class="synConstant">2</span>);
+  M5.Lcd.<span class="synIdentifier">print</span>(<span class="synConstant">"Time: "</span>);
+  m5.Lcd.<span class="synIdentifier">setCursor</span>(<span class="synConstant">230</span>, <span class="synConstant">2</span>);
+  String st = <span class="synIdentifier">String</span>(t / <span class="synConstant">1000</span>) + <span class="synConstant">":"</span> + <span class="synIdentifier">String</span>(t % <span class="synConstant">1000</span>);
+  M5.Lcd.<span class="synIdentifier">print</span>(st);
+</pre>
+</div>
+<div class="section">
+<h3 id="まとめ">まとめ</h3>
+<p>M5Stackで作った迷路ゲームのアニメーション制御について解説しました。<br/>
+アニメーションはBackgroundをオブジェクトの上に描画することで消えたように見せたり、現在の状態と次の状態が少し変わることで移動するように見せたりして実現します。<br/>
+簡単には、画面全体を上書きしても実現できますが、再描画するオブジェクトが多いと画面更新の速度が低下するので、必要最小限にする必要があります。<br/>
+また、M5stackではBackgroundを描画してから新たなオブジェクトを描画しないと、文字等は前のものが残ってしまいます。<br/>
+<iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" frameborder="0" height="315" src="https://www.youtube.com/embed/OwcvV5rolq4?feature=oembed" title="【M5stackコンテスト2022応募作品】3軸加速度センサを用いた迷路ゲーム（Labyrinth）" width="560"></iframe><cite class="hatena-citation"><a href="https://youtu.be/OwcvV5rolq4">youtu.be</a></cite></p>
+</div>
+</div>

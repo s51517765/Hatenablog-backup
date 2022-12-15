@@ -1,0 +1,87 @@
+<div class="entry-content">
+<div class="section">
+<h3 id="Hello-Go-world">Hello Go world!</h3>
+<p>Go言語(<a class="keyword" href="http://d.hatena.ne.jp/keyword/Golang">Golang</a>)に入門しました。<br/>
+Go言語は実行環境としては事前<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%F3%A5%D1%A5%A4%A5%EB">コンパイル</a>なしに動かすことも、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%F3%A5%D1%A5%A4%A5%EB">コンパイル</a>してから動かすこともできるらしく、また<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%DE%A5%EB%A5%C1%A5%D7%A5%E9%A5%C3%A5%C8%A5%D5%A5%A9%A1%BC%A5%E0">マルチプラットフォーム</a>で動作できます。<br/>
+しかも、一つの環境で各種OSに対応した実行ファイルが作れたりするようです。<br/>
+（pyinstaller等を使う<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>は<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%F3%A5%D1%A5%A4%A5%EB">コンパイル</a>したOSと動作するOSが一致している必要がある）</p><p>ここでは、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Ubuntu">Ubuntu</a>で<a class="keyword" href="http://d.hatena.ne.jp/keyword/VS%20Code">VS Code</a>を使って開発できる環境構築を目指しましたが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>等でも<a class="keyword" href="http://d.hatena.ne.jp/keyword/VS%20Code">VS Code</a>の部分は同様と思われます。</p>
+<pre class="code" data-lang="" data-unlink="">#Goのインストール
+$ sudo apt-get install -y golang
+#サンプルコードを書く
+$ vim hello.go
+#スクリプトの実行
+$ go run hello.go
+&gt;&gt;hello go!</pre><pre class="code lang-go" data-lang="go" data-unlink=""><span class="synStatement">package</span> main
+
+<span class="synStatement">import</span> <span class="synConstant">"fmt"</span>
+<span class="synStatement">func</span> main(){
+	fmt.Println(<span class="synConstant">"Hello go!"</span>)
+}
+</pre><p>これで<a class="keyword" href="http://d.hatena.ne.jp/keyword/Hello%20world">Hello world</a>できました。</p>
+</div>
+<div class="section">
+<h3 id="VS-Codeの環境を構築"><a class="keyword" href="http://d.hatena.ne.jp/keyword/VS%20Code">VS Code</a>の環境を構築</h3>
+<p>次に<a class="keyword" href="http://d.hatena.ne.jp/keyword/VS%20Code">VS Code</a>の環境を構築します。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" loading="lazy" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Flearn.microsoft.com%2Fja-jp%2Fazure%2Fdeveloper%2Fgo%2Fconfigure-visual-studio-code" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Go 開発用に Visual Studio Code を構成する"></iframe><cite class="hatena-citation"><a href="https://learn.microsoft.com/ja-jp/azure/developer/go/configure-visual-studio-code">learn.microsoft.com</a></cite></p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/VS%20Code">VS Code</a>のGo言語<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B3%C8%C4%A5%B5%A1%C7%BD">拡張機能</a>をインストールします。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img class="hatena-fotolife" height="252" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20221124/20221124135802.png" title="" width="771"/></span></p><p>コマンドパレット（Ctrl + Shift + P）から<code>Go: install/Update Tools</code>を選択し実行し、検索されるすべてのツールをチェックし、インストールします。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img class="hatena-fotolife" height="225" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20221124/20221124140250.png" title="" width="629"/></span></p><p>先程のサンプルコードを<a class="keyword" href="http://d.hatena.ne.jp/keyword/VS%20Code">VS Code</a>で開きます。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/VS%20Code">VS Code</a>で新しいターミナルを開き<code>go mod init sample-app</code>を実行し、アプリケーションを初期化します。<br/>
+（ここでsample-appがプロジェクト名、何でも良い）<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/VS%20Code">VS Code</a>上部のメニューから<code>実行¥デバッグの開始</code>または実行¥<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C7%A5%D0%A5%C3%A5%B0">デバッグ</a>なしで実行を行うとサンプルコードが実行されます。<br/>
+ここで、上記初期化で<code>go.mod</code>という設定ファイルのようなものが生成されますが、これは下位フォルダにも効果が及ぶようです。</p>
+</div>
+<div class="section">
+<h3 id="基本文法">基本文法</h3>
+<p><code>Hello.go</code>は上記のようなものを書いてみましたが、<code>package main</code>はmainと言うパッケージの宣言、<code>import "fmt"</code>はPrint系のモジュールのimportで、<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%B8%C0%B8%EC">C言語</a>と同様に<code>main()</code>から実行されるようです。</p><p>また、複数のモジュールをimportする場合は以下のようにまとめて書くことができます。</p>
+<pre class="code lang-go" data-lang="go" data-unlink=""><span class="synStatement">import</span> (
+    <span class="synConstant">"fmt"</span>
+    <span class="synConstant">"net/http"</span>
+)
+</pre><p>変数の宣言は</p>
+<pre class="code lang-go" data-lang="go" data-unlink=""><span class="synStatement">var</span> text <span class="synType">string</span>
+text=<span class="synConstant">"Hello world"</span>
+</pre><p>このように書きますが、以下のようにセイウチ<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B1%E9%BB%BB%BB%D2">演算子</a><code>:=</code>を使うと<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B7%BF%BF%E4%CF%C0">型推論</a>を用いることもできます。</p>
+<pre class="code lang-go" data-lang="go" data-unlink="">text:=<span class="synConstant">"Hello world"</span>
+</pre><p>コンソール入力は<code>&amp;</code>で変数のアドレスを指定して受け取ります。</p>
+<pre class="code lang-go" data-lang="go" data-unlink=""><span class="synStatement">var</span> str <span class="synType">string</span>
+fmt.Scan(&amp;str) <span class="synComment">// データを格納する変数のアドレスを指定</span>
+fmt.Println(str)
+</pre><p>複数のときは<code>fmt.Scan(&amp;n[0], &amp;n[1], &amp;n[2])</code>のように変数を並べます。<br/>
+このとき、スペース区切りで<code>12 23 45</code>でも改行区切りでもOKのようです。</p>
+<pre class="code lang-go" data-lang="go" data-unlink=""><span class="synStatement">var</span> n [<span class="synConstant">3</span>]<span class="synType">int</span>
+	fmt.Scan(&amp;n[<span class="synConstant">0</span>], &amp;n[<span class="synConstant">1</span>], &amp;n[<span class="synConstant">2</span>])
+	<span class="synStatement">for</span> i := <span class="synConstant">0</span>; i &lt; <span class="synConstant">3</span>; i++ {
+	fmt.Println(n[i])
+	}
+</pre><p>if文は<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%B8%C0%B8%EC">C言語</a>とほぼ同じですが、<code>if 条件文</code>または<code>else</code>と<code>{}</code>の間に改行があるとErrorになるようです。</p>
+<pre class="code lang-go" data-lang="go" data-unlink="">j:=<span class="synConstant">1</span>
+<span class="synStatement">if</span> str ==<span class="synConstant">"a"</span>{
+	j+=<span class="synConstant">2</span>
+}	<span class="synStatement">else</span>{
+	j++
+}
+fmt.Println(j)
+
+<span class="synComment">//以下はError</span>
+<span class="synStatement">if</span> str ==<span class="synConstant">"a"</span>    <span class="synComment">//ここの改行がError</span>
+{
+	j+=<span class="synConstant">2</span>
+}
+
+<span class="synComment">//以下もError</span>
+・・・
+}      <span class="synComment">//ここの改行がError</span>
+<span class="synStatement">else</span> {
+	j++
+}
+</pre>
+</div>
+<div class="section">
+<h3 id="まとめ">まとめ</h3>
+<p>Go言語(<a class="keyword" href="http://d.hatena.ne.jp/keyword/Golang">Golang</a>)に入門しました。<br/>
+文法的には<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%B8%C0%B8%EC">C言語</a>と<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>の中間みたいな書き味です。<br/>
+実行環境としては事前<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%F3%A5%D1%A5%A4%A5%EB">コンパイル</a>なしに動かすことも、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%F3%A5%D1%A5%A4%A5%EB">コンパイル</a>してから動かすこともできるらしく、このあたりも<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%B8%C0%B8%EC">C言語</a>と<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>の中間みたいなイメージです。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%23">C#</a>は<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>に限定すればとても機能が充実しているのですが、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%DE%A5%EB%A5%C1%A5%D7%A5%E9%A5%C3%A5%C8%A5%D5%A5%A9%A1%BC%A5%E0">マルチプラットフォーム</a>対応には弱さがあると感じています。<br/>
+デスクトップアプリから、サーバープログラムまで幅広く使われているようでネット上の情報も比較的豊富というメリットもありそうです。</p>
+</div>
+</div>

@@ -1,0 +1,38 @@
+<div class="entry-content">
+<div class="section">
+<h3 id="Windowsでも使えるけどUbuntuでも使ってみる"><a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>でも使えるけど<a class="keyword" href="http://d.hatena.ne.jp/keyword/Ubuntu">Ubuntu</a>でも使ってみる</h3>
+<p>ラズパイピコは当然のこと<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>からも使えますが、サンプルコードを使ったりするのに<a class="keyword" href="http://d.hatena.ne.jp/keyword/Linux">Linux</a>のほうが都合が良い場面があります。<br/>
+ラズパイ4等でも良いのですが、ラズパイ4が如何に強力といえどもPCよりは非力です。<br/>
+また、外部ディスプレイか<a class="keyword" href="http://d.hatena.ne.jp/keyword/SSH">SSH</a>で使う必要があります。<br/>
+そこで、最近構築した<a class="keyword" href="http://d.hatena.ne.jp/keyword/Ubuntu">Ubuntu</a>で使えるようにしてみました。</p><p>まず、USBケーブルで接続しますが、Bootボタンを押しながらUSBポートに接続すると書き込みモードで認識されるのは<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>と同じです。</p><p>ラズパイピコは<code>/dev/ttyACM0</code>という名称で認識されます。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" loading="lazy" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgihyo.jp%2Fadmin%2Fserial%2F01%2Fubuntu-recipe%2F0684" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="第684回　UbuntuからRaspberry Pi Picoを使う | gihyo.jp"></iframe><cite class="hatena-citation"><a href="https://gihyo.jp/admin/serial/01/ubuntu-recipe/0684">gihyo.jp</a></cite><br/>
+</p>
+<pre class="code" data-lang="" data-unlink="">$ls -l /dev | grep ttyACM
+crw-rw-rw-+ 1 root   dialout 166,   0 10月  2 18:29 ttyACM0</pre><p>ラズパイピコが<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A8%A5%AF%A5%B9%A5%D7%A5%ED%A1%BC%A5%E9">エクスプローラ</a>ーで外部メディアとして表示されるので、<code>hello_usb.uf2</code>をドラッグドロップして書き込みます。（これも<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>と同様）</p><p>シリアルコンソール接続用のソフトウェアをインストールし、起動します。</p>
+<pre class="code" data-lang="" data-unlink="">$sudo apt install gtkterm</pre><p>起動</p>
+<pre class="code" data-lang="" data-unlink="">$sudo gtkterm</pre><p>ポートを選択すると”Hello, world!”が表示されます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img class="hatena-fotolife" height="588" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20221002/20221002184257.png" title="" width="753"/></span><br/>
+<iframe class="embed-card embed-blogcard" frameborder="0" loading="lazy" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fokchan08.hateblo.jp%2Fentry%2F2019%2F01%2F27%2F234303" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="Ubuntu 18.04でシリアル通信をする - メモ置き場"></iframe><cite class="hatena-citation"><a href="https://okchan08.hateblo.jp/entry/2019/01/27/234303">okchan08.hateblo.jp</a></cite></p><p>次に、<coed>mpu6050というi2c接続の3軸加速度センサを使ってみようとすると、Serialが認識しません。<br/>
+ここでかなり悩みましたが、<code>CMakeLists.txt</code>でUSB Serialが有効化されていないためでした。</coed></p>
+<pre class="code" data-lang="" data-unlink="">$cd pico/pico-examples/i2c/mpu6050_i2c
+$vim CMakeLists.txt</pre><p><code>CMakeLists.txt</code>に以下を追記します。</p>
+<pre class="code" data-lang="" data-unlink="">pico_enable_stdio_usb(mpu6050_i2c 1)
+pico_enable_stdio_uart(mpu6050_i2c 0)</pre><p>再度Buildします。</p>
+<pre class="code" data-lang="" data-unlink="">$cd pico-examples/build/i2c/mpu6050_i2c
+$make clean
+$make</pre><p>これについては、公式の<a class="keyword" href="http://d.hatena.ne.jp/keyword/GitHub">GitHub</a>のIssueに悩んでいる人の書き込みがありました。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" loading="lazy" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fraspberrypi%2Fpico-examples%2Fissues%2F89" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="/dev/ttyACM0 missing when running I2C examples · Issue #89 · raspberrypi/pico-examples"></iframe><cite class="hatena-citation"><a href="https://github.com/raspberrypi/pico-examples/issues/89">github.com</a></cite><br/>
+公式のGetting startにもSerialの項目に書かれています。（公式資料嫁...）<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img class="hatena-fotolife" height="1200" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20221008/20221008173205.jpg" title="" width="750"/></span><br/>
+<a href="https://datasheets.raspberrypi.org/pico/getting-started-with-pico.pdf">https://datasheets.raspberrypi.org/pico/getting-started-with-pico.pdf</a></p><p>センサー出力を得ることができました。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img class="hatena-fotolife" height="639" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20221008/20221008173804.png" title="" width="802"/></span><br/>
+</p>
+</div>
+<div class="section">
+<h3 id="まとめ">まとめ</h3>
+<p>これでシリアル接続環境が整いました。<br/>
+シリアル接続アプリはいろいろあるようですが、まずは<a class="keyword" href="http://d.hatena.ne.jp/keyword/GUI">GUI</a>のこちらを使ってみます。</p><p>教訓<br/>
+公式資料大事。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/GitHub">GitHub</a>のIssueを検索すると情報があることが多い。</p>
+</div>
+</div>

@@ -1,0 +1,37 @@
+<div class="entry-content">
+<div class="section">
+<h3>定期的に<a class="keyword" href="http://d.hatena.ne.jp/keyword/GitHub">GitHub</a>にpushしたい</h3>
+<p><iframe class="embed-card embed-blogcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fs51517765.hatenadiary.jp%2Fentry%2F2020%2F05%2F18%2F073000" style="display: block; width: 100%; height: 190px; max-width: 500px; margin: 10px 0px;" title="Raspberry Pi で温湿度気圧センサBME280を使う - プログラミング素人のはてなブログ"></iframe><cite class="hatena-citation"><a href="https://s51517765.hatenadiary.jp/entry/2020/05/18/073000">s51517765.hatenadiary.jp</a></cite><br/>
+で取得した環境データを周期的に自動的に<a class="keyword" href="http://d.hatena.ne.jp/keyword/GitHub">GitHub</a>にpushすることを考えます。</p><p>Push先はあらかじめ作成してあります。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fgithub.com%2Fs51517765%2FEnvironment_raw_data" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="GitHub - s51517765/Environment_raw_data: Results measured with Raspberry Pi"></iframe><cite class="hatena-citation"><a href="https://github.com/s51517765/Environment_raw_data">github.com</a></cite></p><p>通常、手動で<a class="keyword" href="http://d.hatena.ne.jp/keyword/GitHub">GitHub</a>にpushするには以下のようなコマンドを実行します。</p>
+<pre class="code lang-sh" data-lang="sh" data-unlink=""><span class="synStatement">cd</span> フォルダ
+git add<span class="synStatement"> . </span> <span class="synComment">#すべてを追加</span>
+git commit <span class="synSpecial">-m</span> <span class="synStatement">"</span><span class="synConstant">メッセージ</span><span class="synStatement">"</span> <span class="synComment">#コミットメッセージを追加</span>
+git push origin main <span class="synComment">#リモートにPush</span>
+</pre><p>これを自動化したいので、以下のようなshell<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">スクリプト</a>を作成しました。</p>
+<pre class="code lang-sh" data-lang="sh" data-unlink=""><span class="synComment">#!/bin/bash</span>
+cp ~/env_result.txt ~/Environment_raw_data
+<span class="synStatement">cd</span> /Environment_raw_data
+<span class="synIdentifier">d</span>=<span class="synSpecial">`date </span><span class="synStatement">"</span><span class="synConstant">+%F</span><span class="synStatement">"</span><span class="synSpecial">`</span> <span class="synComment">#全体をバッククォートで囲む</span>
+<span class="synStatement">echo</span><span class="synConstant"> </span><span class="synPreProc">$d</span>
+git add env_result.txt
+git commit <span class="synSpecial">-m</span> <span class="synPreProc">$d</span>
+git push origin main
+</pre><p>やっていることは、shellで<br/>
+①環境データ<code>~/env_result.txt</code>をGit管理のフォルダ<code>~/Environment_raw_data</code>へコピー<br/>
+②カレントフォルダを移動<br/>
+③現在の日付を取得<br/>
+④日付を確認（無くてもよい）<br/>
+⑤ファイル<code>env_result.txt</code>をadd<br/>
+⑥日付でコミットメッセージを追加<br/>
+⑦<a class="keyword" href="http://d.hatena.ne.jp/keyword/Github">Github</a>にPush<br/>
+です。</p><p>この<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">スクリプト</a>をcronで自動実行するので<code>crontab -e</code>に以下を追加します。<br/>
+毎週金曜日に一回実行するようにします。</p>
+<pre class="code" data-lang="" data-unlink="">3 10 * * 5 sh /home/raspberrypi3p/Environment_raw_data/gitPush.sh</pre>
+</div>
+<div class="section">
+<h3>参考</h3>
+<p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fshellscript.sunone.me%2Fvariable.html" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="変数を使用する | UNIX &amp; Linux コマンド・シェルスクリプト リファレンス"></iframe><cite class="hatena-citation"><a href="https://shellscript.sunone.me/variable.html">shellscript.sunone.me</a></cite><br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fshellscript.sunone.me%2Fdate.html" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="日付を取得する | UNIX &amp; Linux コマンド・シェルスクリプト リファレンス"></iframe><cite class="hatena-citation"><a href="https://shellscript.sunone.me/date.html">shellscript.sunone.me</a></cite></p>
+</div>
+</div>

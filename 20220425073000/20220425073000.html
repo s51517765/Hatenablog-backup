@@ -1,0 +1,47 @@
+<div class="entry-content">
+<div class="section">
+<h3>改めて<a class="keyword" href="http://d.hatena.ne.jp/keyword/Raspberry%20Pi">Raspberry Pi</a>のセットアップについて</h3>
+<p>ココナラでIOT入門の一つとして、ラズパイのセットアップからサポートしていますが、基本的なこととしてラズパイのOSセットアップ記事を公開しました。<br/>
+これは、その内容を<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A4%CF%A4%C6%A4%CA%A5%D6%A5%ED%A5%B0">はてなブログ</a>向けにアレンジしたものです。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fcoconala.com%2Fblogs%2F1063621%2F180670" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Raspberry  Pi入門｜s51517765（とりてん）｜coconalaブログ"></iframe><cite class="hatena-citation"><a href="https://coconala.com/blogs/1063621/180670">coconala.com</a></cite><br/>
+<iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fcoconala.com%2Fservices%2F1138621%3Fref%3Dprofile_service" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="電子工作、プログラミングの相談・実装いたします ★★初心者の方からでも相談にのります。★★ | ハードウェア設計・開発・工作 | ココナラ"></iframe><cite class="hatena-citation"><a href="https://coconala.com/services/1138621?ref=profile_service">coconala.com</a></cite><br/>
+</p>
+</div>
+<div class="section">
+<h3>必要なもの</h3>
+<p>・Raspberry  Pi本体<br/>
+・Micro SDカード（最低16GB以上）<br/>
+・USBケーブル（電源用）<br/>
+・ACアダプタ（電流値に注意）<br/>
+・<a class="keyword" href="http://d.hatena.ne.jp/keyword/HDMI">HDMI</a>ケーブル（形状に注意）<br/>
+・マウス<br/>
+・キーボード<br/>
+・OSを書き込むためのPC（<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>など）<br/>
+・<a class="keyword" href="http://d.hatena.ne.jp/keyword/Raspberry%20Pi">Raspberry Pi</a>用ケース（無くてもよい）</p><p>SDカードは8GBでも動かせますが、すぐに容量が不足してしまう可能性がありますので16GBはあったほうが良いでしょう。</p><p>USBケーブルはRaspberry Pi4ではTypeCですが３，３＋、２、ZeroではMicro Bです。</p><p>ACアダプタ（電源）は<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%DE%A5%DB">スマホ</a>の充電用のものでも大丈夫ですが、Raspberry Pi4では3A、それ以外では2A程度が必要です。</p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/HDMI">HDMI</a>はRaspberry Pi4ではマイクロですが、３，３＋,2ではフルサイズで、Zeroではミニです。</p><p>ケースはなくても良いですが、下手にショートさせてしまう危険があるのであるほうが良いでしょう。<br/>
+2以降は似た形状ですが、必ずしもすべてのバージョンに対応していないので、購入した（購入予定の）<a class="keyword" href="http://d.hatena.ne.jp/keyword/Raspberry%20Pi">Raspberry Pi</a>と合わせましょう。</p><p>よく分からない、または一気に揃えたい場合はセットを購入しても良いでしょう。</p><div class="hatena-asin-detail"><a class="hatena-asin-detail-image-link" href="https://www.amazon.co.jp/dp/B08D6CYBNS?tag=shirotoakb-22&amp;linkCode=ogi&amp;th=1&amp;psc=1" rel="noopener" target="_blank"><img alt="TRASKIT Raspberry Pi 4 Model B /ラズベリーパイ4B（8GB RAM）技適マーク付/MicroSDHCカード128GB NOOBSプリインストール/簡単に取り付けるケース/5.1V/3A Type-C スイッチ付電源/2つのMicroHDMI-to-HDMIケーブルライン/3つヒートシンクと2つの透明静音冷却ファン/カードリーダ /GPIOリファレンスカード/日本語取扱説明書/2年保証付" class="hatena-asin-detail-image" src="https://m.media-amazon.com/images/I/51LX5ZZSGlL._SL500_.jpg" title="TRASKIT Raspberry Pi 4 Model B /ラズベリーパイ4B（8GB RAM）技適マーク付/MicroSDHCカード128GB NOOBSプリインストール/簡単に取り付けるケース/5.1V/3A Type-C スイッチ付電源/2つのMicroHDMI-to-HDMIケーブルライン/3つヒートシンクと2つの透明静音冷却ファン/カードリーダ /GPIOリファレンスカード/日本語取扱説明書/2年保証付"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="https://www.amazon.co.jp/dp/B08D6CYBNS?tag=shirotoakb-22&amp;linkCode=ogi&amp;th=1&amp;psc=1" rel="noopener" target="_blank">TRASKIT Raspberry Pi 4 Model B /ラズベリーパイ4B（8GB RAM）技適マーク付/MicroSDHCカード128GB NOOBSプリインストール/簡単に取り付けるケース/5.1V/3A Type-C スイッチ付電源/2つのMicroHDMI-to-HDMIケーブルライン/3つヒートシンクと2つの透明静音冷却ファン/カードリーダ /GPIOリファレンスカード/日本語取扱説明書/2年保証付</a></p><ul class="hatena-asin-detail-meta"><li>Traskit</li></ul><a class="asin-detail-buy" href="https://www.amazon.co.jp/dp/B08D6CYBNS?tag=shirotoakb-22&amp;linkCode=ogi&amp;th=1&amp;psc=1" rel="noopener" target="_blank">Amazon</a></div></div>
+</div>
+<div class="section">
+<h3>OSのインストール</h3>
+<p>インストールにはイメージのダウンロード含めて1時間ぐらいかかります。</p><p><iframe class="embed-card embed-webcard" frameborder="0" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fwww.raspberrypi.com%2Fsoftware%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Raspberry Pi OS – Raspberry Pi"></iframe><cite class="hatena-citation"><a href="https://www.raspberrypi.com/software/">www.raspberrypi.com</a></cite><br/>
+まず、Raspberry imagerをダウンロードします。<br/>
+「<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%E9%A5%BA%A5%D9%A5%EA%A1%BC">ラズベリー</a>パイイメージャー」等で検索し、Raspberry の公式サイトからRaspberry imagerをダウンロードし、インストールします。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img class="hatena-fotolife" height="577" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220423/20220423183327.png" title="" width="1200"/></span></p><p>起動したら、まず「Ctrl」 + 「Shift」 + 「X」でオプション画面を開きます。<br/>
+そろそろこの機能、隠しておかなくてもいい気がしますが…<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img class="hatena-fotolife" height="452" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220423/20220423183342.jpg" title="" width="682"/></span></p><p>オプションでは、ホスト名、ユーザー名、パスワード、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Wifi">Wifi</a>アクセスポイント、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%ED%A5%B1%A1%BC%A5%EB">ロケール</a>などを設定します。<br/>
+ユーザー名とパスワードはOSのログインに使うものですのです。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img class="hatena-fotolife" height="617" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220423/20220423183400.png" title="" width="405"/></span></p><p>次にOSタイプを選択します。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Raspberry%20Pi">Raspberry Pi</a> OS (other)から、LiteまたはFullを選択します。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img class="hatena-fotolife" height="776" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220423/20220423183414.png" title="" width="389"/></span><br/>
+Liteはデスクトップが入っておらず、<a class="keyword" href="http://d.hatena.ne.jp/keyword/SSH">SSH</a>やコマンド画面のみのOSで、Fullはデスクトップが入った全部入りです。<br/>
+Fullのほうが容量が大きく、動作も重い、などの違いがありますが、よくわからないときはFullを選択してもよいでしょう。<br/>
+また、デスクトップがないということは<a class="keyword" href="http://d.hatena.ne.jp/keyword/GUI">GUI</a>が使えない、ということなので<a class="keyword" href="http://d.hatena.ne.jp/keyword/GUI">GUI</a>が使いたい、<a class="keyword" href="http://d.hatena.ne.jp/keyword/GUI">GUI</a>のアプリを作ったりしたいときはFullを選択する必要があります。</p><p>次に、ストレージを選択して「書き込む」をクリックすると書き込みが始まります。<br/>
+このとき、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Windows">Windows</a>に接続された「Micro SD以外」のストレージも選択できてしまうので注意が必要です。<br/>
+書き込みを行うとSDカードの既存のデータは削除されます。</p>
+</div>
+<div class="section">
+<h3><a class="keyword" href="http://d.hatena.ne.jp/keyword/Raspberry%20Pi">Raspberry Pi</a>に差し込んで電源ON</h3>
+<p><a class="keyword" href="http://d.hatena.ne.jp/keyword/HDMI">HDMI</a>でモニタ、USBでキーボード、マウスを接続してUSBから電源を投入するとセットアップが始まります。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Raspberry%20Pi">Raspberry Pi</a>には電源スイッチはなく、USBを差し込むと起動します。<br/>
+セットアップがすんだらもう使えます。</p>
+</div>
+</div>

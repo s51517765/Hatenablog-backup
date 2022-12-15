@@ -1,0 +1,79 @@
+<div class="entry-content">
+<div class="section">
+<h3 id="あるぞITの可能性--Python">あるぞ、ITの可能性 | <a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a></h3>
+<p><span itemscope="" itemtype="http://schema.org/Photograph"><img class="hatena-fotolife" height="675" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220818/20220818214640.png" title="" width="1200"/></span><br/>
+上記は<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>で作った画像を動画に重ねてみたところです。</p><p><iframe class="embed-card embed-webcard" frameborder="0" loading="lazy" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fqiita.com%2FYoshikiIto%2Fitems%2Face92dc9b05e375b8326" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Python+Pillowで、任意の文字列を画像で出力する - Qiita"></iframe><cite class="hatena-citation"><a href="https://qiita.com/YoshikiIto/items/ace92dc9b05e375b8326">qiita.com</a></cite></p><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>には本当に、何でもありますね。<br/>
+上記参考サイトのサンプルに対して以下の機能を追加しました。<br/>
+①コンソールから次々、文を指定できるように<br/>
+②ファイル名は自動的にユニークに<br/>
+③背景を半透明に<br/>
+④文字列をセンタリングする</p>
+</div>
+<div class="section">
+<h3 id="解説">解説①</h3>
+<p>ほぼ説明は不要でしょう。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synStatement">while</span> <span class="synIdentifier">True</span>:
+  <span class="synIdentifier">print</span>(<span class="synConstant">"Input text..."</span>)  
+  text = <span class="synIdentifier">input</span>()
+  <span class="synComment"># 中身の処理</span>
+</pre>
+</div>
+<div class="section">
+<h3 id="解説-1">解説②</h3>
+<p>こちらも、<code>datetime</code>モジュールから日時時刻を取得しユニークな文字列を生成し、ファイル名にします。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synPreProc">import</span> datetime
+time = datetime.datetime.now().strftime(<span class="synConstant">'%Y%m%d%H%M%S'</span>)
+im.save(<span class="synConstant">"./img/"</span>+time+<span class="synConstant">".png"</span>)
+</pre>
+</div>
+<div class="section">
+<h3 id="解説-2">解説③</h3>
+<p>半透明化は背景をRGBフォーマットからRGBAに変更し、色の4つ目が透過度です。<br/>
+ここでは、およそ半分の120にしました。</p>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synComment"># RGB, 画像サイズ, 背景色を設定</span>
+im = Image.new(<span class="synConstant">"RGBA"</span>, (<span class="synConstant">2120</span>, <span class="synConstant">140</span>), (<span class="synConstant">0</span>, <span class="synConstant">0</span>, <span class="synConstant">0</span>, <span class="synConstant">120</span>))  <span class="synComment"># (x,y),(R,G,B,A)</span>
+</pre>
+</div>
+<div class="section">
+<h3 id="解説-3">解説④</h3>
+<p>センタリングは一見、組込みでパラメータがあります。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">  <span class="synComment"># 描画位置、描画する文字、文字色、フォントを指定</span>
+  <span class="synComment"># 改行は\n</span>
+  draw.multiline_text((<span class="synConstant">0</span>, <span class="synConstant">0</span>), text, fill=(<span class="synConstant">255</span>, <span class="synConstant">255</span>, <span class="synConstant">0</span>), font=font, align=<span class="synConstant">'center'</span>)  <span class="synComment"># Yellow</span>
+</pre><p>しかし、こちらは、画像に対してセンタリングではなく、文字列に対してセンタリングになります。</p><p>試しに右寄せ<code>align='right'</code>にしてみると、以下のようになります。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img class="hatena-fotolife" height="286" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220818/20220818220020.png" title="" width="828"/></span></p><p>センタリングするには、改行と適当な文字列（ここではアンダーバー）を設定し、アンダーバーが出力画像サイズになるようにします。</p>
+<pre class="code lang-python" data-lang="python" data-unlink="">text = <span class="synIdentifier">input</span>()
+text += <span class="synConstant">"</span><span class="synSpecial">\n</span><span class="synConstant">_______________________________"</span>
+</pre><p>改行後の文字は画像の外になります。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img class="hatena-fotolife" height="72" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220818/20220818220732.png" title="" width="1200"/></span><br/>
+</p>
+</div>
+<div class="section">
+<h3 id="ソースコード"><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%BD%A1%BC%A5%B9%A5%B3%A1%BC%A5%C9">ソースコード</a></h3>
+<pre class="code lang-python" data-lang="python" data-unlink=""><span class="synPreProc">from</span> PIL <span class="synPreProc">import</span> Image, ImageDraw, ImageFont
+<span class="synPreProc">import</span> datetime
+<span class="synStatement">while</span> <span class="synIdentifier">True</span>:
+  <span class="synIdentifier">print</span>(<span class="synConstant">"Input text..."</span>)  
+  text = <span class="synIdentifier">input</span>()
+  <span class="synStatement">if</span> text == <span class="synConstant">""</span>:
+      text = <span class="synConstant">"無いぞ知名度SCSK"</span>
+  text += <span class="synConstant">"</span><span class="synSpecial">\n</span><span class="synConstant">_______________________________"</span>
+  <span class="synComment"># RGB, 画像サイズ, 背景色を設定</span>
+  im = Image.new(<span class="synConstant">"RGBA"</span>, (<span class="synConstant">2120</span>, <span class="synConstant">140</span>), (<span class="synConstant">0</span>, <span class="synConstant">0</span>, <span class="synConstant">0</span>, <span class="synConstant">120</span>))  <span class="synComment"># (x,y),(R,G,B,A)</span>
+  draw = ImageDraw.Draw(im)
+
+  <span class="synComment"># PCローカルのフォントへのパスと、フォントサイズを指定</span>
+  fontsize = <span class="synConstant">100</span>  <span class="synComment"># 140</span>
+  font = ImageFont.truetype(<span class="synConstant">'C:/Windows/Fonts/meiryob.ttc'</span>, fontsize)
+
+  <span class="synComment"># 描画位置、描画する文字、文字色、フォントを指定</span>
+  <span class="synComment"># 改行は\n</span>
+  draw.multiline_text((<span class="synConstant">0</span>, <span class="synConstant">0</span>), text, fill=(<span class="synConstant">255</span>, <span class="synConstant">255</span>, <span class="synConstant">0</span>),
+                      font=font, align=<span class="synConstant">'center'</span>)  <span class="synComment"># Yellow</span>
+
+  <span class="synComment"># ファイルに出力</span>
+  time = datetime.datetime.now().strftime(<span class="synConstant">'%Y%m%d%H%M%S'</span>)
+  im.save(<span class="synConstant">"./img/"</span>+time+<span class="synConstant">".png"</span>)
+</pre>
+</div>
+</div>

@@ -1,0 +1,85 @@
+<div class="entry-content">
+<div class="section">
+<h3 id="cronでコマンドを定期実行したい">cronでコマンドを定期実行したい</h3>
+<p>ラズパイで運用している室内温湿度観測システムなのですが、何かしらのErrorが発生して停止しているのか、原因ははっきりしないのですが<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">スクリプト</a>が停止していることがあります。<br/>
+以前、「温度計のErrorでセンサーが認識しなくなる」という現象もあって、このときはいったんラズパイの電源を完全にoffしないと回復しなかったのですが、最近週１ぐらいの頻度で<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>が停止していて、しかし再度<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">スクリプト</a>を起動するとなんの問題もなく起動する、という別現象が発生しています。</p><p>原因はわからないのですがラズパイを再起動すれば回復するので<br/>
+「温湿度の最終データを別の<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">スクリプト</a>で確認し、停止していたらラズパイを再起動する」というのを作ってみました。<br/>
+ここで、定期実行のためにcronを設定しましたが、なかなか苦労したのでここにまとめておこうと思います。</p>
+</div>
+<div class="section">
+<h3 id="cronの設定">cronの設定</h3>
+<p>cronでは決まった日時での繰り返し、または決まった日時間隔の繰り返しが設定できます。</p>
+<pre class="code" data-lang="" data-unlink="">$sudo crontab -e</pre><p>を実行しcronの設定ファイルを開きます。<br/>
+初回は編集に使うeditorを聞かれるので<a class="keyword" href="http://d.hatena.ne.jp/keyword/vim">vim</a>などを選択します。</p><p>ここでは1日に一回で十分と考え、以下のように毎日18時31分に実行するようにします。<br/>
+これをファイルに追記します。</p>
+<pre class="code" data-lang="" data-unlink="">31 18 * * * sudo /usr/bin/python3 /home/raspberrypi3p/cron.py</pre><p>日時間隔の繰り返しの場合は以下のように<code>*/5</code>と記載し、この場合5分ごとになります。</p>
+<pre class="code" data-lang="" data-unlink="">*/5 * * * * /usr/bin/python3 /home/raspberrypi3p/cron.py</pre><p><code>*</code>になっている部分は順番に 「分 時 日 月 曜日」で<code>*</code>は<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%EF%A5%A4%A5%EB%A5%C9%A5%AB%A1%BC%A5%C9">ワイルドカード</a>です。</p><p>また、起動時に一回だけ実行したい場合は@rebootを使います。起動からwaitを入れたい場合は<code>sleep 15;</code>のようにします（ここでは15秒後）。<br/>
+起動時には各種プロセスが順番に立ち上がるのですが、デーモンの立ち上がりを待ってからでないと上手く実行されない場合があるようでwaitを入れたほうがいい場合があります。</p>
+<pre class="code" data-lang="" data-unlink="">@reboot /usr/bin/python3 /home/raspberrypi3p/cron.py
+@reboot sleep 15; /usr/bin/python3 /home/raspberrypi3p/cron.py</pre><p><a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>の場合は上記のようになりますが、ここで <a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>は<code>/usr/bin/python3</code>のように<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C0%E4%C2%D0%A5%D1%A5%B9">絶対パス</a>で記載する必要があります。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C0%E4%C2%D0%A5%D1%A5%B9">絶対パス</a>は</p>
+<pre class="code" data-lang="" data-unlink="">$ which python3</pre><p>で取得できます。<br/>
+また、<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">スクリプト</a>も<code>/home/user名/cron.py</code>のように<a class="keyword" href="http://d.hatena.ne.jp/keyword/%C0%E4%C2%D0%A5%D1%A5%B9">絶対パス</a>で指定するようにします。</p><p>shell<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B9%A5%AF%A5%EA%A5%D7%A5%C8">スクリプト</a>の場合は以下のようになります。</p>
+<pre class="code" data-lang="" data-unlink="">*/5 * * * * sh /home/raspberrypi3p/cron.sh</pre><p>上記<code>sudo crontab -e</code>コマンドまたは以下のコマンドでこのファイルの内容が確認できます。</p>
+<pre class="code" data-lang="" data-unlink="">$ sudo crontab -l   //確認のみ</pre><p>cronを起動します。</p>
+<pre class="code" data-lang="" data-unlink="">$ sudo systemctl start cron
+or
+$ sudo systemctl enable cron</pre><p>以下コマンドで起動できているかどうか状態確認できます。<br/>
+activeまたはinactiveと表示されます。<br/>
+また、cronの動作Logも表示されます。</p>
+<pre class="code" data-lang="" data-unlink="">$ sudo systemctl status cron
+→ Active: active (running)
+→ Active: inactive (dead)</pre><p><span itemscope="" itemtype="http://schema.org/Photograph"><img class="hatena-fotolife" height="498" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220120/20220120205555.png" title="" width="1007"/></span></p><p>停止させたいときは以下のようにします。</p>
+<pre class="code" data-lang="" data-unlink="">$ sudo systemctl stop cron</pre>
+</div>
+<div class="section">
+<h3 id="トラブルシューティング"><a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C8%A5%E9%A5%D6%A5%EB%A5%B7%A5%E5%A1%BC%A5%C6%A5%A3%A5%F3%A5%B0">トラブルシューティング</a></h3>
+<p>これで意図通りに定期実行されていることが確認されればOKですが、上手くいかないことがあります。<br/>
+まずは、cronのLogを有効化します。</p><p>rsyslog.conf 中の cron ログは # と<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%E1%A5%F3%A5%C8%A5%A2%A5%A6%A5%C8">コメントアウト</a>されているため、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%E1%A5%F3%A5%C8%A5%A2%A5%A6%A5%C8">コメントアウト</a>を外します。</p>
+<pre class="code" data-lang="" data-unlink="">$ sudo vim /etc/rsyslog.conf
+&gt;&gt; 
+# cron.*                         /var/log/cron.log
+↓
+cron.*                         /var/log/cron.log</pre><p>再起動して変更を反映させます。</p>
+<pre class="code" data-lang="" data-unlink="">$ sudo systemctl restart rsyslog</pre><p>以下コマンドでcronのLogを確認します。</p>
+<pre class="code" data-lang="" data-unlink="">$ sudo vim /var/log/cron.log
+&gt;&gt; Jan 16 18:25:03 raspberrypi3p CRON[17105]: (CRON) error (grandchild #17106 failed with exit status 1)</pre><p>このようなerrorが出力されていれば何らかのErrorがでてうまく動いていないということになります。</p><p><code>crontab -e</code>の中身を以下のように<code>/tmp/test.log</code>に出力するようにします。<br/>
+これで<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>の<code>print()</code>やErrorの内容がテキストファイルに出力されるようになります(標準出力と標準エラーを出力)。<br/>
+<a href="https://yongjinkim.com/linux%E3%81%A7%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%81%AE%E5%AE%9F%E8%A1%8C%E3%83%AD%E3%82%B0%EF%BC%88cron%E3%82%82%EF%BC%89%E3%82%92%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%81%AB%E5%87%BA%E5%8A%9B/">https://yongjinkim.com/linux%E3%81%A7%E3%82%B3%E3%83%9E%E3%83%B3%E3%83%89%E3%81%AE%E5%AE%9F%E8%A1%8C%E3%83%AD%E3%82%B0%EF%BC%88cron%E3%82%82%EF%BC%89%E3%82%92%E3%83%95%E3%82%A1%E3%82%A4%E3%83%AB%E3%81%AB%E5%87%BA%E5%8A%9B/</a><br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C7%A5%D0%A5%C3%A5%B0">デバッグ</a>用に実行頻度を多くしておきます（ここでは2分ごと）。</p>
+<pre class="code" data-lang="" data-unlink="">*/2 * * * * /usr/bin/python3 /home/raspberrypi3p/cron.py &gt;&gt; /tmp/test.log 2&gt;&amp;1</pre><p>しかし、そもそもこのLogが出てこないようならcron自体の設定がおかしく、cronが動いていないということになります。</p><p>出てきた内容はここでは<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>の例外でした。<br/>
+<code>serviceAccountKey.json</code>というFirebaseにアクセスするためのキーが見つからない、というものでした。</p>
+<pre class="code" data-lang="" data-unlink="">Traceback (most recent call last):
+  File "/home/raspberrypi3p/cron.py", line 48, in &lt;module&gt;
+    get_last_data()
+  File "/home/raspberrypi3p/cron.py", line 24, in get_last_data
+    cred = credentials.Certificate('serviceAccountKey.json')
+  File "/usr/local/lib/python3.7/dist-packages/firebase_admin/credentials.py", line 83, in __init__
+    with open(cert) as json_file:
+FileNotFoundError: [Errno 2] No such file or directory: 'serviceAccountKey.json'</pre><p>しかし、cronを使わず直接</p>
+<pre class="code" data-lang="" data-unlink="">python3 cron.py</pre><p>のように起動した場合は問題なく終了します。<br/>
+さらに、<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%C7%A5%D0%A5%C3%A5%B0">デバッグ</a>用に</p>
+<pre class="code" data-lang="" data-unlink="">inport os
+print(os.getcwd())
+&gt;&gt; /root</pre><p>を加えると、実行されているフォルダが分かります。</p><p>一方、手動で起動すると</p>
+<pre class="code" data-lang="" data-unlink="">raspberrypi3p@raspberrypi3p:~ $ sudo python3 cron.py
+&gt;&gt; /home/raspberrypi3p</pre><p>となり、実行されているカレントフォルダが違うことが分かりました。<br/>
+このため、<code>/home/raspberrypi3p</code>に設置されている<code>serviceAccountKey.json</code>が見つからないということが起きていることが分かりました。</p>
+</div>
+<div class="section">
+<h3 id="まとめ">まとめ</h3>
+<p>cronで自動実行の仕組みを構築しました。<br/>
+cron自体の記事はたくさんあるのですが、躓きポイントが多いと思いました。<br/>
+一度出来てしまえば簡単なのですが、最初の設定は結構苦労します。<br/>
+上手く動かないときは<br/>
+・crontab -e の記法が間違っていないか<br/>
+・<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>等を実行している場合はLogを出力するようにしてprint()やErrorなどの中身を確認する<br/>
+・実行権限sudo等の問題は無いか<br/>
+・cronを使わないで実行したとき問題は無いか<br/>
+等を確認することで解決できると思います。</p>
+</div>
+<div class="section">
+<h3 id="参考">参考</h3>
+<p><iframe class="embed-card embed-webcard" frameborder="0" loading="lazy" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fwww.server-memo.net%2Ftips%2Fcrontab.html" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="crontabの書き方"></iframe><cite class="hatena-citation"><a href="https://www.server-memo.net/tips/crontab.html">www.server-memo.net</a></cite></p>
+</div>
+</div>

@@ -1,0 +1,30 @@
+<div class="entry-content">
+<div class="section">
+<h3 id="使ってみた">使ってみた</h3>
+<p><iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen="" frameborder="0" height="315" src="https://www.youtube.com/embed/9k3LfzZkRF8?feature=oembed" title="ArduinoでLEDテープを動作させる" width="560"></iframe><cite class="hatena-citation"><a href="https://youtu.be/9k3LfzZkRF8">youtu.be</a></cite></p><p></p><div class="hatena-asin-detail"><a class="hatena-asin-detail-image-link" href="https://www.amazon.co.jp/dp/B01MYT6IMX?tag=shirotoakb-22&amp;linkCode=ogi&amp;th=1&amp;psc=1" rel="noopener" target="_blank"><img alt="ALITOVE LEDテープライト WS2812B アドレス指定可能 LEDテープ イルミネーション LEDライト5050 RGB SMD 1 m 144個ピクセル夢色 非防水 ホワイトPCB ＤC ５Ⅴ" class="hatena-asin-detail-image" src="https://m.media-amazon.com/images/I/41czfmM22wL._SL500_.jpg" title="ALITOVE LEDテープライト WS2812B アドレス指定可能 LEDテープ イルミネーション LEDライト5050 RGB SMD 1 m 144個ピクセル夢色 非防水 ホワイトPCB ＤC ５Ⅴ"/></a><div class="hatena-asin-detail-info"><p class="hatena-asin-detail-title"><a href="https://www.amazon.co.jp/dp/B01MYT6IMX?tag=shirotoakb-22&amp;linkCode=ogi&amp;th=1&amp;psc=1" rel="noopener" target="_blank">ALITOVE LEDテープライト WS2812B アドレス指定可能 LEDテープ イルミネーション LEDライト5050 RGB SMD 1 m 144個ピクセル夢色 非防水 ホワイトPCB ＤC ５Ⅴ</a></p><ul class="hatena-asin-detail-meta"><li>ALITOVE</li></ul><a class="asin-detail-buy" href="https://www.amazon.co.jp/dp/B01MYT6IMX?tag=shirotoakb-22&amp;linkCode=ogi&amp;th=1&amp;psc=1" rel="noopener" target="_blank">Amazon</a></div></div>商品ページにはFastLED対応、レビューにはNeoPixelで動いた、とありましたが、FastLEDはClockピンが必要なようなので、本当に動くのか？という感じです。<br/>
+※2022/09/19 FastLEDライブラリでも動作しました -&gt;追記<p>ライブラリマネージャからNeoPixcelのライブラリをインストールすると簡単に使えます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img class="hatena-fotolife" height="443" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220911/20220911181350.png" title="" width="786"/></span><br/>
+RGBWstrandtestというサンプルをLED数を変更して使ってみました。</p><p>光量設定にもよるかもしれませんが、外部電源ではなく<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>の5Vから電源をとっても144個すべてのLEDを点灯させることができました。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/Amazon">Amazon</a>の商品ページには144個と書いてありますが最後のLEDの番号が72となっていて、？と思いましたが、72個のテープが連結されているようです。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img class="hatena-fotolife" height="676" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220911/20220911182120.png" title="" width="1199"/></span></p><p>どういう仕組みになっているのか？ということで少しテスターを当てて調べてみると、テープ上に3つ並んでいる端子が、VCC、Data、GNDとなっていることがわかります。<br/>
+このDataピンにジャンプして信号を入れると点灯させることができます。<br/>
+また、この信号は信号線を外しても状態は維持され、状態の切り替え信号を送っていると思われます。<br/>
+つまり、途中でカットしてもトカゲのしっぽ？タコの足？のように短いテープLEDとして機能すると考えられます。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img class="hatena-fotolife" height="1199" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220911/20220911182624.png" title="" width="1074"/></span></p><p>また、9個のLEDにカットして、端子にリード線をつけることで短いLEDテープを構成することもできました。<br/>
+<span itemscope="" itemtype="http://schema.org/Photograph"><img class="hatena-fotolife" height="676" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220911/20220911220732.jpg" title="" width="1200"/></span><br/>
+</p>
+</div>
+<div class="section">
+<h3 id="まとめ">まとめ</h3>
+<p>LEDテープを<a class="keyword" href="http://d.hatena.ne.jp/keyword/Arduino">Arduino</a>で使ってみました。<br/>
+NeoPixcelというライブラリを使うことで簡単に動作させることが出来ます。<br/>
+動画にはしていませんが、このほかにも複雑なエフェクトを作成することもできました。</p>
+</div>
+<div class="section">
+<h3 id="追記">追記</h3>
+<p><span itemscope="" itemtype="http://schema.org/Photograph"><img class="hatena-fotolife" height="580" itemprop="image" loading="lazy" src="https://cdn-ak.f.st-hatena.com/images/fotolife/s/s51517765/20220919/20220919173035.png" title="" width="1020"/></span><br/>
+FastLEDライブラリをインストールして、以下のサンプルコードを参考に動かすことができました。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" loading="lazy" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fdeviceplus.jp%2Farduino%2Fhow-to-add-rgb-led-strip-to-home-lighting%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="Arduino＋LEDテープでRGBフルカラーの自宅イルミネーションを始めよう！ | Device Plus - デバプラ"></iframe><cite class="hatena-citation"><a href="https://deviceplus.jp/arduino/how-to-add-rgb-led-strip-to-home-lighting/">deviceplus.jp</a></cite><br/>
+<iframe class="embed-card embed-webcard" frameborder="0" loading="lazy" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fweb.is.tokushima-u.ac.jp%2Fwp%2Fblog%2F2018%2F04%2F17%2Fesp32-arduino-%25E3%2583%25AA%25E3%2583%25B3%25E3%2582%25B0led%25E3%2581%25AE%25E7%2582%25B9%25E7%2581%25AF-fastled%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="ESP32 Arduino: リングLEDの点灯 FastLED - AI / IoT センサのしくみを知ろう"></iframe><cite class="hatena-citation"><a href="https://web.is.tokushima-u.ac.jp/wp/blog/2018/04/17/esp32-arduino-%E3%83%AA%E3%83%B3%E3%82%B0led%E3%81%AE%E7%82%B9%E7%81%AF-fastled/">web.is.tokushima-u.ac.jp</a></cite></p>
+</div>
+</div>

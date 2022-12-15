@@ -1,0 +1,527 @@
+<div class="entry-content">
+<div class="section">
+<h3 id="Go-基本文法総ざらい">Go 基本文法総ざらい</h3>
+<p>一通り使ってみたところで、基本文法を総ざらいするために、paizaのレベルアップ問題集（Bランクレベルアップ）をGoで解いてみました。<br/>
+以下、すべてpaizaでの採点は100点となる回答例であり、基本文法を確認した結果です。<br/>
+paizaではスキルチェックの回答は公開NGですが、レベルアップ問題集に関してはOKです。</p>
+</div>
+<div class="section">
+<h3 id="5以上の整数の合計">5以上の整数の合計</h3>
+<p><a href="https://paiza.jp/works/mondai/prob60/5_or_more_9">5以上の整数の合計 | レベルアップ問題集 | プログラミング学習サイト【paizaラーニング】</a></p>
+<blockquote>
+<p>改行区切りで整数がn個入力されるので、n個の整数のうち、5以上のものをすべて足し合わせた値を出力してください。</p>
+</blockquote>
+<pre class="code lang-go" data-lang="go" data-unlink=""><span class="synComment">//if文の使い方、基本の数値計算をする問題</span>
+<span class="synStatement">package</span> main
+
+<span class="synStatement">import</span> <span class="synConstant">"fmt"</span>
+
+<span class="synStatement">func</span> main() {
+	<span class="synStatement">var</span> n, a <span class="synType">int</span>
+	ans := <span class="synConstant">0</span>
+	fmt.Scan(&amp;n)
+	<span class="synStatement">for</span> i := <span class="synConstant">0</span>; i &lt; n; i++ {
+		fmt.Scan(&amp;a)
+		<span class="synStatement">if</span> a &gt;<span class="synConstant">5</span> {
+			ans +=a
+		}
+	}
+	fmt.Println(ans)
+}
+</pre>
+</div>
+<div class="section">
+<h3 id="足すか掛けるか">足すか掛けるか</h3>
+<p><a href="https://paiza.jp/works/mondai/prob60/total_value_9">足すか掛けるか | レベルアップ問題集 | プログラミング学習サイト【paizaラーニング】</a><br/>
+</p>
+<blockquote>
+<p>2つの整数の組がn個与えられるので、各組の計算結果を足し合わせたものを出力してください。<br/>
+各組の計算結果は次の値です。<br/>
+・2つの整数の組を足し合わせたもの<br/>
+・ただし、2つの整数が同じ値だった場合は、掛け合わせたもの</p>
+</blockquote>
+<pre class="code lang-go" data-lang="go" data-unlink=""><span class="synComment">//入力を受取り数値としてif文を使う、また基本の数値計算をする問題</span>
+<span class="synStatement">package</span> main
+
+<span class="synStatement">import</span> <span class="synConstant">"fmt"</span>
+
+<span class="synStatement">func</span> main() {
+	<span class="synStatement">var</span> n, a, b <span class="synType">int</span>
+	ans := <span class="synConstant">0</span>
+	fmt.Scan(&amp;n)
+	<span class="synStatement">for</span> i := <span class="synConstant">0</span>; i &lt; n; i++ {
+		fmt.Scan(&amp;a, &amp;b)
+		<span class="synStatement">if</span> a == b {
+			ans += a * b
+		} <span class="synStatement">else</span> {
+			ans += a + b
+		}
+	}
+	fmt.Println(ans)
+}
+</pre>
+</div>
+<div class="section">
+<h3 id="文字列を切り取る">文字列を切り取る</h3>
+<p><a href="https://paiza.jp/works/mondai/prob60/substring_9">文字列を切り取る | レベルアップ問題集 | プログラミング学習サイト【paizaラーニング】</a></p>
+<blockquote>
+<p>スペース区切りの2つの整数と、文字列が入力されるので、2つの整数の範囲の部分文字列を出力してください。</p>
+</blockquote>
+<pre class="code lang-go" data-lang="go" data-unlink=""><span class="synComment">/*</span>
+<span class="synComment">スライスの使い方とスペースを含む文字列の取得</span>
+<span class="synComment">また、Pythonに似た感じでスライス操作s.Text()[0:a-1] が可能。</span>
+<span class="synComment">*/</span>
+<span class="synStatement">package</span> main
+
+<span class="synStatement">import</span> (
+	<span class="synConstant">"bufio"</span>
+	<span class="synConstant">"fmt"</span>
+	<span class="synConstant">"os"</span>
+)
+
+<span class="synStatement">func</span> main() {
+	<span class="synStatement">var</span> a, b <span class="synType">int</span>
+	fmt.Scan(&amp;a, &amp;b)
+	s := bufio.NewScanner(os.Stdin)
+	s.Scan()
+
+	fmt.Println(s.Text()[a-<span class="synConstant">1</span>:b])
+}
+</pre>
+</div>
+<div class="section">
+<h3 id="指定範囲だけ大文字">指定範囲だけ大文字</h3>
+<p><a href="https://paiza.jp/works/mondai/prob60/substring_upper_9">指定範囲だけ大文字 | レベルアップ問題集 | プログラミング学習サイト【paizaラーニング】</a></p>
+<blockquote>
+<p>文字列 s の a 文字目から b 文字目を大文字にして、文字列 s を出力してください。<br/>
+文字列 s に含まれる記号やスペースは、変形せずそのまま出力します。<br/>
+最後は改行し、余計な文字、空行を含んではいけません。</p>
+</blockquote>
+<pre class="code lang-go" data-lang="go" data-unlink=""><span class="synComment">/* </span>
+<span class="synComment">strings.ToUpper()という関数を使う。</span>
+<span class="synComment">また、スペースを含む文字列を取得するにはfmt.Scan()では使い勝手が悪く、s := bufio.NewScanner(os.Stdin)をつかうことで改行までを取得できる。</span>
+<span class="synComment">*/</span>
+<span class="synStatement">package</span> main
+
+<span class="synStatement">import</span> (
+	<span class="synConstant">"bufio"</span>
+	<span class="synConstant">"fmt"</span>
+	<span class="synConstant">"os"</span>
+	<span class="synConstant">"strings"</span>
+)
+
+<span class="synStatement">func</span> main() {
+	<span class="synStatement">var</span> a, b <span class="synType">int</span>
+
+	fmt.Scan(&amp;a, &amp;b)
+	s := bufio.NewScanner(os.Stdin)
+	s.Scan()
+	ans := s.Text()[<span class="synConstant">0</span>:a-<span class="synConstant">1</span>] + strings.ToUpper(s.Text()[a-<span class="synConstant">1</span>:b]) + s.Text()[b:]
+
+	fmt.Println(ans)
+}
+</pre><pre class="code lang-go" data-lang="go" data-unlink=""><span class="synComment">//別解。置き換え前と置き換え後の配列（スライス）を用意してreplaceする。</span>
+arr := [...]<span class="synType">string</span>{<span class="synConstant">"a"</span>, <span class="synConstant">"b"</span>, <span class="synConstant">"c"</span>, <span class="synConstant">"d"</span>, ***}
+arr2 := [...]<span class="synType">string</span>{<span class="synConstant">"A"</span>, <span class="synConstant">"B"</span>, <span class="synConstant">"C"</span>, <span class="synConstant">"D"</span>, ***}
+
+s2 := s.Text()
+<span class="synStatement">for</span> n, _ := <span class="synStatement">range</span> arr {
+	replaced := strings.Replace(s2, arr[n], arr2[n], -<span class="synConstant">1</span>)
+	s2 = replaced
+	fmt.Println(replaced)
+}
+</pre>
+</div>
+<div class="section">
+<h3 id="文字列の重複カウント">文字列の重複カウント</h3>
+<p><a href="https://paiza.jp/works/mondai/prob60/string_count_9">文字の重複カウント | レベルアップ問題集 | プログラミング学習サイト【paizaラーニング】</a></p>
+<blockquote>
+<p>文字列 s の中に、文字 c が出現する個数を数えて出力してください。<br/>
+最後は改行し、余計な文字、空行を含んではいけません。</p>
+</blockquote>
+<pre class="code lang-go" data-lang="go" data-unlink=""><span class="synComment">//strings.Count(s, c)を使う</span>
+<span class="synStatement">package</span> main
+
+<span class="synStatement">import</span> (
+	<span class="synComment">//"bufio"</span>
+	<span class="synConstant">"fmt"</span>
+	<span class="synComment">//"os"</span>
+	<span class="synConstant">"strings"</span>
+)
+
+<span class="synStatement">func</span> main() {
+	<span class="synStatement">var</span> s, c <span class="synType">string</span>
+	fmt.Scan(&amp;c)
+	fmt.Scan(&amp;s)
+
+	fmt.Println(strings.Count(s, c))
+}
+</pre>
+</div>
+<div class="section">
+<h3 id="文字と整数の組のソート">文字と整数の組のソート</h3>
+<p><a href="https://paiza.jp/works/mondai/prob60/sort_asc_9">文字と整数の組のソート | レベルアップ問題集 | プログラミング学習サイト【paizaラーニング】</a></p>
+<blockquote>
+<p>1行目に行数を表す整数 n、続く n 行の各行で「文字」と「整数」の組が空白区切りで入力されます。<br/>
+n 個の組を、「整数」の値で昇順に並べ変え、「文字」を出力してください。</p>
+</blockquote>
+<pre class="code lang-go" data-lang="go" data-unlink=""><span class="synComment">/*</span>
+<span class="synComment">「文字」と「整数」を一旦Slice(リスト)にそれぞれ格納し、整数をsortする。</span>
+<span class="synComment">sortされたSliceを順番に取り出し、もとのSliceをdeep copyしたk2からその値を探しそのindexを取得する。</span>
+<span class="synComment">そのindexの「文字」を順番に出力する。</span>
+<span class="synComment">Pythonであれば辞書型に格納して、辞書をソートして順番に取り出せばいいが、Golangにはそのような機能が組み込みでは無い。</span>
+<span class="synComment">*/</span>
+<span class="synStatement">package</span> main
+
+<span class="synStatement">import</span> (
+	<span class="synComment">//"bufio"</span>
+	<span class="synConstant">"fmt"</span>
+	<span class="synComment">//"reflect"</span>
+	<span class="synConstant">"sort"</span>
+	<span class="synComment">//"strconv"</span>
+	<span class="synComment">//"os"</span>
+	<span class="synComment">//"strings"</span>
+)
+
+<span class="synStatement">func</span> main() {
+	<span class="synStatement">var</span> n,d <span class="synType">int</span>
+	fmt.Scan(&amp;n)
+	<span class="synStatement">var</span> s <span class="synType">string</span>
+<span class="synError">	</span>
+	k := <span class="synStatement">make</span>([]<span class="synType">int</span>, <span class="synConstant">0</span>)    <span class="synComment">//key : type int  Empty slice(List)</span>
+	v := <span class="synStatement">make</span>([]<span class="synType">string</span>, <span class="synConstant">0</span>) <span class="synComment">//value :type string  Empty slice(List)</span>
+
+	<span class="synStatement">for</span> i := <span class="synConstant">0</span>; i &lt; n; i++ {
+		fmt.Scan(&amp;s, &amp;d)
+<span class="synError">		</span>
+		k = <span class="synStatement">append</span>(k, d) <span class="synComment">// int</span>
+		v = <span class="synStatement">append</span>(v, s)
+	}
+	k2 := <span class="synStatement">make</span>([]<span class="synType">int</span>, <span class="synStatement">len</span>(k))
+	<span class="synStatement">copy</span>(k2, k) <span class="synComment">//deep Copy &lt;--&gt; k2:=k はshallow copy</span>
+	sort.Slice(k, <span class="synType">func</span>(i, j <span class="synType">int</span>) <span class="synType">bool</span> {
+		<span class="synStatement">return</span> k[i] &lt; k[j]
+	})
+	tmp := <span class="synConstant">0</span>
+	<span class="synStatement">for</span> i := <span class="synConstant">0</span>; i &lt; n; i++ {
+		<span class="synStatement">for</span> j := <span class="synConstant">0</span>; j &lt; n; j++ {
+			<span class="synStatement">if</span> k[i] == k2[j] {
+				<span class="synComment">//fmt.Println(k[i])</span>
+				tmp = j
+				<span class="synStatement">break</span>
+			}
+
+		}
+		fmt.Println(v[tmp])
+	}
+}
+</pre>
+</div>
+<div class="section">
+<h3 id="文字と整数の組のソート2">文字と整数の組のソート2</h3>
+<p><a href="https://paiza.jp/works/mondai/prob60/sort_add_9">文字と整数の組のソート2 | レベルアップ問題集 | プログラミング学習サイト【paizaラーニング】</a></p>
+<blockquote>
+<p>1行目に行数を表す整数 n、続く n 行の各行で「文字」と「整数」の組が空白区切りで入力されます。<br/>
+n 個の組について、「文字」の値が同じ組同士の数値を足しあわせてまとめ、まとめた数値の降順で、文字とまとめた数値の組を出力してください。<br/>
+この際、まとめた数値は重複しません。</p>
+</blockquote>
+<pre class="code lang-go" data-lang="go" data-unlink=""><span class="synComment">/*</span>
+<span class="synComment">文字を保存するsliceと数値を保存するsliceを作成。</span>
+<span class="synComment">先のsliceに該当文字があれば対応する数値のlistに加算、なければ要素をそれぞれ追加</span>
+<span class="synComment">数値のsliceをshallow copyし、ソート。</span>
+<span class="synComment">順番に取り出し、もとの数値sliceから対応する要素indexを取得、その要素indexの文字sliceを取り出し出力。</span>
+<span class="synComment">今回は数値の重複はないが、ある場合は出力時にsliceから削除していく必要があるはず</span>
+<span class="synComment">*/</span>
+
+<span class="synStatement">package</span> main
+
+<span class="synStatement">import</span> (
+	<span class="synComment">//"bufio"</span>
+	<span class="synConstant">"fmt"</span>
+	<span class="synConstant">"sort"</span>
+	<span class="synComment">//"os"</span>
+	<span class="synComment">//"strings"</span>
+)
+
+<span class="synStatement">func</span> main() {
+	<span class="synStatement">var</span> n, tmpd <span class="synType">int</span>
+	<span class="synStatement">var</span> tmps <span class="synType">string</span>
+	s := <span class="synStatement">make</span>([]<span class="synType">string</span>, <span class="synConstant">0</span>)
+	d := <span class="synStatement">make</span>([]<span class="synType">int</span>, <span class="synConstant">0</span>)
+
+	fmt.Scan(&amp;n)
+	<span class="synStatement">for</span> i := <span class="synConstant">0</span>; i &lt; n; i++ {
+		flag := <span class="synStatement">false</span>
+		fmt.Scan(&amp;tmps, &amp;tmpd)
+		<span class="synComment">//文字列のsliceを探索し、一致したら数値の同じindexに加算する</span>
+		<span class="synStatement">for</span> count, s0 := <span class="synStatement">range</span> s {
+			<span class="synStatement">if</span> s0 == tmps {
+				d[count] += tmpd
+				flag = <span class="synStatement">true</span>
+				<span class="synStatement">break</span>
+			}
+		}
+		<span class="synStatement">if</span> !flag {
+			<span class="synComment">//無ければ要素を追加</span>
+			s = <span class="synStatement">append</span>(s, tmps)
+			d = <span class="synStatement">append</span>(d, tmpd)
+		}
+	}
+	<span class="synComment">//数値のsliceをコーピーしてもとのsliceをソート</span>
+	d2 := <span class="synStatement">make</span>([]<span class="synType">int</span>, <span class="synStatement">len</span>(d))
+	<span class="synStatement">copy</span>(d2, d)
+	sort.Slice(d, <span class="synType">func</span>(i, j <span class="synType">int</span>) <span class="synType">bool</span> {
+		<span class="synStatement">return</span> d[i] &gt; d[j]
+	})
+
+	<span class="synComment">//ソートしたsliceから順番に取り出し、もとのsliceのindexを探す</span>
+	<span class="synStatement">var</span> count <span class="synType">int</span>
+	<span class="synStatement">for</span> _, i := <span class="synStatement">range</span> d {
+		<span class="synStatement">for</span> c, j := <span class="synStatement">range</span> d2 {
+			<span class="synStatement">if</span> i == j {
+				count = c
+				<span class="synStatement">break</span>
+			}
+		}
+		<span class="synComment">//あえてprintf、改行はバックスラッシュn</span>
+		fmt.Printf(<span class="synConstant">"%s %d</span><span class="synSpecial">\n</span><span class="synConstant">"</span>, s[count], d2[count])
+	}
+}
+</pre>
+</div>
+<div class="section">
+<h3 id="アルファベット探し">アルファベット探し</h3>
+<p><a href="https://paiza.jp/works/mondai/prob60/alphabets_large_or_small_9">アルファベット探し | レベルアップ問題集 | プログラミング学習サイト【paizaラーニング】</a></p>
+<blockquote>
+<p>1行目の英大文字 X から、2行目の英大文字 Y の範囲に3行目のアルファベット C が含まれていれば"true", そうでなければ"false"と出力してください。<br/>
+X が Y よりもアルファベット順で後ろになる場合(X = 'G', Y = 'F'のときなど)も"false"と出力してください。</p>
+</blockquote>
+<pre class="code lang-go" data-lang="go" data-unlink=""><span class="synComment">//それぞれのアルファベットがアルファベットの何文字目に当たるかを算出し、比較する</span>
+
+<span class="synStatement">package</span> main
+
+<span class="synStatement">import</span> (
+	<span class="synComment">//"bufio"</span>
+	<span class="synConstant">"fmt"</span>
+	<span class="synComment">//"sort"</span>
+	<span class="synComment">//"os"</span>
+	<span class="synComment">//"strings"</span>
+)
+
+<span class="synStatement">func</span> main() {
+	<span class="synStatement">var</span> x, y, c <span class="synType">string</span>
+	<span class="synComment">//改行区切りでもまとめて取得できる（c++と同じ）</span>
+	fmt.Scan(&amp;x, &amp;y, &amp;c)
+	<span class="synComment">//変数 [i]でi文字目のアスキーコードを取得できる</span>
+	<span class="synStatement">if</span> x[<span class="synConstant">0</span>]&lt;=c[<span class="synConstant">0</span>]&amp;&amp; c[<span class="synConstant">0</span>]&lt;=y[<span class="synConstant">0</span>] {
+		fmt.Println(<span class="synConstant">"true"</span>)
+	}<span class="synStatement">else</span>{
+		fmt.Println(<span class="synConstant">"false"</span>)
+	}
+}
+</pre>
+</div>
+<div class="section">
+<h3 id="五目並べ"><a class="keyword" href="http://d.hatena.ne.jp/keyword/%B8%DE%CC%DC%CA%C2%A4%D9">五目並べ</a></h3>
+<p><a href="https://paiza.jp/works/mondai/prob60/tic_tac_toe_9">五目並べ | レベルアップ問題集 | プログラミング学習サイト【paizaラーニング】</a></p>
+<blockquote>
+<p>5行5列の<a class="keyword" href="http://d.hatena.ne.jp/keyword/%B8%DE%CC%DC%CA%C2%A4%D9">五目並べ</a>の盤面が与えられます。<br/>
+盤面の各マスには、"O"か"X"か"."が書かれています。<br/>
+"O"と"X"は、それぞれプレイヤーの記号を表します。<br/>
+同じ記号が縦か横か斜めに連続で5つ並んでいれば、その記号のプレイヤーが勝者となります。<br/>
+勝者の記号を1行で表示してください。<br/>
+勝者がいない場合は、引き分けとして、"D"を表示してください。</p>
+</blockquote>
+<pre class="code lang-go" data-lang="go" data-unlink=""><span class="synComment">/*</span>
+<span class="synComment">2次元配列(slice)に盤面を格納する</span>
+<span class="synComment">縦横斜めにカウントする</span>
+<span class="synComment">*/</span>
+
+<span class="synStatement">package</span> main
+
+<span class="synStatement">import</span> (
+	<span class="synComment">//"bufio"</span>
+	<span class="synConstant">"fmt"</span>
+	<span class="synConstant">"strings"</span>
+	<span class="synComment">//"sort"</span>
+	<span class="synComment">//"os"</span>
+	<span class="synComment">//"strings"</span>
+)
+
+<span class="synStatement">func</span> main() {
+	<span class="synStatement">var</span> input <span class="synType">string</span>
+	<span class="synComment">//m := make([][]string, 0)</span>
+	m := [][]<span class="synType">string</span>{}
+	<span class="synStatement">for</span> i := <span class="synConstant">0</span>; i &lt; <span class="synConstant">5</span>; i++ {
+		fmt.Scan(&amp;input)
+		line := strings.Split(input, <span class="synConstant">""</span>) <span class="synComment">//sliceに1文字ずつ格納</span>
+		m = <span class="synStatement">append</span>(m, line)
+	}
+
+	<span class="synComment">//yoko</span>
+	<span class="synStatement">for</span> i := <span class="synConstant">0</span>; i &lt; <span class="synConstant">5</span>; i++ {
+		o := <span class="synConstant">0</span>
+		x := <span class="synConstant">0</span>
+		<span class="synStatement">for</span> j := <span class="synConstant">0</span>; j &lt; <span class="synConstant">5</span>; j++ {
+			<span class="synStatement">if</span> m[i][j] == <span class="synConstant">"O"</span> {
+				o += <span class="synConstant">1</span>
+			} <span class="synStatement">else</span> <span class="synStatement">if</span> m[i][j] == <span class="synConstant">"X"</span> {
+				x += <span class="synConstant">1</span>
+			}
+		}
+		<span class="synStatement">if</span> o == <span class="synConstant">5</span> {
+			fmt.Println(<span class="synConstant">"O"</span>)
+			<span class="synStatement">return</span>
+		} <span class="synStatement">else</span> <span class="synStatement">if</span> x == <span class="synConstant">5</span> {
+			fmt.Println(<span class="synConstant">"X"</span>)
+			<span class="synStatement">return</span>
+		}
+	}
+	<span class="synComment">//tate</span>
+	<span class="synStatement">for</span> i := <span class="synConstant">0</span>; i &lt; <span class="synConstant">5</span>; i++ {
+		o := <span class="synConstant">0</span>
+		x := <span class="synConstant">0</span>
+		<span class="synStatement">for</span> j := <span class="synConstant">0</span>; j &lt; <span class="synConstant">5</span>; j++ {
+			<span class="synStatement">if</span> m[j][i] == <span class="synConstant">"O"</span> {
+				o += <span class="synConstant">1</span>
+			} <span class="synStatement">else</span> <span class="synStatement">if</span> m[j][i] == <span class="synConstant">"X"</span> {
+				x += <span class="synConstant">1</span>
+			}
+		}
+		<span class="synStatement">if</span> o == <span class="synConstant">5</span> {
+			fmt.Println(<span class="synConstant">"O"</span>)
+			<span class="synStatement">return</span>
+		} <span class="synStatement">else</span> <span class="synStatement">if</span> x == <span class="synConstant">5</span> {
+			fmt.Println(<span class="synConstant">"X"</span>)
+			<span class="synStatement">return</span>
+		}
+	}
+	<span class="synComment">//naname</span>
+	o := <span class="synConstant">0</span>
+	x := <span class="synConstant">0</span>
+	<span class="synStatement">for</span> i := <span class="synConstant">0</span>; i &lt; <span class="synConstant">5</span>; i++ {
+		<span class="synStatement">if</span> m[i][i] == <span class="synConstant">"O"</span> {
+			o += <span class="synConstant">1</span>
+		} <span class="synStatement">else</span> <span class="synStatement">if</span> m[i][i] == <span class="synConstant">"X"</span> {
+			x += <span class="synConstant">1</span>
+		}
+		<span class="synStatement">if</span> o == <span class="synConstant">5</span> {
+			fmt.Println(<span class="synConstant">"O"</span>)
+			<span class="synStatement">return</span>
+		} <span class="synStatement">else</span> <span class="synStatement">if</span> x == <span class="synConstant">5</span> {
+			fmt.Println(<span class="synConstant">"X"</span>)
+			<span class="synStatement">return</span>
+		}
+	}
+	<span class="synComment">//gyaku naname</span>
+	o = <span class="synConstant">0</span>
+	x = <span class="synConstant">0</span>
+	<span class="synStatement">for</span> i := <span class="synConstant">0</span>; i &lt; <span class="synConstant">5</span>; i++ {
+		<span class="synStatement">if</span> m[<span class="synConstant">4</span>-i][i] == <span class="synConstant">"O"</span> {
+			o += <span class="synConstant">1</span>
+		} <span class="synStatement">else</span> <span class="synStatement">if</span> m[<span class="synConstant">4</span>-i][i] == <span class="synConstant">"X"</span> {
+			x += <span class="synConstant">1</span>
+		}
+		<span class="synStatement">if</span> o == <span class="synConstant">5</span> {
+			fmt.Println(<span class="synConstant">"O"</span>)
+			<span class="synStatement">return</span>
+		} <span class="synStatement">else</span> <span class="synStatement">if</span> x == <span class="synConstant">5</span> {
+			fmt.Println(<span class="synConstant">"X"</span>)
+			<span class="synStatement">return</span>
+		}
+	}
+	fmt.Println(<span class="synConstant">"D"</span>)
+}
+</pre>
+</div>
+<div class="section">
+<h3 id="占い">占い</h3>
+<p><a href="https://paiza.jp/works/mondai/prob60/fortune_telling_9">占い | レベルアップ問題集 | プログラミング学習サイト【paizaラーニング】</a></p>
+<blockquote>
+<p>次のような占いプログラムを作成してください。<br/>
+「ユーザー」と「ユーザーに対応する血液型」、「血液型」と「血液型に対応する占い結果」が与えられます。<br/>
+それぞれのユーザーに対応する占い結果を表示してください。<br/>
+入力例の1つ目は、ユーザーの血液型についてのラッキーカラーの占いです。<br/>
+入力例の2つ目は、ユーザーの星座についてのラッキーパーソンの占いになっています。<br/>
+「血液型」として「星座」などのさまざまな文字列を利用できるようにすることで、他の占いにも対応する必要があることに注意してください。</p>
+</blockquote>
+<pre class="code lang-go" data-lang="go" data-unlink=""><span class="synComment">/*</span>
+<span class="synComment">配列を使って線形探索する。</span>
+<span class="synComment">1行の入力を一次元配列tmp2として、これをappendして二次元配列を作成する。</span>
+<span class="synComment">*/</span>
+
+<span class="synStatement">package</span> main
+
+<span class="synStatement">import</span> (
+	<span class="synComment">//"bufio"</span>
+	<span class="synConstant">"fmt"</span>
+	<span class="synComment">//"os"</span>
+	<span class="synComment">//"strconv"</span>
+	<span class="synComment">//"strings"</span>
+)
+
+<span class="synStatement">func</span> main() {
+	<span class="synStatement">var</span> n, m <span class="synType">int</span>
+
+	fmt.Scan(&amp;n)
+	usr0 := <span class="synStatement">make</span>([][]<span class="synType">string</span>, <span class="synConstant">0</span>)
+	usr1 := <span class="synStatement">make</span>([][]<span class="synType">string</span>, <span class="synConstant">0</span>)
+
+	<span class="synStatement">for</span> i := <span class="synConstant">0</span>; i &lt; n; i++ {
+		<span class="synStatement">var</span> tmp0, tmp1 <span class="synType">string</span>
+		fmt.Scan(&amp;tmp0, &amp;tmp1)
+		tmp2 := []<span class="synType">string</span>{tmp0, tmp1}
+		usr0 = <span class="synStatement">append</span>(usr0, tmp2)
+	}
+
+	fmt.Scan(&amp;m)
+	<span class="synStatement">for</span> j := <span class="synConstant">0</span>; j &lt; m; j++ {
+		<span class="synStatement">var</span> tmp0, tmp1 <span class="synType">string</span>
+		fmt.Scan(&amp;tmp0, &amp;tmp1)
+		tmp2 := []<span class="synType">string</span>{tmp0, tmp1}
+		usr1 = <span class="synStatement">append</span>(usr1, tmp2)
+	}
+
+	<span class="synStatement">for</span> i := <span class="synConstant">0</span>; i &lt; n; i++ {
+		fmt.Printf(<span class="synConstant">"%s "</span>, usr0[i][<span class="synConstant">0</span>])
+		<span class="synStatement">for</span> j := <span class="synConstant">0</span>; j &lt; m; j++ {
+			<span class="synStatement">if</span> usr0[i][<span class="synConstant">1</span>] == usr1[j][<span class="synConstant">0</span>] {
+				fmt.Printf(<span class="synConstant">"%s</span><span class="synSpecial">\n</span><span class="synConstant">"</span>, usr1[j][<span class="synConstant">1</span>])
+				<span class="synStatement">break</span>
+			}
+		}
+	}
+}
+</pre><pre class="code lang-go" data-lang="go" data-unlink=""><span class="synComment">/*</span>
+<span class="synComment">2次元配列の作成時に以下の方法も可能に思えるが、LocalではOKだが、</span>
+<span class="synComment">paizaのテストではRuntime Errorや2周目以降値が取れないなどが発生。</span>
+<span class="synComment">原因不明。</span>
+<span class="synComment">*/</span>
+<span class="synComment">//別解</span>
+usr0 := <span class="synStatement">make</span>([][]<span class="synType">string</span>, <span class="synConstant">0</span>)
+usr1 := <span class="synStatement">make</span>([][]<span class="synType">string</span>, <span class="synConstant">0</span>)
+tmp := bufio.NewScanner(os.Stdin)
+tmp.Scan()
+input0 := strings.Split(tmp.Text(), <span class="synConstant">" "</span>)
+usr0 = <span class="synStatement">append</span>(usr0, input0)
+<span class="synComment">//別解2</span>
+<span class="synStatement">var</span> usr0 [<span class="synConstant">100</span>][<span class="synConstant">2</span>]<span class="synType">string</span>
+<span class="synStatement">var</span> usr1 [<span class="synConstant">100</span>][<span class="synConstant">2</span>]<span class="synType">string</span>
+tmp := bufio.NewScanner(os.Stdin)
+tmp.Scan()
+input0 := strings.Split(tmp.Text(), <span class="synConstant">" "</span>)
+usr0[i][<span class="synConstant">0</span>] = input0[<span class="synConstant">0</span>]
+usr0[i][<span class="synConstant">1</span>] = input0[<span class="synConstant">1</span>]
+</pre>
+</div>
+<div class="section">
+<h3 id="まとめ">まとめ</h3>
+<p>Goの基本文法習得（を目指）しました。<br/>
+Goは他の言語（特に<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>や<a class="keyword" href="http://d.hatena.ne.jp/keyword/C%2B%2B">C++</a>）と比較して、標準の関数が競プロを解くには「無い機能」が多く、想定されている解き方が簡単には実装できない部分が多くあるように思います。<br/>
+（例えば<a class="keyword" href="http://d.hatena.ne.jp/keyword/Python">Python</a>では辞書は自動的にソートされているが、Goではそうではなく、しかも順番にアクセスしているつもりがランダムに出力される）</p><p>また、Goでは宣言したけど使われていない変数があるとErrorになります。<br/>
+<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A2%A5%EB%A5%B4%A5%EA%A5%BA%A5%E0">アルゴリズム</a>を考えながら実装していると、結構こういうところで引っかかって、一旦<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%B3%A5%E1%A5%F3%A5%C8%A5%A2%A5%A6%A5%C8">コメントアウト</a>するなどが必要だったりします。</p>
+<pre class="code" data-lang="" data-unlink="">./filename.go:17:11: xxxx declared but not used</pre><p>このような場合、<code>_=変数</code>のように使われない変数に代入するとErrorを回避することができます。<br/>
+<iframe class="embed-card embed-webcard" frameborder="0" loading="lazy" scrolling="no" src="https://hatenablog-parts.com/embed?url=https%3A%2F%2Fmebee.info%2F2020%2F11%2F18%2Fpost-23158%2F" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;" title="go言語 「_」アンダーバーを使用する"></iframe><cite class="hatena-citation"><a href="https://mebee.info/2020/11/18/post-23158/">mebee.info</a></cite><br/>
+Goの思想としては「<a class="keyword" href="http://d.hatena.ne.jp/keyword/%A5%A2%A5%EB%A5%B4%A5%EA%A5%BA%A5%E0">アルゴリズム</a>を考えてから実装しましょう、そのほうがBugが起きにくいですよ。」ということなのでしょう。</p>
+</div>
+</div>
